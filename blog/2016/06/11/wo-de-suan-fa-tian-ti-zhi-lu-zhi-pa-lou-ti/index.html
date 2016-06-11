@@ -110,7 +110,7 @@
 
 <p>  但是由于计蒜客的算法问题有1000ms运行时间的限制,因此在此处用Ruby的递归算法来实现并非是正解(可能是Ruby的性能问题导致运行超时,博主没试过用C进行递归.有兴趣的人可以试一试.)</p>
 
-<p>  我们再自习观察前10级阶梯数算出的结果会发现:随着阶梯数N的增长,走法的总数符合斐波那契数列规律增长, $ f(N)=f(N-1)+f(N-2) $
+<p>  我们再自习观察前10级阶梯数算出的结果会发现:随着阶梯数N的增长,走法的总数符合斐波那契数列规律增长, f(N)=f(N-1)+f(N-2)
   利用这个规律我们可以采取以下循环方法实现:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
