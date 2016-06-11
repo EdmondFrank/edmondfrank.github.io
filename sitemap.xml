@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/</loc>
+<lastmod>2016-06-11T11:17:42+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/06/10/hello/</loc>
 <lastmod>2016-06-10T12:22:01+08:00</lastmod>
 </url>
@@ -15,5 +19,17 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/test/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/bian-cheng/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/ruby/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/suan-fa/</loc>
 </url>
 </urlset>
