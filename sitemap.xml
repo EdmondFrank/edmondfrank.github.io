@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/</loc>
+<lastmod>2016-06-14T15:49:20+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/</loc>
 <lastmod>2016-06-12T16:37:33+08:00</lastmod>
 </url>
@@ -36,5 +40,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/linux-shen-tou-gong-ju/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/meng-sui-xiang-xin-li-xue/</loc>
 </url>
 </urlset>
