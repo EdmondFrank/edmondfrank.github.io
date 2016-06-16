@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/</loc>
+<lastmod>2016-06-16T22:23:37+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/</loc>
 <lastmod>2016-06-14T15:49:20+08:00</lastmod>
 </url>
@@ -43,5 +47,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/meng-sui-xiang-xin-li-xue/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/javascript-ying-yong-kai-fa-bian-cheng/</loc>
 </url>
 </urlset>
