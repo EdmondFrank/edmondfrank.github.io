@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-06-24T23:42:49+08:00</updated>
+  <updated>2016-06-26T14:57:08+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,196 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript学习笔记2]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/26/javascriptxue-xi-bi-ji-2/"/>
+    <updated>2016-06-26T14:52:05+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/26/javascriptxue-xi-bi-ji-2</id>
+    <content type="html"><![CDATA[<h1>JavaScript学习笔记2</h1>
+
+<h2>一.流程控制</h2>
+
+<h3>一般选择-if 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">3</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多重选择-switch 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">switch</span><span class="p">(</span><span class="err">表达式</span><span class="p">){</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">1</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">2</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="nx">n</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="nx">n</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">default</span><span class="o">:</span>
+</span><span class='line'>  <span class="p">...;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:switch所依赖的参数必须赋初始值,值与每个case值匹配,满足执行改case后的所以语句,并用break语句来阻止运行下一个case.)</strong></p>
+
+<h3>循环语句-for</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">for</span><span class="p">(</span><span class="err">初始化变量</span><span class="p">;</span><span class="err">循环条件</span><span class="p">;</span><span class="err">循环迭代</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>循环语句-while</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">while</span><span class="p">(</span><span class="err">判断条件</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(break语句可用在循环语句中,跳出循环.
+与其类似的有continue语句,用于跳过本次循环,而整个循环体继续执行.)</strong></p>
+
+<h2>二.函数(function)</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">fun</span><span class="p">(){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">fun</span><span class="p">();</span><span class="c1">//调用函数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">fun2</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span><span class="nx">arg2</span><span class="p">){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参数及返回值的函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>函数的this</h3>
+
+<p>函数体中的this表示当前的方法属于谁.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>[object global]9</p></blockquote>
+
+<h3>函数的call</h3>
+
+<p>函数的call方法可以改变函数的this的指向.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>11</p></blockquote>
+
+<p><strong>(输出结果表明:this也是一个数字,所以叫号作为运算符而非连接符处理.)</strong></p>
+
+<h3>函数的apply</h3>
+
+<p>函数的apply方法也可以改变函数的this的指向,但不同的是,apply是将原参数作为一个数组进行传递.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ar</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">22</span><span class="p">];</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">arr</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>2</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JavaScript学习笔记1]]></title>

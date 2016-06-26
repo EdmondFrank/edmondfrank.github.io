@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript,编程,笔记 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/javascript-bian-cheng-bi-ji/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-06-24T23:42:49+08:00</updated>
+  <updated>2016-06-26T14:57:08+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,131 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript学习笔记2]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/26/javascriptxue-xi-bi-ji-2/"/>
+    <updated>2016-06-26T14:52:05+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/26/javascriptxue-xi-bi-ji-2</id>
+    <content type="html"><![CDATA[<h1>JavaScript学习笔记2</h1>
+
+<h2>一.流程控制</h2>
+
+<h3>一般选择-if 结构</h3>
+
+<pre><code class="javascript">if(表达式1){
+执行1
+} else if(表达式2) {
+执行2
+} else {
+执行3
+}
+</code></pre>
+
+<h3>多重选择-switch 结构</h3>
+
+<pre><code class="javascript">switch(表达式){
+case 条件1:
+  执行1
+  break;
+case 条件2:
+  执行2
+  break;
+case 条件n:
+  执行n
+  break;
+default:
+  ...;
+}
+</code></pre>
+
+<p><strong>(注:switch所依赖的参数必须赋初始值,值与每个case值匹配,满足执行改case后的所以语句,并用break语句来阻止运行下一个case.)</strong></p>
+
+<h3>循环语句-for</h3>
+
+<pre><code class="javascript">for(初始化变量;循环条件;循环迭代)
+{
+  循环语句;
+}
+</code></pre>
+
+<h3>循环语句-while</h3>
+
+<pre><code class="javascript">while(判断条件)
+{
+  循环语句;
+}
+</code></pre>
+
+<p><strong>(break语句可用在循环语句中,跳出循环.
+与其类似的有continue语句,用于跳过本次循环,而整个循环体继续执行.)</strong></p>
+
+<h2>二.函数(function)</h2>
+
+<pre><code class="javascript">function fun(){
+//函数体
+}
+fun();//调用函数
+
+//带参函数
+function fun2(arg1,arg2){
+//函数体
+}
+
+//带参数及返回值的函数
+function add(a,b){
+  return a+b;
+}
+</code></pre>
+
+<h3>函数的this</h3>
+
+<p>函数体中的this表示当前的方法属于谁.</p>
+
+<p>eg:
+<code>javascript
+function add(a,b)
+{
+    return this+(a+b);
+}
+console.log(add(3,6));
+</code>
+输出结果:</p>
+
+<blockquote><p>[object global]9</p></blockquote>
+
+<h3>函数的call</h3>
+
+<p>函数的call方法可以改变函数的this的指向.</p>
+
+<p>eg:
+<code>javascript
+function add(a,b)
+{
+    return this+(a+b);
+}
+console.log(add.call(2,3,6));
+</code>
+输出结果:</p>
+
+<blockquote><p>11</p></blockquote>
+
+<p><strong>(输出结果表明:this也是一个数字,所以叫号作为运算符而非连接符处理.)</strong></p>
+
+<h3>函数的apply</h3>
+
+<p>函数的apply方法也可以改变函数的this的指向,但不同的是,apply是将原参数作为一个数组进行传递.</p>
+
+<p>eg:
+<code>javascript
+ar arr = [5, 6, 3, 2, 9, 44, 6, 3, 61, 22];
+console.log(Math.min.apply(null,arr));
+</code>
+输出结果:</p>
+
+<blockquote><p>2</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JavaScript学习笔记1]]></title>
