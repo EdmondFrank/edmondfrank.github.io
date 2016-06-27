@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/06/27/javascript-domxue-xi-bi-ji/</loc>
+<lastmod>2016-06-27T16:23:25+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/06/26/javascriptxue-xi-bi-ji-2/</loc>
 <lastmod>2016-06-26T14:52:05+08:00</lastmod>
 </url>
@@ -89,5 +93,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/javascript-bian-cheng-bi-ji/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/javescript-bian-cheng-bi-ji/</loc>
 </url>
 </urlset>
