@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu/</loc>
+<lastmod>2016-07-04T19:23:04+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/07/02/rubyshi-xian-de-tian-yi-xiao-yuan-wang-ke-hu-duan/</loc>
 <lastmod>2016-07-02T20:33:30+08:00</lastmod>
 </url>
@@ -110,5 +114,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/linux-ruby-bian-cheng/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/linux-emacs-bi-ji/</loc>
 </url>
 </urlset>
