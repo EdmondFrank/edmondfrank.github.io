@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: html,编程,学习 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/html-bian-cheng-xue-xi/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-07-12T18:45:09+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[百度前端技术学院-任务1]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/"/>
+    <updated>2016-07-12T18:35:22+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1</id>
+    <content type="html"><![CDATA[<h1>百度前端技术学院-任务一</h1>
+
+<p><strong><a href="http://ife.baidu.com/task/detail?taskId=1">任务一：零基础HTML编码</a></strong></p>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv="Content-Language" content="zh-ch"/&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+    &lt;title&gt;任务一&lt;/title&gt;
+    &lt;/meta&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+        &lt;h1&gt;网站一级标题&lt;/h1&gt;
+        &lt;ul&gt;
+            &lt;li&gt;&lt;a href="http://edmondfrank.github.io"&gt;链接一&lt;/a&gt;&lt;/li&gt;
+              &lt;li&gt;&lt;a href="http://edmondfrank.github.io"&gt;链接二&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="http://edmondfrank.github.io"&gt;链接三&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href="http://edmondfrank.github.io"&gt;链接四&lt;/a&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+                &lt;h2&gt;文章一级标题&lt;/h2&gt;
+                &lt;h2&gt;文章二级标题&lt;/h2&gt;
+                &lt;p&gt;文章作者 发布时间&lt;/p&gt;
+                 &lt;p&gt;这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;br/&gt;换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;a href = "http://ife.baidu.com"&gt;这里有个链接链接到http://ife.baidu.com&lt;/a&gt;
+                  这是一个很长很长的段落，&lt;b&gt;这里有个粗体字&lt;/b&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落。&lt;/p&gt;
+
+                &lt;img src="fish.png"&gt;
+
+                &lt;p&gt;这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;br/&gt;换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;a href = "http://ife.baidu.com"target="_blank"&gt;这里有个链接新窗口链接到http://ife.baidu.com&lt;/a&gt;
+                  这是一个很长很长的段落，&lt;b&gt;这里有个粗体字&lt;/b&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落。&lt;/p&gt;
+                &lt;h2&gt;另外一篇文章一级标题&lt;/h2&gt;
+                &lt;h2&gt;文章二级标题&lt;/h2&gt;
+                &lt;p&gt;文章作者 文章发布时间&lt;/p&gt;
+
+                &lt;p&gt;这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;br/&gt;换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落，
+                  这是一个很长很长的段落，换行了&lt;br/&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，&lt;a href = "http://ife.baidu.com"&gt;这里有个链接链接到http://ife.baidu.com&lt;/a&gt;
+                  这是一个很长很长的段落，&lt;strong&gt;&lt;b&gt;这里有个粗体字&lt;/b&gt;&lt;/strong&gt;这是一个很长很长的段落，
+                  这是一个很长很长的段落，这是一个很长很长的段落。&lt;/p&gt;
+                &lt;img src="fish.png"&gt;
+
+                &lt;ul&gt;
+                    &lt;li&gt;项目列表1&lt;/li&gt;
+                    &lt;li&gt;项目列表2&lt;/li&gt;
+                    &lt;li&gt;项目列表3&lt;/li&gt;
+                  &lt;/ul&gt;
+                      &lt;h2&gt;图片&lt;/h2&gt;
+                      &lt;ul&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                        &lt;p&gt; 好看的图片&lt;/p&gt;
+                        &lt;img src="fish.png"&gt;
+                      &lt;/ul&gt;
+
+                      &lt;h2&gt;最后一篇文章一级标题&lt;/h2&gt;
+                      &lt;h2&gt;文章二级标题&lt;/h2&gt;
+                      &lt;p&gt;文章作者 文章发布时间&lt;/p&gt;
+                      &lt;ol&gt;
+                        &lt;li&gt;排名1&lt;/li&gt;
+                        &lt;li&gt;排名2&lt;/li&gt;
+                        &lt;li&gt;排名3&lt;/li&gt;
+                      &lt;/ol&gt; 
+        &lt;p&gt;下面是一个表格,给表格加了一个border="1",好让你看出来是一个表格&lt;/p&gt;
+        &lt;div&gt;
+          &lt;table border="1" &gt;
+            &lt;tr&gt;
+              &lt;td&gt;表头&lt;/td&gt;
+              &lt;td&gt;表头&lt;/td&gt;
+              &lt;td&gt;表头&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;&lt;a href="http://edmondfrank.github.io"&gt;操作&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;&lt;a href="http://edmondfrank.github.io"&gt;操作&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;&lt;a href="http://edmondfrank.github.io"&gt;操作&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;表内容单元格&lt;/td&gt;
+              &lt;td&gt;&lt;a href="http://edmondfrank.github.io"&gt;操作&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+              &lt;td&gt;总计&lt;/td&gt;
+              &lt;td colspan="2"&gt;1000&lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/div&gt;
+        &lt;h2&gt;这以后是一个侧栏，这是侧栏标题&lt;/h2&gt;
+        &lt;h2&gt;侧栏注册窗口标题&lt;/h2&gt;
+        &lt;div&gt;
+          &lt;form&gt;
+            请输入邮箱地址:
+            &lt;input type="text" name="email" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/&gt;&lt;br/&gt;
+            &lt;br&gt;
+            &lt;div&gt;邮箱地址请按要求格式输入&lt;/div&gt;&lt;br&gt;
+            请输入密码:
+           &lt;!-- &lt;input type="text" name="password"&gt; --&gt;
+             &lt;input type="text" name="password" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/&gt;
+            请再次输入密码:
+           &lt;!-- &lt;input type="text" name="password"&gt;&lt;br&gt; --&gt;
+             &lt;input type="text" name="password" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/&gt;&lt;br/&gt;
+            &lt;br/&gt;
+            &lt;div&gt;密码请为6-16位英文数字&lt;/div&gt;
+            &lt;br/&gt;
+            &lt;div&gt;
+              性别:
+              &lt;input type="radio" name="Male" value="male" checked&gt; 男
+              &lt;input type="radio" name="Female" value="female"&gt; 女 
+
+              城市：
+              &lt;select&gt;
+                &lt;option value="北京"&gt;北京&lt;/option&gt;
+                &lt;option value="广东"&gt;广东&lt;/option&gt;
+              &lt;/select&gt;
+
+              爱好：
+              &lt;input type="checkbox" name="运动" value="运动"&gt;运动
+              &lt;input type="checkbox" name="艺术" value="艺术"&gt;艺术
+              &lt;input type="checkbox" name="科学" value="科学"&gt;科学
+
+              个人描述:&lt;textarea name="个人描述" onclick="if(value==defaultValue){value=''}" onBlur="if(!value){value=defaultValue}"&gt;这是一个文本框，输入个人信息 &lt;/textarea&gt;
+              &lt;input type="submit" value="确认提交"&gt;
+          &lt;/form&gt;
+       &lt;/div&gt;
+          &lt;footer&gt;
+    &lt;br/&gt;&lt;div&gt;版权所有@ &lt;/div&gt;
+&lt;/footer&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
