@@ -1,0 +1,131 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>错误:Could not reserve enough space for object heap的解决方案 | EdmondFrank's 时光足迹</title>
+
+	<meta name="author" content="EdmondFrank"> 
+	
+	<meta name="description" content="错误:Could not reserve enough space for object heap的解决方案 Reason: If you go thru this IBM link on java, it says that on 32 bit windows the recommended &hellip;"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+</head>
+
+
+
+<body>
+	<header id="header">
+<div class="inner">
+  <ul class="navigation">
+    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
+    <li><a href="/" class="is-selected">Blog</a></li>
+    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
+  </ul>
+</div></header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">错误:Could Not Reserve Enough Space for Object Heap的解决方案</h2>
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-07-22T20:59:57+08:00" pubdate data-updated="true">Jul 22nd, 2016</time></div>
+	</div>
+	<div class="entry-content"><h1>错误:Could not reserve enough space for object heap的解决方案</h1>
+
+<h2>Reason:</h2>
+
+<p>If you go thru this IBM link on java, it says that on 32 bit windows the recommended heap size is 1.5 GB and the Maximum heap size is 1.8 GB. So your jvm does not gets initialized for -Xmx2G and above.</p>
+
+<p>Also if you go thru this SO answer, clearly the DLL bindings are an issue for memory reservation changing which is no trivial task. Hence what may be recommended is that you go for 64-bit Windows and a 64-bit JVM. while it will chew up more RAM, you will have much more contiguous virtual address space.</p>
+
+<h2>Method to fix:</h2>
+
+<blockquote><p>For Windows</p></blockquote>
+
+<p>Go to Start → Control Panel → System → Advanced system settings → advanced(tab) → Environment Variables → System Variables → New:</p>
+
+<p>Variable name: _JAVA_OPTIONS
+Variable value: -Xmx512M</p>
+
+<blockquote><p>For Linux</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export _JAVA_OPTIONS=-Xmx512M</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+or</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export _JAVA_OPTIONS=-Xmx1024M </span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>For Android Studio</p></blockquote>
+
+<p>Project > Gradle Scripts > gradle.properties</p>
+
+<p>org.gradle.jvmargs=-Xms512m -Xmx1024m</p>
+</div>
+
+
+<div class="sharing">
+  
+  <div class="sns-tw">
+    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  
+</div>
+</article>
+</div>
+	<footer id="footer" class="inner"><div class="aboutme">
+<hr>
+  <div class="profile">
+
+    <h3>EdmondFrank</h3>
+    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
+
+    <div class="codes">
+      <h4>Codes</h4>
+      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
+    </div>
+  </div>
+
+  <div class="float_clear"></div>
+
+</div>
+
+Copyright &copy; 2016
+ EdmondFrank 
+<br>
+Powered by Octopress.
+
+
+
+</footer>
+	
+
+</body>
+</html>
