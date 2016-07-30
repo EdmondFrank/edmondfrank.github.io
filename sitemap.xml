@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/07/30/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-7/</loc>
+<lastmod>2016-07-30T21:26:22+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an/</loc>
 <lastmod>2016-07-22T20:59:57+08:00</lastmod>
 </url>
@@ -151,5 +155,11 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/linux-ruboto-bi-ji/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/posts/2/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/posts/3/</loc>
 </url>
 </urlset>

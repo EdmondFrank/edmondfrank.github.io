@@ -4,7 +4,7 @@
   <title><![CDATA[Category: html,编程,学习 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/html-bian-cheng-xue-xi/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-07-22T21:11:49+08:00</updated>
+  <updated>2016-07-30T21:30:01+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,1106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[百度前端技术学院-任务7]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/07/30/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-7/"/>
+    <updated>2016-07-30T21:26:22+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/07/30/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-7</id>
+    <content type="html"><![CDATA[<h1>百度前端技术学院-任务七</h1>
+
+<p><strong><a href="http://ife.baidu.com/task/detail?taskId=7">任务七：实现常见的技术产品官网的页面架构及样式布局</a></strong></p>
+
+<blockquote><p>style.css</p></blockquote>
+
+<pre><code class="css">* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    min-width: 1024px;
+    font-family: 微软雅黑 ,sans-serif;
+}
+
+nav {
+    height: 60px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.brand {
+    float: left;
+    height: 60px;
+    line-height: 60px;
+    font-size: 22px;
+}
+
+.brand em {
+    display: inline-block;
+    background: url(img/logo-middle.png) center center no-repeat;
+    background-size:60%;
+    width: 60px;
+    height: 60px; 
+    float: left;
+}
+
+#nav-ul {
+    float: right;
+    height: 60px;
+    line-height: 60px;
+}
+
+
+.nav-list {
+    display: inline-block;
+    width: 80px;
+    text-align: center;
+    height: 56px;
+}
+
+.fix {
+    border-bottom: 4px solid red;
+}
+
+.nav-list a {
+    text-decoration: none;
+    color: #9E9E9E;
+    font-size: 14px;
+}
+
+.nav-list:first-child a {
+    color: red;
+}
+
+.nav-list:hover {
+    border-bottom: 4px solid red; 
+}
+
+.login {
+    display: inline-block;
+    background: url(img/login-icon.png) left center no-repeat;
+    text-indent: 20px;
+    color: red !important;
+}
+
+.poster {
+    position: relative;
+    background: url(img/back-img.jpg)no-repeat;
+    background-size: 100%;
+    height: 800px;
+}
+
+.slogan {
+    position: absolute;
+    left: 150px;
+    top: 250px;
+}
+
+h2 {
+    color: white;
+    font-size: 70px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+.slogan p {
+    text-indent: 6px;
+    color: white;
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.join-btn {
+    margin-top: 40px;
+    width: 300px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.join-btn a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 5px 0 5px 0;
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    background-color: #e74f4d;
+    letter-spacing: 3px;
+    transition: background .3s;
+}
+
+.join-btn a:hover {
+    background-color: #FF9800;
+}
+
+.effect {
+    margin-top: 50px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+.section-list {
+    width: 25%;
+    float: left;
+    text-align: center;
+}
+
+.section-list p {
+    padding-left: 55px;
+    padding-right: 55px;
+    color: #999;
+    margin: 15px auto;
+    letter-spacing: 1px;
+    font-size: 15px;
+    border-right: 2px solid #999;
+}
+
+.section-list:nth-child(4) p {
+    border-right:0; 
+}
+
+.introduce {
+    text-align: center;
+    background-color: #edecec;
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+.introduce h3 {
+    padding-top: 30px;
+    text-align: center;
+    color: #a1a1a1;
+    font-size: 50px;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+
+.map {
+    height: 340px;
+    background: url(img/map.jpg) no-repeat;
+    background-size: 100%;
+}
+
+.map-introduce {
+    padding-top: 50px;
+    text-align: center;
+    color: white;
+}
+
+.map-introduce p {
+    font-size: 20px;
+    padding-bottom: 3px;
+}
+
+.map-introduce span{
+    margin: 0 auto;
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color:white; 
+    margin-bottom: 10px;
+}
+
+.map-introduce i{
+    display: block;
+    font-style: normal;
+    font-size: 13px;
+}
+
+.select-con {
+    width: 80%;
+    margin: 0 auto;
+    margin-top:50px; 
+}
+
+.select-list {
+    float: left;
+    width: 20%;
+    margin-right: 5%;
+    position: relative;
+    cursor: pointer;
+}
+
+.select-title {
+    height: 35px;
+    line-height: 35px;
+    background-color: white;
+    color: #000;
+    text-indent: 10px;
+    position: relative;
+}
+
+.email {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 25px;
+    height: 20px;
+    margin-top: -10px;
+    background-color: #be4e48;
+}
+
+.email em {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: -6px;
+    z-index: 3;
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform:rotate(-45deg);
+}
+
+.select-list ul {
+    display: none;
+    width: 100%;
+    position: absolute;
+    top: 35px;
+    left: 0;    
+    background-color: #e4e3e5;
+    padding-bottom: 15px;
+    color: black;
+}
+
+.select-list:hover ul {
+    display: block;
+}
+
+.select-list li {
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.select-list li:hover {
+    color: white;
+    background-color: #be4e48;
+}
+
+.select-list li:hover i{
+    opacity: 1;
+}
+
+.select-list i {
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.select-list i:after{
+    content: '√';
+}
+
+.select-btn {
+    height: 35px;
+    line-height: 35px;
+    background-color: #be4e48;
+    text-align: center;
+    color: white;
+    letter-spacing: 15px;
+}
+
+.activity {
+    overflow: hidden;
+    padding: 100px 0 100px 0; 
+    background-color: #f7f7f7;
+}
+
+.acvivity-con {
+    width: 80%;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.activity-list {
+    width: 25%;
+    float: left;
+}
+
+.activity-list img {
+    border-width: 10px 7px;
+    border-color: white;
+    border-style: solid;
+}
+
+.act-site {
+    padding-top: 15px;
+    font-size: 15px;
+}
+
+.act-site-top {
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 20px;
+    text-indent: 20px;
+}
+
+.act-site-top + p{
+    padding-bottom: 20px;
+    color: #b5b5b5;
+    font-size: 14px;
+}
+
+.activity-list p:nth-child(3) {
+    color: #b5b5b5;
+    padding-top: 5px;
+    font-size: 14px;
+}
+
+.rule-1 {
+    overflow: hidden;
+}
+
+.socks {
+    text-align: center;
+    color: white;
+    position: relative;
+    width: 66.7%;
+    height: 44vw;
+    min-height: 450px;
+    background: url(img/socks.jpg) center center no-repeat;
+    background-size: cover;
+    float: left;
+}
+
+.socks-text {
+    width: 400px;
+    height: 300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: -150px;
+}
+
+.socks-text p:nth-child(1) {
+    font-size: 3em;
+}
+
+.socks-text p:nth-child(2) {
+    font-size: 8em;
+    font-weight: lighter;
+}
+
+.socks-text p:nth-child(3),.socks-text p:nth-child(4) {
+    font-size: 1.5em;
+}
+
+.trangle {
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-right: 40px solid white;
+    border-bottom: 20px solid transparent;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -20px;
+}
+
+.socks-right {
+    position: relative;
+    float: left;
+    text-align: center;
+    height: 44vw;
+    min-height: 450px;
+    width: 33.3%;
+}
+
+.world-content {
+    position: absolute;
+    height: 300px;
+    width: 300px;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -150px;
+}
+
+.world-content-title {
+    font-size: 24px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.world-content-title span:nth-child(2):after {
+    content: '/';
+    color: #666;
+
+}
+
+.world-content-title span:nth-child(3) {
+    color: red;
+}
+
+.world-content p {
+    margin-top: 20px;
+    color: #aaaaaa;
+    font-size: 14px;
+    line-height: 30px;
+}
+
+.world-content a {
+    display: block;
+    width: 110px;
+    height: 35px;
+    line-height: 35px;
+    margin: 40px auto 0 auto;
+    text-align: center;
+    border: 1px solid #e74f4d;
+    color: #e74f4d;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.world-btn {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.world-btn  span{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 8px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border: 1px solid #919292;
+}
+
+.selected {
+    background-color: #919292;
+}
+
+.rule-2 {
+    overflow: hidden;
+}
+
+.rule-part {
+    float: left;
+    width: 33.3%;
+    min-height: 400px;
+    height: 40vw;
+    position: relative;
+}
+
+.new-time {
+    text-align: center;
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    font-size: 1.3em;
+    margin-top: -100px;
+}
+
+.new-time &gt; * {
+    margin-bottom: 20px;
+}
+
+.new-time span {
+    display: inline-block;
+    width: 30px;
+    height: 2px;
+    background-color: white;
+} 
+
+.new-time a {
+    display: block;
+    color: white;
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0 auto;
+    border: 2px solid white; 
+}
+
+.red-bj {
+    background-color: #e7504d;
+    color: white;
+}
+
+.white-bj span {
+    background-color: #abaaaa;
+}
+
+.white-bj a {
+    border-color: #e7504d;
+    color: #e7504d;
+}
+
+.photo-bj {
+    background: url(img/woman.jpg) no-repeat;
+    background-size: cover;
+}
+
+.left-trangle {
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-left: 40px solid white;
+    border-bottom: 20px solid transparent;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -20px;
+} 
+
+.invitation {
+    margin-top: 100px !important;
+    overflow: hidden;
+
+}
+
+.invitation-title {
+    margin-bottom: 50px !important;
+    text-align: center;
+}
+
+.invitation-title h4 {
+    font-weight: normal;
+    font-size: 20px;
+}
+
+.invitation-title span {
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background-color: #ea6563;
+}
+
+.invitation-title p {
+    margin-top: 15px;
+    color: #b7b7b7;
+    font-size: 12px;
+}
+
+.invition-area {
+    width: 80%;
+    margin: 30px auto;
+}
+
+.invitation-protocol {
+    float: left;
+    width: 40%;
+}
+
+.invitation-login {
+    width: 60%;
+    float: left;
+}
+
+.invitation-protocol h4 {
+    color: #807c7c;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.invitation-protocol h4:nth-child(7) {
+    margin-bottom: 0;
+}
+
+.invitation-protocol p {
+    width: 80%;
+    color:#6e6e6e;
+    font-size: 12px;
+}
+
+.invitation-protocol span {
+    display: inline-block;
+    line-height: 15px;
+    margin-right: 4px;
+    width: 5px;
+    height: 5px;
+    border-left: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    transform: rotate(-45deg);
+}
+
+.invitation-protocol  a{
+    width: 80%;
+    height: 15px;
+    line-height: 15px;
+    display: block;
+    text-align: right;
+    color: #adabab;
+    font-size: 10px;
+    margin-bottom: 40px;
+}
+
+.input-group {
+    padding-left: 3px;
+    display: inline-block;
+    width: calc(50% - 20px);
+    margin: 5px;
+    text-indent: 0px;
+    background-color: #ededef;
+    position: relative;
+    cursor: pointer;
+    font-size: 14px;    
+}
+
+.input-group:before {
+    content: attr(data-label);
+    position:absolute;
+    height: 20px;
+    line-height: 20px;
+    top: 50%;
+    margin-top: -12px;
+}
+
+.input-group input {
+    text-indent: 80px;
+    width: 100%;
+    display: inline;
+    background-color: #ededef;
+    border: 0;
+    height: 35px;
+    line-height: 35px;
+}
+
+.textarea {
+    width: calc(100% - 20px);
+    font-size: 13px;
+}
+
+.textarea:before {
+    height: 20px;
+    line-height: 20px;
+    top: 19px;
+}
+
+textarea {
+    padding-top: 9px;
+    width: 100%;
+    height: 120px;
+    background-color: #ededef;
+    border:0;
+    text-indent: 160px;
+}
+
+.login-row a {
+    padding-left: 3px;
+    text-align: center;
+    width: calc(100% - 20px);
+    height: 30px;
+    line-height: 30px;
+    display: block;
+    margin: 5px;
+    background-color: #ededef;
+    color: black;
+}
+
+footer {
+    margin-top: 100px;
+}
+
+.top-f {
+    background-color: #32353e;
+    height: 300px;
+    position: relative;
+}
+
+
+.contact {
+    width: 500px;
+    height: 150px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -250px;
+    margin-top: -100px;
+    text-align: center;
+    color: white;   
+}
+
+.contact h4 {
+    font-weight: lighter;
+    font-size: 20px;
+    padding-bottom: 8px;
+}
+
+.contact p {
+    font-size: 14px;
+}
+
+.grid-email {
+    position: relative;
+    width: 80%;
+    height: 45px;
+    line-height: 45px;
+    margin: 20px auto;
+}
+
+.grid-email:after {
+    content: attr(data-label);
+    background-color: #6f7278;
+    position: absolute;
+    top: 1px;
+    right: 0;
+    width: 70px;
+    height: 45px;
+    line-height: 45px;
+    cursor: pointer;
+}
+
+.grid-email input {
+    height: 45px;
+    border: 0;
+    width: 100%;
+    text-indent: 15px;
+    font-size: 18px;
+}
+
+.tools {
+    text-align: center;
+}
+
+.tools a {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    margin: 10px;
+}
+
+#qq {
+    background: url(img/qq.png) center center no-repeat;
+}
+
+#weibo {
+    background: url(img/weibo.png) center center no-repeat;
+}
+
+#twitter {
+    background: url(img/twitter.png) center center no-repeat;
+}
+
+#earth {
+    background: url(img/earth.png) center center no-repeat;
+}
+
+.bot-f {
+    background-color: #2f2f38;
+}
+
+.links {
+    width: 85%;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.links a {
+    color: white;   
+    line-height: 50px;
+    font-size: 12px;
+}
+
+.links a:nth-child(2) {
+    float: right;
+}
+</code></pre>
+
+<blockquote><p>index.html</p></blockquote>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta http-equiv="Content-Language" content="zh-ch"/&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;link rel="stylesheet" href="style.css" type="text/css"/&gt;
+    &lt;title&gt;任务七&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;nav&gt;
+            &lt;div class="brand"&gt;
+                &lt;em&gt;&lt;/em&gt;
+                新世界
+            &lt;/div&gt;
+            &lt;ul id="nav-ul"&gt;
+                &lt;li class="nav-list fix"&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="nav-list"&gt;&lt;a href="#"&gt;最新活动&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="nav-list"&gt;&lt;a href="#"&gt;项目介绍&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="nav-list"&gt;&lt;a href="#"&gt;爱心社区&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="nav-list"&gt;&lt;a href="#" class="login"&gt;登录&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+        &lt;div class="poster"&gt;
+            &lt;div class="slogan"&gt;
+                &lt;h2 class="slogin-title"&gt;Time of new life&lt;/h2&gt;
+                &lt;p&gt;新时代，年轻的人们让我们一起&lt;/p&gt;
+                &lt;p&gt;体验新生活，享受新生活&lt;/p&gt;
+
+                &lt;div class="join-btn"&gt;
+                    &lt;a href="#"&gt;开始体验&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;div class="container"&gt;
+        &lt;section class="effect"&gt;
+            &lt;div class="section-list"&gt;
+                &lt;img src="img/icon-1.png" alt=""&gt;
+                &lt;p&gt;打造全新世界，让你更爱你的生活&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="section-list"&gt;
+                &lt;img src="img/icon-2.png" alt=""&gt;
+                &lt;p&gt;丰富多彩的公益活动,发挥新世界的主人公意识&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="section-list"&gt;
+                &lt;img src="img/icon-3.png" alt=""&gt;
+                &lt;p&gt;时尚的新理念,超前体验未知的生活&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="section-list"&gt;
+                &lt;img src="img/icon-4.png" alt=""&gt;
+                &lt;p&gt;完善的培养机制,培养你的全新的世界观&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class="introduce"&gt;
+            &lt;img src="img/logo-middle.png" alt=""&gt;
+            &lt;h3&gt;关于新世界，你不知道的还有些什么&lt;/h3&gt;   
+        &lt;/section&gt;
+
+        &lt;section class="map"&gt;
+            &lt;div class="map-introduce"&gt;
+                &lt;p&gt;查找新世界城市活动信息&lt;/p&gt;
+                &lt;span&gt;&lt;/span&gt;
+                &lt;i&gt;每个城市的有不同的信息,请自主查询您需要了解的城市&lt;/i&gt;                
+            &lt;/div&gt;
+            &lt;div class="select-con"&gt;
+                &lt;div class="select-list"&gt;
+                    &lt;div class="select-title"&gt;中国
+                        &lt;em class="email"&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;
+                    &lt;/div&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;美国&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;法国&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;德国&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;新西兰&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;俄罗斯&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;日本&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;div class="select-list"&gt;
+                    &lt;div class="select-title"&gt;省份
+                        &lt;em class="email"&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;
+                    &lt;/div&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;北京市&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;天津市&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;河北省&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;山西省&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;内蒙古自治区&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;辽宁省&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;div class="select-list"&gt;
+                    &lt;div class="select-title"&gt;城市
+                        &lt;em class="email"&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;
+                    &lt;/div&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;广州&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;肇庆&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;增城&lt;/li&gt;
+                        &lt;li&gt;&lt;i&gt;&lt;/i&gt;江门&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+                &lt;div class="select-list"&gt;
+                    &lt;div class="select-btn"&gt;搜索&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class="activity"&gt;
+            &lt;div class="acvivity-con"&gt;
+                &lt;div class="activity-list"&gt;
+                    &lt;img src="img/pic1.jpg" alt=""&gt;
+                    &lt;p class="act-site"&gt;北京活动&lt;/p&gt;
+                    &lt;p&gt;新社区大联盟&lt;/p&gt;                       
+                &lt;/div&gt;
+                &lt;div class="activity-list"&gt;
+                    &lt;p class="act-site-top"&gt;上海活动&lt;/p&gt;
+                    &lt;p&gt;新社区大联盟&lt;/p&gt;                       
+                    &lt;img src="img/pic2.jpg" alt=""&gt;
+                &lt;/div&gt;
+                &lt;div class="activity-list"&gt;
+                    &lt;img src="img/pic3.jpg" alt=""&gt;
+                    &lt;p class="act-site"&gt;深圳活动&lt;/p&gt;
+                    &lt;p&gt;全新海岸线观点站&lt;/p&gt;                     
+                &lt;/div&gt;
+                &lt;div class="activity-list"&gt;
+                    &lt;img src="img/pic4.jpg" alt=""&gt;
+                    &lt;p class="act-site"&gt;香港活动&lt;/p&gt;
+                    &lt;p&gt;奢侈品消费大派送&lt;/p&gt;                     
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class="rules"&gt;
+            &lt;div class="rule-1"&gt;
+                &lt;div class="socks"&gt;
+                    &lt;div class="socks-text"&gt;
+                        &lt;p&gt;新世界&lt;/p&gt;
+                        &lt;p&gt;TIME&lt;/p&gt;
+                        &lt;p&gt;@新世界-北京&lt;/p&gt;
+                        &lt;p&gt;2016.04.01&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class="trangle"&gt;   
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class="socks-right"&gt;
+                    &lt;div class="world-content"&gt;
+                        &lt;div class="world-content-title"&gt;
+                            &lt;span&gt;新世界&lt;/span&gt;
+                            &lt;span&gt;&lt;/span&gt;
+                            &lt;span&gt;01&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;p&gt;新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界新世界&lt;/p&gt;
+
+                        &lt;a href="#"&gt;点击详情&lt;/a&gt;
+
+                        &lt;div class="world-btn"&gt;
+                            &lt;span class="selected"&gt;&lt;/span&gt;
+                            &lt;span&gt;&lt;/span&gt;
+                            &lt;span&gt;&lt;/span&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="rule-2"&gt;
+                &lt;div class="rule-part red-bj"&gt;
+                    &lt;div class="new-time"&gt;
+                        &lt;p&gt;新时代&lt;/p&gt;
+                        &lt;p&gt;关于爱生活的我们&lt;/p&gt;
+                        &lt;span&gt;&lt;/span&gt;
+                        &lt;a href="#"&gt;查看更多&lt;/a&gt;
+                    &lt;/div&gt;                  
+                &lt;/div&gt;  
+                &lt;div class="rule-part white-bj"&gt;
+                    &lt;div class="new-time"&gt;
+                        &lt;p&gt;新时代&lt;/p&gt;
+                        &lt;p&gt;关于爱生活的我们&lt;/p&gt;
+                        &lt;span&gt;&lt;/span&gt;
+                        &lt;a href="#"&gt;查看更多&lt;/a&gt;
+                    &lt;/div&gt;                  
+
+                &lt;/div&gt;  
+                &lt;div class="rule-part photo-bj"&gt;
+                    &lt;div class="left-trangle"&gt;  
+                    &lt;/div&gt;
+                &lt;/div&gt;  
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;section class="invitation"&gt;
+            &lt;div class="invitation-title"&gt;
+                &lt;h4&gt;成为我们的志愿者&lt;/h4&gt;
+                &lt;span&gt;&lt;/span&gt;
+                &lt;p&gt;新世界的大家庭需要每一个爱生活的人的加入，如果你够年轻，有梦想，有激情&lt;br&gt;那就不要犹豫快来计入我们，改变所有人的生活&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="invition-area"&gt;
+                &lt;div class="invitation-protocol"&gt;
+
+                        &lt;h4&gt;新世界志愿者协议&lt;/h4&gt;
+                        &lt;p&gt;加入新世界志愿者的人员必须遵守中华人民共共和国的
+                            相关法律法规，并且本着平等资源的原则
+                        &lt;/p&gt;
+                        &lt;a href="#"&gt;&lt;span&gt;&lt;/span&gt;more&lt;/a&gt;
+
+                        &lt;h4&gt;新世界志愿者协议&lt;/h4&gt;
+                        &lt;p&gt;加入新世界志愿者的人员必须遵守中华人民共共和国的
+                            相关法律法规，并且本着平等资源的原则
+                        &lt;/p&gt;
+                        &lt;a href="#"&gt;&lt;span&gt;&lt;/span&gt;more&lt;/a&gt;
+
+                        &lt;h4&gt;更多条款&lt;/h4&gt;
+                        &lt;a href="#"&gt;&lt;span&gt;&lt;/span&gt;more&lt;/a&gt;
+                &lt;/div&gt;
+
+                &lt;div class="invitation-login"&gt;
+                    &lt;div class="login-row"&gt;
+                        &lt;div class="input-group" data-label="姓名"&gt;   
+                            &lt;input type="text" name="name" id="name"&gt;                           
+                        &lt;/div&gt;
+                        &lt;div class="input-group" data-label="年龄"&gt;   
+                            &lt;input type="text" name="name" id="name"&gt;                           
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="login-row"&gt;
+                        &lt;div class="input-group" data-label="联系方式"&gt; 
+                            &lt;input type="text" name="name" id="name"&gt;                           
+                        &lt;/div&gt;
+                        &lt;div class="input-group" data-label="联系地址"&gt; 
+                            &lt;input type="text" name="name" id="name"&gt;                           
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="login-row"&gt;
+                        &lt;div class="input-group textarea" data-label="请简单描述您梦想的生活"&gt;   
+                            &lt;textarea&gt;&lt;/textarea&gt;                       
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="login-row"&gt;
+                        &lt;a href="#"&gt;提交申请&lt;/a&gt;    
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+        &lt;/section&gt;
+    &lt;/div&gt;
+
+    &lt;footer&gt;
+        &lt;div class="top-f"&gt;
+            &lt;div class="contact"&gt;
+                &lt;h4&gt;联系我们&lt;/h4&gt;
+                &lt;p&gt;为了更好的获取我们最新的产品资讯，您可以留下您的电子邮箱快速订阅我们的产品资讯
+                也可以通过以下任何方式关注我们动态&lt;/p&gt;
+                &lt;div class="grid-email" data-label="提交"&gt;
+                    &lt;input type="email" placeholder="someone's@email.com"&gt;
+                &lt;/div&gt;
+                &lt;div class="tools"&gt;
+                    &lt;a href="#" id="qq"&gt;&lt;/a&gt;
+                    &lt;a href="#" id="weibo"&gt;&lt;/a&gt;
+                    &lt;a href="#" id="twitter"&gt;&lt;/a&gt;
+                    &lt;a href="#" id="earth"&gt;&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="bot-f"&gt;
+            &lt;div class="links"&gt;
+                &lt;a href=""&gt;@2016新世界&lt;/a&gt;
+                &lt;a href=""&gt;back to top&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[百度前端技术学院-任务6]]></title>
@@ -917,340 +2017,6 @@ body {
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[百度前端技术学院-任务2]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/07/13/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-2/"/>
-    <updated>2016-07-13T17:58:19+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/07/13/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-2</id>
-    <content type="html"><![CDATA[<h1>百度前端技术学院-任务二</h1>
-
-<p><strong><a href="http://ife.baidu.com/task/detail?taskId=2">任务二：零基础HTML及CSS编码（一）</a></strong></p>
-
-<p>```html
-&lt;!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Language" content="zh-ch"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>任务二</title>
-    <style>
-        body{
-            margin:20;
-            padding:0;
-            background-color: #cccccc;
-        }
-        .top,.footer{
-            background-color: #333333;
-            height:50px;
-        }
-        .top h1{
-            color: blue;
-            display: inline-block;
-            margin: 0;
-        }
-        .top ul{
-            float: right;
-        }
-        .top ul li{
-            display: inline-block;
-            padding-left: 10px;
-            color: #fff;
-        }
-        .top ul li a{
-            color: white;
-        }
-        .wrap{
-            margin: 20px 20px 0 20px;
-            background-color: #fff;
-            box-shadow: 5px 5px 5px #000;
-            padding:10px;
-        }
-     .wrap2{
-            margin: 20px 20px 0 20px;
-            background-color: #fff;
-            box-shadow: 5px 5px 5px #000;
-            padding:10px;
-        }
-        .wrap h3{
-            color: #646464;
-        }
-        .wrap .author{
-            color: #707070;
-            text-indent: 0;
-        }
-        .wrap>p{
-            text-indent: 2em;
-        }
-     .wrap ul li{
-         list-style-type:none;
-     }
-     .wrap2 ul li{
-         border: 1px solid #000;
-         padding: 10px;
-         text-align: center;
-         margin: 10px;
-         max-width: 10%;
-         max-height: 10%;
-         width:auto;
-         height:auto;
-         list-style-type:none;
-     }
-        .wrap li img{
-            max-width: 100%;
-            max-height: 100%;
-            width:auto;
-            height:auto;
-        }
-      .wrap2 li img{
-            max-width: 100%;
-            max-height: 100%;
-            width:auto;
-            height:auto;
-        }
-        table{
-            width:100%;
-            padding:0;
-            margin:0;
-            background-color: #6c6c6c;
-        }
-        table th{
-            color: #fff;
-            background-color: #383e41;
-            text-align: left;
-        }
-        table tr:last-child th{
-            background-color: #c0c0c0;
-            color:black
-        }
-        table td {
-            background-color: white;
-        }
-        .myform table{
-            width:40%;
-            background-color: white;
-            margin-left: 200px;
-        }
-     .myform h2{
-    height:40px;
-    line-height:40px;
-    padding-left:10px;
-    border-left:3px solid #ccc;
-}
-        .myform table tr{
-            height:30px;
-        }
-     .notice{
-            color:#8e8e8e;
-        }
-        .myform table tr td:first-child{
-            text-align: right;
-            margin-right: 5px;
-        }
-        .myform table tr:last-child td:first-child{
-            vertical-align: text-top;
-        }
-        .myform input[type=&ldquo;button&rdquo;]{
-            width:100%;
-            height:40px;
-            background-color: #3355dd;
-            color: white;
-            border:none;
-            border-radius: 10px;
-        }
-        .footer p{
-            text-align: center;
-            color: white;
-            line-height: 45px;
-        }
-    </style>
-</head>
-<body></p>
-
-<div class="top">
-    <h1>EdmondFrank</h1>
-    <ul>
-        <li><a href="">导航链接一</a></li>
-        <li><a href="">导航链接二</a></li>
-        <li><a href="">导航链接三</a></li>
-        <li><a href="">导航链接四</a></li>
-    </ul>
-</div>
-
-
-<div class="wrap">
-    <h2>文章一级标题</h2>
-    <h3>文件二级标题</h3>
-    <p class="author">文章作者 文章发布时间</p>
-<p>这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，<br/>换行了<br/>这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，换行了<br/>这是一个很长很长的段落，
-                  这是一个很长很长的段落，<a href = "http://ife.baidu.com">这里有个链接链接到http://ife.baidu.com</a>
-                  这是一个很长很长的段落，<b>这里有个粗体字</b>这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落。</p>
-
-                <img src="warp.png">
-
-                <p>这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，<br/>换行了<br/>这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落，
-                  这是一个很长很长的段落，换行了<br/>这是一个很长很长的段落，
-                  这是一个很长很长的段落，<a href = "http://ife.baidu.com"target="_blank">这里有个链接新窗口链接到http://ife.baidu.com</a>
-                  这是一个很长很长的段落，<b>这里有个粗体字</b>这是一个很长很长的段落，
-                  这是一个很长很长的段落，这是一个很长很长的段落。</p>
-</div>
-
-
-<div class="wrap">
-    <h2>另外一篇文章一级标题</h2>
-    <h3>文章二级标题</h3>
-    <p class="author">文章作者 文章发布时间</p>
-    <p>这是一个很长很长的段落，这是一个很长很长的段落，
-        这是一个很长很长的段落，这是一个很长很长的段落，
-        这是一个很长很长的段落，这是一个很长很长的段落，
-        这是一个很长很长的段落，<br/>换行了<br/>这是一个很长很长的段落，
-        这是一个很长很长的段落，这是一个很长很长的段落，
-        这是一个很长很长的段落，这是一个很长很长的段落，
-        这是一个很长很长的段落，换行了<br/>这是一个很长很长的段落，
-        这是一个很长很长的段落，<a href = "http://ife.baidu.com">这里有个链接链接到http://ife.baidu.com</a>
-        这是一个很长很长的段落，<b>这里有个粗体字</b>这是一个很长很长的段落，
-        这是一个很长很长的段落，这是一个很长很长的段落。</p>
-    <img src="warp.png">
-        <ul class="noli">
-        <li>项目列表1</li>
-        <li>项目列表2</li>
-        <li>项目列表3</li>
-    </ul>
-</div>
-
-
-<div class="wrap2">
-    <h2>图片</h2>
-    <ul style="list-style: none" class="img">
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-        <li><span>好看的图片</span><img src="warp.png" ></li>
-    </ul>
-</div>
-
-
-<div class="wrap">
-    <h2>最后一篇文章一级标题</h2>
-    <h3>文章二级标题</h3>
-    <p class="author">文章作者 发布时间</p>
-    <ol>
-        <li>排名1</li>
-        <li>排名2</li>
-        <li>排名3</li>
-    </ol>
-    <p>一个表格</p>
-    <table >
-            <tr>
-              <th>表头</th>
-              <th>表头</th>
-              <th>表头</th>
-            </tr>
-            <tr>
-              <td>表内容单元格</td>
-              <td>表内容单元格</td>
-              <td><a href="http://edmondfrank.github.io">操作</a></td>
-            </tr>
-            <tr>
-              <td>表内容单元格</td>
-              <td>表内容单元格</td>
-              <td><a href="http://edmondfrank.github.io">操作</a></td>
-            </tr>
-            <tr>
-              <td>表内容单元格</td>
-              <td>表内容单元格</td>
-              <td><a href="http://edmondfrank.github.io">操作</a></td>
-            </tr>
-            <tr>
-              <td>表内容单元格</td>
-              <td>表内容单元格</td>
-              <td><a href="http://edmondfrank.github.io">操作</a></td>
-            </tr>
-            <tr>
-              <th>总计</th>
-              <th colspan="2">1000</th>
-            </tr>
-          </table>
-</div>
-
-
-<div class="wrap myform">
-    <h2>这里以后是一个侧栏，这是侧栏的标题</h1>
-<table>
-        <tr>
-            <td>请输入邮箱地址</td>
-            <td><input type="text" name="email" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="notice">邮箱地址请按要求格式输入</td>
-        </tr>
-        <tr></tr>
-        <tr>
-            <td>请输入密码</td>
-            <td><input type="text" name="password" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/></td>
-        </tr>
-        <tr>
-            <td>请重复输入密码</td>
-            <td><input type="text" name="password" value="这是一个文本输入框" onclick="if(value==defaultValue){value='';this.style.color='#000'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999"/></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="notice">密码为6-16位英文数字</td>
-        </tr>
-        <tr></tr>
-        <tr>
-            <td>性别</td>
-            <td><input type="radio" name="Male" value="male" checked>男<input type="radio" name="Female" value="female" checked="false">女</td>
-        </tr>
-        <tr>
-            <td>城市</td>
-            <td>
-                <select name="">
-                    <option value="" aria-checked="true">北京</option>
-                    <option value="" aria-checked="false">上海</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>爱好</td>
-            <td><input type="checkbox">运动<input type="checkbox">艺术<input type="checkbox">科学</td>
-        </tr>
-        <tr>
-            <td>个人描述</td>
-            <td><textarea name="个人描述" onclick="if(value==defaultValue){value=''}" onBlur="if(!value){value=defaultValue}" cols="30" rows="4">这是一个多行输入框，输入个人信息</textarea></td>
-        </tr>
-    </table>
-    <input type="button" value="确认提交">
-</div>
-
-
-<div class="footer">
-    <p>版权所有@</p>
-</div>
-
-
-<p></body>
-</html>
-```</p>
 ]]></content>
   </entry>
   
