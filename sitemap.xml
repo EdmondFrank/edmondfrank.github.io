@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/</loc>
+<lastmod>2016-08-10T11:24:22+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/</loc>
 <lastmod>2016-08-09T16:16:57+08:00</lastmod>
 </url>
@@ -164,9 +168,6 @@
 <loc>http://edmondfrank.github.io/blog/categories/linux-bian-cheng-bi-ji/</loc>
 </url>
 <url>
-<loc>http://edmondfrank.github.io/posts/2/</loc>
-</url>
-<url>
-<loc>http://edmondfrank.github.io/posts/3/</loc>
+<loc>http://edmondfrank.github.io/blog/categories/linux-xue-xi-bi-ji/</loc>
 </url>
 </urlset>
