@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-08-11T15:59:36+08:00</updated>
+  <updated>2016-08-12T12:24:52+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,262 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的算法天梯之路之-归并排序]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/"/>
+    <updated>2016-08-12T10:44:05+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu</id>
+    <content type="html"><![CDATA[<h2>我的算法天梯之路之-归并排序</h2>
+
+<p>插入排序算法采取增量式(Incremental)的策略解决问题,每次添一个元素到已排序的子序列
+中,逐渐将整个数组排序完毕,它的时间复杂度是Θ(n<sup>2</sup>)。下面介绍另一个典型的排序算法&ndash;
+归并排序,它采取分而治之(Divide-and-Conquer)的策略,时间复杂度是Θ(nlgn),优于插入
+排序算法。归并排序的步骤如下:</p>
+
+<ol>
+<li>Divide: 把长度为n的输入序列分成两个长度为n/2的子序列。</li>
+<li>Conquer: 对这两个子序列分别采用归并排序。</li>
+<li>Combine: 将两个排序好的子序列合并成一个最终的排序序列。</li>
+</ol>
+
+
+<p>在描述归并排序的步骤时又调用了归并排序本身,可见这是一个递归的过程。</p>
+
+<p><strong>示例代码</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="cp">#define LEN 8</span>
+</span><span class='line'> <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">LEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">};</span>
+</span><span class='line'> <span class="kt">void</span> <span class="nf">merge</span><span class="p">(</span><span class="kt">int</span> <span class="n">start</span><span class="p">,</span><span class="kt">int</span> <span class="n">mid</span><span class="p">,</span><span class="kt">int</span> <span class="n">end</span><span class="p">){</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">n2</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">left</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span><span class="n">right</span><span class="p">[</span><span class="n">n2</span><span class="p">];</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>     <span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">start</span><span class="o">+</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>     <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>     <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>     <span class="n">i</span> <span class="o">=</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n1</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>         <span class="k">if</span> <span class="p">(</span><span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span>
+</span><span class='line'>             <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>             <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>         <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>             <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>             <span class="n">j</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>         <span class="p">}</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">)</span>
+</span><span class='line'>     <span class="k">for</span><span class="p">(;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>         <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>         <span class="n">k</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">)</span>
+</span><span class='line'>     <span class="k">for</span> <span class="p">(;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>         <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>         <span class="n">k</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="kt">void</span> <span class="nf">sort</span><span class="p">(</span><span class="kt">int</span> <span class="n">start</span><span class="p">,</span><span class="kt">int</span> <span class="n">end</span><span class="p">){</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">mid</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">){</span>
+</span><span class='line'>         <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;sort (%d-%d,%d-%d) %d,%d,%d,%d,%d,%d,%d,%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">start</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">end</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]);</span>
+</span><span class='line'>         <span class="n">sort</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">mid</span><span class="p">);</span>
+</span><span class='line'>         <span class="n">sort</span><span class="p">(</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">end</span><span class="p">);</span>
+</span><span class='line'>         <span class="n">merge</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">end</span><span class="p">);</span>
+</span><span class='line'>         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;merge (%d-%d,%d-%d) %d,%d,%d,%d,%d,%d,%d,%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">start</span><span class="p">,</span><span class="n">mid</span><span class="p">,</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">end</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span><span class='line'>     <span class="n">sort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">LEN</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>在merge函数中演示了C99的新特性&ndash;可变长数组,当然
+也可以避免使用这一特性,比如把left和right都按最大长度LEN分配。</p></blockquote>
+
+<h3>程序耗时</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">$</span> <span class="n">time</span> <span class="p">.</span><span class="o">/</span><span class="n">sort</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">6</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">6</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span>
+</span><span class='line'><span class="n">merge</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">real</span>   <span class="mi">0</span><span class="n">m0</span><span class="mf">.001</span><span class="n">s</span>
+</span><span class='line'><span class="n">user</span>   <span class="mi">0</span><span class="n">m0</span><span class="mf">.000</span><span class="n">s</span>
+</span><span class='line'><span class="n">sys</span>    <span class="mi">0</span><span class="n">m0</span><span class="mf">.000</span><span class="n">s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>相比之下冒泡排序在时间复杂度上就较为逊色了,且要排序的元素越多时,差别越大!</strong></p>
+
+<p><strong>示例代码</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="cp">#define LEN 8</span>
+</span><span class='line'> <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">LEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span> <span class="p">};</span>
+</span><span class='line'> <span class="kt">void</span> <span class="nf">sort</span><span class="p">(</span><span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">int</span> <span class="n">end</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">temp</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>         <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">end</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>             <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">end</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>                 <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span>
+</span><span class='line'>                 <span class="n">temp</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>                 <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>                 <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span><span class='line'>                 <span class="p">}</span>
+</span><span class='line'>             <span class="p">}</span>
+</span><span class='line'>         <span class="p">}</span>
+</span><span class='line'>         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;sort (%d-%d) %d %d %d %d %d %d %d %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="n">sort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">LEN</span><span class="p">);</span>
+</span><span class='line'> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>程序耗时</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">$</span> <span class="n">time</span> <span class="p">.</span><span class="o">/</span><span class="n">sort2</span>
+</span><span class='line'><span class="n">sort</span> <span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">7</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">real</span>   <span class="mi">0</span><span class="n">m0</span><span class="mf">.002</span><span class="n">s</span>
+</span><span class='line'><span class="n">user</span>   <span class="mi">0</span><span class="n">m0</span><span class="mf">.000</span><span class="n">s</span>
+</span><span class='line'><span class="n">sys</span>    <span class="mi">0</span><span class="n">m0</span><span class="mf">.000</span><span class="n">s</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[gdb的简单使用]]></title>
@@ -6866,108 +7122,6 @@ httpscan会返回IP http状态码 Web容器版本 以及网站标题。</p>
 </span><span class='line'>  <span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ubuntu下Web服务器Apache的安装及配置]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/"/>
-    <updated>2016-06-19T16:34:50+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi</id>
-    <content type="html"><![CDATA[<h1>Ubuntu下Web服务器Apache的安装及配置</h1>
-
-<h2>一.安装</h2>
-
-<h3>1. 终端下安装Apache:</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo apt-get install apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回车后等待安装完成即可.</p>
-
-<h3>2. 源码编译安装</h3>
-
-<blockquote><p>1.前往 <a href="http://httpd.apache.org">Apache官方网站</a> 下载并解压源码包.</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ tar zxvf httpd-2.4.20.tar.gz
-</span><span class='line'>$ cd httpd-2.4.20</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>2.配置安装路径</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./configure --prefix=/usr/local/apache</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>3.编译并安装</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ make
-</span><span class='line'>$ make install</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>4.启动服务器</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/local/apache/bin
-</span><span class='line'>$ ./apachectrl start</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二.配置</h2>
-
-<p>(1)默认页面的路径
-Apache安装完成后,默认的网站根目录是"/var/www/html"</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /var/www/html
-</span><span class='line'>=&gt; index.html //该文件即为apache的默认页面</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)Apache配置文件的路径
-apache2.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>000-default.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2/sites-available</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)修改网站根目录
-有关网页根目录的设置以上讲述的两个配置文件的设置有关</p>
-
-<p>1)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/apache2.conf
-</span><span class='line'>--&gt;找到"&lt;Directory /var/www/&gt;"的位置--&gt;更改"/var/www/"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<p>2)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/sites-available/000-default.conf
-</span><span class='line'>--&gt;找到"DocumentRoot /var/www/html"的位置--&gt;更改"/var/www/html"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>三.重启Apache使设置生效</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重启完毕后,往修改后的新目录添加你的自定义index.html主页文件,再在浏览器的地址栏键入127.0.0.1就可以查看apache服务器的运行效果了.</p>
 ]]></content>
   </entry>
   
