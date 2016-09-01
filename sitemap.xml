@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/</loc>
+<lastmod>2016-09-01T17:51:01+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/</loc>
 <lastmod>2016-08-21T17:15:20+08:00</lastmod>
 </url>
@@ -192,9 +196,6 @@
 <loc>http://edmondfrank.github.io/blog/categories/linux-android-ubuntu/</loc>
 </url>
 <url>
-<loc>http://edmondfrank.github.io/posts/2/</loc>
-</url>
-<url>
-<loc>http://edmondfrank.github.io/posts/3/</loc>
+<loc>http://edmondfrank.github.io/blog/categories/bian-cheng-suan-fa-cyu-yan/</loc>
 </url>
 </urlset>
