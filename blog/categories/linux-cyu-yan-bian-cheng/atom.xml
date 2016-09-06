@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux,c语言,编程 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/linux-cyu-yan-bian-cheng/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-09-06T23:49:28+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[简单cat的实现-1.0]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/"/>
+    <updated>2016-09-06T23:47:23+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0</id>
+    <content type="html"><![CDATA[<h2>简单cat的实现-1.0</h2>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;stdlib.h&gt;
+void vis(FILE *fp);
+int strip = 0;
+void main(int argc,char *argv[])
+{
+    int i = 0;
+    FILE *fp;
+    while(argc &gt; 1 &amp;&amp; argv[1][0] =='-'){
+        switch(argv[1][1]){
+        case 's':
+            strip = 1;
+            break;
+        default:
+            fprintf(stderr,"%s:unknown arg %s\n",argv[0],argv[1]);
+            exit(1);
+        }
+        argc--;
+        argv++;
+    }
+
+    if(argc == 1)
+    vis(stdin);
+    else
+    for(i=1;i&lt;argc;i++)
+    if((fp=fopen(argv[i],"r")) == NULL){
+        fprintf(stderr,"%s:can't open %s\n",argv[0],argv[i]);
+        exit(1);
+    }else{
+        vis(fp);
+        fclose(fp);
+    }
+    exit(0);
+}
+void vis(FILE *fp){
+    int c;
+    while((c=getc(fp))!=EOF)
+    if(isascii(c) &amp;&amp; (isprint(c) || c=='\n' || c=='\t' || c==' '))
+    putchar(c);
+    else if(!strip)
+    printf("\\%03o",c);
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
