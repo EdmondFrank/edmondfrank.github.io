@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/10/12/2016-10-12-tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/</loc>
+<lastmod>2016-10-12T22:14:07+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/09/21/cong-ling-kai-shi-de-rust-enumeratefang-fa/</loc>
 <lastmod>2016-09-21T19:37:14+08:00</lastmod>
 </url>
@@ -211,6 +215,9 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/rust-linux-bian-cheng/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/xiao-yuan-wang-bian-cheng-linux/</loc>
 </url>
 <url>
 <loc>http://edmondfrank.github.io/posts/2/</loc>
