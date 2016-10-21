@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-10-21T20:22:05+08:00</updated>
+  <updated>2016-10-21T20:27:25+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -140,6 +140,8 @@
 <p><strong>编译</strong></p>
 
 <blockquote><p>gcc -o win ./win.c -L/usr/lib -lX11</p></blockquote>
+
+<p><strong>That is All</strong></p>
 ]]></content>
   </entry>
   
