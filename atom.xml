@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-10-12T22:39:19+08:00</updated>
+  <updated>2016-10-21T20:17:49+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Xlib编程之-创建全屏透明窗口]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/"/>
+    <updated>2016-10-21T20:11:20+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou</id>
+    <content type="html"><![CDATA[<h2>Xlib编程之-创建全屏透明窗口</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//source file : win.c</span>
+</span><span class='line'><span class="cp">#include &lt;X11/Xlib.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;X11/Xutil.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Display</span><span class="o">*</span> <span class="n">display</span> <span class="o">=</span> <span class="n">XOpenDisplay</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">XVisualInfo</span> <span class="n">vinfo</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">XMatchVisualInfo</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultScreen</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">32</span><span class="p">,</span> <span class="n">TrueColor</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vinfo</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">XSetWindowAttributes</span> <span class="n">attr</span><span class="p">;</span><span class="c1">//窗口属性设置</span>
+</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">XCreateColormap</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span> <span class="n">AllocNone</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">border_pixel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">background_pixel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//取输出设备的长宽像素</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">screen</span> <span class="o">=</span> <span class="n">DefaultScreen</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="n">DisplayHeight</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="n">DisplayWidth</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//开始创建窗口</span>
+</span><span class='line'>    <span class="n">Window</span> <span class="n">win</span> <span class="o">=</span> <span class="n">XCreateWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">InputOutput</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span> <span class="n">CWColormap</span> <span class="o">|</span> <span class="n">CWBorderPixel</span> <span class="o">|</span> <span class="n">CWBackPixel</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">XSelectInput</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">,</span> <span class="n">StructureNotifyMask</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//GC gc = XCreateGC(display, win, 0, 0);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">    Atom wm_delete_window = XInternAtom(display, &quot;WM_DELETE_WINDOW&quot;, 0);</span>
+</span><span class='line'><span class="cm">    XSetWMProtocols(display, win, &amp;wm_delete_window, 1);</span>
+</span><span class='line'><span class="cm">    */</span>
+</span><span class='line'>    <span class="n">XMapWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">XMoveWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">win</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">XFlush</span><span class="p">(</span><span class="n">display</span><span class="p">);</span><span class="c1">//刷新输出设备</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">keep_running</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">XEvent</span> <span class="n">event</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//窗口事件监听尝试</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">keep_running</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">XNextEvent</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">ClientMessage</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">message_type</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_PROTOCOLS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">Atom</span><span class="p">)</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>                    <span class="n">keep_running</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//结束销毁</span>
+</span><span class='line'>    <span class="n">XDestroyWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">XCloseDisplay</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>编译</strong></p>
+
+<blockquote><p>gcc -o win ./win.c -L/usr/lib -lX11</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[2016-10-12:天翼校园网客户端登录协议更新]]></title>
@@ -6771,64 +6901,6 @@ or</p>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby Shoes-优雅轻量GUI之选]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/"/>
-    <updated>2016-06-30T20:10:11+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan</id>
-    <content type="html"><![CDATA[<h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
-
-<h2>Shoes简介</h2>
-
-<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
-
-<ul>
-<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
-<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
-</ul>
-
-
-<hr />
-
-<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
-
-<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
-
-<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
-
-<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
-
-<h2>示例代码</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Shoes</span><span class="o">.</span><span class="n">app</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span> <span class="mi">200</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">background</span> <span class="n">lime</span><span class="o">.</span><span class="n">.blue</span>
-</span><span class='line'>  <span class="n">stack</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">para</span> <span class="s2">&quot;Welcome to the world of Shoes!&quot;</span>
-</span><span class='line'>    <span class="n">button</span> <span class="s2">&quot;Click me&quot;</span> <span class="k">do</span> <span class="n">alert</span> <span class="s2">&quot;Nice click!&quot;</span> <span class="k">end</span>
-</span><span class='line'>    <span class="n">image</span> <span class="s2">&quot;http://shoesrb.com/img/shoes-icon.png&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">margin_top</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="ss">margin_left</span><span class="p">:</span> <span class="mi">10</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>界面效果如下:</p>
-
-<p>　<img src="http://edmondfrank.github.io/images/shoes4.png"></p>
-
-<hr />
 ]]></content>
   </entry>
   
