@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-10-30T14:37:46+08:00</updated>
+  <updated>2016-10-30T15:38:44+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -74,14 +74,11 @@
 <span class='line-number'>52</span>
 <span class='line-number'>53</span>
 <span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//source file : win.c</span>
-</span><span class='line'><span class="cp">#include &lt;X11/Xlib.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;X11/Xutil.h&gt;</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
-</span><span class='line'><span class="p">{</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="c1">//source file : win.c</span>
+</span><span class='line'> <span class="cp">#include &lt;X11/Xlib.h&gt;</span>
+</span><span class='line'> <span class="cp">#include &lt;X11/Xutil.h&gt;</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'> <span class="p">{</span>
 </span><span class='line'>    <span class="n">Display</span><span class="o">*</span> <span class="n">display</span> <span class="o">=</span> <span class="n">XOpenDisplay</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">XVisualInfo</span> <span class="n">vinfo</span><span class="p">;</span>
@@ -98,7 +95,7 @@
 </span><span class='line'>    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="n">DisplayWidth</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">screen</span><span class="p">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">//开始创建窗口</span>
-</span><span class='line'>    <span class="n">Window</span> <span class="n">win</span> <span class="o">=</span> <span class="n">XCreateWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">InputOutput</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span> <span class="n">CWColormap</span> <span class="o">|</span> <span class="n">CWBorderPixel</span> <span class="o">|</span> <span class="n">CWBackPixel</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Window</span> <span class="n">win</span> <span class="o">=</span> <span class="n">XCreateWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">InputOutput</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span>  <span class="n">CWColormap</span> <span class="o">|</span> <span class="n">CWBorderPixel</span> <span class="o">|</span> <span class="n">CWBackPixel</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
 </span><span class='line'>    <span class="n">XSelectInput</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">,</span> <span class="n">StructureNotifyMask</span><span class="p">);</span>
 </span><span class='line'>    <span class="c1">//GC gc = XCreateGC(display, win, 0, 0);</span>
 </span><span class='line'>
@@ -116,14 +113,11 @@
 </span><span class='line'>    <span class="c1">//窗口事件监听尝试</span>
 </span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">keep_running</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="n">XNextEvent</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
-</span><span class='line'>
 </span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>            <span class="k">case</span> <span class="nl">ClientMessage</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">message_type</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_PROTOCOLS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">Atom</span><span class="p">)</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">message_type</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_PROTOCOLS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">Atom</span><span class="p">)</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="s">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 </span><span class='line'>                    <span class="n">keep_running</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
 </span><span class='line'>                <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>
 </span><span class='line'>            <span class="k">default</span><span class="o">:</span>
 </span><span class='line'>                <span class="k">break</span><span class="p">;</span>
 </span><span class='line'>        <span class="p">}</span>
@@ -133,7 +127,7 @@
 </span><span class='line'>    <span class="n">XDestroyWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
 </span><span class='line'>    <span class="n">XCloseDisplay</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
 </span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

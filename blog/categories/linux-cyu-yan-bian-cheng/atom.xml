@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux,c语言,编程 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/linux-cyu-yan-bian-cheng/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2016-10-30T14:37:46+08:00</updated>
+  <updated>2016-10-30T15:38:44+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -20,11 +20,11 @@
     <id>http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou</id>
     <content type="html"><![CDATA[<h2>Xlib编程之-创建全屏透明窗口</h2>
 
-<pre><code class="c">//source file : win.c
-#include &lt;X11/Xlib.h&gt;
-#include &lt;X11/Xutil.h&gt;
-int main(int argc, char* argv[])
-{
+<pre><code class="c"> //source file : win.c
+ #include &lt;X11/Xlib.h&gt;
+ #include &lt;X11/Xutil.h&gt;
+ int main(int argc, char* argv[])
+ {
     Display* display = XOpenDisplay(NULL);
 
     XVisualInfo vinfo;
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     int width = DisplayWidth(display,screen);
 
     //开始创建窗口
-    Window win = XCreateWindow(display, DefaultRootWindow(display), 0, 0,width, height , 0, vinfo.depth, InputOutput, vinfo.visual, CWColormap | CWBorderPixel | CWBackPixel, &amp;attr);
+    Window win = XCreateWindow(display, DefaultRootWindow(display), 0, 0,width, height , 0, vinfo.depth, InputOutput, vinfo.visual,  CWColormap | CWBorderPixel | CWBackPixel, &amp;attr);
     XSelectInput(display, win, StructureNotifyMask);
     //GC gc = XCreateGC(display, win, 0, 0);
 
@@ -59,14 +59,11 @@ int main(int argc, char* argv[])
     //窗口事件监听尝试
     while (keep_running) {
         XNextEvent(display, &amp;event);
-
         switch(event.type) {
             case ClientMessage:
-                if (event.xclient.message_type == XInternAtom(display, "WM_PROTOCOLS", 1) &amp;&amp; (Atom)event.xclient.data.l[0] == XInternAtom(display, "WM_DELETE_WINDOW", 1))
+                if (event.xclient.message_type == XInternAtom(display, "WM_PROTOCOLS", 1) &amp;&amp; (Atom)event.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
                     keep_running = 0;
-
                 break;
-
             default:
                 break;
         }
@@ -76,7 +73,7 @@ int main(int argc, char* argv[])
     XDestroyWindow(display, win);
     XCloseDisplay(display);
     return 0;
-}
+ }
 </code></pre>
 
 <p><strong>编译</strong></p>
