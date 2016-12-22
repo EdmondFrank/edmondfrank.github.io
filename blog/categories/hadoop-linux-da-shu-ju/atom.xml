@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: hadoop,linux,大数据 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/hadoop-linux-da-shu-ju/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-12-22T20:06:56+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[大数据下的Hadoop]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
+    <updated>2016-12-22T20:00:09+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
+    <content type="html"><![CDATA[<h2>大数据下的Hadoop</h2>
+
+<p><strong>(1) 什么是大数据概念？</strong>
+    <a href="http://baike.baidu.com/item/%E5%A4%A7%E6%95%B0%E6%8D%AE/1356941">大数据(big data,mega data)</a>，或称巨量资料，指的是需要新处理模式才能具有更强的决策力、洞察力和流程优化能力的海量、高增长率和多样化的信息资产。</p>
+
+<p><strong>(2) 常规的数据处理 </strong>
+* 数据的采集
+* 明确数据处理的目的
+* 数据清洗 : 统一数据格式、删除重复值、处理缺失字段、检查数据逻辑错误等
+* 数据加工 : 数据抽取、数据计算、数据分组和数据转换等
+* 数据抽样
+数据处理完毕后，就可以进行数据分析了</p>
+
+<p><strong>(3) 主流的三大分布式计算系统</strong></p>
+
+<blockquote><p>一.Hadoop 基于java</p></blockquote>
+
+<p>   Hadoop采用MapReduce分布式计算框架，并根据GFS开发了HDFS分布式文件系统，根据BigTable开发了HBase数据存储系统。</p>
+
+<blockquote><p>二.Spark  基于scala</p></blockquote>
+
+<pre><code>Spark也是Apache基金会的开源项目，它由加州大学伯克利分校的实验室开发，是另外一种重要的分布式计算系统。它在Hadoop的基础上进行了一些架构上的改良。Spark与Hadoop最大的不同点在于，Hadoop使用硬盘来存储数据，而Spark使用内存来存储数据，因此Spark可以提供超过Hadoop 100倍的运算速度。但是，由于内存断电后会丢失数据，Spark不能用于处理需要长期保存的数据。
+</code></pre>
+
+<blockquote><p>三.Storm  基于clojure</p></blockquote>
+
+<pre><code>Storm是Twitter主推的分布式计算系统，它由BackType团队开发，是Apache基金会的孵化项目。它在Hadoop的基础上提供了实时运算的特性，可以实时的处理大数据流。不同于Hadoop和Spark，Storm不进行数据的收集和存储工作，它直接通过网络实时的接受数据并且实时的处理数据，然后直接通过网络实时的传回结果。
+</code></pre>
+
+<p>   <em>然而,以上的平台的语言开发组件都有一个共同点,即,基于java的JVM</em></p>
+
+<p><strong>(4) 有关hadoop</strong></p>
+
+<p>Hadoop核心 HDFS和MapReduce</p>
+
+<pre><code>HDFS
+</code></pre>
+
+<p>   HDFS（Hadoop Distributed File System，Hadoop分布式文件系统），它是一个高度容错性的系统，适合部署在廉价的机器上。HDFS能提供高吞吐量的数据访问，适合那些有着超大数据集（large data set）的应用程序。</p>
+
+<blockquote><p>HDFS的设计特点是：</p></blockquote>
+
+<ol>
+<li>大数据文件，非常适合上T级别的大文件或者一堆大数据文件的存储，如果文件只有几个G甚至更小就没啥意思了。</li>
+<li>文件分块存储，HDFS会将一个完整的大文件平均分块存储到不同计算器上，它的意义在于读取文件时可以同时从多个主机取不同区块的文件，多主机读取比单主机读取效率要高得多得都。</li>
+<li>流式数据访问，一次写入多次读写，这种模式跟传统文件不同，它不支持动态改变文件内容，而是要求让文件一次写入就不做变化，要变化也只能在文件末添加内容。</li>
+<li>廉价硬件，HDFS可以应用在普通PC机上，这种机制能够让给一些公司用几十台廉价的计算机就可以撑起一个大数据集群。</li>
+<li>硬件故障，HDFS认为所有计算机都可能会出问题，为了防止某个主机失效读取不到该主机的块文件，它将同一个文件块副本分配到其它某几个主机上，如果其中一台主机失效，可以迅速找另一块副本取文件。</li>
+</ol>
+
+
+<blockquote><p>HDFS的关键元素：</p></blockquote>
+
+<p><strong>Block：将一个文件进行分块，通常是64M。</strong></p>
+
+<p>NameNode：保存整个文件系统的目录信息、文件信息及分块信息，这是由唯一一台主机专门保存，当然这台主机如果出错，NameNode就失效了。在Hadoop2.*开始支持activity-standy模式&mdash;-如果主NameNode失效，启动备用主机运行NameNode。</p>
+
+<p><strong>DataNode：分布在廉价的计算机上，用于存储Block块文件。</strong></p>
+
+<p><img src="/images/hdfs.jpg"></p>
+
+<pre><code>MapReduce
+</code></pre>
+
+<p>   通俗说MapReduce是一套从海量·源数据提取分析元素最后返回结果集的编程模型，将文件分布式存储到硬盘是第一步，而从海量数据中提取分析我们需要的内容就是MapReduce做的事了。</p>
+
+<p>   下面以一个计算海量数据最大值为例：一个银行有上亿储户，银行希望找到存储金额最高的金额是多少，按照传统的计算方式，我们会这样：</p>
+
+<pre><code class="java">//java
+Long moneys[] ...
+Long max = 0L;
+for(int i=0;i&lt;moneys.length;i++){
+  if(moneys[i]&gt;max){
+    max = moneys[i];
+  }
+}
+</code></pre>
+
+<p>如果计算的数组长度少的话，这样实现是不会有问题的，还是面对海量数据的时候就会有问题。</p>
+
+<p>MapReduce会这样做：首先数字是分布存储在不同块中的，以某几个块为一个Map，计算出Map中最大的值，然后将每个Map中的最大值做Reduce操作，Reduce再取最大值给用户。</p>
+
+<p><img src="/images/map.jpg"></p>
+
+<p>MapReduce的基本原理就是：将大的数据分析分成小块逐个分析，最后再将提取出来的数据汇总分析，最终获得我们想要的内容。当然怎么分块分析，怎么做Reduce操作非常复杂，Hadoop已经提供了数据分析的实现，我们只需要编写简单的需求命令即可达成我们想要的数据。</p>
+
+<h2>总结</h2>
+
+<p>   <strong>总的来说:</strong> <em>Hadoop适合应用于大数据存储和大数据分析的应用，适合于服务器几千台到几万台的集群运行，支持PB级的存储容量。Hadoop典型应用有：搜索、日志处理、推荐系统、数据分析、视频图像分析、数据保存等。</em></p>
+]]></content>
+  </entry>
+  
+</feed>

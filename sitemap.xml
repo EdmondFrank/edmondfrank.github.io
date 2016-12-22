@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/</loc>
+<lastmod>2016-12-22T20:00:09+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/</loc>
 <lastmod>2016-10-21T20:11:20+08:00</lastmod>
 </url>
@@ -222,5 +226,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/xiao-yuan-wang-bian-cheng-linux/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/hadoop-linux-da-shu-ju/</loc>
 </url>
 </urlset>
