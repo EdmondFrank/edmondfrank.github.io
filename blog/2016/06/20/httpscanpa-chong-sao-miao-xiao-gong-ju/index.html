@@ -1,0 +1,283 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>httpscan爬虫扫描小工具 | EdmondFrank's 时光足迹</title>
+
+	<meta name="author" content="EdmondFrank"> 
+	
+	<meta name="description" content="httpscan 爬虫扫描小工具 httpscan是一个扫描指定网段的Web主机的小工具。和端口扫描器不一样，httpscan是以爬虫的方式进行Web主机发现，因此相对来说不容易被防火墙拦截。
+httpscan会返回IP http状态码 Web容器版本 以及网站标题。 　 1
+2
+Usage：./ &hellip;"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+</head>
+
+
+
+<body>
+	<header id="header">
+<div class="inner">
+  <ul class="navigation">
+    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
+    <li><a href="/" class="is-selected">Blog</a></li>
+    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
+    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
+  </ul>
+</div></header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Httpscan爬虫扫描小工具</h2>
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-20T16:30:07+08:00" pubdate data-updated="true">Jun 20th, 2016</time></div>
+	</div>
+	<div class="entry-content"><h1>httpscan 爬虫扫描小工具</h1>
+
+<p>httpscan是一个扫描指定网段的Web主机的小工具。<strong>和端口扫描器不一样，httpscan是以爬虫的方式进行Web主机发现，因此相对来说不容易被防火墙拦截。</strong>
+httpscan会返回IP http状态码 Web容器版本 以及网站标题。</p>
+
+<hr />
+
+<p>　<img src="/images/httpscan.png"></p>
+
+<hr />
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Usage：./httpscan IP/CIDR –t threads
+</span><span class='line'>Example:./httpscan.py 10.20.30.0/24 –t 10</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://github.com/zer0h/httpscan">Github地址</a></p>
+
+<h2>代码预览:</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c">#coding:utf-8</span>
+</span><span class='line'><span class="c"># Author: Zeroh</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">Queue</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">optparse</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">IPy</span> <span class="kn">import</span> <span class="n">IP</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">printLock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c">#lock Screen print</span>
+</span><span class='line'><span class="n">TimeOut</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c">#request timeout</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#User-Agent</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;User-Agent&#39;</span> <span class="p">:</span> <span class="s">&#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36&#39;</span><span class="p">,</span><span class="s">&#39;Connection&#39;</span><span class="p">:</span><span class="s">&#39;close&#39;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">scan</span><span class="p">():</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cidr</span><span class="p">,</span><span class="n">threads_num</span><span class="p">):</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">threads_num</span> <span class="o">=</span> <span class="n">threads_num</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cidr</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">cidr</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#build ip queue</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cidr</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">ip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">with</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">():</span>
+</span><span class='line'>      <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span><span class="n">timeout</span><span class="o">=</span><span class="n">TimeOut</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">status</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;&lt;title&gt;(.*)&lt;/title&gt;&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="c">#get the title</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\r</span><span class="s">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]</span>
+</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;None&quot;</span>
+</span><span class='line'>          <span class="n">banner</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>          <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">banner</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Server&#39;</span><span class="p">][:</span><span class="mi">20</span><span class="p">]</span> <span class="c">#get the server banner</span>
+</span><span class='line'>          <span class="k">except</span><span class="p">:</span><span class="k">pass</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+</span><span class='line'>          <span class="k">print</span> <span class="s">&quot;|</span><span class="si">%-16s</span><span class="s">|</span><span class="si">%-6s</span><span class="s">|</span><span class="si">%-20s</span><span class="s">|</span><span class="si">%-30s</span><span class="s">|&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ip</span><span class="p">,</span><span class="n">status</span><span class="p">,</span><span class="n">banner</span><span class="p">,</span><span class="n">title</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c">#Save log</span>
+</span><span class='line'>          <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;./log/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cidr</span><span class="o">.</span><span class="n">strNormal</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;.log&quot;</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">finally</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c">#Multi thread</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads_num</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="s">&quot;Usage: %prog [options] target&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&quot;-t&quot;</span><span class="p">,</span> <span class="s">&quot;--thread&quot;</span><span class="p">,</span> <span class="n">dest</span> <span class="o">=</span> <span class="s">&quot;threads_num&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">default</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s">&quot;int&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">help</span> <span class="o">=</span> <span class="s">&quot;[optional]number of  theads,default=10&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;|     IP         |Status|       Server       |            Title             |&quot;</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">s</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">cidr</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">threads_num</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">threads_num</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+<div class="sharing">
+  
+  <div class="sns-tw">
+    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  
+</div>
+</article>
+</div>
+	<footer id="footer" class="inner"><div class="aboutme">
+<hr>
+  <div class="profile">
+
+    <h3>EdmondFrank</h3>
+    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
+
+    <div class="codes">
+      <h4>Codes</h4>
+      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
+    </div>
+  </div>
+
+  <div class="float_clear"></div>
+
+</div>
+
+Copyright &copy; 2016
+ EdmondFrank 
+<br>
+Powered by Octopress.
+
+
+
+</footer>
+	
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rust,linux,编程 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/rust-linux-bian-cheng/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-10-30T15:38:44+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[从零开始的Rust-Enumerate方法]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/09/21/cong-ling-kai-shi-de-rust-enumeratefang-fa/"/>
+    <updated>2016-09-21T19:37:14+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/09/21/cong-ling-kai-shi-de-rust-enumeratefang-fa</id>
+    <content type="html"><![CDATA[<h2>从零开始的Rust学习之旅-Enumerate方法</h2>
+
+<p>Enumerate方法
+当你需要记录你已经循环了多少次了的时候,你可以使用 .enumerate()函数。</p>
+
+<h3>对范围(On ranges):</h3>
+
+<pre><code class="rust">for(i,j) in (5..10).enumerate() 
+{
+    println!("i =   {}  and j   =   {}",    i,  j);
+}
+</code></pre>
+
+<blockquote><p>输出:<br/>
+i = 0 and j = 5 <br/>
+i = 1 and j = 6 <br/>
+i = 2 and j = 7 <br/>
+i = 3 and j = 8 <br/>
+i = 4 and j = 9 <br/>
+<strong>别忘了在范围外面加上括号</strong></p></blockquote>
+
+<h3>对迭代器(On iterators):</h3>
+
+<pre><code class="rust">let lines = "hello\nworld".lines();
+for (linenumber, line) in lines.enumerate() {
+    println!("{}:{}", linenumber, line);
+}
+</code></pre>
+
+<blockquote><p>输出:<br/>
+0:hello <br/>
+1:world <br/></p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>

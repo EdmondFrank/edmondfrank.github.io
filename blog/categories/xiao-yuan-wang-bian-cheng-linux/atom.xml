@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 校园网,编程,linux | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/xiao-yuan-wang-bian-cheng-linux/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-10-30T15:38:44+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2016-10-12:天翼校园网客户端登录协议更新]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/"/>
+    <updated>2016-10-12T22:14:07+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin</id>
+    <content type="html"><![CDATA[<h2>天翼校园网客户端登录协议更新</h2>
+
+<p><strong>PS:此登录协议仅供参考,未必适合所有高校.</strong>
+<strong>本项目源码不遵循任何协议,各位可以随意下载及修改,但请勿用作非法 or 商业用途!</strong></p>
+
+<h3>主要变化</h3>
+
+<p><strong><a href="https://github.com/EdmondFrank/Esurfing">原登录协议</a> 步骤为:challange -> 获取rescode -> login,现登录协议取消了rescode认证,因此可以省略challange可以直接login</strong></p>
+
+<h3>登录协议主要源码如下:</h3>
+
+<pre><code class="ruby">#coding:utf-8
+require 'json'
+require 'net/http'
+require 'uri'
+require 'digest/md5'
+body = File.read("./config.json")
+config = JSON.parse(body)
+username = config["username"].to_s
+password = config["password"].to_s
+clientip = config["clientip"].to_s
+nasip = config["nasip"].to_s
+mac = config["mac"].to_s
+iswifi="1050"
+def get_timestamp()
+  return Time.now.to_i.to_s+'444'
+end
+def get_md5(str)
+  return  Digest::MD5.hexdigest(str+'Eshore!@#').upcase
+end
+
+def active(username,clientip,nasip,mac)
+  timestamp = get_timestamp
+  authenticator= get_md5(clientip+nasip+mac+timestamp)
+  puts username,clientip,nasip,mac,timestamp,authenticator
+  url="http://enet.10000.gd.cn:8001/hbservice/client/active?username=#{username}&amp;clientip=#{clientip}&amp;nasip=#{nasip}&amp;mac=#{mac}&amp;timestamp=#{timestamp}&amp;authenticator=#{authenticator}"
+  uri = URI(url)
+  resp = Net::HTTP.get(uri)
+  #resp = `curl -A "" -H "Accept:" -H "Host:enet.10000.gd.cn:8001" #{url}`
+  result = JSON.parse(resp)
+  puts result
+  return result["rescode"].to_s
+end
+
+def login(username,password,clientip,nasip,mac,iswifi)
+  url = "http://enet.10000.gd.cn:10001/client/login"
+  timestamp =  get_timestamp
+  authenticator=get_md5(clientip+nasip+mac+timestamp)
+  postdata={}
+  postdata["username"]=username
+  postdata["password"]=password
+  postdata["clientip"]=clientip
+  postdata["nasip"]=nasip
+  postdata["mac"]=mac
+  postdata["timestamp"]=timestamp
+  postdata["authenticator"]=authenticator
+  postdata["iswifi"]=iswifi
+  data=postdata.to_json
+
+  headers = {"Content-Type" =&gt; "application/json"}
+  headers["Host"]="enet.10000.gd.cn:10001"
+  headers["Content-Length"]=data.bytesize.to_s
+  headers["Expect"]="100-continue"
+  headers["Connection"]="Keep-Alive"
+  puts `curl -d '#{data}' -A "" -H "Accept:" -H "Content-Type:application/json" -H "Host:enet.10000.gd.cn:10001" -H "Content-Length:#{data.bytesize.to_s}" -H "Expect:100-continue" -H "Connection:Keep-Alive" -X POST #{url}`
+end
+code = active(username,clientip,nasip,mac)
+if code != "0"
+  login(username,password,clientip,nasip,mac,iswifi)
+end
+</code></pre>
+
+<p><strong>注:源码中才用了curl发送post包,使用前需先确认系统中是否用curl工具.若是改回Ruby的net/http发包请去掉[Expect]=&ldquo;100-continue"头</strong></p>
+
+<p><strong>目前仅提供登录协议供大家参考,有能力者可自行实现完整程序及Gui界面,完整的程序(Cli版本/Gui版本),博主也会后续在我的<a href="https://github.com/EdmondFrank">Github</a>上发布</strong></p>
+]]></content>
+  </entry>
+  
+</feed>

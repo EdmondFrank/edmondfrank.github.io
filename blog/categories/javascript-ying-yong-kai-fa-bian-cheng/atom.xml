@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript,应用开发,编程 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/javascript-ying-yong-kai-fa-bian-cheng/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-10-30T15:38:44+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Electron-用JavaScript来构建跨平台的桌面应用]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/"/>
+    <updated>2016-06-16T22:23:37+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong</id>
+    <content type="html"><![CDATA[<h1>Electron - 用JavaScript来构建跨平台的桌面应用</h1>
+
+<p>　　  Electron 框架的前身是 Atom Shell，可以让你写使用 JavaScript，HTML 和 CSS 构建跨平台的桌面应用程序。它是基于io.js 和 Chromium 开源项目，并用于在 Atom 编辑器中。Electron 是开源的，由 GitHub 维护，有一个活跃的社区。最重要的是，Electron 应用服务构建和运行在 Mac，Windows 和 Linux。</p>
+
+<h2>　　　　</h2>
+
+<p>　　
+　　<img src="/images/Electron.png"></p>
+]]></content>
+  </entry>
+  
+</feed>

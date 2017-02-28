@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: go,编程,笔记 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/go-bian-cheng-bi-ji/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-10-30T15:38:44+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Go语言var/init/main的执行顺序]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/"/>
+    <updated>2016-06-23T18:04:40+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu</id>
+    <content type="html"><![CDATA[<h1>Go语言var/init/main的执行顺序</h1>
+
+<p>执行顺序(降序):</p>
+
+<ol>
+<li>var</li>
+<li>init</li>
+<li>main</li>
+</ol>
+
+
+<p>大家也可以亲自动手把下面的代码复制到<a href="https://play.golang.org/">Go Playground</a>上执行看看!</p>
+
+<h4>示例代码</h4>
+
+<pre><code class="go">package main
+
+var someVar = defaultVar()
+
+func init() {
+    println("main.init was called")
+}
+
+func main() {
+    println("main.main was called")
+}
+
+func defaultVar() int {
+    println("main.var was initialized")
+    return 0
+}
+</code></pre>
+
+<h4>输出结果如下:</h4>
+
+<blockquote><p>main.var was initialized</p>
+
+<p>main.init was called</p>
+
+<p>main.main was called</p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>

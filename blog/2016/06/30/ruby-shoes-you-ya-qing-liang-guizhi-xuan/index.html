@@ -1,0 +1,148 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Ruby Shoes-优雅轻量GUI之选 | EdmondFrank's 时光足迹</title>
+
+	<meta name="author" content="EdmondFrank"> 
+	
+	<meta name="description" content="Ruby Shoes：用户界面优雅的轻量之选 Shoes简介 人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括： 将Ruby绑定到Qt或者GTK这样的用户界面库
+使用基于JRuby的嵌入式DSL或者API创建Swing界面 Ruby Shoes实现GUI的方式则略显不同.Ruby &hellip;"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+</head>
+
+
+
+<body>
+	<header id="header">
+<div class="inner">
+  <ul class="navigation">
+    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
+    <li><a href="/" class="is-selected">Blog</a></li>
+    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
+    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
+  </ul>
+</div></header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Ruby Shoes-优雅轻量GUI之选</h2>
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-30T20:10:11+08:00" pubdate data-updated="true">Jun 30th, 2016</time></div>
+	</div>
+	<div class="entry-content"><h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
+
+<h2>Shoes简介</h2>
+
+<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
+
+<ul>
+<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
+<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
+</ul>
+
+
+<hr />
+
+<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
+
+<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
+
+<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
+
+<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
+
+<h2>示例代码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Shoes</span><span class="o">.</span><span class="n">app</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span> <span class="mi">200</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">background</span> <span class="n">lime</span><span class="o">.</span><span class="n">.blue</span>
+</span><span class='line'>  <span class="n">stack</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">para</span> <span class="s2">&quot;Welcome to the world of Shoes!&quot;</span>
+</span><span class='line'>    <span class="n">button</span> <span class="s2">&quot;Click me&quot;</span> <span class="k">do</span> <span class="n">alert</span> <span class="s2">&quot;Nice click!&quot;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">image</span> <span class="s2">&quot;http://shoesrb.com/img/shoes-icon.png&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">margin_top</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="ss">margin_left</span><span class="p">:</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>界面效果如下:</p>
+
+<p>　<img src="/images/shoes4.png"></p>
+
+<hr />
+</div>
+
+
+<div class="sharing">
+  
+  <div class="sns-tw">
+    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  
+</div>
+</article>
+</div>
+	<footer id="footer" class="inner"><div class="aboutme">
+<hr>
+  <div class="profile">
+
+    <h3>EdmondFrank</h3>
+    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
+
+    <div class="codes">
+      <h4>Codes</h4>
+      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
+    </div>
+  </div>
+
+  <div class="float_clear"></div>
+
+</div>
+
+Copyright &copy; 2016
+ EdmondFrank 
+<br>
+Powered by Octopress.
+
+
+
+</footer>
+	
+
+</body>
+</html>

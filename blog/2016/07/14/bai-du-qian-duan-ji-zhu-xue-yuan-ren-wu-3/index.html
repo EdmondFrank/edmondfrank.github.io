@@ -1,0 +1,315 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>百度前端技术学院-任务3 | EdmondFrank's 时光足迹</title>
+
+	<meta name="author" content="EdmondFrank"> 
+	
+	<meta name="description" content="百度前端技术学院-任务三 任务三：三栏式布局 style.css 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42 &hellip;"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+</head>
+
+
+
+<body>
+	<header id="header">
+<div class="inner">
+  <ul class="navigation">
+    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
+    <li><a href="/" class="is-selected">Blog</a></li>
+    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
+    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
+  </ul>
+</div></header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">百度前端技术学院-任务3</h2>
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-07-14T16:56:41+08:00" pubdate data-updated="true">Jul 14th, 2016</time></div>
+	</div>
+	<div class="entry-content"><h1>百度前端技术学院-任务三</h1>
+
+<p><strong><a href="http://ife.baidu.com/task/detail?taskId=3">任务三：三栏式布局</a></strong></p>
+
+<blockquote><p>style.css</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">body</span><span class="o">,</span> <span class="nt">div</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#999</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#box</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#eee</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">zoom</span><span class="o">:</span> <span class="m">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">min-height</span><span class="o">:</span> <span class="m">440px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#leftbox</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#fff</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#leftbox</span> <span class="nt">h2</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span><span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">12px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-weight</span><span class="o">:</span> <span class="k">normal</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#leftbox</span> <span class="nt">img</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#rightbox</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#fff</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-bottom</span><span class="o">:</span><span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">120px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#rightbox</span> <span class="nt">div</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">border</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nf">#midbox</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span><span class="m">#fff</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-left</span><span class="o">:</span> <span class="m">220px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">margin-right</span><span class="o">:</span> <span class="m">140px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>index.html</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>任务三<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Language&quot;</span> <span class="na">content=</span><span class="s">&quot;zh-ch&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;box&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;leftbox&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic.png&quot;</span> <span class="na">width=</span><span class="s">&quot;80px&quot;</span> <span class="na">height=</span><span class="s">&quot;80px&quot;</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;h2&gt;</span>团队名称<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;p&gt;</span>EdmondFrank<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;midbox&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;h3&gt;</span>关于你们的团队<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;p&gt;</span>可以给我们解释一下团队名称的来历,或是分别介绍你们团队的成员.<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;p&gt;</span>(以下为示例)<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;p&gt;</span>百度前端技术学院的课程任务是由百度前端工程师专为对前端不同掌握程度的同学设计。我们尽力保证课程内容的质量以及学习难度的合理性，但即使如此，真正决定课程效果的，还是你的每一次思考和实践。
+</span><span class='line'>课程多数题目的解决方案都不是唯一的，这和我们在实际工作中的情况也是一致的。因此，我们的要求不仅仅是实现设计稿的效果，更是要多去思考不同的解决方案，评估不同方案的优劣，然后使用在该场景下最优雅的方式去实现。那些最终没有被我们采纳的方案，同样也可以帮助我们学到很多知识。所以，我们列出的参考资料未必是实现需求所必须的。有的时候，实现题目的要求很简单，甚至参考资料里就有，但是背后的思考和亲手去实践却是任务最关键的一部分。在学习这些资料时，要多思考，多提问，多质疑。相信通过和小伙伴们的交流，能让你的学习事半功倍。<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;rightbox&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;div&gt;&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic.png&quot;</span> <span class="na">width=</span><span class="s">&quot;80px&quot;</span> <span class="na">height=</span><span class="s">&quot;80px&quot;</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;div&gt;</span> <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic.png&quot;</span> <span class="na">width=</span><span class="s">&quot;80px&quot;</span> <span class="na">height=</span><span class="s">&quot;80px&quot;</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;div&gt;</span> <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic.png&quot;</span> <span class="na">width=</span><span class="s">&quot;80px&quot;</span> <span class="na">height=</span><span class="s">&quot;80px&quot;</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div&gt;</span> <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic.png&quot;</span> <span class="na">width=</span><span class="s">&quot;80px&quot;</span> <span class="na">height=</span><span class="s">&quot;80px&quot;</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+<div class="sharing">
+  
+  <div class="sns-tw">
+    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  
+</div>
+</article>
+</div>
+	<footer id="footer" class="inner"><div class="aboutme">
+<hr>
+  <div class="profile">
+
+    <h3>EdmondFrank</h3>
+    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
+
+    <div class="codes">
+      <h4>Codes</h4>
+      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
+    </div>
+  </div>
+
+  <div class="float_clear"></div>
+
+</div>
+
+Copyright &copy; 2016
+ EdmondFrank 
+<br>
+Powered by Octopress.
+
+
+
+</footer>
+	
+
+</body>
+</html>

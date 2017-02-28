@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux,编程,笔记 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/linux-bian-cheng-bi-ji/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2016-10-30T15:38:44+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Linux程序开发-命令行选项及参数]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/"/>
+    <updated>2016-08-09T16:16:57+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu</id>
+    <content type="html"><![CDATA[<h2>Linux程序开发-命令行选项及参数</h2>
+
+<h3>1.C语言中命令行参数的读取与输出</h3>
+
+<pre><code class="c"> #include &lt;stdio.h&gt;
+ int main(int argc,char* argv[])
+ {
+    int i;
+    for(i=0;i&lt;argc;i++)
+    {
+        printf("argv[%d] = %s\n",i,argv[i]);
+    }
+ }
+</code></pre>
+
+<p><strong>当命令行选项很多时,可以使用库函数获取</strong>
+<code>c
+getopt      //短选项
+getlongopt  //长选项
+</code>
+<strong>函数声明</strong>
+<code>c
+ #include &lt;unistd.h&gt;
+ int getopt(int argc,char* const argv[],const char *optstring);
+</code>
+以下全局变量用于配合getopt函数</p>
+
+<blockquote><p>extern char *optargr;<br/>
+extern int optind;<br/>
+extern int optopt;<br/>
+extern int opterr;<br/></p></blockquote>
+
+<h3>2.有关选项和参数的区别</h3>
+
+<p>eg:</p>
+
+<p>-a : 选项,一般表示所有</p>
+
+<p>-h host: 其中,h表示选项,而host代表了一个主机ip也就是选项h的参数</p>
+
+<p><strong>具体参数的解析,可以参考getopt的第三个参数的使用约定</strong></p>
+
+<h3>3.getopt的执行过程</h3>
+
+<p>当getopt每成功执行一次
+<code>c
+extern char *optarg; //指向下一个要扫描的参数
+extern int optind;   //索引修改为下一个要处理的指针的下标
+extern int optopt;   //用于存储可能的错误
+extern int opterr;   //如果opterr == 0;则不将错误输出到标准错误输出设备
+</code></p>
+
+<h3>4.getopt使用实例</h3>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+int main(int argc,char** argv)
+{
+    int result;
+    opterr = 0;
+    while ((result = getopt(argc,argv,"ab:c::"))!= -1)
+    {
+        switch(result)
+        {
+        case 'a':
+            printf("option=a,optopt=%c,optarg=%s\n",optopt,optarg);
+            break;
+        case 'b':
+            printf("option=b,optopt=%c,optarg=%s\n",optopt,optarg);
+            break;
+        case 'c':
+            printf("option=c,optopt=%c,optarg=%s\n",optopt,optarg);
+            break;
+        case '?':
+            printf("result=?,optopt=%c,optarg=%s\n",optopt,optarg);
+        default:
+            printf("default,result=%c\n",result);
+        }
+        printf("argv[%d]=%s\n",optind,argv[optind]);
+    }
+    printf("result=-1,optind=%d\n",optind);
+    return 0;
+}
+</code></pre>
+
+<blockquote><p>输入示例
+./first -a -b host -cShell</p></blockquote>
+
+<pre><code>输出结果
+option=a,optopt=,optarg=(null)
+argv[2]=-b
+option=b,optopt=,optarg=host
+argv[4]=-cShell
+option=c,optopt=,optarg=Shell
+argv[5]=(null)
+result=-1,optind=5
+</code></pre>
+
+<h3>5.长选项判断函数getopt_long的声明</h3>
+
+<pre><code class="c">#include &lt;unistd.h&gt;
+
+int getopt(int argc, char * const argv[],
+                  const char *optstring);
+
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+#include &lt;getopt.h&gt;
+
+int getopt_long(int argc, 
+                  char * const argv[],
+                  const char *optstring,          //当前支持的短选项列表
+                  const struct option *longopts,  //长选项信息
+                  int *longindex);                //索引
+
+struct option {
+               const char *name;         //选项名
+               int         has_arg;      //是否有参数
+               int        *flag;         //标志
+               int         val;          //返回值
+                                };
+int getopt_long_only(int argc, char * const argv[],
+                  const char *optstring,
+                  const struct option *longopts, int *longindex);
+</code></pre>
+
+<p><strong>第四个参数的使用示例:</strong>
+<code>c
+struct optino my_option = {
+   {"help",0,NULL,'h'},
+   {"output",1,NULL,'o'}
+}
+</code>
+除了以上区别外,长选项与短选项的使用方法类似.</p>
+]]></content>
+  </entry>
+  
+</feed>

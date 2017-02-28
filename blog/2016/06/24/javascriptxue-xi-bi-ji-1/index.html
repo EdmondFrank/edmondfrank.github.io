@@ -1,0 +1,284 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JavaScript学习笔记1 | EdmondFrank's 时光足迹</title>
+
+	<meta name="author" content="EdmondFrank"> 
+	
+	<meta name="description" content="JavaScript学习笔记1 一.第一个程序:Hello World的输出 控制台下的输出: console.log(&lsquo;Hello World!&rsquo;);
+消息框模式输出: alert(&lsquo;Hello World!&rsquo;); 　 二.变量 必须以字母、 &hellip;"> <meta name="keywords" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+</head>
+
+
+
+<body>
+	<header id="header">
+<div class="inner">
+  <ul class="navigation">
+    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
+    <li><a href="/" class="is-selected">Blog</a></li>
+    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
+    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
+  </ul>
+</div></header>
+
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">JavaScript学习笔记1</h2>
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-24T21:41:53+08:00" pubdate data-updated="true">Jun 24th, 2016</time></div>
+	</div>
+	<div class="entry-content"><h1>JavaScript学习笔记1</h1>
+
+<h2>一.第一个程序:Hello World的输出</h2>
+
+<ul>
+<li><p>控制台下的输出:</p>
+
+<blockquote><p>console.log(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+<li><p>消息框模式输出:</p>
+
+<blockquote><p>alert(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+</ul>
+
+
+<p>　<img src="/images/alert.png"></p>
+
+<h2>二.变量</h2>
+
+<ul>
+<li>必须以字母、下划线或美元符号开头，后面可以跟字母、下划线、美元符号和数字.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">_myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">$myvar</span><span class="p">;</span> <span class="c1">//以上均为正确的变量名</span>
+</span><span class='line'><span class="mi">1</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//错误,不能用数字开头</span>
+</span><span class='line'><span class="o">%</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//开头不能用(_,$)以外的特殊字符</span>
+</span><span class='line'><span class="kd">var</span><span class="p">;</span> <span class="c1">//错误,不能使用保留字和关键字</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>变量的声明</h3>
+
+<blockquote><p>var 变量名;</p></blockquote>
+
+<p>eg: var mynum = 1;</p>
+
+<p>同时声明多个变量时使用",&ldquo;分割即可.</p>
+
+<p>eg: var myvar,myvar2,myvar3;</p>
+
+<p><strong>(注:在JavaScript中,未赋值的变量,会自动被使用"undefined"值来初始化)</strong></p>
+
+<h2>三.数据类型</h2>
+
+<p>JavaScript中有5种基本数据类型,分别是:
+1. 字符串
+2. 数字
+3. 布尔值
+4. 数组
+5. 对象</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">mychar1</span> <span class="o">=</span> <span class="s2">&quot;双引号包起来的字符串&quot;</span><span class="p">;</span> <span class="c1">// 这是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mychar2</span> <span class="o">=</span> <span class="s1">&#39;单引号包起来的字符串&#39;</span><span class="p">;</span> <span class="c1">// 这也是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="c1">// 这是数字6</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum3</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e5</span><span class="p">;</span> <span class="c1">// 这是使用科学（指数）计数法来书写的12300000</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum4</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e</span><span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="c1">// 这是0.00123</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mybool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// 这是布尔值</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span> <span class="c1">// 这是数组</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myobject</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">};</span> <span class="c1">// 这是对象</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>四.表达式及运算符</h2>
+
+<p>与Ruby和Python类似.
+<strong>(注:完整语句后面记得加上";&ldquo;)</strong></p>
+
+<h2>五.数组</h2>
+
+<p>数组变量的声明:</p>
+
+<blockquote><p>var arr = [&lsquo;a&rsquo;,&lsquo;b&rsquo;,&lsquo;c&rsquo;];</p></blockquote>
+
+<p><strong>(注:任意一种类型的数据,都可以放进数组里,且数组支持嵌套)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">a</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="kd">function</span><span class="p">(){</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">//对象</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">//数组</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">//函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>length属性:返回数组成员的数量</li>
+</ul>
+
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:length 属性是可写的。如果人为设置一个小于当前成员个数的值，该数组的成员会自动减少到 length 设置的长度.即,随意改写length值会造成数据丢失问题.)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 3</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">;</span>    <span class="c1">// =&gt; [&quot;a&quot;, &quot;b&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//快速清空数组</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>增加新元素</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="nx">myarr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myarr</span><span class="p">);</span> <span class="c1">// =&gt;[1,2,3,4]</span>
+</span><span class='line'><span class="c1">//此处特性与Ruby数组相似.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>六.对象</h2>
+
+<p>JavaScript的对象，是指带有属性和方法的数据类型，一般由若干个“键值对”（key-value）构成</p>
+
+<ul>
+<li>键名
+键名加不加引号都可以，前面的代码也可以写成这样：
+
+<blockquote><p>var o = {
+  &ldquo;p&rdquo;: &ldquo;Hello&rdquo;
+};</p></blockquote></li>
+</ul>
+
+
+<p><strong>(注:键名如果不符合标识名的条件，也不是正整数，则必须加上引号)</strong></p>
+
+<h3>生成方法</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj3</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>对象引用</h3>
+
+<p>如果不同的变量名指向同一个对象，那么它们都是这个对象的引用，也就是说指向同一个内存地址。修改其中一个变量的属性，会影响到其他所有变量(此处与C类似)</p>
+
+<h3>内置对象</h3>
+
+<p>JavaScript常见的内置对象(built-in object)有: String, Number, Boolean,Date Object</p>
+
+<p>有关更多JavaScript内置对象相关属性及方法可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">JavaScript|MDN</a></p>
+</div>
+
+
+<div class="sharing">
+  
+  <div class="sns-tw">
+    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  
+</div>
+</article>
+</div>
+	<footer id="footer" class="inner"><div class="aboutme">
+<hr>
+  <div class="profile">
+
+    <h3>EdmondFrank</h3>
+    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
+
+    <div class="codes">
+      <h4>Codes</h4>
+      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
+    </div>
+  </div>
+
+  <div class="float_clear"></div>
+
+</div>
+
+Copyright &copy; 2016
+ EdmondFrank 
+<br>
+Powered by Octopress.
+
+
+
+</footer>
+	
+
+</body>
+</html>
