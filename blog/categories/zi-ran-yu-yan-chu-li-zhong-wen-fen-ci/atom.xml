@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 自然语言处理,中文分词 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/zi-ran-yu-yan-chu-li-zhong-wen-fen-ci/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-02-28T20:44:14+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[中文分词的简介]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
+    <updated>2017-02-28T20:23:19+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
+    <content type="html"><![CDATA[<h2>中文分词的简介</h2>
+
+<h3>一：中文分词是什么？</h3>
+
+<p>中文分词指的是将一个汉字序列切分成一个一个单独的词。
+中文分词技术属于自然语言处理技术范畴，对于一句话，人可以通过自己的知识来明白哪些是词，哪些不是词，但如何让计算机也能理解？其处理过程就是分词算法。</p>
+
+<h3>二：为什么要进行中文分词？</h3>
+
+<p>词是最小的能够独立活动的有意义的语言成分，英文单词之间是以空格作为自然分界符的，而汉语是以字为基本的书写单位，词语之间没有明显的区分标记，因此，中文词语分析是中文信息处理的基础与关键。</p>
+
+<p>中文分词对于搜索引擎来说，最重要的并不是找到所有结果，因为在上百亿的网页中找到所有结果没有太多的意义，没有人能看得完，最重要的是把最相关的结果排在最前面，这也称为相关度排序。中文分词的准确与否，常常直接影响到对搜索结果的相关度排序。</p>
+
+<h3>三：常用的中文分词算法及原理</h3>
+
+<p>分词算法大体上可分为三大类：<strong>（1）基于字典、词库匹配的分词方法（2）基于词频度统计的分词方法（3）基于知识理解的分词方法</strong>。</p>
+
+<h4>（1）词典匹配：</h4>
+
+<p>词典匹配、汉语词法或其它汉语语言知识进行分词，如：<strong>最大匹配法、最小分词方法</strong>等。这类方法简单、分词效率较高,但汉语语言现象复杂丰富，词典的完备性、规则的一致性等问题使其难以适应开放的大规模文本的分词处理</p>
+
+<p><strong>最大正向匹配法</strong>：通常简称为ＭＭ法。其基本思想为：假定分词词典中的最长词有i个汉字字符，则用被处理文档的当前字串中的前i个字作为匹配字段，查找字典。若字典中存在这样的一个i字词，则匹配成功，匹配字段被作为一个词切分出来。如果词典中找不到这样的一个i字词，则匹配失败，将匹配字段中的最后一个字去掉，对剩下的字串重新进行匹配处理，如此进行下去，直到匹配成功，即切分出一个词或剩余字串的长度为零为止。这样就完成了一轮匹配，然后取下一个i字字串进行匹配处理，直到文档被扫描完为止。</p>
+
+<p>由于汉语中偏正结构较多，若从后向前匹配，可以适当提高精确度。所以，逆向最大匹配法比正向最大匹配法的误差要小。</p>
+
+<p><strong>逆向最大匹配法</strong>：通常简称为ＲＭＭ法。ＲＭＭ法的基本原理与ＭＭ法相同 ,不同的是分词切分的方向与MM法相反，而且使用的分词辞典也不同。逆向最大匹配法从被处理文档的末端开始匹配扫描，每次取最末端的2i个字符（i字字串）作为匹配字段，若匹配失败，则去掉匹配字段最前面的一个字，继续匹配。相应地，它使用的分词词典是逆序词典，其中的每个词条都将按逆序方式存放。在实际处理时，先将文档进行倒排处理，生成逆序文档。然后，根据逆序词典，对逆序文档用正向最大匹配法处理即可。</p>
+
+<p><strong>最少切分法（最小分词法）</strong>：使每一句中切出的词数最小。</p>
+
+<h4>（2）基于统计的分词算法：</h4>
+
+<p>统计模型则基于字和词的统计信息，把相邻字间的信息、词频及相应的共现信息通过条件概率分布模型应用于分词，由于这些信息是通过调查真实语料而取得的，因而基于统计的分词方法具有较好的实用性。</p>
+
+<p>其中最具代表性的是：<a href="http://baike.baidu.com/item/%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%A8%A1%E5%9E%8B">马尔可夫模型</a></p>
+
+<h3>四：常用中文分词工具（引擎）</h3>
+
+<ol>
+<li><a href="https://github.com/fxsjy/jieba">结巴中文分词（多语言版本）</a></li>
+<li><a href="https://github.com/NLPchina/ansj_seg">Ansj中文分词（java）</a></li>
+<li><a href="http://bosonnlp.com/dev/center">BosonNLP</a></li>
+<li><a href="http://www.oschina.net/p/ikanalyzer">IKAnalyzer</a></li>
+<li><a href="http://ictclas.nlpir.org/docs">NLPIR</a></li>
+<li><a href="http://www.xunsearch.com/scws/docs.php">SCWS中文分词</a></li>
+<li><a href="http://pangusegment.codeplex.com/">盘古分词</a></li>
+<li><a href="https://code.google.com/p/paoding/">庖丁解牛</a></li>
+<li><a href="http://www.sogou.com/labs/webservice/">搜狗分词</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>
