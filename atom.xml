@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-02-28T20:44:14+08:00</updated>
+  <updated>2017-03-10T19:41:11+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,323 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[认识网络爬虫]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong/"/>
+    <updated>2017-03-10T19:39:43+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong</id>
+    <content type="html"><![CDATA[<h2>认识网络爬虫</h2>
+
+<h3>什么是网络爬虫</h3>
+
+<p>   <em>传统网络爬虫是一个自动提取网页的程序,它为搜索引擎从万维网上下载网页,是搜索引擎的重要组成。
+一般从一个或若干初始网页的URL开始,获得初始网页上的URL,在抓取网页的过程中,不断从当前页面上抽取新的URL放入队列,直到满
+足系统的一定停止条件。</em></p>
+
+<h3>爬虫有什么用？</h3>
+
+<p>   <em>随着现代商业元素的发展，网络爬虫也开始呈现出一种多元化发展的趋势，应用在各种不同的领域。例如：商业数据收集、科学数据采集、社会特征分析等等</em>
+   <img src="http://p1.bqimg.com/567571/795209d053f87619.png" alt="" /></p>
+
+<ol>
+<li>通用搜索引擎网页搜集器</li>
+<li>垂直搜索引擎（招聘网，二手车，买房网）</li>
+<li>科学研究</li>
+<li>hacking
+&hellip;&hellip;</li>
+</ol>
+
+
+<h3>一个简单的python爬虫</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#！/usr/bin/env python</span>
+</span><span class='line'><span class="c">#coding=utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pyquery</span> <span class="kn">import</span> <span class="n">PyQuery</span> <span class="k">as</span> <span class="n">pq</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/portal.php&#39;</span>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span>
+</span><span class='line'><span class="n">p</span> <span class="o">=</span> <span class="n">pq</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#portal_block_617 li&gt;a&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span> <span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/&#39;</span><span class="o">+</span><span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&#39;href&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>爬虫工作过程解析</h3>
+
+<pre><code>网络爬虫框架主要由控制器、解析器和索引库三大部分组成，而爬虫工作原理主要是解析器这个环节，解析器的主要工作是下载网页，进行页面的处理，主要是将一些JS脚本标签、CSS代码内容、空格字符、HTML标签等内容处理掉，爬虫的基本工作是由解析器完成。所以解析器的具体流程是：
+</code></pre>
+
+<blockquote><p><strong>入口访问->下载内容->分析结构->提取内容</strong></p></blockquote>
+
+<h4>下面以爬取<a href="http://www.luoo.net/">落网</a>为例子</h4>
+
+<p><strong>第一步 确定目的</strong>
+抓取目标网站的某一期所有音乐</p>
+
+<p><strong>第二步 分析页面结构</strong>
+访问落网的某一期刊，通过Chrome的（F12）开发者模式查看播放列表中的歌曲，右侧选中的是一些需要特别注意的语义结构，见下图所示：</p>
+
+<p><img src="http://i1.piimg.com/567571/ed8e842e2bb1bb13.png" alt="" /></p>
+
+<p>这时我们可以看到在Chrome的开发者模式的Network中看到实际请求的播放文件。
+根据以上分析我们可以得到播放清单的位置和音乐文件的路径，接下来我们通过Python来实现这个目的。</p>
+
+<p><strong>实现爬虫</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#-*- coding: utf-8 -*-</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Factory</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">Queue</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">fake</span> <span class="o">=</span> <span class="n">Factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</span><span class='line'><span class="n">luoo_site</span> <span class="o">=</span> <span class="s">&#39;http://www.luoo.net/music/&#39;</span>
+</span><span class='line'><span class="n">luoo_site_mp3</span> <span class="o">=</span> <span class="s">&#39;http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.mp3&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Connection&#39;</span><span class="p">:</span> <span class="s">&#39;keep-alive&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="n">fake</span><span class="o">.</span><span class="n">user_agent</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">random_proxies</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">ip_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">proxy_ips</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">res</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;http&#39;</span><span class="p">:</span> <span class="n">proxy_ips</span><span class="p">[</span><span class="n">ip_index</span><span class="p">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">res</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">fix_characters</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="s">&#39;*&#39;</span><span class="p">]:</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">s</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LuooSpider</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">vols</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;[luoo spider]&#39;</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">20</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="s">&#39;1&#39;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vols</span> <span class="o">=</span> <span class="n">vols</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">vol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vols</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">spider</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">ncrawl end</span><span class="se">\\</span><span class="s">n</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">spider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">url</span> <span class="o">=</span> <span class="n">luoo_site</span> <span class="o">+</span> <span class="n">vol</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;crawling: &#39;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">())</span>
+</span><span class='line'>                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;html.parser&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">title</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-title&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="n">cover</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-cover&#39;</span><span class="p">})[</span><span class="s">&#39;src&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">desc</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-desc&#39;</span><span class="p">})</span>
+</span><span class='line'>        <span class="n">track_names</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;trackname&#39;</span><span class="p">})</span>
+</span><span class='line'>        <span class="n">track_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">track_names</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">track_names</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]))</span> <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">)</span> <span class="k">else</span> <span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">_name</span> <span class="o">=</span> <span class="n">fix_characters</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+</span><span class='line'>            <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">_name</span><span class="p">})</span>
+</span><span class='line'>            <span class="n">phases</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>                <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">vol</span><span class="p">,</span>                         <span class="c"># 期刊编号</span>
+</span><span class='line'>                <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>                       <span class="c"># 期刊标题</span>
+</span><span class='line'>                 <span class="s">&#39;cover&#39;</span><span class="p">:</span> <span class="n">cover</span><span class="p">,</span>                      <span class="c"># 期刊封面</span>
+</span><span class='line'>                 <span class="s">&#39;desc&#39;</span><span class="p">:</span> <span class="n">desc</span><span class="p">,</span>                        <span class="c"># 期刊描述</span>
+</span><span class='line'>                 <span class="s">&#39;track_count&#39;</span><span class="p">:</span> <span class="n">track_count</span><span class="p">,</span>          <span class="c"># 节目数</span>
+</span><span class='line'>                 <span class="s">&#39;tracks&#39;</span><span class="p">:</span> <span class="n">tracks</span>                     <span class="c"># 节目清单(节目编号，节目名称)</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LuooDownloader</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">pass</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</span><span class='line'>                <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;tracks&#39;</span><span class="p">]:</span>
+</span><span class='line'>            <span class="n">file_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">%</span> <span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">local_file_dict</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">local_file</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.mp3&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">local_file_dict</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_file</span><span class="p">):</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;downloading: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</span><span class='line'>                <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;done.</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;break: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">spider_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">luoo</span> <span class="o">=</span> <span class="n">LuooSpider</span><span class="p">(</span><span class="n">luoo_site</span><span class="p">,</span> <span class="n">vols</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;680&#39;</span><span class="p">,</span> <span class="s">&#39;721&#39;</span><span class="p">,</span> <span class="s">&#39;725&#39;</span><span class="p">,</span> <span class="s">&#39;720&#39;</span><span class="p">],</span><span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">downloader_count</span> <span class="o">=</span> <span class="mi">5</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">downloader_count</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">luoo_download</span> <span class="o">=</span> <span class="n">LuooDownloader</span><span class="p">(</span><span class="n">luoo_site_mp3</span><span class="p">,</span> <span class="s">&#39;/home/luoo&#39;</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[中文分词的简介]]></title>
@@ -6480,368 +6797,6 @@ or</p>
 </span><span class='line'><span class="nt">&lt;/body&gt;</span>
 </span><span class='line'><span class="nt">&lt;/html&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[百度前端技术学院-任务1]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/"/>
-    <updated>2016-07-12T18:35:22+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1</id>
-    <content type="html"><![CDATA[<h1>百度前端技术学院-任务一</h1>
-
-<p><strong><a href="http://ife.baidu.com/task/detail?taskId=1">任务一：零基础HTML编码</a></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Language&quot;</span> <span class="na">content=</span><span class="s">&quot;zh-ch&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;</span>任务一<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/meta&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h1&gt;</span>网站一级标题<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接一<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接二<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接三<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                  <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接四<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>文章作者 发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                 <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="nt">&gt;</span>这里有个链接链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span>这里有个链接新窗口链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>另外一篇文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>文章作者 文章发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="nt">&gt;</span>这里有个链接链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;strong&gt;&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;&lt;/strong&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表1<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表2<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表3<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                  <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>图片<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>最后一篇文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;p&gt;</span>文章作者 文章发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;ol&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名1<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名2<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名3<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;/ol&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;p&gt;</span>下面是一个表格,给表格加了一个border=&quot;1&quot;,好让你看出来是一个表格<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span> <span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>总计<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td</span> <span class="na">colspan=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>1000<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h2&gt;</span>这以后是一个侧栏，这是侧栏标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h2&gt;</span>侧栏注册窗口标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;form&gt;</span>
-</span><span class='line'>            请输入邮箱地址:
-</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>邮箱地址请按要求格式输入<span class="nt">&lt;/div&gt;&lt;br&gt;</span>
-</span><span class='line'>            请输入密码:
-</span><span class='line'>           <span class="c">&lt;!-- &lt;input type=&quot;text&quot; name=&quot;password&quot;&gt; --&gt;</span>
-</span><span class='line'>             <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>            请再次输入密码:
-</span><span class='line'>           <span class="c">&lt;!-- &lt;input type=&quot;text&quot; name=&quot;password&quot;&gt;&lt;br&gt; --&gt;</span>
-</span><span class='line'>             <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>密码请为6-16位英文数字<span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>              性别:
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;radio&quot;</span> <span class="na">name=</span><span class="s">&quot;Male&quot;</span> <span class="na">value=</span><span class="s">&quot;male&quot;</span> <span class="na">checked</span><span class="nt">&gt;</span> 男
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;radio&quot;</span> <span class="na">name=</span><span class="s">&quot;Female&quot;</span> <span class="na">value=</span><span class="s">&quot;female&quot;</span><span class="nt">&gt;</span> 女
-</span><span class='line'>
-</span><span class='line'>              城市：
-</span><span class='line'>              <span class="nt">&lt;select&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;北京&quot;</span><span class="nt">&gt;</span>北京<span class="nt">&lt;/option&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;广东&quot;</span><span class="nt">&gt;</span>广东<span class="nt">&lt;/option&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;/select&gt;</span>
-</span><span class='line'>
-</span><span class='line'>              爱好：
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;运动&quot;</span> <span class="na">value=</span><span class="s">&quot;运动&quot;</span><span class="nt">&gt;</span>运动
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;艺术&quot;</span> <span class="na">value=</span><span class="s">&quot;艺术&quot;</span><span class="nt">&gt;</span>艺术
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;科学&quot;</span> <span class="na">value=</span><span class="s">&quot;科学&quot;</span><span class="nt">&gt;</span>科学
-</span><span class='line'>
-</span><span class='line'>              个人描述:<span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;个人描述&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue}&quot;</span><span class="nt">&gt;</span>这是一个文本框，输入个人信息 <span class="nt">&lt;/textarea&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;确认提交&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/form&gt;</span>
-</span><span class='line'>       <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;footer&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;br/&gt;&lt;div&gt;</span>版权所有@ <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/footer&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>
