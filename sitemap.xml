@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/</loc>
+<lastmod>2017-03-22T17:33:02+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong/</loc>
 <lastmod>2017-03-10T19:39:43+08:00</lastmod>
 </url>
@@ -243,5 +247,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/python-bian-cheng-pa-chong/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/suan-fa-linux,cpp/</loc>
 </url>
 </urlset>
