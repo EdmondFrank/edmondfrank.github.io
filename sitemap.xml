@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/</loc>
+<lastmod>2017-04-23T12:34:29+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/</loc>
 <lastmod>2017-04-05T14:28:56+08:00</lastmod>
 </url>
@@ -264,5 +268,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/mongodb-shu-ju-ku/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/python-suan-fa/</loc>
 </url>
 </urlset>
