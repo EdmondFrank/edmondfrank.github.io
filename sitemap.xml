@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian/</loc>
+<lastmod>2017-05-07T19:03:30+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/</loc>
 <lastmod>2017-05-02T20:48:47+08:00</lastmod>
 </url>
@@ -278,5 +282,8 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/python-web-suan-fa/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/suan-fa-ji-qi-xue-xi-python/</loc>
 </url>
 </urlset>
