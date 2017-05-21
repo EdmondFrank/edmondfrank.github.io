@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/</loc>
+<lastmod>2017-05-21T11:05:15+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/</loc>
 <lastmod>2017-05-12T19:33:10+08:00</lastmod>
 </url>
@@ -292,6 +296,9 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/python-suan-fa-tong-ji/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/python-suan-fa-pa-chong-xiang-guan/</loc>
 </url>
 <url>
 <loc>http://edmondfrank.github.io/posts/2/</loc>
