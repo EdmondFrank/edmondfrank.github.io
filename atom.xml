@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-05-21T11:11:12+08:00</updated>
+  <updated>2017-05-21T20:59:58+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -92,15 +92,15 @@
 
 <p>开始时集合内没有元素：</p>
 
-<p><img src="//e.hiphotos.baidu.com/baike/s%3D250/sign=0fd8813a78f0f736dcfe4b043a54b382/7af40ad162d9f2d3f39093aaa9ec8a136227ccf6.jpg" alt="img" /></p>
+<p><img src="http://e.hiphotos.baidu.com/baike/s%3D250/sign=0fd8813a78f0f736dcfe4b043a54b382/7af40ad162d9f2d3f39093aaa9ec8a136227ccf6.jpg" alt="img" /></p>
 
 <p>当来了一个元素a时，进行哈希计算再判断，当计算出对应的比特位上为0时，即a不在集合内，添加a的哈希值进去。</p>
 
-<p><img src="//g.hiphotos.baidu.com/baike/s%3D250/sign=7debb7818c1001e94a3c130a880e7b06/9d82d158ccbf6c815e2dd280bd3eb13533fa4044.jpg" alt="img" /></p>
+<p><img src="http://g.hiphotos.baidu.com/baike/s%3D250/sign=7debb7818c1001e94a3c130a880e7b06/9d82d158ccbf6c815e2dd280bd3eb13533fa4044.jpg" alt="img" /></p>
 
 <p>之后的元素，要判断是不是在集合内，也是同 a 一样的方法，只有对元素哈希后对应位置上都是 1 才认为这个元素在集合内</p>
 
-<p><img src="//c.hiphotos.baidu.com/baike/s%3D250/sign=71f00574a18b87d65442ac1a37092860/d6ca7bcb0a46f21f7ce5e916f6246b600d33aea6.jpg" alt="img" /></p>
+<p><img src="http://c.hiphotos.baidu.com/baike/s%3D250/sign=71f00574a18b87d65442ac1a37092860/d6ca7bcb0a46f21f7ce5e916f6246b600d33aea6.jpg" alt="img" /></p>
 
 <p>随着元素的插入，Bloom filter 中修改的值变多，出现误判的几率也随之变大，当新来一个元素时，
 满足其在集合内的条件，即所有对应位都是1，这样就可能有两种情况，
