@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python,web,算法 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/python-web-suan-fa/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:21:24+08:00</updated>
+  <updated>2017-07-03T12:32:52+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -348,7 +348,7 @@
 
 <h1>效果测试<a id="sec-3" name="sec-3"></a></h1>
 
-<p><img src="/images/webcrawl.png"></p>
+<p>{% img /images/webcrawl.png %}</p>
 ]]></content>
   </entry>
   

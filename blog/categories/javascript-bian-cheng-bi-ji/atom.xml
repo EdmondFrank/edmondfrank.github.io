@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript,编程,笔记 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/javascript-bian-cheng-bi-ji/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:21:24+08:00</updated>
+  <updated>2017-07-03T12:32:52+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -157,7 +157,7 @@ console.log(Math.min.apply(null,arr));
 </ul>
 
 
-<p>　<img src="/images/alert.png"></p>
+<p>　{% img /images/alert.png %}</p>
 
 <h2>二.变量</h2>
 
@@ -233,21 +233,15 @@ arr.length;    // =&gt; 2
 </code>
 <strong>(注:length 属性是可写的。如果人为设置一个小于当前成员个数的值，该数组的成员会自动减少到 length 设置的长度.即,随意改写length值会造成数据丢失问题.)</strong>
 eg:
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">a</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">b</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">c</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 3&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'><span class="nx">arr</span><span class="p">;</span>    <span class="c1">// =&gt; [&amp;ldquo;a&amp;rdquo;, &amp;ldquo;b&amp;rdquo;]&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//快速清空数组</span>
-</span></code></pre></td></tr></table></div></figure></p>
+```javascript
+var arr = [&lsquo;a&rsquo;, &lsquo;b&rsquo;, &lsquo;c&rsquo;];
+arr.length;    // => 3</p>
+
+<p>arr.length = 2;
+arr;    // => [&ldquo;a&rdquo;, &ldquo;b&rdquo;]</p>
+
+<p>arr.length = 0;//快速清空数组
+```</p>
 
 <h3>增加新元素</h3>
 

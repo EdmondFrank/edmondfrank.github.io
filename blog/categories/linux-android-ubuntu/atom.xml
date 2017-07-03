@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux,android,ubuntu | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/linux-android-ubuntu/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:21:24+08:00</updated>
+  <updated>2017-07-03T12:32:52+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -143,7 +143,7 @@
 <p><strong>(其实对于一个服务器系统来说,博主更推荐使用ssh连接来代替VNC连接)</strong></p>
 
 <p>最后补一张最终效果图(此处博主已经自行安装了LXDE桌面环境):
-<img src="/images/ubuntu.jpg"></p>
+{% img /images/ubuntu.jpg %}</p>
 ]]></content>
   </entry>
   

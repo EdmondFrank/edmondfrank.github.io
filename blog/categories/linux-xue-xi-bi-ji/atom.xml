@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux,学习,笔记 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/linux-xue-xi-bi-ji/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:21:24+08:00</updated>
+  <updated>2017-07-03T12:32:52+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -114,51 +114,30 @@ bff73000-bff94000 rw-p 00000000 00:00 0          [stack]
 <p><strong>堆和栈的起始地址是随机产生的,其目的是避免产生安全漏洞,但是可以使用brk/sbrk函数指定在堆中申请空间的起始地址</strong></p>
 
 <p>brk/sbrk函数声明
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'>   <span class="cp">#include &amp;lt;unistd.h&gt;&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kt">int</span> <span class="n">brk</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">);</span>  <span class="c1">//指定下次申请堆空间的起始地址</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="kt">void</span> <span class="o">*</span><span class="nf">sbrk</span><span class="p">(</span><span class="kt">intptr_t</span> <span class="n">increment</span><span class="p">);</span>  <span class="c1">//在当前地址位置后移increament字节,为0时返回当前地址</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">**</span><span class="err">代码示例</span><span class="o">:**</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="err">#</span><span class="n">include</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">stdlib</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;</span>
-</span><span class='line'> <span class="cp">#include&amp;lt;stdio.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">argv</span><span class="p">[])</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'> <span class="n">brk</span><span class="p">(</span><span class="mh">0x09e50000</span><span class="p">);</span>
-</span><span class='line'> <span class="n">printf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">brk</span> <span class="k">return</span><span class="o">:%</span><span class="n">p</span><span class="err">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span><span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
-</span><span class='line'> <span class="kt">char</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">102400</span><span class="p">);</span>
-</span><span class='line'> <span class="n">printf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">new</span> <span class="nl">malloc</span><span class="p">:</span><span class="o">%</span><span class="n">p</span> <span class="err">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span><span class="n">ptr</span><span class="p">);</span>
-</span><span class='line'> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+```c
+       #include &lt;unistd.h></p>
+
+<pre><code>   int brk(void *addr);  //指定下次申请堆空间的起始地址
+
+   void *sbrk(intptr_t increment);  //在当前地址位置后移increament字节,为0时返回当前地址
+</code></pre>
+
+<pre><code>
+**代码示例:**
+</code></pre>
+
+<p> #include&lt;stdlib.h>
+ #include&lt;stdio.h>
+ int i = 10;
+ int main(int argc,char <em>argv[])
+ {
+     brk(0x09e50000);
+     printf(&ldquo;brk return:%p\n&rdquo;,sbrk(0));
+     char </em>ptr = malloc(102400);
+     printf(&ldquo;new malloc:%p \n&rdquo;,ptr);
+     return 0;
+ }
+```</p>
 
 <blockquote><p>输出结果 <br/>
 brk return:0x9e50000 <br/>
