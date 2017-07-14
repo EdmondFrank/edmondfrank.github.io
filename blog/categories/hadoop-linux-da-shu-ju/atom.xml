@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hadoop,linux,大数据 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/hadoop-linux-da-shu-ju/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:32:52+08:00</updated>
+  <updated>2017-07-14T13:23:10+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -77,7 +77,7 @@
 
 <p><strong>DataNode：分布在廉价的计算机上，用于存储Block块文件。</strong></p>
 
-<p>{% img /images/hdfs.jpg %}</p>
+<p><img src="/images/hdfs.jpg"></p>
 
 <pre><code>MapReduce
 </code></pre>
@@ -100,7 +100,7 @@ for(int i=0;i&lt;moneys.length;i++){
 
 <p>MapReduce会这样做：首先数字是分布存储在不同块中的，以某几个块为一个Map，计算出Map中最大的值，然后将每个Map中的最大值做Reduce操作，Reduce再取最大值给用户。</p>
 
-<p>{% img /images/map.jpg %}</p>
+<p><img src="/images/map.jpg"></p>
 
 <p>MapReduce的基本原理就是：将大的数据分析分成小块逐个分析，最后再将提取出来的数据汇总分析，最终获得我们想要的内容。当然怎么分块分析，怎么做Reduce操作非常复杂，Hadoop已经提供了数据分析的实现，我们只需要编写简单的需求命令即可达成我们想要的数据。</p>
 

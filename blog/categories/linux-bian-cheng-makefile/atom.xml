@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux,编程,makefile | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/linux-bian-cheng-makefile/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:32:52+08:00</updated>
+  <updated>2017-07-14T13:23:10+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -156,11 +156,12 @@ hello_SOURCES=hello.cpp
 <p>至此我们想要的标准的configure和Makefile文件都已经生成了。</p>
 
 <p>最后只要执行make命令就可以编译我们的hello程序了
-```
-$ make</p>
-
-<p>$ ./hello
-```
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ make&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$ ./hello</span></code></pre></td></tr></table></div></figure>
 输出如下:</p>
 
 <blockquote><p>Hello World!</p></blockquote>

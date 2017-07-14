@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 统计,学习,笔记 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/tong-ji-xue-xi-bi-ji/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-07-14T13:23:10+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[有统计学的一些笔记]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/14/you-tong-ji-xue-de-yi-xie-bi-ji/"/>
+    <updated>2017-07-14T13:22:09+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/14/you-tong-ji-xue-de-yi-xie-bi-ji</id>
+    <content type="html"><![CDATA[<h1>有关推断统计学</h1>
+
+<h2>样本与总体</h2>
+
+<p>在统计中，一个<strong>总体</strong>包括事件的全部，而一个<strong>样本</strong>是总体的一小部分（子集）
+。</p>
+
+<h2>推断统计学</h2>
+
+<p><strong>推断统计学（Inferential statistics）</strong> 是使用样本归纳总体的一种统计方法。推断统计非常有用，因为他允许我们基于有限的信息（样本）对总体得出结论。</p>
+
+<h2>假设检验</h2>
+
+<p>当我们使用样本对总体进行推断时，这个过程为假设检验（Hypothesis testing）。在假设检验中，通常要陈述两个假设：<strong>原假设（null hypothesis）</strong> 和<strong>对立假设（alternative hypothesis）</strong>。原假设通常陈述处理没有效果，而对立假设陈述处理有效果。</p>
+
+<h2>单边检验和双边检验</h2>
+
+<p>在评估处理要看是否对任一方向有影响（了解得分是更高还是更低）时使用双边检验，而在母的仅仅是调查单一方向（仅仅是更高还是更低）时使用单边检验。</p>
+
+<h2>第一类错误和第二类错误</h2>
+
+<p>在假设检验中，使用样本对总体进行推断。因为样本是总体的不完整“图像”，所以在假设检验过程中，就可能有错误。有两类错误发生：第一类错误，第二类错误。如果在原假设是真实的情况下拒绝了原假设，就发生了第一类错误。如果在原假设是错误的情况下没有拒绝原假设，就发生了第二类错误。</p>
+
+<h2>功效</h2>
+
+<p><strong>功效（power）</strong>等于原假设错误的拒绝原假设的概率（如果原假设是错误的，他也是被拒绝的，就是做了一个正确的决策）。功效的取值范围在0~1之间，数值越大，功效越大。</p>
+
+<h2>抽样误差</h2>
+
+<p>一般来说，样本越小，样本与总体的差异就越大。样本与总体的差异就是<strong>抽样误差（sampling error）</strong></p>
+
+<h2>p-值</h2>
+
+<p>如果从总体中抽取的样本通常都是不相同的，那么我们应该如何确定样本之间存在有意义的差异，还是由于抽样误差所导致的结果。p-值表明在原假设为真时获得特定结果的的概率。在假设检验中，检验的p-值是和预先确定的数值进行比较的，且基于比较的结果，对原假设进行决策。在社会和行为科学中，常用0.05位水平，来评价p-值。</p>
+
+<blockquote><p>评价p-值过程如下：
+1. 如果p-值小于或等于0.05（α），拒绝原假设（假定策略之间存在差异）
+2. 如果p-值大于0.05（α），不能拒绝原假设（没有假定策略之间有差异）</p></blockquote>
+
+<h2>效应量</h2>
+
+<p><strong>效应量（effect sizes）</strong>一般用来描述策略组之间的差异程度，表明我们研究结果的大小。</p>
+]]></content>
+  </entry>
+  
+</feed>

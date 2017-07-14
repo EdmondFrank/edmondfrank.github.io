@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/07/14/you-tong-ji-xue-de-yi-xie-bi-ji/</loc>
+<lastmod>2017-07-14T13:22:09+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/</loc>
 <lastmod>2017-07-03T12:18:45+08:00</lastmod>
 </url>
@@ -313,6 +317,9 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/bei-xie-si-python-suan-fa/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/tong-ji-xue-xi-bi-ji/</loc>
 </url>
 <url>
 <loc>http://edmondfrank.github.io/posts/2/</loc>

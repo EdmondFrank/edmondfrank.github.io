@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby,linux,编程 | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/ruby-linux-bian-cheng/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:32:52+08:00</updated>
+  <updated>2017-07-14T13:23:10+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -55,7 +55,7 @@ end
 
 <p>界面效果如下:</p>
 
-<p>　{% img /images/shoes4.png %}</p>
+<p>　<img src="/images/shoes4.png"></p>
 
 <hr />
 ]]></content>

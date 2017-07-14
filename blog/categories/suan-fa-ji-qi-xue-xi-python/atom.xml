@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法,机器学习,python | EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/blog/categories/suan-fa-ji-qi-xue-xi-python/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-03T12:32:52+08:00</updated>
+  <updated>2017-07-14T13:23:10+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -155,7 +155,7 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
         plotBestFit(a,b)
 </code></pre>
 
-<p>{% img /images/pca.png %}</p>
+<p><img src="/images/pca.png"></p>
 ]]></content>
   </entry>
   
