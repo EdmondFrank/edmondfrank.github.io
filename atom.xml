@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-14T13:23:10+08:00</updated>
+  <updated>2017-07-19T19:22:15+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,511 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python科学计算库NumPy的使用]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/"/>
+    <updated>2017-07-19T19:10:49+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong</id>
+    <content type="html"><![CDATA[<h1>Python科学计算库NumPy的使用</h1>
+
+<h2>NumPy的介绍</h2>
+
+<p>NumPy(Numerical Python的缩写)是一个开源的Python科学计算库。使用NumPy,就可以很自然地使用数组和矩阵。NumPy包含很多实用的数学函数,涵盖线性代数运算、傅里叶变换和随机数生成等功能。如果你的系统中已经装有LAPACK,NumPy的线性代数模块会调用它,否则NumPy将使用自己实现的库函数。LAPACK是一个著名的数值计算库,最初是用Fortran写成的,Matlab同样也需要调用它。从某种意义上讲,NumPy可以取代Matlab和Mathematica的部分功能,并且允许用户进行快速的交互式原型设计。</p>
+
+<h2>NumPy的数组对象</h2>
+
+<p>ndarray是一个多维数组对象，该对象由实际数据+描述性元数据组成。
+使用Numpy需要先安装和导入NumPy库，有关安装教程可以参考<a href="https://docs.scipy.org/doc/numpy/user/install.html">Installing NumPy</a></p>
+
+<blockquote><p>导入语法：import numpy as np</p></blockquote>
+
+<p>此处使用np为别名是为了避免命名空间被污染。</p>
+
+<p><strong>特点</strong>：</p>
+
+<ol>
+<li>NumPy数组一般是同质（即数组内的元素为相同类型，特殊类型除外）</li>
+<li>NumPy数组的下标也是从0开始</li>
+<li>可以方便地创建高维数组</li>
+</ol>
+
+
+<p><em>eg：</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>5<span class="o">)</span>
+</span><span class='line'>In: a.dtype
+</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;int64&#39;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在32位系统中，得到的结果类型可能是int32。</p>
+
+<p><strong>多维数组的创建</strong>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">m</span> <span class="o">=</span> np.array<span class="o">([</span>np.arange<span class="o">(</span>2<span class="o">)</span>, np.arange<span class="o">(</span>2<span class="o">)])</span>
+</span><span class='line'>In: m
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([[</span>0, 1<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>0, 1<span class="o">]])</span>
+</span><span class='line'>In: m.shape <span class="c">#shape可以输出数组行列（维度）信息</span>
+</span><span class='line'>Out: <span class="o">(</span>2, 2<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>选取数组元素</strong>：
+我们继续沿用上面创建的数组m</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: m<span class="o">[</span>0,0<span class="o">]</span>
+</span><span class='line'>Out: 0
+</span><span class='line'>In: m<span class="o">[</span>0,1<span class="o">]</span>
+</span><span class='line'>Out: 1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>是的,从数组中选取元素就是这么简单。对于数组 a ,只需要用 a[m,n] 选取各数组元素,其中 m 和 n 为元素下标。
+</code></pre>
+
+<p><strong>NumPy的数据类型</strong>:
+    Python支持的数据类型有整型、浮点型以及复数型,但这些类型不足以满足科学计算的需求,因此NumPy添加了很多其他的数据类型。在NumPy中,许多函数的参数中可以指定数据类型,通常这个参数是可选的:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.arange<span class="o">(</span>7, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
+</span><span class='line'>Out: array<span class="o">([</span>0, 1, 2, 3, 4, 5, 6<span class="o">]</span>, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中完整的数据类型可以通过np.sctypeDict.keys()查到：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>dict_keys<span class="o">([</span>0, 1, 2, 3, <span class="s1">&#39;D&#39;</span>, 5, 6, <span class="s1">&#39;ushort&#39;</span>, 8, <span class="s1">&#39;P&#39;</span>, 10, 11, 12, <span class="s1">&#39;uintp&#39;</span>, 14, 15, 16, 17, 18, 19, <span class="s1">&#39;Float16&#39;</span>, 21, 22, 23, <span class="s1">&#39;cfloat&#39;</span>, 4, <span class="s1">&#39;Object0&#39;</span>, <span class="s1">&#39;int32&#39;</span>, <span class="s1">&#39;UInt64&#39;</span>, <span class="s1">&#39;Complex128&#39;</span>, <span class="s1">&#39;uint0&#39;</span>, <span class="s1">&#39;i2&#39;</span>, 7, <span class="s1">&#39;Int16&#39;</span>, <span class="s1">&#39;int&#39;</span>, <span class="s1">&#39;complex&#39;</span>, <span class="s1">&#39;ubyte&#39;</span>, <span class="s1">&#39;Int32&#39;</span>, <span class="s1">&#39;float&#39;</span>, <span class="s1">&#39;i&#39;</span>, <span class="s1">&#39;short&#39;</span>, <span class="s1">&#39;B&#39;</span>, <span class="s1">&#39;str0&#39;</span>, 9, <span class="s1">&#39;complex_&#39;</span>, <span class="s1">&#39;O&#39;</span>, <span class="s1">&#39;long&#39;</span>, <span class="s1">&#39;bytes&#39;</span>, <span class="s1">&#39;float_&#39;</span>, <span class="s1">&#39;Int64&#39;</span>, <span class="s1">&#39;int0&#39;</span>, <span class="s1">&#39;Void0&#39;</span>, <span class="s1">&#39;float128&#39;</span>, <span class="s1">&#39;Float64&#39;</span>, <span class="s1">&#39;Str0&#39;</span>, <span class="s1">&#39;int64&#39;</span>, <span class="s1">&#39;b&#39;</span>, <span class="s1">&#39;longdouble&#39;</span>, <span class="s1">&#39;void&#39;</span>, <span class="s1">&#39;f&#39;</span>, <span class="s1">&#39;longcomplex&#39;</span>, <span class="s1">&#39;ulonglong&#39;</span>, <span class="s1">&#39;intp&#39;</span>, <span class="s1">&#39;UInt32&#39;</span>, <span class="s1">&#39;V&#39;</span>, <span class="s1">&#39;object_&#39;</span>, <span class="s1">&#39;longlong&#39;</span>, <span class="s1">&#39;csingle&#39;</span>, <span class="s1">&#39;uint&#39;</span>, <span class="s1">&#39;c32&#39;</span>, <span class="s1">&#39;M&#39;</span>, <span class="s1">&#39;I&#39;</span>, <span class="s1">&#39;singlecomplex&#39;</span>, <span class="s1">&#39;double&#39;</span>, <span class="s1">&#39;timedelta64&#39;</span>, <span class="s1">&#39;object&#39;</span>, <span class="s1">&#39;unicode_&#39;</span>, <span class="s1">&#39;Float128&#39;</span>, <span class="s1">&#39;uint64&#39;</span>, <span class="s1">&#39;h&#39;</span>, <span class="s1">&#39;str&#39;</span>, <span class="s1">&#39;d&#39;</span>, <span class="s1">&#39;UInt8&#39;</span>, 20, <span class="s1">&#39;complex128&#39;</span>, <span class="s1">&#39;string_&#39;</span>, <span class="s1">&#39;clongfloat&#39;</span>, <span class="s1">&#39;H&#39;</span>, <span class="s1">&#39;m8&#39;</span>, <span class="s1">&#39;clongdouble&#39;</span>, <span class="s1">&#39;S&#39;</span>, <span class="s1">&#39;g&#39;</span>, <span class="s1">&#39;bool_&#39;</span>, <span class="s1">&#39;unicode&#39;</span>, <span class="s1">&#39;f16&#39;</span>, 13, <span class="s1">&#39;int8&#39;</span>, <span class="s1">&#39;void0&#39;</span>, <span class="s1">&#39;L&#39;</span>, <span class="s1">&#39;M8&#39;</span>, <span class="s1">&#39;uint32&#39;</span>, <span class="s1">&#39;p&#39;</span>, <span class="s1">&#39;bytes0&#39;</span>, <span class="s1">&#39;e&#39;</span>, <span class="s1">&#39;datetime64&#39;</span>, <span class="s1">&#39;U&#39;</span>, <span class="s1">&#39;float16&#39;</span>, <span class="s1">&#39;c16&#39;</span>, <span class="s1">&#39;?&#39;</span>, <span class="s1">&#39;Bool&#39;</span>, <span class="s1">&#39;byte&#39;</span>, <span class="s1">&#39;i4&#39;</span>, <span class="s1">&#39;c8&#39;</span>, <span class="s1">&#39;int16&#39;</span>, <span class="s1">&#39;half&#39;</span>, <span class="s1">&#39;uint16&#39;</span>, <span class="s1">&#39;str_&#39;</span>, <span class="s1">&#39;i8&#39;</span>, <span class="s1">&#39;Complex32&#39;</span>, <span class="s1">&#39;Int8&#39;</span>, <span class="s1">&#39;bool&#39;</span>, <span class="s1">&#39;Bytes0&#39;</span>, <span class="s1">&#39;G&#39;</span>, <span class="s1">&#39;l&#39;</span>, <span class="s1">&#39;uint8&#39;</span>, <span class="s1">&#39;f2&#39;</span>, <span class="s1">&#39;single&#39;</span>, <span class="s1">&#39;f8&#39;</span>, <span class="s1">&#39;q&#39;</span>, <span class="s1">&#39;Q&#39;</span>, <span class="s1">&#39;m&#39;</span>, <span class="s1">&#39;Complex64&#39;</span>, <span class="s1">&#39;f4&#39;</span>, <span class="s1">&#39;u2&#39;</span>, <span class="s1">&#39;Float32&#39;</span>, <span class="s1">&#39;i1&#39;</span>, <span class="s1">&#39;u4&#39;</span>, <span class="s1">&#39;Datetime64&#39;</span>, <span class="s1">&#39;intc&#39;</span>, <span class="s1">&#39;float64&#39;</span>, <span class="s1">&#39;a&#39;</span>, <span class="s1">&#39;complex64&#39;</span>, <span class="s1">&#39;u1&#39;</span>, <span class="s1">&#39;bytes_&#39;</span>, <span class="s1">&#39;cdouble&#39;</span>, <span class="s1">&#39;object0&#39;</span>, <span class="s1">&#39;UInt16&#39;</span>, <span class="s1">&#39;bool8&#39;</span>, <span class="s1">&#39;float32&#39;</span>, <span class="s1">&#39;uintc&#39;</span>, <span class="s1">&#39;Timedelta64&#39;</span>, <span class="s1">&#39;F&#39;</span>, <span class="s1">&#39;longfloat&#39;</span>, <span class="s1">&#39;b1&#39;</span>, <span class="s1">&#39;u8&#39;</span>, <span class="s1">&#39;int_&#39;</span>, <span class="s1">&#39;complex256&#39;</span><span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>创建自定义数据类型</strong>：</p>
+
+<p>(1)创建数据类型</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">t</span> <span class="o">=</span> np.dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>,np.str_,128<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;count&#39;</span>,np.int32<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;price&#39;</span>,np.float64<span class="o">)])</span>
+</span><span class='line'>In: t
+</span><span class='line'>Out: dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>, <span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;count&#39;</span>, <span class="s1">&#39;&lt;i4&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;price&#39;</span>, <span class="s1">&#39;&lt;f8&#39;</span><span class="o">)])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)查看数据类型</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: t<span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span>
+</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)使用自定义数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">itemz</span> <span class="o">=</span> np.array<span class="o">([(</span><span class="s1">&#39;Meaning of life DVD&#39;</span>, 42, 3.14<span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)]</span>, <span class="nv">dtype</span><span class="o">=</span>t<span class="o">)</span>
+</span><span class='line'>In: itemz<span class="o">[</span>1<span class="o">]</span>
+</span><span class='line'>Out: <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>一维数组的索引和切片</strong>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>
+</span><span class='line'>In: a<span class="o">[</span>3:7<span class="o">]</span>
+</span><span class='line'>Out: array<span class="o">([</span>3, 4, 5, 6<span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>多维数组索引和切片</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In： <span class="nv">b</span><span class="o">=</span>np.arange<span class="o">(</span>24<span class="o">)</span>.reshape<span class="o">(</span>2,3,4<span class="o">)</span>
+</span><span class='line'>In: b
+</span><span class='line'>Out: array<span class="o">([[[</span> 0,  1,  2,  3<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 4,  5,  6,  7<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 8,  9, 10, 11<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>       <span class="o">[[</span>12, 13, 14, 15<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>16, 17, 18, 19<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>20, 21, 22, 23<span class="o">]]])</span>
+</span><span class='line'>In: b<span class="o">[</span>0,2,1<span class="o">]</span>
+</span><span class='line'>Out: 9-
+</span><span class='line'><span class="c">#我们还可以这样写,选取第0组的所有元素:</span>
+</span><span class='line'>In: b<span class="o">[</span>0,:,:<span class="o">]</span>
+</span><span class='line'>Out: array<span class="o">([[</span>
+</span><span class='line'>0, 1, 2, 3<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>4, 5, 6, 7<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>8, 9,10,11<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>同时，b[0,:,:] == b[0,&hellip;]。</em>
+更多的多维数组的索引和切片操作可以参考<a href="https://docs.scipy.org/doc/numpy/reference/">NumPy使用手册</a></p>
+
+<p><strong>数组展平</strong>:</p>
+
+<p>(1)ravel</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b-
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([[[</span> 0, 1, 2, 3<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]]</span>,
+</span><span class='line'><span class="o">[[</span>12,13,14,15<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]])</span>
+</span><span class='line'>In: b.ravel<span class="o">()</span>
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)flatten</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.flatten<span class="o">()</span>
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>flatten 和 ravel的区别在于：flatten函数会请求分配内存来保存结果，而reval函数只是返回数组的一个视图（view）</p>
+
+<p>(3)改变数组的shape属性</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.shape <span class="o">=</span> <span class="o">(</span>6,4<span class="o">)</span>
+</span><span class='line'>In: b
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,-
+</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>12,13,14,15<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]</span>,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(4)transpose,相当与线性代数的转置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.transpose<span class="o">()</span>
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([[</span> 0, 4, 8,12,16,20<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 1, 5, 9,13,17,21<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 2, 6,10,14,18,22<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 3, 7,11,15,19,23<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(5)resize，功能和reshape相同，但是resize会直接影响原操作数组</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.resize<span class="o">((</span>2,12<span class="o">))</span>
+</span><span class='line'>In: b
+</span><span class='line'>Out:
+</span><span class='line'>array<span class="o">([[</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>12,13,14,15,16,17,18,19,20,21, 22, 23<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>数组组合</strong>：</p>
+
+<p>(1)水平组合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>.reshape<span class="o">(</span>3,3<span class="o">)</span>
+</span><span class='line'>In: <span class="nv">b</span><span class="o">=</span>2*a
+</span><span class='line'>In: np.hstack<span class="o">((</span>a,b<span class="o">))</span>
+</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2,  0,  2,  4<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span> 3,  4,  5,  6,  8, 10<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span> 6,  7,  8, 12, 14, 16<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>同样可以使用concatenate函数实现同样效果</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>1<span class="o">)</span>
+</span><span class='line'>Out: array<span class="o">([[</span> 0, 1, 2, 0, 2, 4<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 3, 4, 5, 6, 8,10<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 6, 7, 8,12,14,16<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)垂直组合</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsta-ck<span class="o">((</span>a,b<span class="o">))</span>
+</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
+</span><span class='line'>   <span class="o">[</span> 3,  4,  5<span class="o">]</span>,
+</span><span class='line'>   <span class="o">[</span> 6,  7,  8<span class="o">]</span>,
+</span><span class='line'>   <span class="o">[</span> 0,  2,  4<span class="o">]</span>,
+</span><span class='line'>   <span class="o">[</span> 6,  8, 10<span class="o">]</span>,
+</span><span class='line'>   <span class="o">[</span>12, 14, 16<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>同样可以使用concatenate函数实现同样效果</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>0<span class="o">)</span>
+</span><span class='line'>Out: In: np.vstack<span class="o">((</span>a,b<span class="o">))</span>
+</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 3,  4,  5<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 6,  7,  8<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 0,  2,  4<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span> 6,  8, 10<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>12, 14, 16<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)深度组合</p>
+
+<p>深度组合,就是将一系列数组沿着纵轴(深度)方向进行层叠组合。举个例子,有若干张二维平面内的图像点阵数据,我们可以将这些图像数据沿纵轴方向层叠在一起,这就形象地解释了什么是深度组合。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dstack<span class="o">((</span>a,b<span class="o">))</span>
+</span><span class='line'>Out: array<span class="o">([[[</span> 0,  0<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 1,  2<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 2,  4<span class="o">]]</span>,
+</span><span class='line'>       <span class="o">[[</span> 3,  6<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 4,  8<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 5, 10<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>       <span class="o">[[</span> 6, 12<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 7, 14<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 8, 16<span class="o">]]])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(4)列组合,column_stack 函数对于一维数组将按列方向进行组合,而对于二维数组, column_stack 与 hstack 的效果是相同的</p>
+
+<p>(5)行组合,当然,NumPy中也有按行方向进行组合的函数,它就是 row_stack 。对于两
+个一维数组,将直接层叠起来组合成一个二维数组。同样，对于二维数组，row_stack 与 vstack 的效果是相同的。</p>
+
+<p><strong>数组分割</strong>:</p>
+
+<p>NumPy数组可以进行水平、垂直或深度分割,相关的函数有 hsplit 、 vsplit 、 dsplit 和split 。我们可以将数组分割成相同大小的子数组,也可以指定原数组中需要分割的位置。</p>
+
+<p>(1)水平分割</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: a
+</span><span class='line'>Out: array<span class="o">([[</span>0, 1, 2<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span>3, 4, 5<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span>6, 7, 8<span class="o">]])</span>
+</span><span class='line'>In: np.hsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#沿水平方向分割成三个大小相同的子数组</span>
+</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[</span>0<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>3<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>6<span class="o">]])</span>, array<span class="o">([[</span>1<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>4<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>7<span class="o">]])</span>, array<span class="o">([[</span>2<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>5<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>8<span class="o">]])]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)垂直分割</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#在垂直方向上分割成三个大小相同的子数组</span>
+</span><span class='line'>Out： <span class="o">[</span>array<span class="o">([[</span>0, 1, 2<span class="o">]])</span>, array<span class="o">([[</span>3, 4, 5<span class="o">]])</span>, array<span class="o">([[</span>6, 7, 8<span class="o">]])]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)深度分割,dsplit函数将按深度方向分割数组。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dsplit<span class="o">(</span>np.arange<span class="o">(</span>27<span class="o">)</span>.reshape<span class="o">(</span>3,3,3<span class="o">)</span>,3<span class="o">)</span>
+</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[[</span> 0<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 3<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 6<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span> 9<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>12<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>15<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span>18<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>21<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>24<span class="o">]]])</span>, array<span class="o">([[[</span> 1<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 4<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 7<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span>10<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>13<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>16<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span>19<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>22<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>25<span class="o">]]])</span>, array<span class="o">([[[</span> 2<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 5<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span> 8<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span>11<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>14<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>17<span class="o">]]</span>,
+</span><span class='line'>
+</span><span class='line'>        <span class="o">[[</span>20<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>23<span class="o">]</span>,
+</span><span class='line'>         <span class="o">[</span>26<span class="o">]]])]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>同时，hsplit,vsplit同样也可以用函数split来实现，其使用就像上面的数组组合函数concatenate类似</em></p>
+
+<p><strong>到此，NumPy的常规的数组操作基本就结束了！</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[有统计学的一些笔记]]></title>
@@ -3741,140 +4246,6 @@ i = 4 and j = 9 <br/>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[(转)Linux On Android——在Android手机上跑Linux教程]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/"/>
-    <updated>2016-08-21T17:15:20+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng</id>
-    <content type="html"><![CDATA[<h2>(转)Linux On Android——在Android手机上跑Linux教程(以Ubuntu14.04-core为例）</h2>
-
-<p>前言</p>
-
-<p>Android 是基于 Linux 内核的开源操作系统，主要用在移动设备上。当然同样是基于 Linux 内核的操作系统，现在支持的 Android 的智能手机理论来说都能运行基于 Linux 的操作系统，比如现在流行的发行版：Ubuntu、Fedora 等等。不仅如此，现在的智能移动设备的硬件也越来越强，更为能运行 Linux 系统提供了良好的硬件支持。今天就带大家来尝试一下在 Android 手机上安装 Ubuntu14.04操作系统。
-有关说明:</p>
-
-<ul>
-<li><strong>原帖点<a href="http://www.jianshu.com/p/3c5f792bca1f">这里</a></strong></li>
-<li><strong>注:ubuntu14.04-core类似于Ubuntu系列的服务器版本,想使用图形界面的朋友可以在系统安装完成后,自行下载Ubuntu的图形界面(KDE,GNOME,XFCE或LXDE,而在图形界面方面博主较为推荐LXDE,轻便,简捷,占用资源及空间较少.但是用户友好度不高,适合低配低容量手机(装在SD卡的读者可以无视这个建议!))</strong></li>
-<li><strong>想用图形界面,但又怕安装图形界面麻烦的读者可以直接安装Ubuntu12.04-Full,更多其他linux发行版可以在sourceforge.net的LinuxonAndroid目录列表中查询,详情可以继续往下阅读.</strong></li>
-</ul>
-
-
-<h3>配置要求</h3>
-
-<ul>
-<li><strong>设备需要 root 权限(重点,没有root的手机以下的关键操作基本都无法执行)，并且安装了 BusyBox</strong></li>
-<li>最小 1GHz 处理器(推荐)</li>
-<li>Android 系统版本 2.1 或以上</li>
-<li>手机容量,一般有张4GB的SD卡就够了(其他像kali的映像(至少5G)除外) (安装full映像需要3.5GB,small映像需要2G,core映像则只需要1G)</li>
-<li>支持 Ext2 文件系统(大部分 Android 设备应该都支持)</li>
-</ul>
-
-
-<h3>博主设备</h3>
-
-<ul>
-<li>手机型号:lenvon A5500</li>
-<li>处理器主频:1.6GHz</li>
-<li>无SD卡(由于博主装的是core版,使用1G的机身空余容量即可)</li>
-<li>Android版本:5.0</li>
-</ul>
-
-
-<h3>需要的软件(此处清单基本照抄原帖主)</h3>
-
-<ul>
-<li><a href="https://play.google.com/store/apps/details?id=jackpal.androidterm">Android Terminal Emulator (终端模拟器)</a> ：用于运行 shell 脚本</li>
-<li><a href="https://play.google.com/store/apps/details?id=stericson.busybox">BusyBox</a> ：用于提供 shell 命令的支持</li>
-<li><a href="https://play.google.com/store/apps/details?id=android.androidVNC">Android VNC Viewer</a>：用于 Android 设备的远程连接工具</li>
-<li><a href="http://sourceforge.net/projects/linuxonandroid/files/">Ubuntu 14.04-core的映像文件</a>：用于安装 Ubuntu 的映像文件(该网站中有很多 Linux 发行版，大家也可以尝试其他发行版)</li>
-<li>ubuntu.sh：Ubuntu 的安装脚本
-
-<ul>
-<li>链接：<a href="http://pan.baidu.com/s/1hqgVxvY">http://pan.baidu.com/s/1hqgVxvY</a> 密码：o0xa</li>
-</ul>
-</li>
-<li>bootscript.sh：Ubuntu 的启动脚本
-
-<ul>
-<li>链接：<a href="http://pan.baidu.com/s/1pJkeSkF">http://pan.baidu.com/s/1pJkeSkF</a> 密码：whfe</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>开始安装</h2>
-
-<h3>0. 取得 ROOT 权限</h3>
-
-<p>首先您的手机需要 root，也就是能够获得root权限去操作，相当于越狱。不懂的可以去 Google 一下“Android获取root权限”。root是前提，所以先要把这个做好，不过现在很多ROM都做的很好，比如MIUI就有很好的权限管理。</p>
-
-<h3>1. 安装文件下载</h3>
-
-<p>首先就是下载必要的文件，这个是在 sourceforge.net 上的一个叫 Linux-on-Android 的项目。
-我上面给的地址中有一般三个包可供下载(Ubuntu14.04除外,目前只有core版)：</p>
-
-<p>其实下面就有英文的介绍，我就在这里简单介绍一下：</p>
-
-<blockquote><p>   full 映像包含了完整的 Ubuntu 系统，其中包括 Unity 桌面，还有很多如GIMP等常用软件，非常齐全。需要 3.5G 以上空间。</p>
-
-<p>   small 映像包含了的基本的 Ubuntu 系统，其中包括 LXDE 桌面，需要 2G 以上空间。</p>
-
-<p>   core 映像包含了基础的 Ubuntu 系统，不过这个没有GUI的，也就是没有桌面只有命令行。</p></blockquote>
-
-<p>下载完待安装的 Ubuntu 14.04-core 的映像文件，然后我们安装还需要安装脚本，也就是上面说的 ubuntu.sh ，还有安装后的启动脚本 bootscript.sh 。有了这些文件后我们在手机的根目录，新建一个文件夹取名为 ubuntu ，然后把这里我们刚才下载好的文件放到这个文件夹里面，到这里 ubuntu 文件夹里就分别有 ubuntu.img、ubuntu.sh、bootcript.sh 这三个文件了。</p>
-
-<p><strong>注:由于原帖主安装的是Ubuntu12.04,文件系统才用的是ext2,而此处我们要安装的是Ubuntu14.04-core所以两个脚本文件的内容有些许的出入,大家用编辑器将两个.sh文件打开,用搜索替换功能将脚本里面的"ext2"替换成"ext4"保存退出即可.</strong></p>
-
-<h2>安装软件(此处照搬原帖,博主懒得码字了&hellip;)</h2>
-
-<p>首先需要的是 Terminal 这个软件，也就是一个终端，通过终端我们可以用来执行很多命令和脚本。上面我给出了Google Play的地址，这个在很多地方都有的下的，还有Android VNC Viewer也可以在 Google Play 里面找到安装。</p>
-
-<p>在这里我要说一下 BusyBox，它使得你可以在 Terminal 中运行很多命令，现在很多 Android 的 Rom (我用的MIUI_v4_2.8.10也是) 的终端中很多命令都不能运行，比如 cp、mv、cut 等，但是这些都是我们脚本里面需要用到的，如果不能运行这些命令而执行脚本的话，会提示 **: not found 这样的提示。所以安装 BusyBox 可以使得这些命令都能够在终端里面执行。如果你的Rom本来够强大已经包含了BusyBox的新版本，能够运行基本的shell命令的话，那也可以不用装这个。</p>
-
-<p>当然安装 BusyBox 以及后面我们在 Terminal 中都需要 root 权限，如果是MIUI系统的话则可以直接在 授权管理 > ROOT权限管理 里面打开该选项，然后需要root权限的时候允许就可以了。其他的系统我没用过，不过可以直接用 一键ROOT工具 来操作。</p>
-
-<p>安装 BusyBox，安装好后，打开BusyBox点击 Install 开始安装，如果弹出需要ROOT权限，点下一步允许就行!</p>
-
-<h2>安装 ubuntu 14.04-core</h2>
-
-<p>首先，打开 终端模拟器(Terminal) ，在光标处输入 “cd /ubuntu”(不包括引号，注意cd后有空格)然后回车，这样就来到了刚才我们在SD卡里面新建的目录了.</p>
-
-<p>接下来我们就要开始运行 ubuntu.sh 这个安装脚本了，但在这之前我们需要使用 root 用户来运行这个脚本，在终端中使用命令 “su” 来切换至 root 用户权限，如果弹出授权信息点击下一步允许就行了，或者直接用 一键ROOT 来开启终端重复上面操作，成功后如图之前的“$”变成了“#”，这就说明已经获得Root权限了</p>
-
-<p>然后运行安装脚本，输入命令 “sh ubuntu.sh”，进行安装</p>
-
-<p>然后脚本为你建立了一个名字为“ubuntu”的帐号，这里提示你需要为你的帐号设置一个密码，这个密码会在以后你操作 Ubuntu 的时候一些授权应用到，比如我在这里设置密码为：“ubuntu”，这里注意的是在终端里面输入密码是不会显示出来的，你看见光标没有动静，但实际上你已经输入进去了。回车后提示再次输入密码以保证你两次密码一样</p>
-
-<p>密码设置完成后，提示是否启动VNC服务和SSH服务，我们只要输入“y”然后回车，开启了这两个服务后我们才能通过远程连接来连上系统</p>
-
-<p>然后提示我们输入设备屏幕的尺寸，我的屏幕是1280x800的，所以我输入“1280x800”（小米手机注意：小米手机是854×480的，但是后面用Android VNC 连接的时候有问题，在右边会显示一条线，所以小米手机用户最好设置成“852×480”，其他手机没有测试过，在设置的时候请注意！）。注意：这里两个数字之间的不是乘号，而是字母“xyz”的“x”，输错了不能远程连接的.</p>
-
-<p>然后，提示是否保存你刚才的设置为默认设置，只要输入“y”即可</p>
-
-<p>然后你就可以看到操作完成后光标前的字符变成了“root@localhost:~#”，这样说明你已经成功进入ubuntu系统中了.</p>
-
-<h2>远程桌面连接</h2>
-
-<p>自行查询VNC的使用说明,在此博主不再赘述.
-连接ip:localhost:5900(其中":5900",可填可不填)
-密码:ubuntu</p>
-
-<h2>退出 Ubuntu 系统</h2>
-
-<p>只需要回到刚才我们运行的终端，输入命令 “exit” 回车，等待片刻即可退出 Ubuntu 系统，再次输入 “exit” 回车 则是退出手机终端的 root 用户权限，然后再次 “exit” 回车后则是退出手机终端，这样就完全退出了</p>
-
-<h2>下次启动</h2>
-
-<p>下次启动的时候只需要开启 终端，然后输入 “su” 获得 root 权限，再输入 “cd /ubuntu” 来到ubuntu文件夹下，然后在输入 “sh bootscript.sh” 运行启动脚本就可以运行启动 Ubuntu 了，需要连接桌面的话按照上面说的用 Android VNC 就可以了。</p>
-
-<p><strong>(其实对于一个服务器系统来说,博主更推荐使用ssh连接来代替VNC连接)</strong></p>
-
-<p>最后补一张最终效果图(此处博主已经自行安装了LXDE桌面环境):
-<img src="http://edmondfrank.github.io/images/ubuntu.jpg"></p>
 ]]></content>
   </entry>
   
