@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-07-19T19:22:15+08:00</updated>
+  <updated>2017-07-24T16:19:41+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,128 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scala概率编程语言库-Figaro介绍]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/"/>
+    <updated>2017-07-24T16:15:49+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao</id>
+    <content type="html"><![CDATA[<h1>Scala 的概率编程语言库-Figaro</h1>
+
+<h2>什么是概率编程？</h2>
+
+<p><strong>概率编程</strong>是一种系统创建方法，它所创建的系统能够帮助我们在面对不确定性时作出决策。</p>
+
+<h2>为什么使用概率编程？</h2>
+
+<p>概率推理是机器学习的基础技术之一。Google,Amazon和Microsoft等公司使用它理解可用数据。概率推理已经应用于各种各样的应用程序，如预测股价，推荐电影，诊断计算机和检测网络入侵。</p>
+
+<ul>
+<li>概率推理可用于预测未来，推断过去，以及从过去的事实中学习更好地预测未来。</li>
+<li>概率编程是使用图灵完备的编程语言作为表示语言的概率编程。</li>
+</ul>
+
+
+<p><strong>事实上：</strong>概率推理 + 图灵完备 = 概率编程</p>
+
+<h2>Figaro的简介</h2>
+
+<p>Figaro是一个内嵌于Scala编程语言的概率编程系统。除了继承了Scala的良好特性外，Figaro还提供了相当多的额外的优势，包括：</p>
+
+<ul>
+<li>Figaro能够表示及其广泛的概率模型。Figaro元素的值可以为任何类型，包括布尔型，整数，双精度数，数组，树，图等。</li>
+<li>Figaro提供了使用其条件和约束规定证据的丰富框架</li>
+<li>Figaro有多种多样的推理算法</li>
+<li>Figaro能够表示和推理随时间变化的的动态模型</li>
+<li>Figaro能够在其模型中包含明确决策，并支持最优决策的推断。</li>
+</ul>
+
+
+<h2>简单示例-量化“你好，世界”</h2>
+
+<p>图片截取自<a href="http://www.epubit.com.cn/book/details/4366">《概率编程实战》</a> 表 1-1
+<img src="http://edmondfrank.github.io/images/figaro.jpg"></p>
+
+<p><strong>代码实现：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">mport</span> <span class="n">com</span><span class="o">.</span><span class="n">cra</span><span class="o">.</span><span class="n">figaro</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="k">_</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.library.compound.If</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.algorithm.factored.VariableElimination</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Main</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyToday</span> <span class="k">=</span> <span class="nc">Flip</span><span class="o">(</span><span class="mf">0.2</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingToday</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;Howdy universe&quot;</span><span class="o">),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.2</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.8</span><span class="o">-&gt;</span> <span class="s">&quot;no not again!&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.8</span><span class="o">)</span> <span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.05</span><span class="o">))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyTomorrow</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;Howdy universe&quot;</span><span class="o">),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;no not again&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">predict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingToday</span><span class="o">,</span><span class="s">&quot;Hello World&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Today&#39;s greeting is \&quot;Hello World!\&quot; &quot;</span><span class="o">+</span><span class="s">&quot; with probability &quot;</span><span class="o">+</span> <span class="n">result</span> <span class="o">+</span><span class="s">&quot;.&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">infer</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="s">&quot;Hello World&quot;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&#39;s greeting is $greeting with probability $result.&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">learnAndPredict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="s">&quot;Hello World&quot;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingTomorrow</span><span class="o">,</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&#39;s greeting is $greeting,tomorrow&#39;s greeting will be $greeting\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="n">s</span><span class="s">&quot;with probability $result.&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">predict</span>
+</span><span class='line'>    <span class="n">infer</span>
+</span><span class='line'>    <span class="n">learnAndPredict</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python科学计算库NumPy的使用]]></title>
@@ -4170,81 +4292,6 @@ i = 4 and j = 9 <br/>
 </span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">%03o&quot;</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我的算法天梯之路之-最大子阵列]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/"/>
-    <updated>2016-09-01T17:51:01+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie</id>
-    <content type="html"><![CDATA[<h2>我的算法天梯之路之-最大子阵列</h2>
-
-<blockquote><p>在一个数组中找出和最大的连续几个数。（至少包含一个数）<br/>
-例如：<br/>
-数组A[] = [−2, 1, −3, 4, −1, 2, 1, −5, 4]，则连续的子序列[4,−1,2,1]有最大的和6.<br/>
-输入格式<br/>
-第一行输入一个不超过1000的整数n。<br/>
-第二行输入n个整数A[i]。<br/>
-输出格式<br/>
-第一行输出一个整数，表示最大的和。<br/></p></blockquote>
-
-<p><strong>样例输入</strong></p>
-
-<blockquote><p>3<br/>
-1 1 -2<br/>
-<strong>样例输出</strong>
-<br/>
-2<br/></p></blockquote>
-
-<p><strong>示例代码</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'> <span class="cp">#define N 1001</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">maxsum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">n</span><span class="p">){</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="n">b</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="k">else</span> <span class="n">b</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="o">&gt;</span><span class="n">sum</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">sum</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="n">maxsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">n</span><span class="p">));</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>

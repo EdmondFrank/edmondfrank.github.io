@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: scala,figaro,概率编程 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/scala-figaro-gai-lu-bian-cheng/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-07-24T16:19:41+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Scala概率编程语言库-Figaro介绍]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/"/>
+    <updated>2017-07-24T16:15:49+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao</id>
+    <content type="html"><![CDATA[<h1>Scala 的概率编程语言库-Figaro</h1>
+
+<h2>什么是概率编程？</h2>
+
+<p><strong>概率编程</strong>是一种系统创建方法，它所创建的系统能够帮助我们在面对不确定性时作出决策。</p>
+
+<h2>为什么使用概率编程？</h2>
+
+<p>概率推理是机器学习的基础技术之一。Google,Amazon和Microsoft等公司使用它理解可用数据。概率推理已经应用于各种各样的应用程序，如预测股价，推荐电影，诊断计算机和检测网络入侵。</p>
+
+<ul>
+<li>概率推理可用于预测未来，推断过去，以及从过去的事实中学习更好地预测未来。</li>
+<li>概率编程是使用图灵完备的编程语言作为表示语言的概率编程。</li>
+</ul>
+
+
+<p><strong>事实上：</strong>概率推理 + 图灵完备 = 概率编程</p>
+
+<h2>Figaro的简介</h2>
+
+<p>Figaro是一个内嵌于Scala编程语言的概率编程系统。除了继承了Scala的良好特性外，Figaro还提供了相当多的额外的优势，包括：</p>
+
+<ul>
+<li>Figaro能够表示及其广泛的概率模型。Figaro元素的值可以为任何类型，包括布尔型，整数，双精度数，数组，树，图等。</li>
+<li>Figaro提供了使用其条件和约束规定证据的丰富框架</li>
+<li>Figaro有多种多样的推理算法</li>
+<li>Figaro能够表示和推理随时间变化的的动态模型</li>
+<li>Figaro能够在其模型中包含明确决策，并支持最优决策的推断。</li>
+</ul>
+
+
+<h2>简单示例-量化“你好，世界”</h2>
+
+<p>图片截取自<a href="http://www.epubit.com.cn/book/details/4366">《概率编程实战》</a> 表 1-1
+<img src="/images/figaro.jpg"></p>
+
+<p><strong>代码实现：</strong>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">mport</span> <span class="n">com</span><span class="o">.</span><span class="n">cra</span><span class="o">.</span><span class="n">figaro</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="k">_</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.library.compound.If</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.algorithm.factored.VariableElimination</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">Main</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyToday</span> <span class="k">=</span> <span class="nc">Flip</span><span class="o">(</span><span class="mf">0.2</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingToday</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Howdy</span> <span class="n">universe</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.2</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.8</span><span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">no</span> <span class="n">not</span> <span class="n">again</span><span class="o">!&amp;</span><span class="n">rdquo</span><span class="o">;))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.8</span><span class="o">)</span> <span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.05</span><span class="o">))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyTomorrow</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Howdy</span> <span class="n">universe</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">no</span> <span class="n">not</span> <span class="n">again</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;))</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">predict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingToday</span><span class="o">,&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Today</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="o">;</span><span class="n">s</span> <span class="n">greeting</span> <span class="n">is</span> <span class="o">\</span><span class="s">&quot;Hello World!\&amp;rdquo; &amp;ldquo;+&amp;rdquo; with probability &amp;ldquo;+ result +&amp;rdquo;.&amp;ldquo;)</span>
+</span><span class='line'><span class="s">  }</span>
+</span><span class='line'><span class="s">  def infer: Unit = {</span>
+</span><span class='line'><span class="s">    val greeting = &quot;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&amp;rsquo;s greeting is $greeting with probability $result.&amp;ldquo;)</span>
+</span><span class='line'><span class="s">  }</span>
+</span><span class='line'><span class="s">  def learnAndPredict: Unit ={</span>
+</span><span class='line'><span class="s">    val greeting = &quot;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingTomorrow</span><span class="o">,</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&amp;rsquo;s greeting is $greeting,tomorrow&amp;rsquo;s greeting will be $greeting\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="n">s</span><span class="err">&quot;</span><span class="k">with</span> <span class="n">probability</span> <span class="nc">$result</span><span class="o">.&amp;</span><span class="n">ldquo</span><span class="o">;)</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">predict</span>
+</span><span class='line'>    <span class="n">infer</span>
+</span><span class='line'>    <span class="n">learnAndPredict</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
+  
+</feed>

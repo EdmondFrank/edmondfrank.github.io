@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/</loc>
+<lastmod>2017-07-24T16:15:49+08:00</lastmod>
+</url>
+<url>
 <loc>http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/</loc>
 <lastmod>2017-07-19T19:10:49+08:00</lastmod>
 </url>
@@ -327,6 +331,9 @@
 </url>
 <url>
 <loc>http://edmondfrank.github.io/blog/categories/python-numpy-xue-xi/</loc>
+</url>
+<url>
+<loc>http://edmondfrank.github.io/blog/categories/scala-figaro-gai-lu-bian-cheng/</loc>
 </url>
 <url>
 <loc>http://edmondfrank.github.io/posts/2/</loc>
