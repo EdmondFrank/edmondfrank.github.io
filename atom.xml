@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-08-15T00:15:36+08:00</updated>
+  <updated>2017-08-23T12:21:44+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,226 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[K-近邻算法-Part2]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
+    <updated>2017-08-23T12:19:17+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
+    <content type="html"><![CDATA[<h1>K-近邻算法-Part2</h1>
+
+<h2>使用交叉验证来调整k值</h2>
+
+<p>通常来说,一个最优的KNN模型其k参数所对应的预估错误率应该是最低的。因此，在选定模型k值的时候应该反复尝试不同的k值在预估上的效果，对比其错误率。初学者在这里为了降低模型的误差通常会将全部样本数据也作为训练集一起代入模型进行训练。虽然这种做法在训练时确实能够有效降低误差，对现有数据进行更好的拟合。但是，同时带来的后果是：我们会将数据的各种无法避免的真实误差，如测量误差，抽样误差等也训练进了我们的模型之中，使得训练出来的模型在新数据或未知数据上的预估效果特别差，这种现象也被称为<strong>过拟合（overfitting）</strong>。</p>
+
+<p>为了降低预估的错误率以及避免过拟合现象的发生，我们可以在某种意义下将<strong>原始数据(dataset)</strong>进行分组,一部分做为<strong>训练集(train set)</strong>,另一部分做为<strong>验证集(validation set or test set)</strong>，首先用训练集对分类器进行训练,再利用验证集来测试训练得到的<strong>模型(model)</strong>,以此来做为评价分类器的性能指标。这种方法也就是所谓的<strong>交叉验证（Cross Validation）</strong>。</p>
+
+<p>而在交叉验证中，<strong>K折交叉验证（k-fold cross validation）</strong>是比较常用的。其主要思想是：初始采样分割成K个子样本，一个单独的子样本被保留作为验证模型的数据，其他K-1个样本用来训练。交叉验证重复K次，每个子样本验证一次，平均K次的结果或者使用其它结合方式，最终得到一个单一估测。这个方法的优势在于，同时重复运用随机产生的子样本进行训练和验证，每次的结果验证一次，10折交叉验证是最常用的。</p>
+
+<p><img src="https://kevinzakka.github.io/assets/k_fold_cv.jpg" alt="enter image description here" /></p>
+
+<p>为了更好的理解k折交叉验证，我们继续沿用part1部分的训练数据，使用10折交叉验证的方法来调整我们的k值。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+</span><span class='line'><span class="c"># creating odd list of K for KNN</span>
+</span><span class='line'><span class="n">myList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># subsetting just the odd ones</span>
+</span><span class='line'><span class="n">neighbors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">myList</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># empty list that will hold cv scores</span>
+</span><span class='line'><span class="n">cv_scores</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># perform 10-fold cross validation</span>
+</span><span class='line'><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">knn</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s">&#39;accuracy&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">cv_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># changing to misclassification error</span>
+</span><span class='line'><span class="n">MSE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_scores</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># determining best k</span>
+</span><span class='line'><span class="n">optimal_k</span> <span class="o">=</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">MSE</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">MSE</span><span class="p">))]</span>
+</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&quot;The optimal number of neighbors is </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">optimal_k</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># plot misclassification error vs k</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">neighbors</span><span class="p">,</span> <span class="n">MSE</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Number of Neighbors K&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Misclassification Error&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的程序中，我们在1-50的奇数中选取k值，并根据k值训练模型进行预估验证。最后根据不同k值训练出去的模型的<strong>均方误差（Mean Squared Error, MSE）</strong>作出折线图，并求出使得MSE最小的最优k值。</p>
+
+<blockquote><p>输出结果:</p>
+
+<p>The optimal number of neighbors is 7
+<img src="https://kevinzakka.github.io/assets/cv_knn.png" alt="enter image description here" /></p></blockquote>
+
+<p>由此我们可以得出：在这个模型中，10折交叉验证告诉我们最优的k值是7。</p>
+
+<h2>尝试自己实现KNN算法</h2>
+
+<p>到目前为止，我们都是调用sklearn库中的KNN来完成分类任务。那么，下面我们来尝试自己实现一个简单的KNN算法并用它来分类我们之前的数据。</p>
+
+<p>经过上一篇文章的介绍，我们可以知道KNN算法的关键是计算出新的<strong>待分类数据</strong>与现有的样本数据的<strong>“距离”</strong>，而其中较为常用的还是<strong>欧式距离（euclidean distance ）</strong>。然后提取出k个最相邻的点，并根据他们大多数点的分类属性来给待分类点进行归类。</p>
+
+<p>因此核心计算代码我们可以这样写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>  <span class="c"># create list for distances and targets</span>
+</span><span class='line'>  <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)):</span>
+</span><span class='line'>      <span class="c"># first we compute the euclidean distance</span>
+</span><span class='line'>      <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x_test</span> <span class="o">-</span> <span class="n">X_train</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])))</span>
+</span><span class='line'>      <span class="c"># add it to list of distances</span>
+</span><span class='line'>      <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">distance</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># sort the list</span>
+</span><span class='line'>  <span class="n">distances</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># make a list of the k neighbors&#39; targets</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">index</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># return most common target</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中，我们首先创建一个保存距离的数组，并在存储完计算出的待测点与各样本点的距离后对数组进行升序排列，然后取出前k个最接近待测点的样本点，返回其出现最多的分类标签。</p>
+
+<p>然后接下来让我继续完成整个KNN算法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">kNearestNeighbor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># loop over all observations</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">)):</span>
+</span><span class='line'>      <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">k</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用我们上面得出最优的 k = 7作为参数生成模型并进行预估。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># making our predictions </span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">kNearestNeighbor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform the list into an array</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="c">#print(y_test,predictions)</span>
+</span><span class='line'><span class="c"># evaluating accuracy</span>
+</span><span class='line'><span class="c">#for i in range(predictions.size):</span>
+</span><span class='line'><span class="c">#    print(predictions.tolist()[i],list(y_test)[i])</span>
+</span><span class='line'><span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">The accuracy of our classifier is </span><span class="si">%d%%</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">accuracy</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>输出结果：
+The accuracy of our classifier is 98%</p></blockquote>
+
+<p>到此，我们基本已经完成了一个类似于sklearn库中的KNN算法了，并且还有不错的准确率。</p>
+
+<h2>小结</h2>
+
+<p>最后，KNN算法介绍性文章到这就结束了。我们来总结一下KNN算法的优点与不足。</p>
+
+<h4>优点</h4>
+
+<ul>
+<li>易于理解</li>
+<li>无需训练</li>
+<li>容易迁移至多分类情况</li>
+</ul>
+
+
+<h4>不足</h4>
+
+<ul>
+<li>计算量大，时间复杂度随数据规模增大而增大</li>
+<li>分类情况容易受高频分类影响</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[K-近邻算法-Part1]]></title>
@@ -4490,149 +4710,6 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
 <blockquote><p>gcc -o win ./win.c -L/usr/lib -lX11</p></blockquote>
 
 <p><strong>That is All</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2016-10-12:天翼校园网客户端登录协议更新]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/"/>
-    <updated>2016-10-12T22:14:07+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin</id>
-    <content type="html"><![CDATA[<h2>天翼校园网客户端登录协议更新</h2>
-
-<p><strong>PS:此登录协议仅供参考,未必适合所有高校.</strong>
-<strong>本项目源码不遵循任何协议,各位可以随意下载及修改,但请勿用作非法 or 商业用途!</strong></p>
-
-<h3>主要变化</h3>
-
-<p><strong><a href="https://github.com/EdmondFrank/Esurfing">原登录协议</a> 步骤为:challange -> 获取rescode -> login,现登录协议取消了rescode认证,因此可以省略challange可以直接login</strong></p>
-
-<h3>登录协议主要源码如下:</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#coding:utf-8</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;digest/md5&#39;</span>
-</span><span class='line'><span class="n">body</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;./config.json&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">config</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-</span><span class='line'><span class="n">username</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="n">password</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="n">clientip</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s2">&quot;clientip&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="n">nasip</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s2">&quot;nasip&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="n">mac</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s2">&quot;mac&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="n">iswifi</span><span class="o">=</span><span class="s2">&quot;1050&quot;</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">return</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_i</span><span class="o">.</span><span class="n">to_s</span><span class="o">+</span><span class="s1">&#39;444&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">get_md5</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span>  <span class="no">Digest</span><span class="o">::</span><span class="no">MD5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">str</span><span class="o">+</span><span class="s1">&#39;Eshore!@#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upcase</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">timestamp</span> <span class="o">=</span> <span class="n">get_timestamp</span>
-</span><span class='line'>  <span class="n">authenticator</span><span class="o">=</span> <span class="n">get_md5</span><span class="p">(</span><span class="n">clientip</span><span class="o">+</span><span class="n">nasip</span><span class="o">+</span><span class="n">mac</span><span class="o">+</span><span class="n">timestamp</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="n">username</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">,</span><span class="n">timestamp</span><span class="p">,</span><span class="n">authenticator</span>
-</span><span class='line'>  <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://enet.10000.gd.cn:8001/hbservice/client/active?username=</span><span class="si">#{</span><span class="n">username</span><span class="si">}</span><span class="s2">&amp;clientip=</span><span class="si">#{</span><span class="n">clientip</span><span class="si">}</span><span class="s2">&amp;nasip=</span><span class="si">#{</span><span class="n">nasip</span><span class="si">}</span><span class="s2">&amp;mac=</span><span class="si">#{</span><span class="n">mac</span><span class="si">}</span><span class="s2">&amp;timestamp=</span><span class="si">#{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&amp;authenticator=</span><span class="si">#{</span><span class="n">authenticator</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">resp</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-</span><span class='line'>  <span class="c1">#resp = `curl -A &quot;&quot; -H &quot;Accept:&quot; -H &quot;Host:enet.10000.gd.cn:8001&quot; #{url}`</span>
-</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="n">result</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="o">[</span><span class="s2">&quot;rescode&quot;</span><span class="o">].</span><span class="n">to_s</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">,</span><span class="n">iswifi</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://enet.10000.gd.cn:10001/client/login&quot;</span>
-</span><span class='line'>  <span class="n">timestamp</span> <span class="o">=</span>  <span class="n">get_timestamp</span>
-</span><span class='line'>  <span class="n">authenticator</span><span class="o">=</span><span class="n">get_md5</span><span class="p">(</span><span class="n">clientip</span><span class="o">+</span><span class="n">nasip</span><span class="o">+</span><span class="n">mac</span><span class="o">+</span><span class="n">timestamp</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;username&quot;</span><span class="o">]=</span><span class="n">username</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;password&quot;</span><span class="o">]=</span><span class="n">password</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;clientip&quot;</span><span class="o">]=</span><span class="n">clientip</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;nasip&quot;</span><span class="o">]=</span><span class="n">nasip</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;mac&quot;</span><span class="o">]=</span><span class="n">mac</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;timestamp&quot;</span><span class="o">]=</span><span class="n">timestamp</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;authenticator&quot;</span><span class="o">]=</span><span class="n">authenticator</span>
-</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s2">&quot;iswifi&quot;</span><span class="o">]=</span><span class="n">iswifi</span>
-</span><span class='line'>  <span class="n">data</span><span class="o">=</span><span class="n">postdata</span><span class="o">.</span><span class="n">to_json</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="n">headers</span><span class="o">[</span><span class="s2">&quot;Host&quot;</span><span class="o">]=</span><span class="s2">&quot;enet.10000.gd.cn:10001&quot;</span>
-</span><span class='line'>  <span class="n">headers</span><span class="o">[</span><span class="s2">&quot;Content-Length&quot;</span><span class="o">]=</span><span class="n">data</span><span class="o">.</span><span class="n">bytesize</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>  <span class="n">headers</span><span class="o">[</span><span class="s2">&quot;Expect&quot;</span><span class="o">]=</span><span class="s2">&quot;100-continue&quot;</span>
-</span><span class='line'>  <span class="n">headers</span><span class="o">[</span><span class="s2">&quot;Connection&quot;</span><span class="o">]=</span><span class="s2">&quot;Keep-Alive&quot;</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="sb">`curl -d &#39;</span><span class="si">#{</span><span class="n">data</span><span class="si">}</span><span class="sb">&#39; -A &quot;&quot; -H &quot;Accept:&quot; -H &quot;Content-Type:application/json&quot; -H &quot;Host:enet.10000.gd.cn:10001&quot; -H &quot;Content-Length:</span><span class="si">#{</span><span class="n">data</span><span class="o">.</span><span class="n">bytesize</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="sb">&quot; -H &quot;Expect:100-continue&quot; -H &quot;Connection:Keep-Alive&quot; -X POST </span><span class="si">#{</span><span class="n">url</span><span class="si">}</span><span class="sb">`</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">code</span> <span class="o">=</span> <span class="n">active</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">code</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span>
-</span><span class='line'>  <span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">,</span><span class="n">iswifi</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注:源码中才用了curl发送post包,使用前需先确认系统中是否用curl工具.若是改回Ruby的net/http发包请去掉[Expect]=&ldquo;100-continue"头</strong></p>
-
-<p><strong>目前仅提供登录协议供大家参考,有能力者可自行实现完整程序及Gui界面,完整的程序(Cli版本/Gui版本),博主也会后续在我的<a href="https://github.com/EdmondFrank">Github</a>上发布</strong></p>
 ]]></content>
   </entry>
   
