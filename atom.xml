@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T15:05:47+08:00</updated>
+  <updated>2017-09-01T16:01:19+08:00</updated>
   <id>http://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -29,18 +29,18 @@
 
 
 <p>费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小，而不同类间的投影值所形成的类间距离差尽可能大。 <br>
-<img src="https://app.yinxiang.com/shard/s12/res/5e795663-de42-4ad4-806f-a0457f8967a3" alt="" title=""></p>
+<img src="https://i.loli.net/2017/09/01/59a90dda8790e.png" alt="" title=""></p>
 
 
 
 
-<p><img src="https://app.yinxiang.com/shard/s12/res/dece3d38-2882-4581-95d5-1400dbd4347d" alt="enter image description here" title=""></p>
+<p><img src="https://i.loli.net/2017/09/01/59a9136f647d1.png" alt="enter image description here" title=""></p>
 
 
 
 
 <p>这样如果我们想要同类样列的投影点尽可能接近，可以让同类样列投影点的协方差尽可能小，即<script type="math/tex" id="MathJax-Element-1">w^T \left(\sum _0 w\right)+w^T \left(\sum _1 w\right)</script>尽可能小;而欲使异类样列的投影点尽可能远离，可以让类中心之间的距离尽可能大，即<script type="math/tex" id="MathJax-Element-2">\left[\left[u_0 w^T-u_1 w^T\right]\right]</script>尽可能大。同时结合两者我们可以得到欲最大化的目标： <br>
-<img src="https://app.yinxiang.com/shard/s12/res/9123e7b1-dfd8-4c0f-bac2-a75aeeaee3d6" alt="enter image description here" title=""></p>
+<img src="https://i.loli.net/2017/09/01/59a9136f56af9.png" alt="enter image description here" title=""></p>
 
 
 
@@ -50,7 +50,7 @@
 
 
 
-<p><img src="https://app.yinxiang.com/shard/s12/res/9895e937-2172-4874-af44-0a81b8c4acf4" alt="enter image description here" title=""></p>
+<p><img src="https://i.loli.net/2017/09/01/59a9136f635c6.png" alt="enter image description here" title=""></p>
 
 
 
