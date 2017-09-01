@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 机器学习 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Python实现Fisher判别分析]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/"/>
     <updated>2017-08-30T09:06:21+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi</id>
     <content type="html"><![CDATA[<h1 id="python实现fisher-判别分析">Python实现Fisher 判别分析</h1>
 
 
@@ -204,9 +204,9 @@ print(out)
   
   <entry>
     <title type="html"><![CDATA[K-近邻算法-Part2]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
     <updated>2017-08-23T12:19:17+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
     <content type="html"><![CDATA[<h1>K-近邻算法-Part2</h1>
 
 <h2>使用交叉验证来调整k值</h2>
@@ -352,9 +352,9 @@ The accuracy of our classifier is 98%</p></blockquote>
   
   <entry>
     <title type="html"><![CDATA[K-近邻算法-Part1]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/"/>
     <updated>2017-08-14T23:48:56+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1</id>
     <content type="html"><![CDATA[<h1>K-近邻算法-Part1</h1>
 
 <h2>概述</h2>
@@ -648,9 +648,9 @@ print(metrics.accuracy_score(y_test, pred))
   
   <entry>
     <title type="html"><![CDATA[机器学习概述-科普向]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/"/>
     <updated>2017-08-06T23:02:41+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang</id>
     <content type="html"><![CDATA[<h1>机器学习概论-科普篇</h1>
 
 <h2>什么是机器学习？</h2>
@@ -806,9 +806,9 @@ print(metrics.accuracy_score(y_test, pred))
   
   <entry>
     <title type="html"><![CDATA[贝叶斯算法在检测群聊垃圾广告中的应用]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
     <updated>2017-07-03T12:18:45+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
+    <id>https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">

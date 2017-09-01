@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 算法笔记 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/suan-fa-bi-ji/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/suan-fa-bi-ji/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[基于Redis的Bloomfilter]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/"/>
     <updated>2017-05-21T11:05:15+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter</id>
+    <id>https://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -182,9 +182,9 @@
   
   <entry>
     <title type="html"><![CDATA[计算编辑距离(Levenshtein距离)]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/"/>
     <updated>2017-03-22T17:33:02+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi</id>
+    <id>https://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi</id>
     <content type="html"><![CDATA[<h1>计算字符串的相似度（编辑距离）</h1>
 
 <h2>Levenshtein 距离</h2>
@@ -334,9 +334,9 @@ int calcdistance(string str1,string str2)
   
   <entry>
     <title type="html"><![CDATA[我的算法天梯之路之-最大子阵列]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/"/>
     <updated>2016-09-01T17:51:01+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie</id>
+    <id>https://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie</id>
     <content type="html"><![CDATA[<h2>我的算法天梯之路之-最大子阵列</h2>
 
 <blockquote><p>在一个数组中找出和最大的连续几个数。（至少包含一个数）<br/>
@@ -409,9 +409,9 @@ int calcdistance(string str1,string str2)
   
   <entry>
     <title type="html"><![CDATA[我的算法天梯之路之-归并排序]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/"/>
     <updated>2016-08-12T10:44:05+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu</id>
+    <id>https://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu</id>
     <content type="html"><![CDATA[<h2>我的算法天梯之路之-归并排序</h2>
 
 <p>插入排序算法采取增量式(Incremental)的策略解决问题,每次添一个元素到已排序的子序列
@@ -587,9 +587,9 @@ sys 0m0.000s
   
   <entry>
     <title type="html"><![CDATA[我的算法天梯之路之-爬楼梯]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/"/>
     <updated>2016-06-11T11:17:42+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti</id>
+    <id>https://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti</id>
     <content type="html"><![CDATA[<h1>我的算法天梯之路之-爬楼梯</h1>
 
 <p>最近在计蒜客的算法练习题目之中看到了这样一道比较有意思的题目.</p>

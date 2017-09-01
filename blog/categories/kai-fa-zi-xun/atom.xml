@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 开发资讯 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/kai-fa-zi-xun/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/kai-fa-zi-xun/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[中文分词的简介]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
     <updated>2017-02-28T20:23:19+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
+    <id>https://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
     <content type="html"><![CDATA[<h2>中文分词的简介</h2>
 
 <h3>一：中文分词是什么？</h3>
@@ -72,9 +72,9 @@
   
   <entry>
     <title type="html"><![CDATA[大数据下的Hadoop]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
     <updated>2016-12-22T20:00:09+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
+    <id>https://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
     <content type="html"><![CDATA[<h2>大数据下的Hadoop</h2>
 
 <p><strong>(1) 什么是大数据概念？</strong>
@@ -169,9 +169,9 @@ for(int i=0;i&lt;moneys.length;i++){
   
   <entry>
     <title type="html"><![CDATA[Ruby Shoes-优雅轻量GUI之选]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/"/>
     <updated>2016-06-30T20:10:11+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan</id>
+    <id>https://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan</id>
     <content type="html"><![CDATA[<h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
 
 <h2>Shoes简介</h2>
@@ -217,9 +217,9 @@ end
   
   <entry>
     <title type="html"><![CDATA[Electron-用JavaScript来构建跨平台的桌面应用]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/"/>
     <updated>2016-06-16T22:23:37+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong</id>
+    <id>https://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong</id>
     <content type="html"><![CDATA[<h1>Electron - 用JavaScript来构建跨平台的桌面应用</h1>
 
 <p>　　  Electron 框架的前身是 Atom Shell，可以让你写使用 JavaScript，HTML 和 CSS 构建跨平台的桌面应用程序。它是基于io.js 和 Chromium 开源项目，并用于在 Atom 编辑器中。Electron 是开源的，由 GitHub 维护，有一个活跃的社区。最重要的是，Electron 应用服务构建和运行在 Mac，Windows 和 Linux。</p>

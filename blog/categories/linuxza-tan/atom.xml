@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: linux杂谈 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/linuxza-tan/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/linuxza-tan/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[2016-10-12:天翼校园网客户端登录协议更新]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/"/>
     <updated>2016-10-12T22:14:07+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin</id>
+    <id>https://edmondfrank.github.io/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin</id>
     <content type="html"><![CDATA[<h2>天翼校园网客户端登录协议更新</h2>
 
 <p><strong>PS:此登录协议仅供参考,未必适合所有高校.</strong>
@@ -98,9 +98,9 @@ end
   
   <entry>
     <title type="html"><![CDATA[gdb的简单使用]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/08/11/gdbde-jian-dan-shi-yong/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/08/11/gdbde-jian-dan-shi-yong/"/>
     <updated>2016-08-11T14:26:20+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/08/11/gdbde-jian-dan-shi-yong</id>
+    <id>https://edmondfrank.github.io/blog/2016/08/11/gdbde-jian-dan-shi-yong</id>
     <content type="html"><![CDATA[<h2>gdb的简单使用</h2>
 
 <h3>1.单步执行和跟踪函数调用</h3>
@@ -594,9 +594,9 @@ list命令用于列出代码或指定函数,列出的代码行的起始位置为
 </span><span class='line'>  
 </span><span class='line'>  &lt;entry&gt;
 </span><span class='line'>    &lt;title type="html"&gt;&lt;![CDATA[Linux进程内存管理]]&gt;&lt;/title&gt;
-</span><span class='line'>    &lt;link href="http://edmondfrank.github.io/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/"/&gt;
+</span><span class='line'>    &lt;link href="https://edmondfrank.github.io/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/"/&gt;
 </span><span class='line'>    &lt;updated&gt;2016-08-10T11:24:22+08:00&lt;/updated&gt;
-</span><span class='line'>    &lt;id&gt;http://edmondfrank.github.io/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li&lt;/id&gt;
+</span><span class='line'>    &lt;id&gt;https://edmondfrank.github.io/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li&lt;/id&gt;
 </span><span class='line'>    &lt;content type="html"&gt;&lt;![CDATA[&lt;h2&gt;Linux进程内存管理&lt;/h2&gt;
 </span><span class='line'>
 </span><span class='line'>&lt;h3&gt;1.程序的结构与进程结构&lt;/h3&gt;
@@ -743,9 +743,9 @@ new malloc:0x9e51010 <br/></p></blockquote>
   
   <entry>
     <title type="html"><![CDATA[Linux程序开发-命令行选项及参数]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/"/>
     <updated>2016-08-09T16:16:57+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu</id>
+    <id>https://edmondfrank.github.io/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu</id>
     <content type="html"><![CDATA[<h2>Linux程序开发-命令行选项及参数</h2>
 
 <h3>1.C语言中命令行参数的读取与输出</h3>
@@ -887,9 +887,9 @@ struct optino my_option = {
   
   <entry>
     <title type="html"><![CDATA[emacs+w3m:我的浏览我做主]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu/"/>
     <updated>2016-07-04T19:23:04+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu</id>
+    <id>https://edmondfrank.github.io/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu</id>
     <content type="html"><![CDATA[<h1>如何使用emacs + w3m 上网浏览</h1>
 
 <h2>关于w3m的简介:</h2>

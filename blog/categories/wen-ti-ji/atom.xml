@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 问题集 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/wen-ti-ji/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/wen-ti-ji/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[错误:Could not reserve enough space for object heap的解决方案]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an/"/>
     <updated>2016-07-22T20:59:57+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an</id>
+    <id>https://edmondfrank.github.io/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an</id>
     <content type="html"><![CDATA[<h1>错误:Could not reserve enough space for object heap的解决方案</h1>
 
 <h2>Reason:</h2>
@@ -55,9 +55,9 @@ export _JAVA_OPTIONS=-Xmx1024M
   
   <entry>
     <title type="html"><![CDATA[Go语言var/init/main的执行顺序]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/"/>
     <updated>2016-06-23T18:04:40+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu</id>
+    <id>https://edmondfrank.github.io/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu</id>
     <content type="html"><![CDATA[<h1>Go语言var/init/main的执行顺序</h1>
 
 <p>执行顺序(降序):</p>

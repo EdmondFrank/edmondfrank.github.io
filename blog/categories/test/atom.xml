@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: test | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/test/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/test/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/06/10/hello/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/06/10/hello/"/>
     <updated>2016-06-10T12:22:01+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/06/10/hello</id>
+    <id>https://edmondfrank.github.io/blog/2016/06/10/hello</id>
     <content type="html"><![CDATA[<p>Hello World!</p>
 ]]></content>
   </entry>

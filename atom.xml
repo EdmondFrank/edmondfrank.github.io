@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Python实现Fisher判别分析]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/"/>
     <updated>2017-08-30T09:06:21+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi</id>
     <content type="html"><![CDATA[<h1 id="python实现fisher-判别分析">Python实现Fisher 判别分析</h1>
 
 
@@ -290,9 +290,9 @@
   
   <entry>
     <title type="html"><![CDATA[K-近邻算法-Part2]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
     <updated>2017-08-23T12:19:17+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
     <content type="html"><![CDATA[<h1>K-近邻算法-Part2</h1>
 
 <h2>使用交叉验证来调整k值</h2>
@@ -510,9 +510,9 @@ The accuracy of our classifier is 98%</p></blockquote>
   
   <entry>
     <title type="html"><![CDATA[K-近邻算法-Part1]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/"/>
     <updated>2017-08-14T23:48:56+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1</id>
     <content type="html"><![CDATA[<h1>K-近邻算法-Part1</h1>
 
 <h2>概述</h2>
@@ -840,9 +840,9 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
   
   <entry>
     <title type="html"><![CDATA[机器学习概述-科普向]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/"/>
     <updated>2017-08-06T23:02:41+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang</id>
+    <id>https://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang</id>
     <content type="html"><![CDATA[<h1>机器学习概论-科普篇</h1>
 
 <h2>什么是机器学习？</h2>
@@ -998,9 +998,9 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
   
   <entry>
     <title type="html"><![CDATA[Scala概率编程语言库-Figaro介绍]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/"/>
     <updated>2017-07-24T16:15:49+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao</id>
+    <id>https://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao</id>
     <content type="html"><![CDATA[<h1>Scala 的概率编程语言库-Figaro</h1>
 
 <h2>什么是概率编程？</h2>
@@ -1035,7 +1035,7 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
 <h2>简单示例-量化“你好，世界”</h2>
 
 <p>图片截取自<a href="http://www.epubit.com.cn/book/details/4366">《概率编程实战》</a> 表 1-1
-<img src="http://edmondfrank.github.io/images/figaro.jpg"></p>
+<img src="https://edmondfrank.github.io/images/figaro.jpg"></p>
 
 <p><strong>代码实现：</strong></p>
 
@@ -1120,9 +1120,9 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
   
   <entry>
     <title type="html"><![CDATA[Python科学计算库NumPy的使用]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/"/>
     <updated>2017-07-19T19:10:49+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong</id>
+    <id>https://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong</id>
     <content type="html"><![CDATA[<h1>Python科学计算库NumPy的使用</h1>
 
 <h2>NumPy的介绍</h2>
@@ -1625,9 +1625,9 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
   
   <entry>
     <title type="html"><![CDATA[有关统计学的一些笔记]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/"/>
     <updated>2017-07-14T13:22:09+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji</id>
+    <id>https://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji</id>
     <content type="html"><![CDATA[<h1>有关推断统计学</h1>
 
 <h2>样本与总体</h2>
@@ -1675,9 +1675,9 @@ x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，
   
   <entry>
     <title type="html"><![CDATA[贝叶斯算法在检测群聊垃圾广告中的应用]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
     <updated>2017-07-03T12:18:45+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
+    <id>https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -2076,9 +2076,9 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
   
   <entry>
     <title type="html"><![CDATA[Python大规模数据的处理技巧]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/"/>
     <updated>2017-06-07T13:43:01+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao</id>
+    <id>https://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -2227,9 +2227,9 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
   
   <entry>
     <title type="html"><![CDATA[基于Redis的Bloomfilter]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/"/>
     <updated>2017-05-21T11:05:15+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter</id>
+    <id>https://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -2461,9 +2461,9 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
   
   <entry>
     <title type="html"><![CDATA[基本抽样和蓄水池抽样]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/"/>
     <updated>2017-05-12T19:33:10+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang</id>
+    <id>https://edmondfrank.github.io/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -2665,9 +2665,9 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
   
   <entry>
     <title type="html"><![CDATA[PCA（主成分分析）python实现]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian/"/>
     <updated>2017-05-07T19:03:30+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian</id>
+    <id>https://edmondfrank.github.io/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -2882,15 +2882,15 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><img src="http://edmondfrank.github.io/images/pca.png"></p>
+<p><img src="https://edmondfrank.github.io/images/pca.png"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Web正文提取(偏純文本类)]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/"/>
     <updated>2017-05-02T20:48:47+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei</id>
+    <id>https://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -3482,15 +3482,15 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
 
 <h1>效果测试<a id="sec-3" name="sec-3"></a></h1>
 
-<p><img src="http://edmondfrank.github.io/images/webcrawl.png"></p>
+<p><img src="https://edmondfrank.github.io/images/webcrawl.png"></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[比较网页结构相似度]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/"/>
     <updated>2017-04-23T12:34:29+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du</id>
+    <id>https://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -3533,7 +3533,7 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
 
 <h1>递归式展示<a id="sec-3" name="sec-3"></a></h1>
 
-<p>　<img src="http://edmondfrank.github.io/images/lcs.png"></p>
+<p>　<img src="https://edmondfrank.github.io/images/lcs.png"></p>
 
 <h1>算法实现（python实现）<a id="sec-4" name="sec-4"></a></h1>
 
@@ -3633,9 +3633,9 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
   
   <entry>
     <title type="html"><![CDATA[浅谈MongoDB]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/"/>
     <updated>2017-04-05T14:28:56+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb</id>
+    <id>https://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb</id>
     <content type="html"><![CDATA[<div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
@@ -3820,9 +3820,9 @@ test
   
   <entry>
     <title type="html"><![CDATA[Emacs使用指南]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/"/>
     <updated>2017-03-27T20:33:02+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan</id>
+    <id>https://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan</id>
     <content type="html"><![CDATA[<h1>Emacs快速指南</h1>
 
 <h2>传说中的神级编辑器？？</h2>
@@ -4128,9 +4128,9 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
   
   <entry>
     <title type="html"><![CDATA[计算编辑距离(Levenshtein距离)]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/"/>
     <updated>2017-03-22T17:33:02+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi</id>
+    <id>https://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi</id>
     <content type="html"><![CDATA[<h1>计算字符串的相似度（编辑距离）</h1>
 
 <h2>Levenshtein 距离</h2>
@@ -4384,9 +4384,9 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
   
   <entry>
     <title type="html"><![CDATA[认识网络爬虫]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong/"/>
     <updated>2017-03-10T19:39:43+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong</id>
+    <id>https://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong</id>
     <content type="html"><![CDATA[<h2>认识网络爬虫</h2>
 
 <h3>什么是网络爬虫</h3>
@@ -4701,9 +4701,9 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
   
   <entry>
     <title type="html"><![CDATA[中文分词的简介]]></title>
-    <link href="http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
+    <link href="https://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
     <updated>2017-02-28T20:23:19+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
+    <id>https://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
     <content type="html"><![CDATA[<h2>中文分词的简介</h2>
 
 <h3>一：中文分词是什么？</h3>
@@ -4758,9 +4758,9 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
   
   <entry>
     <title type="html"><![CDATA[大数据下的Hadoop]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
     <updated>2016-12-22T20:00:09+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
+    <id>https://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
     <content type="html"><![CDATA[<h2>大数据下的Hadoop</h2>
 
 <p><strong>(1) 什么是大数据概念？</strong>
@@ -4820,7 +4820,7 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
 
 <p><strong>DataNode：分布在廉价的计算机上，用于存储Block块文件。</strong></p>
 
-<p><img src="http://edmondfrank.github.io/images/hdfs.jpg"></p>
+<p><img src="https://edmondfrank.github.io/images/hdfs.jpg"></p>
 
 <pre><code>MapReduce
 </code></pre>
@@ -4852,7 +4852,7 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
 
 <p>MapReduce会这样做：首先数字是分布存储在不同块中的，以某几个块为一个Map，计算出Map中最大的值，然后将每个Map中的最大值做Reduce操作，Reduce再取最大值给用户。</p>
 
-<p><img src="http://edmondfrank.github.io/images/map.jpg"></p>
+<p><img src="https://edmondfrank.github.io/images/map.jpg"></p>
 
 <p>MapReduce的基本原理就是：将大的数据分析分成小块逐个分析，最后再将提取出来的数据汇总分析，最终获得我们想要的内容。当然怎么分块分析，怎么做Reduce操作非常复杂，Hadoop已经提供了数据分析的实现，我们只需要编写简单的需求命令即可达成我们想要的数据。</p>
 

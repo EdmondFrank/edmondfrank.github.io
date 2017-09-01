@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 转载分享 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/zhuan-zai-fen-xiang/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/zhuan-zai-fen-xiang/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[(转)Linux On Android——在Android手机上跑Linux教程]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/"/>
     <updated>2016-08-21T17:15:20+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng</id>
+    <id>https://edmondfrank.github.io/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng</id>
     <content type="html"><![CDATA[<h2>(转)Linux On Android——在Android手机上跑Linux教程(以Ubuntu14.04-core为例）</h2>
 
 <p>前言</p>

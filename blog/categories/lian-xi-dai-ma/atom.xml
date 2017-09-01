@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 练习代码 | EdmondFrank's 时光足迹]]></title>
-  <link href="http://edmondfrank.github.io/blog/categories/lian-xi-dai-ma/atom.xml" rel="self"/>
-  <link href="http://edmondfrank.github.io/"/>
-  <updated>2017-09-01T16:14:36+08:00</updated>
-  <id>http://edmondfrank.github.io/</id>
+  <link href="https://edmondfrank.github.io/blog/categories/lian-xi-dai-ma/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2017-09-01T16:29:22+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
     <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Xlib编程之-创建全屏透明窗口]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/"/>
     <updated>2016-10-21T20:11:20+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou</id>
+    <id>https://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou</id>
     <content type="html"><![CDATA[<h2>Xlib编程之-创建全屏透明窗口</h2>
 
 <pre><code class="c"> //source file : win.c
@@ -86,9 +86,9 @@
   
   <entry>
     <title type="html"><![CDATA[简单cat的实现-1.0]]></title>
-    <link href="http://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/"/>
+    <link href="https://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/"/>
     <updated>2016-09-06T23:47:23+08:00</updated>
-    <id>http://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0</id>
+    <id>https://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0</id>
     <content type="html"><![CDATA[<h2>简单cat的实现-1.0</h2>
 
 <pre><code class="c">#include &lt;stdio.h&gt;
