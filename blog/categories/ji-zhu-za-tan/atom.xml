@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 技术杂谈 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/ji-zhu-za-tan/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-09-01T11:03:42+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Scala概率编程语言库-Figaro介绍]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/"/>
+    <updated>2017-07-24T16:15:49+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao</id>
+    <content type="html"><![CDATA[<h1>Scala 的概率编程语言库-Figaro</h1>
+
+<h2>什么是概率编程？</h2>
+
+<p><strong>概率编程</strong>是一种系统创建方法，它所创建的系统能够帮助我们在面对不确定性时作出决策。</p>
+
+<h2>为什么使用概率编程？</h2>
+
+<p>概率推理是机器学习的基础技术之一。Google,Amazon和Microsoft等公司使用它理解可用数据。概率推理已经应用于各种各样的应用程序，如预测股价，推荐电影，诊断计算机和检测网络入侵。</p>
+
+<ul>
+<li>概率推理可用于预测未来，推断过去，以及从过去的事实中学习更好地预测未来。</li>
+<li>概率编程是使用图灵完备的编程语言作为表示语言的概率编程。</li>
+</ul>
+
+
+<p><strong>事实上：</strong>概率推理 + 图灵完备 = 概率编程</p>
+
+<h2>Figaro的简介</h2>
+
+<p>Figaro是一个内嵌于Scala编程语言的概率编程系统。除了继承了Scala的良好特性外，Figaro还提供了相当多的额外的优势，包括：</p>
+
+<ul>
+<li>Figaro能够表示及其广泛的概率模型。Figaro元素的值可以为任何类型，包括布尔型，整数，双精度数，数组，树，图等。</li>
+<li>Figaro提供了使用其条件和约束规定证据的丰富框架</li>
+<li>Figaro有多种多样的推理算法</li>
+<li>Figaro能够表示和推理随时间变化的的动态模型</li>
+<li>Figaro能够在其模型中包含明确决策，并支持最优决策的推断。</li>
+</ul>
+
+
+<h2>简单示例-量化“你好，世界”</h2>
+
+<p>图片截取自<a href="http://www.epubit.com.cn/book/details/4366">《概率编程实战》</a> 表 1-1
+<img src="/images/figaro.jpg"></p>
+
+<p><strong>代码实现：</strong>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">mport</span> <span class="n">com</span><span class="o">.</span><span class="n">cra</span><span class="o">.</span><span class="n">figaro</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="k">_</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.library.compound.If</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.algorithm.factored.VariableElimination</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">Main</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyToday</span> <span class="k">=</span> <span class="nc">Flip</span><span class="o">(</span><span class="mf">0.2</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingToday</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Howdy</span> <span class="n">universe</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.2</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.8</span><span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">no</span> <span class="n">not</span> <span class="n">again</span><span class="o">!&amp;</span><span class="n">rdquo</span><span class="o">;))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.8</span><span class="o">)</span> <span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.05</span><span class="o">))</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">greetingTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyTomorrow</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Howdy</span> <span class="n">universe</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;),</span>
+</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">no</span> <span class="n">not</span> <span class="n">again</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;))</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">predict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingToday</span><span class="o">,&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nc">Today</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="o">;</span><span class="n">s</span> <span class="n">greeting</span> <span class="n">is</span> <span class="o">\</span><span class="s">&quot;Hello World!\&amp;rdquo; &amp;ldquo;+&amp;rdquo; with probability &amp;ldquo;+ result +&amp;rdquo;.&amp;ldquo;)</span>
+</span><span class='line'><span class="s">  }</span>
+</span><span class='line'><span class="s">  def infer: Unit = {</span>
+</span><span class='line'><span class="s">    val greeting = &quot;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&amp;rsquo;s greeting is $greeting with probability $result.&amp;ldquo;)</span>
+</span><span class='line'><span class="s">  }</span>
+</span><span class='line'><span class="s">  def learnAndPredict: Unit ={</span>
+</span><span class='line'><span class="s">    val greeting = &quot;</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingTomorrow</span><span class="o">,</span><span class="n">greeting</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&amp;rsquo;s greeting is $greeting,tomorrow&amp;rsquo;s greeting will be $greeting\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="n">s</span><span class="err">&quot;</span><span class="k">with</span> <span class="n">probability</span> <span class="nc">$result</span><span class="o">.&amp;</span><span class="n">ldquo</span><span class="o">;)</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">predict</span>
+</span><span class='line'>    <span class="n">infer</span>
+</span><span class='line'>    <span class="n">learnAndPredict</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[浅谈MongoDB]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/"/>
+    <updated>2017-04-05T14:28:56+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Mongodb 简介</a>
+<ul>
+<li><a href="#sec-1-1">1.1. 基本概念</a>
+<ul>
+<li><a href="#sec-1-1-1">1.1.1. 数据库（database）</a></li>
+<li><a href="#sec-1-1-2">1.1.2. 文档（document）</a></li>
+<li><a href="#sec-1-1-3">1.1.3. 集合（collection）</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">1.2. 基本设计</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. MongoDB 启动</a></li>
+<li><a href="#sec-3">3. MongoDB shell 简介</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 运行shell</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. MongoDB 客户端</a></li>
+<li><a href="#sec-5">5. MongoDB 基本操作</a>
+<ul>
+<li><a href="#sec-5-1">5.1. 创建</a></li>
+<li><a href="#sec-5-2">5.2. 读取</a></li>
+<li><a href="#sec-5-3">5.3. 更新</a></li>
+<li><a href="#sec-5-4">5.4. 删除</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<h1>Mongodb 简介<a id="sec-1" name="sec-1"></a></h1>
+
+<p>MongoDB 是一款强大，灵活，且易于扩展的通用型数据库。</p>
+
+<p>它能够扩展出非常多的功能，如二级索引，范围查询，排序，聚合以及本地空间索引的功能</p>
+
+<h2>基本概念<a id="sec-1-1" name="sec-1-1"></a></h2>
+
+<p>Mongodb 是一个面向文档的NoSQL型数据库，不采用关系模型。
+其中mongodb 不再有“行”的概念，而是以文档取而代之。</p>
+
+<p>另外也不存在预定义模式，即文档的键（key）和值（value）不再是固定的类型和大小</p>
+
+<h3>数据库（database）<a id="sec-1-1-1" name="sec-1-1-1"></a></h3>
+
+<p>Mongodb 的一个实例可以拥有多个相互独立的数据库,</p>
+
+<p>在Mongodb中，多个文档组合成集合，而多个集合即组成数据库。</p>
+
+<h3>文档（document）<a id="sec-1-1-2" name="sec-1-1-2"></a></h3>
+
+<p>Mongodb 中的数据的基本单元，类似于关系型数据库管理系统中的行</p>
+
+<p>表示形式：</p>
+
+<p>{&ldquo;greeting&rdquo;:&ldquo;Hello World&rdquo;,
+          &#x2026;.           }</p>
+
+<h3>集合（collection）<a id="sec-1-1-3" name="sec-1-1-3"></a></h3>
+
+<p>类似的，可以看作是一个拥有动态模式的表</p>
+
+<h2>基本设计<a id="sec-1-2" name="sec-1-2"></a></h2>
+
+<p>Mongodb 的设计采用横向扩展。同时面向文档的数据模型</p>
+
+<p>使它能够很容易的在多台服务器之间进行数据分割。</p>
+
+<h1>MongoDB 启动<a id="sec-2" name="sec-2"></a></h1>
+
+<p>通常，MongoDB做为网络服务守护进程运行，客户端可连接到该服务器并执行操作。</p>
+
+<ol>
+<li><p>下载MongoDB（<a href="http://www.mongodb.org/downloads">http://www.mongodb.org/downloads</a>）</p></li>
+<li><p>解压，并运行 <strong>mongod</strong> 命令</p></li>
+</ol>
+
+
+<p>启动后，在默认情况下服务器会打印版本和系统信息，并监听27017端口。</p>
+
+<p>除此之外 mongod 还会启动一个非常基本的HTTP服务器，监听比主端口号高1000的端口</p>
+
+<p>这意味着你可以访问 <a href="http://localhost:28017">http://localhost:28017</a> 来获取数据库管理信息</p>
+
+<h1>MongoDB shell 简介<a id="sec-3" name="sec-3"></a></h1>
+
+<p>MongoDB 自带JavaScript Shell，可以在shell中用命令行与Mongodb实例交互</p>
+
+<h2>运行shell<a id="sec-3-1" name="sec-3-1"></a></h2>
+
+<pre><code>mongo
+
+MongoDB Shell version: 2.4.0
+
+connecting to :test
+
+&gt;
+</code></pre>
+
+<p>shell 是一个功能完备的JavaScript解释器，可以运行任意JavaScript程序，另外还可以充分使用JavaScript的标准库</p>
+
+<h1>MongoDB 客户端<a id="sec-4" name="sec-4"></a></h1>
+
+<p>在客户端的shell启动后，如果要查看db当前执行哪个数据库，可以使用 <strong>db</strong> 命令</p>
+
+<pre><code>&gt; db
+
+test
+</code></pre>
+
+<h1>MongoDB 基本操作<a id="sec-5" name="sec-5"></a></h1>
+
+<h2>创建<a id="sec-5-1" name="sec-5-1"></a></h2>
+
+<p><em>insert</em> 函数可以将一个文档添加到集合中。举一个存储文章的例子：首先，</p>
+
+<p>创建一个名为post的局部变量，这是一个JavaScript对象，用于表示我们的文档</p>
+
+<p>他会有几个键：“ <strong>title</strong> ”、“ <strong>content</strong> ”和 “ <strong>date</strong> ”（发布时间）</p>
+
+<pre><code>&gt; post = {
+"title":"hello",
+"content":"Here's my blog post",
+"date":new Date()
+}
+
+&gt; db.blog.insert(post)
+</code></pre>
+
+<p>此时，这篇文章已经存到数据库中了，要查看它可用调用集合的 <em>find</em> 方法</p>
+
+<pre><code>&gt; db.blog.find()
+</code></pre>
+
+<h2>读取<a id="sec-5-2" name="sec-5-2"></a></h2>
+
+<p><em>find</em> 和 <em>findOne</em> 可以接收一个 <strong>查询文档</strong> 为限定条件，并返回符合一定条件的文件，使用</p>
+
+<p><em>find</em> 的默认自动显示最多20个匹配的文档。</p>
+
+<h2>更新<a id="sec-5-3" name="sec-5-3"></a></h2>
+
+<p>使用 <em>update</em> 修改文章：</p>
+
+<p>update接收（至少）两个参数：
+-   第一个是限定条件（用于匹配待更新的文档）
+-   第二个是新的文档</p>
+
+<p>例如我们为之前的文章增加评论功能，就需要新增一个键，用于保存评论数组。</p>
+
+<pre><code>&gt; post.comments = []
+[ ]
+
+&gt; db.blog.update({ title : "hello"} , post)
+</code></pre>
+
+<p>再用 find 查看一下，就可以看见新的键。</p>
+
+<pre><code>&gt; db.blog.find()
+</code></pre>
+
+<h2>删除<a id="sec-5-4" name="sec-5-4"></a></h2>
+
+<p>使用remove方法可以将文档从数据库中永久删除。如果没用任何参数传入，他将删除集合内的全部文档。</p>
+
+<p>同时，它可以接收一个做为限定条件的文档做为参数。例如：</p>
+
+<pre><code>&gt; db.blog.reomve({ title : "hello" })
+</code></pre>
+
+<hr />
+
+<p><strong><em>有关Mongodb的简单描述到此结束，更多Mongdb使用操作内容，欢迎参考下一篇文章</em></strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Emacs使用指南]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/"/>
+    <updated>2017-03-27T20:33:02+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan</id>
+    <content type="html"><![CDATA[<h1>Emacs快速指南</h1>
+
+<h2>传说中的神级编辑器？？</h2>
+
+<h3>基础介绍</h3>
+
+<p>vim 和 emacs 分别被称为「 编辑器之神」与「 神之编辑器」，自有其独到之处。</p>
+
+<blockquote><p>快捷键的无差别延续</p></blockquote>
+
+<p>vim 和 emacs 诞生于 30 年前，快捷键基本没什么变化。这意味着，一旦你学会使用这两个编辑器，无论以后软件怎么更新，都不需要学习别的快捷键了。因为历史较长，加上快捷键变化不大，新兴编辑器大多提供模拟 vim/emacs 操作的插件。这也方便了用户迁移到其他编辑器，无需学习更多的同质快捷键。</p>
+
+<blockquote><p>基础和适用的默认配置</p></blockquote>
+
+<p>vim 和 emacs 都可以运行在终端，也有图形化的软件，非常适合快速编辑文件。当需要在无法运行图形界面的服务器上编辑代码的时候，二者也足以胜任。虽然在终端也有 nano 这样的编辑器，但毕竟过于简洁，无法支撑较为复杂的编辑工作。这两个编辑器的默认配置的功能就已经很强大了，语法着色、补全、缩进等功能都很不错。</p>
+
+<blockquote><p>emacs有别于vim的地方</p></blockquote>
+
+<p>为了实现强大的功能，vim 选择了多模式编辑（Normal, Insert, Visual 模式），而 emacs 没有输入上的 mode 差别，所以需要依赖复杂的快捷键来实现强大的编辑功能，正如上图所示。emacs 插件想象力更加丰富，有「伪装成编辑器的操作系统」之称。插件的 major mode 和 minor mode 的设计很出彩，对一个文件，只有一个 major mode，但是可以有多个 minor mode，这样一个文件一个主插件，多个附加插件，可以实现很多有趣的效果。</p>
+
+<h3>快捷键说明</h3>
+
+<p>在网上的Emacs文档或手册中，总有一些快捷键说明如下所示：</p>
+
+<p>C-v : 其中C 代表 Ctrl，因此这项快捷键代表 Ctrl + C
+M-v : 其中M 代表 Alt，这项快捷键代表 Alt + V</p>
+
+<h3>基本光标控制</h3>
+
+<pre><code class="bash">                        上一行 C-p
+                          ：
+                          ：
+        向左移 C-b：：： 目前光标位置 ：：： 向右移 C-f
+                          ：
+                          ：
+                        下一行 C-n
+
+                     亦可使用小键盘方向键
+</code></pre>
+
+<p>M-f 移动到词的末尾
+M-b 移动到词的首部</p>
+
+<p>请注意 C-f 、C-b 和 M-f 、M-b 两对之间的类比关系。通常的惯例是：META 系
+列组合键用来操作“由语言定义的单位（比如词、句子、段落）”，而 CONTROL
+系列组合键用来操作“与语言无关的基本单位（比如字符、行等等）”。</p>
+
+<p>这里对简单的光标移动命令做一个总结，其中也包括了整词和整句的移动：</p>
+
+<pre><code>    C-f     向右移动一个字符
+    C-b     向左移动一个字符
+
+    M-f     向右移动一个词【对中文是移动到下一个标点符号】
+    M-b     向左移动一个词【对中文是移动到上一个标点符号】
+
+    C-n     移动到下一行
+    C-p     移动到上一行
+
+    C-a     移动到行首
+    C-e     移动到行尾
+
+    M-a     移动到句首
+    M-e     移动到句尾
+</code></pre>
+
+<h2><em>窗格(WINDOWS)</em></h2>
+
+<p>Emacs 可以有多个“窗格”，每个窗格显示不同的文字。后面会介绍怎么对付多个窗
+格，现在我们先学会如何关掉多余的窗格。其实也很简单：</p>
+
+<pre><code>    C-x 1   只保留一个窗格（也就是关掉其它所有窗格）。
+</code></pre>
+
+<p>也就是先按 CONTROL-x 然后再按 1。C-x 1 会保留光标所在的窗格，并将其扩大
+到整个屏幕，同时关掉所有其它的窗格。</p>
+
+<blockquote><p>把光标移到本行然后输入 C-u 0 C-l。</p>
+
+<p>输入 C-h k C-f。观察当一个新窗格出现时当前窗格（用来显示
+  C-f 命令的文档）是如何缩小的。</p>
+
+<p>输入 C-x 1 关掉文档窗格。</p></blockquote>
+
+<p><em>Emacs中的删除</em></p>
+
+<p>在Emacs删除文字有很多种方法。在说明相应的操作方法前，我们需要先弄明白几个概念：“删除（Delete）”、“移除（Kill）”、“召回（Yank）”还有“移除环（Kill-Ring）”</p>
+
+<p>好吧，“删除”和“移除”在文本编辑的过程中实现的效果非常类似——对应的字符或内容在文档中“消失”了。存在细微差别的地方在与取回这些“消失”的内容的方法上：</p>
+
+<p>被“删除”的内容，只能使用“撤销（Undo）”的办法来找回这些“消失的字符”。和大多数人预想的一样，这些“消失的字符”只会重新出现在原来它们所在的地方。</p>
+
+<p><em>Emacs的剪贴板以及Undo/Redo</em></p>
+
+<p>被“移除”的内容，除了可以使用“撤销”的方法了找回内容以外，还可以使用“召回”的方法让这些“消失”的内容出现在当前光标之后。这样的操作效果和使用了“剪贴板”的效果类似了。</p>
+
+<p>“召回”，是将移除的内容插入到光标所在位置的一种操作。使用召回操作，让人有一种使用“剪贴板”的感觉。不过Emacs会记录多次“移除”操作的内容，这一点可要比windows操作系统提供的“剪贴板”功能要强大多了。这种记录多次“移除”操作内容的机制在Emacs中叫做“移除环”——Yank Ring。</p>
+
+<p><em>Emacs中的查找和替换</em></p>
+
+<p>任何编辑器都有查找和替换的功能，Emacs也不例外。在Emacs中最常用的查找方法是“增量查找”。除此之外，Emacs还提供了“正则查找”、“词组查找”、“简单查找”三种方法。这些查找方法，一般来说，熟练掌握其中的一至两类就足够应付日常使用的需要了。</p>
+
+<p><em>Emacs中的文件操作</em></p>
+
+<p>基础的Emacs文件操作是创建、保存、另存。</p>
+
+<p>创建新文件：
+使用组合键 Ctrl-x Ctrl-f 打开“find file”
+在提示符处输入一个不存在的文件名
+回车确认后，Emacs即创建了一个空的Buffer供输入使用。
+保存文件
+Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
+另存文件
+要另存一个文件，按下组合键Ctrl-x Ctrl-w，按提示输入新的文件名即可。</p>
+
+<h3>常用快捷键</h3>
+
+<pre><code class="bash">C-v : 向前移动一屏（PageUp）
+M-v : 向后移动一屏（PageDn）
+
+导航操作：
+c-p            上一行
+c-n            下一行
+c-f            下一个字符
+c-b            上一个字符
+c-a            行首
+c-e            行尾
+
+M-p            下一段
+M-b            上一段
+M-f            下一个单词
+M-b            上一个单词
+M-a            句首
+M-e            句尾
+
+c-v            下一页
+M-v            上一页
+
+c-l            以本行为中间显示
+
+M-&lt;            文本头
+M-&gt;            文本尾部
+
+c-M-v            不移动光标让另一个窗口翻下一页
+c-S-M-v(S:shift)    不移动光标让另一个窗口翻上一页
+
+撤销操作：
+c-_ / c-x c-u        撤销
+c-h l            列出最近操作
+M-x revert-buffer    重新读入buffer(撤销本次全部更改)
+
+文件操作:
+c-x c-f            打开文件（没有就创建一个新的）
+c-x c-s            保存文件
+c-x c-w            另存为文件
+M-x recover-file 文件名    从错误中恢复(读取自动保存的文件)
+
+buffers:
+c-x b 输入buffer名字    切换buffer
+    方向键可以切换buffer
+c-x k 输入buffer名字    终止buffer
+c-x c-b            列出所有buffer
+    之后按下：
+    1            让选中的个buffer全屏
+    o            让选中的buffer在另外的窗口显示并且切换到该窗口
+    c-o         让选中的buffer在另外的窗口显示并且不切换到该窗口
+    s            标记当前buffer为保存
+    d/c-d        标记一个要删除的buffer并且光标下/上移动
+    x            按下x后执行标记了要删除的buffer或者标记要保存的buffer
+
+fram&amp;windows：
+c-x 2            在frame内横向分割两个windows
+c-x 3            在frame内纵向分割两个windows    
+c-x 1            删除其他windows
+c-x 0            删除当前windows
+c-x o            切换到另外的窗口
+#c-x {            水平缩小当前窗口（分两个窗口的时候）
+#c-x }            水平扩大当前窗口
+c-x 5 2            水平创建一个新的frame
+c-x 5 0         杀死当前的fram（最后一个不可以哦）
+c-x 5 o            切换fram
+
+Searching:
+c-s            向前搜索
+c-r            向后搜索
+搜索时按下：
+    M-p        搜索历史向上
+    M-n        搜索历史向后
+M-%            搜索并替换，替换时询问每一个是否需要被替换（y表示是n表示否!表示全部y）
+M-x replace-string    搜索并替换，不询问
+c-r             进入紧急编辑(保存当前的查询替换的状态)
+c-M-c            退出紧急编辑
+c-[            取消紧急编辑(无视原来保护的现场Orz)
+M-x occur 匹配串    找到并列出所有匹配串
+
+helping:
+c-h            帮助首菜单
+c-h c-h            帮助buffer
+c-h k    按键        显示绑定这个键位的功能
+c-h a    输入功能    显示对应的按键(正则匹配)
+c-x c-h            显示全部c-x的命令
+c-x w    输入功能    显示对应的按键（非正则匹配）
+c-x h    输入功能    显示这个功能的具体功能
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

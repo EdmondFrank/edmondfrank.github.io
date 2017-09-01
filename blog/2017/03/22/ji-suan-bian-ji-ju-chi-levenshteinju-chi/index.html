@@ -1,45 +1,79 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title>计算编辑距离(Levenshtein距离) | EdmondFrank's 时光足迹</title>
+  <meta charset="utf-8">
+  <title>计算编辑距离(Levenshtein距离) - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
 
-	<meta name="author" content="EdmondFrank"> 
-	
-	<meta name="description" content="计算字符串的相似度（编辑距离） Levenshtein 距离 Levenshtein距离，又称编辑距离，指的是两个字符串之间，由一个转换成另外一个所需的最少编辑量。
+  
+  <meta name="description" content="计算字符串的相似度（编辑距离） Levenshtein 距离 Levenshtein距离，又称编辑距离，指的是两个字符串之间，由一个转换成另外一个所需的最少编辑量。
 编辑距离算法首先由俄国科学家Levenshstance提出，原理可大致举例如下： 字符串A：abcdefg
-字符串B：abcdef &hellip;"> <meta name="keywords" content="">
+字符串B：abcdef &hellip;">
+  
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
-	
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	
+  
+  <link rel="canonical" href="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  
+
 </head>
 
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。</h2>
+  
+</hgroup>
 
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
 
-<body>
-<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
-	<header id="header">
-<div class="inner">
-  <ul class="navigation">
-    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
-    <li><a href="/" class="is-selected">Blog</a></li>
-    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
-    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
-  </ul>
-</div></header>
-
-	<div id="content" class="inner"><article class="post">
-	<h2 class="title">计算编辑距离(Levenshtein距离)</h2>
-	<div class="meta">
-		<div class="date">
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">计算编辑距离(Levenshtein距离)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
 
 
 
@@ -52,9 +86,15 @@
 
 
 
-<time datetime="2017-03-22T17:33:02+08:00" pubdate data-updated="true">Mar 22nd, 2017</time></div>
-	</div>
-	<div class="entry-content"><h1>计算字符串的相似度（编辑距离）</h1>
+<time datetime="2017-03-22T17:33:02+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1>计算字符串的相似度（编辑距离）</h1>
 
 <h2>Levenshtein 距离</h2>
 
@@ -89,7 +129,7 @@
 
 <p>所以，L(i,0)=i，L(0,j)=j, 再利用上述的递推公式，可以直接计算出L(i,j)值。</p>
 
-<p>算法实现：</p>
+<blockquote><p>算法实现</p></blockquote>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -147,9 +187,9 @@
 <span class='line-number'>54</span>
 <span class='line-number'>55</span>
 <span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
 </span><span class='line'><span class="cp">#include &lt;string&gt;</span>
-</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">calcdistance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="n">string</span><span class="p">);</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">minvalue</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
@@ -172,9 +212,9 @@
 </span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">len2</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>
 </span><span class='line'>        <span class="k">return</span> <span class="n">len1</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="kt">int</span> <span class="o">**</span> <span class="n">cnt</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">*</span><span class="p">[</span><span class="n">len1</span><span class="p">];</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="o">**</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">new</span> <span class="kt">int</span><span class="o">*</span><span class="p">[</span><span class="n">len1</span><span class="p">];</span>
 </span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">len1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">cnt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">len2</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">cnt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">len2</span><span class="p">];</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">len1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="n">cnt</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
 </span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">len2</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="n">cnt</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">j</span><span class="p">;</span>
@@ -195,8 +235,8 @@
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">cnt</span><span class="p">[</span><span class="n">len1</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">len2</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
 </span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">len1</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">delete</span> <span class="p">[]</span> <span class="n">cnt</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-</span><span class='line'>    <span class="k">delete</span> <span class="p">[]</span> <span class="n">cnt</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">delete</span> <span class="p">[]</span> <span class="n">cnt</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">delete</span> <span class="p">[]</span> <span class="n">cnt</span><span class="p">;</span>
 </span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
 </span><span class='line'><span class="p">}</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">minvalue</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">){</span>
@@ -206,7 +246,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Vector版本如下：</p>
+<blockquote><p>Vector版本如下</p></blockquote>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -254,10 +294,10 @@
 <span class='line-number'>44</span>
 <span class='line-number'>45</span>
 <span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
 </span><span class='line'><span class="cp">#include &lt;string&gt;</span>
 </span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
-</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">calcdistance</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="n">string</span><span class="p">);</span>
 </span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 </span><span class='line'><span class="p">{</span>
@@ -305,44 +345,152 @@
 </div>
 
 
-<div class="sharing">
+  <footer>
+    <p class="meta">
+      
   
-  <div class="sns-tw">
-    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js  ';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-  </div>
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-03-22T17:33:02+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/" data-via="EdmondFrank4" data-counturl="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/" >Tweet</a>
   
   
   
 </div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/" title="Previous Post: 认识网络爬虫">&laquo; 认识网络爬虫</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/03/27/emacsshi-yong-zhi-nan/" title="Next Post: Emacs使用指南">Emacs使用指南 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
-</div>
-	<footer id="footer" class="inner"><div class="aboutme">
-<hr>
-  <div class="profile">
 
-    <h3>EdmondFrank</h3>
-    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
-
-    <div class="codes">
-      <h4>Codes</h4>
-      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
-    </div>
-  </div>
-
-  <div class="float_clear"></div>
 
 </div>
 
-Copyright &copy; 2017
- EdmondFrank 
-<br>
-Powered by Octopress.
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="http://edmondfrank.github.io">http://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
 
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="http://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "http://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
 
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="http://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "http://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/haya14busa/mjolvim-octotheme">Mjolvim</a></span>
+  </p>
+</div>
 
 </footer>
-	
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
 
 </body>
 </html>

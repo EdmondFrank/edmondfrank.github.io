@@ -1,1158 +1,682 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title> EdmondFrank's 时光足迹</title>
+  <meta charset="utf-8">
+  <title>EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
 
-	<meta name="author" content="EdmondFrank"> 
-	
-	<meta name="description" content="Python实现Fisher判别分析 Aug 30, 2017 python,算法,机器学习 K-近邻算法-Part2 Aug 23, 2017 算法,python,knn K-近邻算法-Part1 Aug 14, 2017 算法,python,knn 机器学习概述-科普向 Aug 6, &hellip;"> <meta name="keywords" content="">
+  
+  <meta name="description" content="图片截获工具driftnet driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在Github上下载源码编译使用. 语法:driftnet [options] [fifter code] &hellip;">
+  
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
-	
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	
+  
+  <link rel="canonical" href="http://edmondfrank.github.io/posts/6/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  
+  
+
 </head>
 
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
 
 
-<body>
-<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
-	<header id="header">
-<div class="inner">
-  <ul class="navigation">
-    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
-    <li><a href="/" class="is-selected">Blog</a></li>
-    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
-    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
-  </ul>
-</div></header>
 
-	<div id="content" class="inner">
+
+
+
 
 
   
 
 
-	
-	
-	<section class="archives">
 
-<article>
-	<h2 class="title"><a href="/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/">Python实现Fisher判别分析</a></h2>
-	<div class="meta">
-		<div class="date">Aug 30, 2017</div>
-		
+<time datetime="2016-06-12T16:37:33+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-<div class="tags">
 
-	<a class='category' href='/blog/categories/python-suan-fa-ji-qi-xue-xi/'>python,算法,机器学习</a>
+  <div class="entry-content"><h1>图片截获工具driftnet</h1>
 
+<p>driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在<a href="https://github.com/deiv/driftnet">Github</a>上下载源码编译使用.</p>
+
+<h3><strong>语法</strong>:driftnet [options] [fifter code]</h3>
+
+<h3><strong>常用选项</strong>:</h3>
+
+<ul>
+<li>-h:显示帮助信息</li>
+<li>-b:捕获到新图片时,发出蜂鸣声.</li>
+<li>-i interface:选择监听接口(默认为全部接口,<em>此选项为关键选项</em>.)</li>
+<li>-f file:读取一个指定pcap数据包中的图片</li>
+<li>-p:不让所监听的接口使用混杂模式</li>
+<li>-a:后台模式,即截取的图片自动保存至临时目录中,不显示在屏幕上.</li>
+<li>-m number:指定保存图片的最大数目</li>
+<li>-d directory:指定保存图片的路径</li>
+<li>-x prefix:指定保存图片的前缀名</li>
+<li>-s:尝试解读网络数据包中的音频流或视频流信息,现只支持MPEG格式</li>
+<li>-S:类似-s</li>
+</ul>
+
+
+<blockquote><p>使用示例:</p></blockquote>
+
+<p>Wlan0监听:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -i wlan0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>读取指定pcap数据包:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -f /home/tmp/tmp.pcapng -a -d /tmp/</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>常用组合:</h3>
+
+<blockquote><p>ettercap + driftnet</p>
+
+<p>arproof + driftnet</p></blockquote>
+
+<p>(有关组合的使用以及dirftnet的其他用法,博主会在后期的博客,陆续更新,敬请期待.)</p>
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a>
+      <time datetime="2016-06-12T16:37:33+08:00" pubdate><span class='month'>Jun</span> <span class='day'>12</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2017/08/23/k-jin-lin-suan-fa-part2/">K-近邻算法-Part2</a></h2>
-	<div class="meta">
-		<div class="date">Aug 23, 2017</div>
-		
 
-<div class="tags">
+<time datetime="2016-06-11T20:16:12+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/suan-fa-python-knn/'>算法,python,knn</a>
 
+  <div class="entry-content"><h1>标准化configure文件的生成</h1>
+
+<p>作为一个Linux系统下的开发者,都会或多或少地使用make这个命令来编译自己的程序，既然要用到make命令的话，一个简易的Makefile文件是必不可少的。平时大家自己编译时，如果要使用make命令编译的话，应该都是自己手写一个简单实用的Makefile文件。但一般软件需要发布的时候，由于自己手写的Makefile文件，不符合GNU的标准，且没有考虑各种诸多因素，导致程序在编译时也会出现各种问题。
+因此为了解决如何生成符合CNU标准的configure和Makefile文件，我们可以使用Linux中autotools系统的工具来进行自动生成configure脚本来创建Makefile文件。</p>
+
+<p>下面我以一个简单的HelloWorld程序作为例子：</p>
+
+<h2>一、建立项目文件夹</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir /tmp/hello
+</span><span class='line'>$ cd /tmp/hello</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>二、编写源文件(博主此处以C++程序为例）</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim hello.cpp
+</span><span class='line'>(此处大家可以自己喜欢的编辑器编写）</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//hello.cpp</span>
+</span><span class='line'><span class="cp">#include&lt;iostream&gt;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>     <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;Hello World!&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存并退出后，当前目录下就有了一个hello.cpp的程序源文件了。</p>
+
+<h2>三、生成初步configure文件</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">autoscan</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大家用man来查看autoscan这个命令就会知道，这个命令使用扫描当前源代码目录并生成configure.in模板的，这个命令的输出文件是configure.scan,我们只要将它重命名为configure.in再编辑其中的内容即可。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">mv</span> <span class="n">configure</span><span class="p">.</span><span class="n">scan</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
+</span><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注："#&ldquo;在脚本语言或linux的大部分配置文件中代表注释，与C&amp;C++的“//”意义相同</strong>
+现在将configure.in修改下一下内容</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="cp"># -*- Autoconf -*-</span>
+</span><span class='line'><span class="cp"># Process this file with autoconf to produce a configure script.</span>
+</span><span class='line'><span class="n">AC_PREREQ</span><span class="p">([</span><span class="mf">2.63</span><span class="p">])</span>
+</span><span class='line'><span class="n">AC_INIT</span><span class="p">(</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>  <span class="err">#此项代表源代码的路径，</span><span class="mf">1.0</span><span class="err">为版本号（可省略）</span>
+</span><span class='line'><span class="n">AM_INIT_AUTOMAKE</span><span class="p">(</span><span class="n">hello</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="err">#此项为必需项，代表生成软件包的名字和版本号</span>
+</span><span class='line'><span class="cp">#AC_CONFIG_SRCDIR(hello.cpp) #为了简化操作，我们注释掉这两项内容</span>
+</span><span class='line'><span class="cp">#AC_CONFIG_HEADERS([config.h])</span>
+</span><span class='line'><span class="cp"># Checks for programs.</span>
+</span><span class='line'><span class="n">AC_PROG_CXX</span>   <span class="err">#此项代表使用</span><span class="n">C</span><span class="o">++</span><span class="err">编译器</span>
+</span><span class='line'><span class="cp"># Checks for libraries.</span>
+</span><span class='line'><span class="cp"># Checks for header files.</span>
+</span><span class='line'><span class="cp"># Checks for typedefs, structures, and compiler characteristics.</span>
+</span><span class='line'><span class="cp"># Checks for library functions.</span>
+</span><span class='line'><span class="n">AC_OUTPUT</span><span class="p">(</span><span class="n">Makefile</span><span class="p">)</span> <span class="err">#此项填写我们要输出的</span><span class="n">Makefile</span><span class="err">的名字</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存退出后。
+我们再来执行aclocal和autoconf这两个命令，来分别生成aclocal.m4和configure文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">aclocal</span> <span class="o">&amp;&amp;</span> <span class="n">autoconf</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中生成的两个文件</p>
+
+<p><strong>aclocal.m4</strong>: 是由aclocal这个perl脚本程序自动生成的，而aclocal的定义是："aclocal - create aclocal.m4 by scanning configure.ac"</p>
+
+<p><strong>configure</strong>:则是由autoconf根据GNU m4宏处理器处理aclocal.m4文件，生成的一个脚本。</p>
+
+<p><strong>所以，以上命令的顺序不可颠倒。</strong></p>
+
+<h2>四、手建一个Makefile.am文件</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">Makefile</span><span class="p">.</span><span class="n">am</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Makefile.am文件中主要包括三个项：</p>
+
+<h3>1.AUTOMAKE_OPTIONS：</h3>
+
+<p>这个是automake 的选项。在执行automake 时，它会检查目录下是否存在标准GNU 软件包中应具备的各种文件，例如AUTHORS 、ChangeLog 、NEWS 等文件。我们将其设置成foreign 时，automake 会改用一般软件包的标准来检查。除此之外，可选的条目还有如下所示：</p>
+
+<ul>
+<li>&ndash;cygnus
+     assume program is part of Cygnus-style tree</li>
+<li>&ndash;foreign
+        set strictness to foreign</li>
+<li>&ndash;gnits
+           set strictness to gnits</li>
+<li>&ndash;gnu
+           set strictness to gnu</li>
+</ul>
+
+
+<h3>2.bin_PROGRAMS:</h3>
+
+<p>这个是指定我们所要产生的可执行文件的文件名。如果你要产生多个可执行文件，那么在各个名字间用空格隔开。</p>
+
+<h3>3.hello_SOURCES:</h3>
+
+<p>这个是指定产生“hello” 时所需要的源代码。如果它用到了多个源文件，那么请使用空格符号将它们隔开。</p>
+
+<p><em>eg</em>:
+hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//编辑Makefile.am文件内容如下：</span>
+</span><span class='line'><span class="n">AUTOMAKE_OPTIONS</span><span class="o">=</span><span class="n">foreign</span>
+</span><span class='line'><span class="n">bin_PROGRAMS</span><span class="o">=</span><span class="n">hello</span>
+</span><span class='line'><span class="n">hello_SOURCES</span><span class="o">=</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>五、执行automake</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">automake</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">missing</span>
+</span><span class='line'><span class="err">（或</span> <span class="n">automake</span> <span class="o">-</span><span class="n">a</span><span class="err">，命令意义相同）</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中以上的命令选项</p>
+
+<ul>
+<li>-a, &ndash;add-missing
+        add missing standard files to package</li>
+</ul>
+
+
+<p>代表自动添加软件包所需要的标准文件。</p>
+
+<h2>六、执行configure脚本来生成我们的目标Makefile文件</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>至此我们想要的标准的configure和Makefile文件都已经生成了。</p>
+
+<p>最后只要执行make命令就可以编译我们的hello程序了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">make</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出如下:</p>
+
+<blockquote><p>Hello World!</p></blockquote>
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a>
+      <time datetime="2016-06-11T20:16:12+08:00" pubdate><span class='month'>Jun</span> <span class='day'>11</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2017/08/14/k-jin-lin-suan-fa-part1/">K-近邻算法-Part1</a></h2>
-	<div class="meta">
-		<div class="date">Aug 14, 2017</div>
-		
 
-<div class="tags">
+<time datetime="2016-06-11T11:17:42+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/suan-fa-python-knn/'>算法,python,knn</a>
+
+  <div class="entry-content"><h1>我的算法天梯之路之-爬楼梯</h1>
+
+<p>最近在计蒜客的算法练习题目之中看到了这样一道比较有意思的题目.</p>
+
+<p>原题如下所示:</p>
+
+<blockquote><p>假设你现在正在爬楼梯，楼梯有n级。每次你只能爬1级或者2级，那么你有多少种方法爬到楼梯的顶部？
+格式：
+  第一行输入一个数n(n&lt;=50)，代表楼梯的级数。
+  接下来一行输出你的方法总数。
+样例输入
+5
+样例输出
+8</p></blockquote>
+
+<p>从题面上看,可以发现这是一道比较典型的递归算法题目.
+既然已知阶梯数为N,而最大跨步数为2,那么我们可以先假设有3级阶梯,那么所有的走法就有:</p>
+
+<blockquote><p>111 12 21</p></blockquote>
+
+<p>这样子分析完之后,我们可以发现,我们总共要处理的情况有两种:</p>
+
+<ol>
+<li>剩余阶梯数大于最大步数</li>
+<li>剩余阶梯数小于最大步数</li>
+</ol>
+
+
+<p>而判断走法是否可行的条件就是:<strong>最后的当前阶梯数是否为0</strong></p>
+
+<p>因此我们可以写出如下的递归函数:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">ladder</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">ladder</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">].</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="n">sum</span><span class="o">+=</span> <span class="n">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="o">-</span><span class="n">i</span><span class="p">)}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">sum</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">ladder</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">to_i</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  但是由于计蒜客的算法问题有1000ms运行时间的限制,因此在此处用Ruby的递归算法来实现并非是正解(可能是Ruby的性能问题导致运行超时,博主没试过用C进行递归.有兴趣的人可以试一试.)</p>
+
+<p>  我们再自习观察前10级阶梯数算出的结果会发现:随着阶梯数N的增长,走法的总数符合斐波那契数列规律增长, f(N)=f(N-1)+f(N-2)
+  利用这个规律我们可以采取以下循环方法实现:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">calcArray</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">=</span><span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="o">]=</span><span class="mi">1</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">]=</span><span class="mi">2</span>
+</span><span class='line'>  <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="n">.</span><span class="mi">49</span><span class="p">)</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">]=</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]+</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="o">]</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">result</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">ladder</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">to_i</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">calcArray</span><span class="o">[</span><span class="n">ladder</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a>
+      <time datetime="2016-06-11T11:17:42+08:00" pubdate><span class='month'>Jun</span> <span class='day'>11</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/10/hello/">Hello</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/">机器学习概述-科普向</a></h2>
-	<div class="meta">
-		<div class="date">Aug  6, 2017</div>
-		
 
-<div class="tags">
+<time datetime="2016-06-10T12:22:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/ji-qi-xue-xi-xue-xi-bi-ji/'>机器学习,学习,笔记</a>
 
+  <div class="entry-content"><p>Hello World!</p>
 </div>
-
-
-	</div>
-</article>
-
-
+  
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/">Scala概率编程语言库-Figaro介绍</a></h2>
-	<div class="meta">
-		<div class="date">Jul 24, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/scala-figaro-gai-lu-bian-cheng/'>scala,figaro,概率编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
+      <footer>
+      
+      - <a href="/blog/2016/06/10/hello/">Hello</a>
+      <time datetime="2016-06-10T12:22:01+08:00" pubdate><span class='month'>Jun</span> <span class='day'>10</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/test/'>test</a></span>
+      
+      </footer>
+    </article>
   
+  <div class="pagination">
+    
+    <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/5">Newer &rarr;</a>
+    
+  </div><!-- /div.pagination -->
+</div><!-- /div.blog-index -->
 
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="http://edmondfrank.github.io">http://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
 
-<article>
-	<h2 class="title"><a href="/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/">Python科学计算库NumPy的使用</a></h2>
-	<div class="meta">
-		<div class="date">Jul 19, 2017</div>
-		
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="http://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "http://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
 
-<div class="tags">
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="http://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "http://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
 
-	<a class='category' href='/blog/categories/python-numpy-xue-xi/'>python,numpy,学习</a>
-
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/haya14busa/mjolvim-octotheme">Mjolvim</a></span>
+  </p>
 </div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/">有关统计学的一些笔记</a></h2>
-	<div class="meta">
-		<div class="date">Jul 14, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/tong-ji-xue-xi-bi-ji/'>统计,学习,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a></h2>
-	<div class="meta">
-		<div class="date">Jul  3, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/bei-xie-si-python-suan-fa/'>贝叶斯,python,算法</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/">Python大规模数据的处理技巧</a></h2>
-	<div class="meta">
-		<div class="date">Jun  7, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-pandas-shu-ju-chu-li/'>python,pandas,数据处理</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/05/21/ji-yu-redisde-bloomfilter/">基于Redis的Bloomfilter</a></h2>
-	<div class="meta">
-		<div class="date">May 21, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-suan-fa-pa-chong-xiang-guan/'>python,算法,爬虫相关</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/">基本抽样和蓄水池抽样</a></h2>
-	<div class="meta">
-		<div class="date">May 12, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-suan-fa-tong-ji/'>python,算法,统计</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/05/07/pca(zhu-cheng-fen-fen-xi-)pythonshi-xian/">PCA（主成分分析）python实现</a></h2>
-	<div class="meta">
-		<div class="date">May  7, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/suan-fa-ji-qi-xue-xi-python/'>算法,机器学习,python</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/">Web正文提取(偏純文本类)</a></h2>
-	<div class="meta">
-		<div class="date">May  2, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-web-suan-fa/'>python,web,算法</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/">比较网页结构相似度</a></h2>
-	<div class="meta">
-		<div class="date">Apr 23, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-suan-fa/'>python,算法</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/04/05/qian-tan-mongodb/">浅谈MongoDB</a></h2>
-	<div class="meta">
-		<div class="date">Apr  5, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/mongodb-shu-ju-ku/'>mongodb,数据库</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/03/27/emacsshi-yong-zhi-nan/">Emacs使用指南</a></h2>
-	<div class="meta">
-		<div class="date">Mar 27, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/emacs-linux-bian-ji-qi/'>emacs,linux,编辑器</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/">计算编辑距离(Levenshtein距离)</a></h2>
-	<div class="meta">
-		<div class="date">Mar 22, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/suan-fa-linux,cpp/'>算法,linux，cpp</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/">认识网络爬虫</a></h2>
-	<div class="meta">
-		<div class="date">Mar 10, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-bian-cheng-pa-chong/'>python,编程,爬虫</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/">中文分词的简介</a></h2>
-	<div class="meta">
-		<div class="date">Feb 28, 2017</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/zi-ran-yu-yan-chu-li-zhong-wen-fen-ci/'>自然语言处理,中文分词</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-	
-	
-		</section>
-	
-	<section class="archives">
-
-<article>
-	<h2 class="title"><a href="/blog/2016/12/22/da-shu-ju-xia-de-hadoop/">大数据下的Hadoop</a></h2>
-	<div class="meta">
-		<div class="date">Dec 22, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/hadoop-linux-da-shu-ju/'>hadoop,linux,大数据</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/">Xlib编程之-创建全屏透明窗口</a></h2>
-	<div class="meta">
-		<div class="date">Oct 21, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-cyu-yan-bian-cheng/'>linux,c语言,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/">2016-10-12:天翼校园网客户端登录协议更新</a></h2>
-	<div class="meta">
-		<div class="date">Oct 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/xiao-yuan-wang-bian-cheng-linux/'>校园网,编程,linux</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/09/21/cong-ling-kai-shi-de-rust-enumeratefang-fa/">从零开始的Rust-Enumerate方法</a></h2>
-	<div class="meta">
-		<div class="date">Sep 21, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/rust-linux-bian-cheng/'>rust,linux,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/">简单cat的实现-1.0</a></h2>
-	<div class="meta">
-		<div class="date">Sep  6, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-cyu-yan-bian-cheng/'>linux,c语言,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/">我的算法天梯之路之-最大子阵列</a></h2>
-	<div class="meta">
-		<div class="date">Sep  1, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/bian-cheng-suan-fa-cyu-yan/'>编程,算法,c语言</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/">(转)Linux On Android——在Android手机上跑Linux教程</a></h2>
-	<div class="meta">
-		<div class="date">Aug 21, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-android-ubuntu/'>linux,android,ubuntu</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/">我的算法天梯之路之-归并排序</a></h2>
-	<div class="meta">
-		<div class="date">Aug 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/bian-cheng-suan-fa-bi-ji/'>编程,算法,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">gdb的简单使用</a></h2>
-	<div class="meta">
-		<div class="date">Aug 11, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-bian-cheng-xue-xi/'>linux,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/">Linux进程内存管理</a></h2>
-	<div class="meta">
-		<div class="date">Aug 10, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-xue-xi-bi-ji/'>linux,学习,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/">Linux程序开发-命令行选项及参数</a></h2>
-	<div class="meta">
-		<div class="date">Aug  9, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-bian-cheng-bi-ji/'>linux,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/30/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-7/">百度前端技术学院-任务7</a></h2>
-	<div class="meta">
-		<div class="date">Jul 30, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an/">错误:Could not reserve enough space for object heap的解决方案</a></h2>
-	<div class="meta">
-		<div class="date">Jul 22, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-ruboto-bi-ji/'>linux,ruboto,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/21/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-6/">百度前端技术学院-任务6</a></h2>
-	<div class="meta">
-		<div class="date">Jul 21, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/15/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-5/">百度前端技术学院-任务5</a></h2>
-	<div class="meta">
-		<div class="date">Jul 15, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-4/">百度前端技术学院-任务4</a></h2>
-	<div class="meta">
-		<div class="date">Jul 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-3/">百度前端技术学院-任务3</a></h2>
-	<div class="meta">
-		<div class="date">Jul 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/13/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-2/">百度前端技术学院-任务2</a></h2>
-	<div class="meta">
-		<div class="date">Jul 13, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/">百度前端技术学院-任务1</a></h2>
-	<div class="meta">
-		<div class="date">Jul 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu/">emacs+w3m:我的浏览我做主</a></h2>
-	<div class="meta">
-		<div class="date">Jul  4, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-emacs-bi-ji/'>linux,emacs,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/02/rubyshi-xian-de-tian-yi-xiao-yuan-wang-ke-hu-duan/">Ruby实现的天翼校园网客户端</a></h2>
-	<div class="meta">
-		<div class="date">Jul  2, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-ruby-bian-cheng/'>linux,ruby,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a></h2>
-	<div class="meta">
-		<div class="date">Jun 30, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/ruby-linux-bian-cheng/'>ruby,linux,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a></h2>
-	<div class="meta">
-		<div class="date">Jun 27, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javescript-bian-cheng-bi-ji/'>javescript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a></h2>
-	<div class="meta">
-		<div class="date">Jun 26, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-bian-cheng-bi-ji/'>javascript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a></h2>
-	<div class="meta">
-		<div class="date">Jun 24, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-bian-cheng-bi-ji/'>javascript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a></h2>
-	<div class="meta">
-		<div class="date">Jun 23, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/go-bian-cheng-bi-ji/'>go,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/20/httpscanpa-chong-sao-miao-xiao-gong-ju/">httpscan爬虫扫描小工具</a></h2>
-	<div class="meta">
-		<div class="date">Jun 20, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-sao-miao-xiu-tan-gong-ju/'>python,扫描嗅探,工具</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h2>
-	<div class="meta">
-		<div class="date">Jun 19, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-fu-wu-qi-ubuntu/'>linux,服务器,ubuntu</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a></h2>
-	<div class="meta">
-		<div class="date">Jun 18, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/meng-meng-xiu-ri-ji-qing-ming-meng/'>梦,梦修日记,清明梦</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a></h2>
-	<div class="meta">
-		<div class="date">Jun 16, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-ying-yong-kai-fa-bian-cheng/'>javascript,应用开发,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/">如何控制你的梦境</a></h2>
-	<div class="meta">
-		<div class="date">Jun 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/meng-sui-xiang-xin-li-xue/'>梦,随想,心理学</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h2>
-	<div class="meta">
-		<div class="date">Jun 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-shen-tou-gong-ju/'>linux,渗透,工具</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a></h2>
-	<div class="meta">
-		<div class="date">Jun 11, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-bian-cheng-makefile/'>linux,编程,makefile</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a></h2>
-	<div class="meta">
-		<div class="date">Jun 11, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/bian-cheng-ruby-suan-fa/'>编程,ruby,算法</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/10/hello/">Hello</a></h2>
-	<div class="meta">
-		<div class="date">Jun 10, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/test/'>test</a>
-
-</div>
-
-
-	</div>
-</article>
-
-</div>
-	<footer id="footer" class="inner"><div class="aboutme">
-<hr>
-  <div class="profile">
-
-    <h3>EdmondFrank</h3>
-    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
-
-    <div class="codes">
-      <h4>Codes</h4>
-      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
-    </div>
-  </div>
-
-  <div class="float_clear"></div>
-
-</div>
-
-Copyright &copy; 2017
- EdmondFrank 
-<br>
-Powered by Octopress.
-
-
 
 </footer>
-	
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
 
 </body>
 </html>

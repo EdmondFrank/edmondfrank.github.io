@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 算法笔记 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/suan-fa-bi-ji/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-09-01T11:03:42+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[基于Redis的Bloomfilter]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter/"/>
+    <updated>2017-05-21T11:05:15+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/05/21/ji-yu-redisde-bloomfilter</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 背景</a></li>
+<li><a href="#sec-2">2. 前言及原理简介</a>
+<ul>
+<li><a href="#sec-2-1">2.1. 传统弊端</a></li>
+<li><a href="#sec-2-2">2.2. bloomfilter</a>
+<ul>
+<li><a href="#sec-2-2-1">2.2.1. 优点：</a></li>
+<li><a href="#sec-2-2-2">2.2.2. 缺点：</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 简单图示</a></li>
+<li><a href="#sec-4">4. 算法实现</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>背景<a id="sec-1" name="sec-1"></a></h1>
+
+<p>url去重一直是大型分布式爬虫的主题，在一般规模比较大的的情景，去重需要考虑到两个点：</p>
+
+<ol>
+<li>去重的数据量</li>
+<li>去重的速度</li>
+</ol>
+
+
+<p>并且，在一般情况下为了尽量降低去重对爬虫效率的影响一般选择在内存中去重。</p>
+
+<ul>
+<li>小数据：直接使用语言的逻辑判断及数据结构去重，如python的set，ruby的Set</li>
+<li>持续化去重： redis的set</li>
+<li>中型数据量去重：加密算法压缩url及长字符串在混合使用其他方法去重</li>
+<li>大型数据去重：使用bloomfilter（布隆过滤器）桉内存位去重</li>
+</ul>
+
+
+<h1>前言及原理简介<a id="sec-2" name="sec-2"></a></h1>
+
+<h2>传统弊端<a id="sec-2-1" name="sec-2-1"></a></h2>
+
+<p>按照以往惯例来说，我们一般判断一个元素是否在一个集合内的通常做法是：先将所有元素保存下来，
+然后通过比较判断它是否在集合之中。但是，这样的常规判断方法有一个很大的弊端就是，随着集合内的
+元素个数变大，我们需要的空间和时间都呈线性增长，检索速度也越来越慢。</p>
+
+<h2>bloomfilter<a id="sec-2-2" name="sec-2-2"></a></h2>
+
+<p>而Bloom filter 采用的是哈希函数的方法，将一个元素表示为一个点并将他映射到一个长度为m的
+阵列上。在检索时如果在阵列上发现对应的映射点为1时，那么这个元素在集合内，反之则不在集合内。</p>
+
+<h3>优点：<a id="sec-2-2-1" name="sec-2-2-1"></a></h3>
+
+<p>Bloom filter 优点在于它的插入和查询时间都是常数，另外它查询的元素不保存元素本身，具有良好的
+安全性。</p>
+
+<h3>缺点：<a id="sec-2-2-2" name="sec-2-2-2"></a></h3>
+
+<p>最明显的一点是，当插入元素越多，查询元素被错判成“在集合内”的概率就越大。针对这个问题常用的
+解决方法有：使用k个哈希函数来对应映射k个点，如果所对应的所有点都是1的话。那么元素在集合内，
+如果任何一个有0的话，则元素不在集合内。另外，Bloom filter也不能删除一个元素，因为多个元素的哈希
+的结果可能在bloom filter的阵列中都是占用同一个位。如果删除了一个比特位，可能会影响多个元素的检测。</p>
+
+<h1>简单图示<a id="sec-3" name="sec-3"></a></h1>
+
+<p>实现我们设我们的哈希函数有两个。</p>
+
+<p>开始时集合内没有元素：</p>
+
+<p><img src="http://e.hiphotos.baidu.com/baike/s%3D250/sign=0fd8813a78f0f736dcfe4b043a54b382/7af40ad162d9f2d3f39093aaa9ec8a136227ccf6.jpg" alt="img" /></p>
+
+<p>当来了一个元素a时，进行哈希计算再判断，当计算出对应的比特位上为0时，即a不在集合内，添加a的哈希值进去。</p>
+
+<p><img src="http://g.hiphotos.baidu.com/baike/s%3D250/sign=7debb7818c1001e94a3c130a880e7b06/9d82d158ccbf6c815e2dd280bd3eb13533fa4044.jpg" alt="img" /></p>
+
+<p>之后的元素，要判断是不是在集合内，也是同 a 一样的方法，只有对元素哈希后对应位置上都是 1 才认为这个元素在集合内</p>
+
+<p><img src="http://c.hiphotos.baidu.com/baike/s%3D250/sign=71f00574a18b87d65442ac1a37092860/d6ca7bcb0a46f21f7ce5e916f6246b600d33aea6.jpg" alt="img" /></p>
+
+<p>随着元素的插入，Bloom filter 中修改的值变多，出现误判的几率也随之变大，当新来一个元素时，
+满足其在集合内的条件，即所有对应位都是1，这样就可能有两种情况，
+一是这个元素就在集合内，没有发生误判；还有一种情况就是发生误判，出现了哈希碰撞，这个元素本不在集合内。</p>
+
+<p><img src="http://a.hiphotos.baidu.com/baike/s%3D250/sign=7dd68ea2912397ddd2799f016983b216/2cf5e0fe9925bc31448eb6dd5edf8db1ca1370a7.jpg" alt="img" /></p>
+
+<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
+
+<pre><code class="python">    # encoding=utf-8
+
+    import redis
+    from hashlib import md5
+
+    class SimpleHash(object):
+        def __init__(self, cap, seed):
+            self.cap = cap
+            self.seed = seed
+
+        def hash(self, value):
+            ret = 0
+            for i in range(len(value)):
+                ret += self.seed * ret + ord(value[i])
+            return (self.cap - 1) &amp; ret
+
+
+    class BloomFilter(object):
+        def __init__(self, host='localhost', port=6379, db=0, blockNum=1, key='bloomfilter'):
+            """
+            :param host: the host of Redis
+            :param port: the port of Redis
+            :param db: witch db in Redis
+            :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.
+            :param key: the key's name in Redis
+            """
+            self.server = redis.Redis(host=host, port=port, db=db)
+            self.bit_size = 1 &lt;&lt; 31  # Redis的String类型最大容量为512M，现使用256M
+            self.seeds = [5, 7, 11, 13, 31, 37, 61]
+            self.key = key
+            self.blockNum = blockNum
+            self.hashfunc = []
+            for seed in self.seeds:
+                self.hashfunc.append(SimpleHash(self.bit_size, seed))
+
+        def isContains(self, str_input):
+            if not str_input:
+                return False
+            m5 = md5()
+            m5.update(str_input)
+            str_input = m5.hexdigest()
+            ret = True
+            name = self.key + str(int(str_input[0:2], 16) % self.blockNum)
+            for f in self.hashfunc:
+                loc = f.hash(str_input)
+                ret = ret &amp; self.server.getbit(name, loc)
+            return ret
+
+        def insert(self, str_input):
+            m5 = md5()
+            m5.update(str_input)
+            str_input = m5.hexdigest()
+            name = self.key + str(int(str_input[0:2], 16) % self.blockNum)
+            for f in self.hashfunc:
+                loc = f.hash(str_input)
+                self.server.setbit(name, loc, 1)
+
+
+    if __name__ == '__main__':
+    """ 第一次运行时会显示 not exists!，之后再运行会显示 exists! """
+        bf = BloomFilter()
+        if bf.isContains('http://www.baidu.com'):   # 判断字符串是否存在
+            print 'exists!'
+        else:
+            print 'not exists!'
+            bf.insert('http://www.baidu.com')
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[计算编辑距离(Levenshtein距离)]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi/"/>
+    <updated>2017-03-22T17:33:02+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/03/22/ji-suan-bian-ji-ju-chi-levenshteinju-chi</id>
+    <content type="html"><![CDATA[<h1>计算字符串的相似度（编辑距离）</h1>
+
+<h2>Levenshtein 距离</h2>
+
+<p>Levenshtein距离，又称编辑距离，指的是两个字符串之间，由一个转换成另外一个所需的最少编辑量。
+编辑距离算法首先由俄国科学家Levenshstance提出，原理可大致举例如下：</p>
+
+<blockquote><p>字符串A：abcdefg
+字符串B：abcdef</p></blockquote>
+
+<p>以上两串字符串可以通过添加或是删除字符“g”的方式达到一致的目的。这两种方案都需要一次操作。</p>
+
+<h2>算法实现</h2>
+
+<p>此问题可以采用经典的动态规划求解。</p>
+
+<h2>计算两字符串的最长公共子序列相似</h2>
+
+<p>设Ai为字符串A(a1a2a3 … am)的前i个字符（即为a1,a2,a3 … ai）
+设Bj为字符串B(b1b2b3 … bn)的前j个字符（即为b1,b2,b3 … bj）</p>
+
+<p>设 L(i,j)为使两个字符串和Ai和Bj相等的最小操作次数。
+当ai==bj时 显然</p>
+
+<blockquote><p>L(i,j) = L(i-1,j-1)</p></blockquote>
+
+<p>当ai!=bj时</p>
+
+<blockquote><p>若将它们修改为相等，则对两个字符串至少还要操作L(i-1,j-1)次
+若删除ai或在bj后添加ai，则对两个字符串至少还要操作L(i-1,j)次
+若删除bj或在ai后添加bj，则对两个字符串至少还要操作L(i,j-1)次
+此时L(i,j) = min( L(i-1,j-1), L(i-1,j), L(i,j-1) ) + 1</p></blockquote>
+
+<p>所以，L(i,0)=i，L(0,j)=j, 再利用上述的递推公式，可以直接计算出L(i,j)值。</p>
+
+<blockquote><p>算法实现</p></blockquote>
+
+<pre><code class="c">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+int calcdistance(string,string);
+int minvalue(int,int,int);
+int main(int argc, char *argv[])
+{
+    string str1 ,str2;
+    cout&lt;&lt;"Please input 2 strings:"&lt;&lt;endl;
+    cin&gt;&gt;str1&gt;&gt;str2;
+    cout&lt;&lt;str1&lt;&lt;endl;
+    cout&lt;&lt;str2&lt;&lt;endl;
+    cout&lt;&lt;calcdistance(str1,str2)&lt;&lt;endl;
+    //cout &lt;&lt; "Hello World!" &lt;&lt; endl;
+    return 0;
+}
+int calcdistance(string s1, string s2)
+{
+    int len1 = s1.size()+1;
+    int len2 = s2.size()+1;
+    if(len1==0)
+        return len2;
+    if(len2==0)
+        return len1;
+
+    int ** cnt = new int*[len1];
+    for(int i=0;i&lt;len1;i++)
+        cnt[i]=new int[len2];
+
+    for(int i=0;i&lt;len1;i++)cnt[i][0]=i;
+    for(int j=0;j&lt;len2;j++)cnt[0][j]=j;
+    //cnt[0][0] = 0;
+
+    for(int i=1;i&lt;len1;i++)
+    {
+        for(int j=1;j&lt;len2;j++){
+            if(s1[i-1]==s2[j-1])
+                cnt[i][j]=cnt[i-1][j-1];
+            else
+            {
+                cnt[i][j]=minvalue(cnt[i-1][j-1],
+                        cnt[i-1][j],
+                        cnt[i][j-1])+1;
+            }
+        }
+    }
+    int ret = cnt[len1-1][len2-1];
+    for(int i=0;i&lt;len1;i++)
+        delete [] cnt[i];
+    delete [] cnt;
+    return ret;
+}
+int minvalue(int a, int b, int c){
+ int t = a &lt;=b ? a : b;
+ return t &lt;= c? t : c;
+}
+</code></pre>
+
+<blockquote><p>Vector版本如下</p></blockquote>
+
+<pre><code class="c">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+using namespace std;
+int calcdistance(string,string);
+int main(int argc, char *argv[])
+{
+    string str1 ,str2;
+    cout&lt;&lt;"Please input 2 strings:"&lt;&lt;endl;
+    cin&gt;&gt;str1&gt;&gt;str2;
+    cout&lt;&lt;str1&lt;&lt;endl;
+    cout&lt;&lt;str2&lt;&lt;endl;
+    cout&lt;&lt;calcdistance(str1,str2)&lt;&lt;endl;
+    //cout &lt;&lt; "Hello World!" &lt;&lt; endl;
+    return 0;
+}
+int calcdistance(string str1,string str2)
+{
+    int n = str1.size();
+    int m = str2.size();
+    if ( n == 0)
+        return m;
+    if ( m == 0)
+        return n;
+    vector&lt;int&gt; vec1(n+1);
+    vector&lt;int&gt; vec2(m+1);
+    for(int i=0;i&lt;=n;i++)
+        vec1[i] = i;
+    int cost = 0;
+
+    for(int i=1;i&lt;=n;i++)
+    {
+        vec2[0] = i;
+        for(int j=1;j&lt;=m;j++)
+        {
+            if( str1[i-1] == str2[j-1] )
+                cost = 0;
+            else
+                cost = 1;
+            vec2[j] = vec2[j-1]+1 &lt; vec1[j]+1 ? vec2[j-1]+1 : vec1[j]+1;
+            vec2[j] = vec2[j] &lt; vec1[j-1]+cost ? vec2[j] : vec1[j-1]+cost;
+        }
+        vec1 = vec2;
+    }
+    return vec2.back();
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[我的算法天梯之路之-最大子阵列]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/"/>
+    <updated>2016-09-01T17:51:01+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie</id>
+    <content type="html"><![CDATA[<h2>我的算法天梯之路之-最大子阵列</h2>
+
+<blockquote><p>在一个数组中找出和最大的连续几个数。（至少包含一个数）<br/>
+例如：<br/>
+数组A[] = [−2, 1, −3, 4, −1, 2, 1, −5, 4]，则连续的子序列[4,−1,2,1]有最大的和6.<br/>
+输入格式<br/>
+第一行输入一个不超过1000的整数n。<br/>
+第二行输入n个整数A[i]。<br/>
+输出格式<br/>
+第一行输出一个整数，表示最大的和。<br/></p></blockquote>
+
+<p><strong>样例输入</strong></p>
+
+<blockquote><p>3<br/>
+1 1 -2<br/>
+<strong>样例输出</strong>
+<br/>
+2<br/></p></blockquote>
+
+<p><strong>示例代码</strong>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &amp;lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="cp">#define N 1001</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">maxsum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">[],</span><span class="kt">int</span> <span class="n">n</span><span class="p">){</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="n">b</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="k">else</span> <span class="n">b</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="o">&gt;</span><span class="n">sum</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">sum</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">scanf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">%</span><span class="n">d</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">scanf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">%</span><span class="n">d</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="n">maxsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">n</span><span class="p">));</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[我的算法天梯之路之-归并排序]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/"/>
+    <updated>2016-08-12T10:44:05+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu</id>
+    <content type="html"><![CDATA[<h2>我的算法天梯之路之-归并排序</h2>
+
+<p>插入排序算法采取增量式(Incremental)的策略解决问题,每次添一个元素到已排序的子序列
+中,逐渐将整个数组排序完毕,它的时间复杂度是Θ(n<sup>2</sup>)。下面介绍另一个典型的排序算法&ndash;
+归并排序,它采取分而治之(Divide-and-Conquer)的策略,时间复杂度是Θ(nlgn),优于插入
+排序算法。归并排序的步骤如下:</p>
+
+<ol>
+<li>Divide: 把长度为n的输入序列分成两个长度为n/2的子序列。</li>
+<li>Conquer: 对这两个子序列分别采用归并排序。</li>
+<li>Combine: 将两个排序好的子序列合并成一个最终的排序序列。</li>
+</ol>
+
+
+<p>在描述归并排序的步骤时又调用了归并排序本身,可见这是一个递归的过程。</p>
+
+<p><strong>示例代码</strong>
+<code>c
+ #include &lt;stdio.h&gt;
+ #define LEN 8
+ int a[LEN] = {5,2,4,7,1,3,2,6};
+ void merge(int start,int mid,int end){
+     int n1 = mid - start + 1;
+     int n2 = end - mid;
+     int left[n1],right[n2];
+     int i,j,k;
+     for (i = 0;i &lt; n1;i++)
+     left[i] = a[start+i];
+     for (j = 0;j &lt; n2;j++)
+     right[j] = a[mid+1+j];
+     i = j = 0;
+     for (k = start; i &lt; n1 &amp;&amp; j &lt; n2; k++){
+         if (left[i] &lt; right[j]){
+             a[k] = left[i];
+             i++;
+         }else{
+             a[k] = right[j];
+             j++;
+         }
+     }
+     if (i &lt; n1)
+     for(;i &lt; n1;i++){
+         a[k] = left[i];
+         k++;
+     }
+     if (j &lt; n2)
+     for (;j &lt; n2;j++){
+         a[k] = right[j];
+         k++;
+     }
+ }
+ void sort(int start,int end){
+     int mid;
+     if (start &lt; end){
+         mid = (start + end)/2;
+         printf("sort (%d-%d,%d-%d) %d,%d,%d,%d,%d,%d,%d,%d\n",
+                start,mid,mid+1,end,
+                a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
+         sort(start,mid);
+         sort(mid+1,end);
+         merge(start,mid,end);
+         printf("merge (%d-%d,%d-%d) %d,%d,%d,%d,%d,%d,%d,%d\n",
+                start,mid,mid+1,end,
+                a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
+     }
+ }
+ int main(){
+     sort(0,LEN-1);
+     return 0;
+ }
+</code></p>
+
+<blockquote><p>在merge函数中演示了C99的新特性&ndash;可变长数组,当然
+也可以避免使用这一特性,比如把left和right都按最大长度LEN分配。</p></blockquote>
+
+<h3>程序耗时</h3>
+
+<pre><code>$ time ./sort
+sort (0-3,4-7) 5,2,4,7,1,3,2,6
+sort (0-1,2-3) 5,2,4,7,1,3,2,6
+sort (0-0,1-1) 5,2,4,7,1,3,2,6
+merge (0-0,1-1) 2,5,4,7,1,3,2,6
+sort (2-2,3-3) 2,5,4,7,1,3,2,6
+merge (2-2,3-3) 2,5,4,7,1,3,2,6
+merge (0-1,2-3) 2,4,5,7,1,3,2,6
+sort (4-5,6-7) 2,4,5,7,1,3,2,6
+sort (4-4,5-5) 2,4,5,7,1,3,2,6
+merge (4-4,5-5) 2,4,5,7,1,3,2,6
+sort (6-6,7-7) 2,4,5,7,1,3,2,6
+merge (6-6,7-7) 2,4,5,7,1,3,2,6
+merge (4-5,6-7) 2,4,5,7,1,2,3,6
+merge (0-3,4-7) 1,2,2,3,4,5,6,7
+
+real    0m0.001s
+user    0m0.000s
+sys 0m0.000s
+</code></pre>
+
+<p><strong>相比之下冒泡排序在时间复杂度上就较为逊色了,且要排序的元素越多时,差别越大!</strong></p>
+
+<p><strong>示例代码</strong>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &amp;lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="cp">#define LEN 8</span>
+</span><span class='line'> <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">LEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span> <span class="p">};</span>
+</span><span class='line'> <span class="kt">void</span> <span class="nf">sort</span><span class="p">(</span><span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">int</span> <span class="n">end</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">temp</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">end</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>         <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span><span class="n">i</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">end</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>             <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="n">j</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">end</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>                 <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span>
+</span><span class='line'>                 <span class="n">temp</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>                 <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class='line'>                 <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+</span><span class='line'>                 <span class="p">}</span>
+</span><span class='line'>             <span class="p">}</span>
+</span><span class='line'>         <span class="p">}</span>
+</span><span class='line'>         <span class="n">printf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">sort</span> <span class="p">(</span><span class="o">%</span><span class="n">d</span><span class="o">-%</span><span class="n">d</span><span class="p">)</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span> <span class="o">%</span><span class="n">d</span><span class="err">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span>
+</span><span class='line'>                <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">7</span><span class="p">]);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="p">}</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="n">sort</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">LEN</span><span class="p">);</span>
+</span><span class='line'> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h3>程序耗时</h3>
+
+<pre><code>$ time ./sort2
+sort (0-8) 1 2 2 3 4 5 6 7
+
+real    0m0.002s
+user    0m0.000s
+sys 0m0.000s
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[我的算法天梯之路之-爬楼梯]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/"/>
+    <updated>2016-06-11T11:17:42+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti</id>
+    <content type="html"><![CDATA[<h1>我的算法天梯之路之-爬楼梯</h1>
+
+<p>最近在计蒜客的算法练习题目之中看到了这样一道比较有意思的题目.</p>
+
+<p>原题如下所示:</p>
+
+<blockquote><p>假设你现在正在爬楼梯，楼梯有n级。每次你只能爬1级或者2级，那么你有多少种方法爬到楼梯的顶部？
+格式：
+  第一行输入一个数n(n&lt;=50)，代表楼梯的级数。
+  接下来一行输出你的方法总数。
+样例输入
+5
+样例输出
+8</p></blockquote>
+
+<p>从题面上看,可以发现这是一道比较典型的递归算法题目.
+既然已知阶梯数为N,而最大跨步数为2,那么我们可以先假设有3级阶梯,那么所有的走法就有:</p>
+
+<blockquote><p>111 12 21</p></blockquote>
+
+<p>这样子分析完之后,我们可以发现,我们总共要处理的情况有两种:</p>
+
+<ol>
+<li>剩余阶梯数大于最大步数</li>
+<li>剩余阶梯数小于最大步数</li>
+</ol>
+
+
+<p>而判断走法是否可行的条件就是:<strong>最后的当前阶梯数是否为0</strong></p>
+
+<p>因此我们可以写出如下的递归函数:</p>
+
+<pre><code class="ruby">def calcSumofMethod(ladder)
+  sum = 0
+  if ladder == 0 || ladder == 1
+    return 1
+  else
+    [1,2].each{|i|sum+= calcSumofMethod(ladder-i)}
+  end
+  return sum
+end
+ladder = gets.to_i
+puts calcSumofMethod(ladder)
+</code></pre>
+
+<p>  但是由于计蒜客的算法问题有1000ms运行时间的限制,因此在此处用Ruby的递归算法来实现并非是正解(可能是Ruby的性能问题导致运行超时,博主没试过用C进行递归.有兴趣的人可以试一试.)</p>
+
+<p>  我们再自习观察前10级阶梯数算出的结果会发现:随着阶梯数N的增长,走法的总数符合斐波那契数列规律增长, f(N)=f(N-1)+f(N-2)
+  利用这个规律我们可以采取以下循环方法实现:</p>
+
+<pre><code class="ruby">def calcArray
+  result=Array.new
+  result[0]=1
+  result[1]=2
+  (2..49).each{|i|result[i]=result[i-1]+result[i-2]}
+  return result
+end
+ladder = gets.to_i
+puts calcArray[ladder-1]
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

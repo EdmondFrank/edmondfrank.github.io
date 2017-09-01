@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 开发资讯 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/kai-fa-zi-xun/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-09-01T11:03:42+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[中文分词的简介]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie/"/>
+    <updated>2017-02-28T20:23:19+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/02/28/zhong-wen-fen-ci-de-jian-jie</id>
+    <content type="html"><![CDATA[<h2>中文分词的简介</h2>
+
+<h3>一：中文分词是什么？</h3>
+
+<p>中文分词指的是将一个汉字序列切分成一个一个单独的词。
+中文分词技术属于自然语言处理技术范畴，对于一句话，人可以通过自己的知识来明白哪些是词，哪些不是词，但如何让计算机也能理解？其处理过程就是分词算法。</p>
+
+<h3>二：为什么要进行中文分词？</h3>
+
+<p>词是最小的能够独立活动的有意义的语言成分，英文单词之间是以空格作为自然分界符的，而汉语是以字为基本的书写单位，词语之间没有明显的区分标记，因此，中文词语分析是中文信息处理的基础与关键。</p>
+
+<p>中文分词对于搜索引擎来说，最重要的并不是找到所有结果，因为在上百亿的网页中找到所有结果没有太多的意义，没有人能看得完，最重要的是把最相关的结果排在最前面，这也称为相关度排序。中文分词的准确与否，常常直接影响到对搜索结果的相关度排序。</p>
+
+<h3>三：常用的中文分词算法及原理</h3>
+
+<p>分词算法大体上可分为三大类：<strong>（1）基于字典、词库匹配的分词方法（2）基于词频度统计的分词方法（3）基于知识理解的分词方法</strong>。</p>
+
+<h4>（1）词典匹配：</h4>
+
+<p>词典匹配、汉语词法或其它汉语语言知识进行分词，如：<strong>最大匹配法、最小分词方法</strong>等。这类方法简单、分词效率较高,但汉语语言现象复杂丰富，词典的完备性、规则的一致性等问题使其难以适应开放的大规模文本的分词处理</p>
+
+<p><strong>最大正向匹配法</strong>：通常简称为ＭＭ法。其基本思想为：假定分词词典中的最长词有i个汉字字符，则用被处理文档的当前字串中的前i个字作为匹配字段，查找字典。若字典中存在这样的一个i字词，则匹配成功，匹配字段被作为一个词切分出来。如果词典中找不到这样的一个i字词，则匹配失败，将匹配字段中的最后一个字去掉，对剩下的字串重新进行匹配处理，如此进行下去，直到匹配成功，即切分出一个词或剩余字串的长度为零为止。这样就完成了一轮匹配，然后取下一个i字字串进行匹配处理，直到文档被扫描完为止。</p>
+
+<p>由于汉语中偏正结构较多，若从后向前匹配，可以适当提高精确度。所以，逆向最大匹配法比正向最大匹配法的误差要小。</p>
+
+<p><strong>逆向最大匹配法</strong>：通常简称为ＲＭＭ法。ＲＭＭ法的基本原理与ＭＭ法相同 ,不同的是分词切分的方向与MM法相反，而且使用的分词辞典也不同。逆向最大匹配法从被处理文档的末端开始匹配扫描，每次取最末端的2i个字符（i字字串）作为匹配字段，若匹配失败，则去掉匹配字段最前面的一个字，继续匹配。相应地，它使用的分词词典是逆序词典，其中的每个词条都将按逆序方式存放。在实际处理时，先将文档进行倒排处理，生成逆序文档。然后，根据逆序词典，对逆序文档用正向最大匹配法处理即可。</p>
+
+<p><strong>最少切分法（最小分词法）</strong>：使每一句中切出的词数最小。</p>
+
+<h4>（2）基于统计的分词算法：</h4>
+
+<p>统计模型则基于字和词的统计信息，把相邻字间的信息、词频及相应的共现信息通过条件概率分布模型应用于分词，由于这些信息是通过调查真实语料而取得的，因而基于统计的分词方法具有较好的实用性。</p>
+
+<p>其中最具代表性的是：<a href="http://baike.baidu.com/item/%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%A8%A1%E5%9E%8B">马尔可夫模型</a></p>
+
+<h3>四：常用中文分词工具（引擎）</h3>
+
+<ol>
+<li><a href="https://github.com/fxsjy/jieba">结巴中文分词（多语言版本）</a></li>
+<li><a href="https://github.com/NLPchina/ansj_seg">Ansj中文分词（java）</a></li>
+<li><a href="http://bosonnlp.com/dev/center">BosonNLP</a></li>
+<li><a href="http://www.oschina.net/p/ikanalyzer">IKAnalyzer</a></li>
+<li><a href="http://ictclas.nlpir.org/docs">NLPIR</a></li>
+<li><a href="http://www.xunsearch.com/scws/docs.php">SCWS中文分词</a></li>
+<li><a href="http://pangusegment.codeplex.com/">盘古分词</a></li>
+<li><a href="https://code.google.com/p/paoding/">庖丁解牛</a></li>
+<li><a href="http://www.sogou.com/labs/webservice/">搜狗分词</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[大数据下的Hadoop]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop/"/>
+    <updated>2016-12-22T20:00:09+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/12/22/da-shu-ju-xia-de-hadoop</id>
+    <content type="html"><![CDATA[<h2>大数据下的Hadoop</h2>
+
+<p><strong>(1) 什么是大数据概念？</strong>
+    <a href="http://baike.baidu.com/item/%E5%A4%A7%E6%95%B0%E6%8D%AE/1356941">大数据(big data,mega data)</a>，或称巨量资料，指的是需要新处理模式才能具有更强的决策力、洞察力和流程优化能力的海量、高增长率和多样化的信息资产。</p>
+
+<p><strong>(2) 常规的数据处理 </strong>
+* 数据的采集
+* 明确数据处理的目的
+* 数据清洗 : 统一数据格式、删除重复值、处理缺失字段、检查数据逻辑错误等
+* 数据加工 : 数据抽取、数据计算、数据分组和数据转换等
+* 数据抽样
+数据处理完毕后，就可以进行数据分析了</p>
+
+<p><strong>(3) 主流的三大分布式计算系统</strong></p>
+
+<blockquote><p>一.Hadoop 基于java</p></blockquote>
+
+<p>   Hadoop采用MapReduce分布式计算框架，并根据GFS开发了HDFS分布式文件系统，根据BigTable开发了HBase数据存储系统。</p>
+
+<blockquote><p>二.Spark  基于scala</p></blockquote>
+
+<pre><code>Spark也是Apache基金会的开源项目，它由加州大学伯克利分校的实验室开发，是另外一种重要的分布式计算系统。它在Hadoop的基础上进行了一些架构上的改良。Spark与Hadoop最大的不同点在于，Hadoop使用硬盘来存储数据，而Spark使用内存来存储数据，因此Spark可以提供超过Hadoop 100倍的运算速度。但是，由于内存断电后会丢失数据，Spark不能用于处理需要长期保存的数据。
+</code></pre>
+
+<blockquote><p>三.Storm  基于clojure</p></blockquote>
+
+<pre><code>Storm是Twitter主推的分布式计算系统，它由BackType团队开发，是Apache基金会的孵化项目。它在Hadoop的基础上提供了实时运算的特性，可以实时的处理大数据流。不同于Hadoop和Spark，Storm不进行数据的收集和存储工作，它直接通过网络实时的接受数据并且实时的处理数据，然后直接通过网络实时的传回结果。
+</code></pre>
+
+<p>   <em>然而,以上的平台的语言开发组件都有一个共同点,即,基于java的JVM</em></p>
+
+<p><strong>(4) 有关hadoop</strong></p>
+
+<p>Hadoop核心 HDFS和MapReduce</p>
+
+<pre><code>HDFS
+</code></pre>
+
+<p>   HDFS（Hadoop Distributed File System，Hadoop分布式文件系统），它是一个高度容错性的系统，适合部署在廉价的机器上。HDFS能提供高吞吐量的数据访问，适合那些有着超大数据集（large data set）的应用程序。</p>
+
+<blockquote><p>HDFS的设计特点是：</p></blockquote>
+
+<ol>
+<li>大数据文件，非常适合上T级别的大文件或者一堆大数据文件的存储，如果文件只有几个G甚至更小就没啥意思了。</li>
+<li>文件分块存储，HDFS会将一个完整的大文件平均分块存储到不同计算器上，它的意义在于读取文件时可以同时从多个主机取不同区块的文件，多主机读取比单主机读取效率要高得多得都。</li>
+<li>流式数据访问，一次写入多次读写，这种模式跟传统文件不同，它不支持动态改变文件内容，而是要求让文件一次写入就不做变化，要变化也只能在文件末添加内容。</li>
+<li>廉价硬件，HDFS可以应用在普通PC机上，这种机制能够让给一些公司用几十台廉价的计算机就可以撑起一个大数据集群。</li>
+<li>硬件故障，HDFS认为所有计算机都可能会出问题，为了防止某个主机失效读取不到该主机的块文件，它将同一个文件块副本分配到其它某几个主机上，如果其中一台主机失效，可以迅速找另一块副本取文件。</li>
+</ol>
+
+
+<blockquote><p>HDFS的关键元素：</p></blockquote>
+
+<p><strong>Block：将一个文件进行分块，通常是64M。</strong></p>
+
+<p>NameNode：保存整个文件系统的目录信息、文件信息及分块信息，这是由唯一一台主机专门保存，当然这台主机如果出错，NameNode就失效了。在Hadoop2.*开始支持activity-standy模式&mdash;-如果主NameNode失效，启动备用主机运行NameNode。</p>
+
+<p><strong>DataNode：分布在廉价的计算机上，用于存储Block块文件。</strong></p>
+
+<p><img src="/images/hdfs.jpg"></p>
+
+<pre><code>MapReduce
+</code></pre>
+
+<p>   通俗说MapReduce是一套从海量·源数据提取分析元素最后返回结果集的编程模型，将文件分布式存储到硬盘是第一步，而从海量数据中提取分析我们需要的内容就是MapReduce做的事了。</p>
+
+<p>   下面以一个计算海量数据最大值为例：一个银行有上亿储户，银行希望找到存储金额最高的金额是多少，按照传统的计算方式，我们会这样：</p>
+
+<pre><code class="java">//java
+Long moneys[] ...
+Long max = 0L;
+for(int i=0;i&lt;moneys.length;i++){
+  if(moneys[i]&gt;max){
+    max = moneys[i];
+  }
+}
+</code></pre>
+
+<p>如果计算的数组长度少的话，这样实现是不会有问题的，还是面对海量数据的时候就会有问题。</p>
+
+<p>MapReduce会这样做：首先数字是分布存储在不同块中的，以某几个块为一个Map，计算出Map中最大的值，然后将每个Map中的最大值做Reduce操作，Reduce再取最大值给用户。</p>
+
+<p><img src="/images/map.jpg"></p>
+
+<p>MapReduce的基本原理就是：将大的数据分析分成小块逐个分析，最后再将提取出来的数据汇总分析，最终获得我们想要的内容。当然怎么分块分析，怎么做Reduce操作非常复杂，Hadoop已经提供了数据分析的实现，我们只需要编写简单的需求命令即可达成我们想要的数据。</p>
+
+<h2>总结</h2>
+
+<p>   <strong>总的来说:</strong> <em>Hadoop适合应用于大数据存储和大数据分析的应用，适合于服务器几千台到几万台的集群运行，支持PB级的存储容量。Hadoop典型应用有：搜索、日志处理、推荐系统、数据分析、视频图像分析、数据保存等。</em></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby Shoes-优雅轻量GUI之选]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/"/>
+    <updated>2016-06-30T20:10:11+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan</id>
+    <content type="html"><![CDATA[<h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
+
+<h2>Shoes简介</h2>
+
+<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
+
+<ul>
+<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
+<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
+</ul>
+
+
+<hr />
+
+<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
+
+<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
+
+<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
+
+<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
+
+<h2>示例代码</h2>
+
+<pre><code class="ruby">Shoes.app width: 300, height: 200 do
+  background lime..blue
+  stack do
+    para "Welcome to the world of Shoes!"
+    button "Click me" do alert "Nice click!" end
+    image "http://shoesrb.com/img/shoes-icon.png",
+          margin_top: 20, margin_left: 10
+  end
+end
+</code></pre>
+
+<p>界面效果如下:</p>
+
+<p>　<img src="/images/shoes4.png"></p>
+
+<hr />
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Electron-用JavaScript来构建跨平台的桌面应用]]></title>
+    <link href="http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/"/>
+    <updated>2016-06-16T22:23:37+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong</id>
+    <content type="html"><![CDATA[<h1>Electron - 用JavaScript来构建跨平台的桌面应用</h1>
+
+<p>　　  Electron 框架的前身是 Atom Shell，可以让你写使用 JavaScript，HTML 和 CSS 构建跨平台的桌面应用程序。它是基于io.js 和 Chromium 开源项目，并用于在 Atom 编辑器中。Electron 是开源的，由 GitHub 维护，有一个活跃的社区。最重要的是，Electron 应用服务构建和运行在 Mac，Windows 和 Linux。</p>
+
+<h2>　　　　</h2>
+
+<p>　　
+　　<img src="/images/Electron.png"></p>
+]]></content>
+  </entry>
+  
+</feed>

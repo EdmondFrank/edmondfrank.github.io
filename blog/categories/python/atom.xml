@@ -1,0 +1,1134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: python | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/python/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-09-01T11:03:42+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Python科学计算库NumPy的使用]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/"/>
+    <updated>2017-07-19T19:10:49+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong</id>
+    <content type="html"><![CDATA[<h1>Python科学计算库NumPy的使用</h1>
+
+<h2>NumPy的介绍</h2>
+
+<p>NumPy(Numerical Python的缩写)是一个开源的Python科学计算库。使用NumPy,就可以很自然地使用数组和矩阵。NumPy包含很多实用的数学函数,涵盖线性代数运算、傅里叶变换和随机数生成等功能。如果你的系统中已经装有LAPACK,NumPy的线性代数模块会调用它,否则NumPy将使用自己实现的库函数。LAPACK是一个著名的数值计算库,最初是用Fortran写成的,Matlab同样也需要调用它。从某种意义上讲,NumPy可以取代Matlab和Mathematica的部分功能,并且允许用户进行快速的交互式原型设计。</p>
+
+<h2>NumPy的数组对象</h2>
+
+<p>ndarray是一个多维数组对象，该对象由实际数据+描述性元数据组成。
+使用Numpy需要先安装和导入NumPy库，有关安装教程可以参考<a href="https://docs.scipy.org/doc/numpy/user/install.html">Installing NumPy</a></p>
+
+<blockquote><p>导入语法：import numpy as np</p></blockquote>
+
+<p>此处使用np为别名是为了避免命名空间被污染。</p>
+
+<p><strong>特点</strong>：</p>
+
+<ol>
+<li>NumPy数组一般是同质（即数组内的元素为相同类型，特殊类型除外）</li>
+<li>NumPy数组的下标也是从0开始</li>
+<li>可以方便地创建高维数组</li>
+</ol>
+
+
+<p><em>eg：</em>
+<code>bash
+In: a = np.arange(5)
+In: a.dtype
+Out: dtype('int64')
+</code>
+而在32位系统中，得到的结果类型可能是int32。</p>
+
+<p><strong>多维数组的创建</strong>：
+<code>bash
+In: m = np.array([np.arange(2), np.arange(2)])
+In: m
+Out:
+array([[0, 1],
+[0, 1]])
+In: m.shape #shape可以输出数组行列（维度）信息
+Out: (2, 2)
+</code>
+<strong>选取数组元素</strong>：
+我们继续沿用上面创建的数组m
+<code>bash
+In: m[0,0]
+Out: 0
+In: m[0,1]
+Out: 1
+</code>
+    是的,从数组中选取元素就是这么简单。对于数组 a ,只需要用 a[m,n] 选取各数组元素,其中 m 和 n 为元素下标。</p>
+
+<p><strong>NumPy的数据类型</strong>:
+    Python支持的数据类型有整型、浮点型以及复数型,但这些类型不足以满足科学计算的需求,因此NumPy添加了很多其他的数据类型。在NumPy中,许多函数的参数中可以指定数据类型,通常这个参数是可选的:
+<code>bash
+In: np.arange(7, dtype=uint16)
+Out: array([0, 1, 2, 3, 4, 5, 6], dtype=uint16)
+</code>
+其中完整的数据类型可以通过np.sctypeDict.keys()查到：
+<code>bash
+dict_keys([0, 1, 2, 3, 'D', 5, 6, 'ushort', 8, 'P', 10, 11, 12, 'uintp', 14, 15, 16, 17, 18, 19, 'Float16', 21, 22, 23, 'cfloat', 4, 'Object0', 'int32', 'UInt64', 'Complex128', 'uint0', 'i2', 7, 'Int16', 'int', 'complex', 'ubyte', 'Int32', 'float', 'i', 'short', 'B', 'str0', 9, 'complex_', 'O', 'long', 'bytes', 'float_', 'Int64', 'int0', 'Void0', 'float128', 'Float64', 'Str0', 'int64', 'b', 'longdouble', 'void', 'f', 'longcomplex', 'ulonglong', 'intp', 'UInt32', 'V', 'object_', 'longlong', 'csingle', 'uint', 'c32', 'M', 'I', 'singlecomplex', 'double', 'timedelta64', 'object', 'unicode_', 'Float128', 'uint64', 'h', 'str', 'd', 'UInt8', 20, 'complex128', 'string_', 'clongfloat', 'H', 'm8', 'clongdouble', 'S', 'g', 'bool_', 'unicode', 'f16', 13, 'int8', 'void0', 'L', 'M8', 'uint32', 'p', 'bytes0', 'e', 'datetime64', 'U', 'float16', 'c16', '?', 'Bool', 'byte', 'i4', 'c8', 'int16', 'half', 'uint16', 'str_', 'i8', 'Complex32', 'Int8', 'bool', 'Bytes0', 'G', 'l', 'uint8', 'f2', 'single', 'f8', 'q', 'Q', 'm', 'Complex64', 'f4', 'u2', 'Float32', 'i1', 'u4', 'Datetime64', 'intc', 'float64', 'a', 'complex64', 'u1', 'bytes_', 'cdouble', 'object0', 'UInt16', 'bool8', 'float32', 'uintc', 'Timedelta64', 'F', 'longfloat', 'b1', 'u8', 'int_', 'complex256'])
+</code>
+<strong>创建自定义数据类型</strong>：</p>
+
+<p>(1)创建数据类型</p>
+
+<pre><code class="bash">In: t = np.dtype([('name',np.str_,128),('count',np.int32),('price',np.float64)])
+In: t
+Out: dtype([('name', '&lt;U128'), ('count', '&lt;i4'), ('price', '&lt;f8')])
+</code></pre>
+
+<p>(2)查看数据类型</p>
+
+<pre><code class="bash">In: t['name']
+Out: dtype('&lt;U128')
+</code></pre>
+
+<p>(3)使用自定义数据</p>
+
+<pre><code class="bash">In: itemz = np.array([('Meaning of life DVD', 42, 3.14), ('Butter', 13, 2.72)], dtype=t)
+In: itemz[1]
+Out: ('Butter', 13, 2.72)
+</code></pre>
+
+<p><strong>一维数组的索引和切片</strong>：
+<code>bash
+In: a = np.arange(9)
+In: a[3:7]
+Out: array([3, 4, 5, 6])
+</code>
+<strong>多维数组索引和切片</strong>:
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In： <span class="nv">b</span><span class="o">=</span>np.arange<span class="o">(</span>24<span class="o">)</span>.reshape<span class="o">(</span>2,3,4<span class="o">)</span>
+</span><span class='line'>In: b
+</span><span class='line'>Out: array<span class="o">([[[</span> 0,  1,  2,  3<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 4,  5,  6,  7<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 8,  9, 10, 11<span class="o">]]</span>,&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;   <span class="o">[[</span>12, 13, 14, 15<span class="o">]</span>,
+</span><span class='line'>    <span class="o">[</span>16, 17, 18, 19<span class="o">]</span>,
+</span><span class='line'>    <span class="o">[</span>20, 21, 22, 23<span class="o">]]])</span>
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;In: b<span class="o">[</span>0,2,1<span class="o">]</span>
+</span><span class='line'>Out: 9-&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;我们还可以这样写,选取第0组的所有元素:&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;In: b<span class="o">[</span>0,:,:<span class="o">]</span>
+</span><span class='line'>Out: array<span class="o">([[</span>
+</span><span class='line'>0, 1, 2, 3<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>4, 5, 6, 7<span class="o">]</span>,
+</span><span class='line'><span class="o">[</span>8, 9,10,11<span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure>
+<em>同时，b[0,:,:] == b[0,&hellip;]。</em>
+更多的多维数组的索引和切片操作可以参考<a href="https://docs.scipy.org/doc/numpy/reference/">NumPy使用手册</a></p>
+
+<p><strong>数组展平</strong>:</p>
+
+<p>(1)ravel</p>
+
+<pre><code class="bash">In: b-
+Out:
+array([[[ 0, 1, 2, 3],
+[ 4, 5, 6, 7],
+[ 8, 9,10,11]],
+[[12,13,14,15],
+[16,17,18,19],
+[20,21,22,23]]])
+In: b.ravel()
+Out:
+array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+17, 18, 19, 20, 21, 22, 23])
+</code></pre>
+
+<p>(2)flatten</p>
+
+<pre><code class="bash">In: b.flatten()
+Out:
+array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+17, 18, 19, 20, 21, 22, 23])
+</code></pre>
+
+<p>flatten 和 ravel的区别在于：flatten函数会请求分配内存来保存结果，而reval函数只是返回数组的一个视图（view）</p>
+
+<p>(3)改变数组的shape属性</p>
+
+<pre><code class="bash">In: b.shape = (6,4)
+In: b
+Out:
+array([ 0, 1, 2, 3],
+[ 4, 5, 6, 7],-
+[ 8, 9,10,11],
+[12,13,14,15],
+[16,17,18,19],
+[20,21,22,23]],
+</code></pre>
+
+<p>(4)transpose,相当与线性代数的转置</p>
+
+<pre><code class="bash">In: b.transpose()
+Out:
+array([[ 0, 4, 8,12,16,20],
+[ 1, 5, 9,13,17,21],
+[ 2, 6,10,14,18,22],
+[ 3, 7,11,15,19,23]])
+</code></pre>
+
+<p>(5)resize，功能和reshape相同，但是resize会直接影响原操作数组</p>
+
+<pre><code class="bash">In: b.resize((2,12))
+In: b
+Out:
+array([[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+[12,13,14,15,16,17,18,19,20,21, 22, 23]])
+</code></pre>
+
+<p><strong>数组组合</strong>：</p>
+
+<p>(1)水平组合</p>
+
+<pre><code class="bash">In: a = np.arange(9).reshape(3,3)
+In: b=2*a
+In: np.hstack((a,b))
+Out: array([[ 0,  1,  2,  0,  2,  4],
+       [ 3,  4,  5,  6,  8, 10],
+       [ 6,  7,  8, 12, 14, 16]])
+</code></pre>
+
+<p><em>同样可以使用concatenate函数实现同样效果</em>
+<code>bash
+    In: concatenate((a,b),axis=1)
+    Out: array([[ 0, 1, 2, 0, 2, 4],
+    [ 3, 4, 5, 6, 8,10],
+    [ 6, 7, 8,12,14,16]])
+</code></p>
+
+<p>(2)垂直组合</p>
+
+<pre><code class="bash">    In: np.vsta-ck((a,b))
+    Out: array([[ 0,  1,  2],
+       [ 3,  4,  5],
+       [ 6,  7,  8],
+       [ 0,  2,  4],
+       [ 6,  8, 10],
+       [12, 14, 16]])
+</code></pre>
+
+<p><em>同样可以使用concatenate函数实现同样效果</em>
+<code>bash
+In: concatenate((a,b),axis=0)
+Out: In: np.vstack((a,b))
+Out: array([[ 0,  1,  2],
+[ 3,  4,  5],
+[ 6,  7,  8],
+[ 0,  2,  4],
+[ 6,  8, 10],
+[12, 14, 16]])
+</code>
+(3)深度组合</p>
+
+<p>深度组合,就是将一系列数组沿着纵轴(深度)方向进行层叠组合。举个例子,有若干张二维平面内的图像点阵数据,我们可以将这些图像数据沿纵轴方向层叠在一起,这就形象地解释了什么是深度组合。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dstack<span class="o">((</span>a,b<span class="o">))</span>
+</span><span class='line'>Out: array<span class="o">([[[</span> 0,  0<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 1,  2<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 2,  4<span class="o">]]</span>,
+</span><span class='line'>       <span class="o">[[</span> 3,  6<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 4,  8<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span> 5, 10<span class="o">]]</span>,&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;   <span class="o">[[</span> 6, 12<span class="o">]</span>,
+</span><span class='line'>    <span class="o">[</span> 7, 14<span class="o">]</span>,
+</span><span class='line'>    <span class="o">[</span> 8, 16<span class="o">]]])</span>
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;<span class="o">(</span>4<span class="o">)</span>列组合,column_stack 函数对于一维数组将按列方向进行组合,而对于二维数组, column_stack 与 hstack 的效果是相同的
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span>5<span class="o">)</span>行组合,当然,NumPy中也有按行方向进行组合的函数,它就是 row_stack 。对于两
+</span><span class='line'>个一维数组,将直接层叠起来组合成一个二维数组。同样，对于二维数组，row_stack 与 vstack 的效果是相同的。
+</span><span class='line'>
+</span><span class='line'>**数组分割**:
+</span><span class='line'>
+</span><span class='line'>NumPy数组可以进行水平、垂直或深度分割,相关的函数有 hsplit 、 vsplit 、 dsplit 和split 。我们可以将数组分割成相同大小的子数组,也可以指定原数组中需要分割的位置。
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span>1<span class="o">)</span>水平分割
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;In: a
+</span><span class='line'>Out: array<span class="o">([[</span>0, 1, 2<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span>3, 4, 5<span class="o">]</span>,
+</span><span class='line'>       <span class="o">[</span>6, 7, 8<span class="o">]])</span>
+</span><span class='line'>In: np.hsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#沿水平方向分割成三个大小相同的子数组</span>
+</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[</span>0<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>3<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>6<span class="o">]])</span>, array<span class="o">([[</span>1<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>4<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>7<span class="o">]])</span>, array<span class="o">([[</span>2<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>5<span class="o">]</span>,
+</span><span class='line'>        <span class="o">[</span>8<span class="o">]])]</span>
+</span></code></pre></td></tr></table></div></figure>
+(2)垂直分割</p>
+
+<pre><code class="bash">In: np.vsplit(a,3) #在垂直方向上分割成三个大小相同的子数组
+Out： [array([[0, 1, 2]]), array([[3, 4, 5]]), array([[6, 7, 8]])]
+</code></pre>
+
+<p>(3)深度分割,dsplit函数将按深度方向分割数组。</p>
+
+<pre><code class="bash">In: np.dsplit(np.arange(27).reshape(3,3,3),3)
+Out: [array([[[ 0],
+         [ 3],
+         [ 6]],
+
+        [[ 9],
+         [12],
+         [15]],
+
+        [[18],
+         [21],
+         [24]]]), array([[[ 1],
+         [ 4],
+         [ 7]],
+
+        [[10],
+         [13],
+         [16]],
+
+        [[19],
+         [22],
+         [25]]]), array([[[ 2],
+         [ 5],
+         [ 8]],
+
+        [[11],
+         [14],
+         [17]],
+
+        [[20],
+         [23],
+         [26]]])]
+</code></pre>
+
+<p><em>同时，hsplit,vsplit同样也可以用函数split来实现，其使用就像上面的数组组合函数concatenate类似</em></p>
+
+<p><strong>到此，NumPy的常规的数组操作基本就结束了！</strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Python大规模数据的处理技巧]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/"/>
+    <updated>2017-06-07T13:43:01+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 问题一：大数据量的csv读入到内存中</a>
+<ul>
+<li><a href="#sec-1-1">1.1. 问题分析：</a></li>
+<li><a href="#sec-1-2">1.2. 应对思路：</a></li>
+<li><a href="#sec-1-3">1.3. 简易示例：</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. 问题二：如何高效读取csv文件成python内部的list结构</a>
+<ul>
+<li><a href="#sec-2-1">2.1. 问题分析：</a></li>
+<li><a href="#sec-2-2">2.2. 应对思路：</a></li>
+<li><a href="#sec-2-3">2.3. 简易示例：</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 问题三：数据结构之间合并</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 问题分析：</a></li>
+<li><a href="#sec-3-2">3.2. 应对思路：</a></li>
+<li><a href="#sec-3-3">3.3. 简易示例：</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<p>目前在数据分析和挖掘领域内，最为热门的莫过于Python和R了，不过这两门语言一直因为不好处理大规模的数据而被人们调侃，
+同时，hadoop和spark也因此应运而生。然而，其实Python在大规模的数据处理上也并非像传言所说的那么慢。甚者，其中也蕴含了
+挺多的技巧让我们能够利用Python对大规模的数据进行分析计算。</p>
+
+<p>下面就Python操作大规模数据时可能会遇到的问题，给出一些个人的见解。</p>
+
+<h1>问题一：大数据量的csv读入到内存中<a id="sec-1" name="sec-1"></a></h1>
+
+<h2>问题分析：<a id="sec-1-1" name="sec-1-1"></a></h2>
+
+<p>当一个csv文件的数据量十分大时，例如，一个电商站点的一个月的流水帐单或交易记录，其中可能有高达几千万条至上亿条
+记录文本。这样的文件对于一般性能的计算机来说，若是全部数据一次读入内存的存储就非常吃力了，甚至有崩溃的可能。</p>
+
+<h2>应对思路：<a id="sec-1-2" name="sec-1-2"></a></h2>
+
+<p>这时一个比较明智的方法就是将这些数据全部读入数据库之中，或者是根据我们的实际数据使用情况将大文件拆分成小块，然后
+再按块读入。</p>
+
+<h2>简易示例：<a id="sec-1-3" name="sec-1-3"></a></h2>
+
+<pre><code class="python">    #使用pandas包的最简示例
+     chunker = pd.read_csv(PATH_LOAD, chunksize = CHUNK_SIZE)
+
+    #按列按需读取
+      columns = ("date_time",  "user_id")
+      chunks_train = pd.read_csv(filename, usecols = columns, chunksize = 100000)
+
+    #分块分行读取
+    for rawPiece in chunker_rawData:
+      current_chunk_size = len(rawPiece.index)   #rawPiece 是dataframe
+      for i in range(current_chunk_size ):
+        timeFlag = timeShape(rawPiece.ix[i])   #获取第i行的数据
+</code></pre>
+
+<h1>问题二：如何高效读取csv文件成python内部的list结构<a id="sec-2" name="sec-2"></a></h1>
+
+<h2>问题分析：<a id="sec-2-1" name="sec-2-1"></a></h2>
+
+<p>当仅仅需要对外部大规模的csv做一些的简单的求和，求平均值，等简单的统计描述性分析时，使用pandas包显然是不明智的，因为pd
+的读取中包含了各种抽象的转换操作，一但数据规模较大，性能是十分低下的。</p>
+
+<h2>应对思路：<a id="sec-2-2" name="sec-2-2"></a></h2>
+
+<p>这时应该直接采用python原生的IO读写操作，节省那些多此一举的转换操作。</p>
+
+<h2>简易示例：<a id="sec-2-3" name="sec-2-3"></a></h2>
+
+<pre><code class="python">    #使用pandas包的方法，转换操作多，效率低下。
+        userList = []
+        content = pd.read_csv(filename)
+        for i in range(len(content)):
+            line = content.ix[i]['id']
+            userList.append(line)
+
+    #直接使用原生操作读取外部数据，效率较高，但数据操作不及pandas方便
+        userList = []
+        f = open(filename)
+        content = f.readlines()
+        for line in content:
+            line = line.replace('\n', '').split(',')
+            userList.append(line)
+</code></pre>
+
+<h1>问题三：数据结构之间合并<a id="sec-3" name="sec-3"></a></h1>
+
+<h2>问题分析：<a id="sec-3-1" name="sec-3-1"></a></h2>
+
+<p>当你要对一组数据特征进行建模时，就要用到数据结构的合并功能了。
+然而，对于大规模数据来说，任何的操作和合并如何采用的方法不当，其要浪费的时间都是十分致命的。</p>
+
+<h2>应对思路：<a id="sec-3-2" name="sec-3-2"></a></h2>
+
+<p>纵向的合并使用list并不好，因为需要去拆解list的每一个行元素，并用extend去拓展每一行的纵向元素
+最好使用dataframe中的concat函数：c = pd.concat([a, b], axis = 1)，当axis=0时表示合并行（以行为轴）</p>
+
+<h2>简易示例：<a id="sec-3-3" name="sec-3-3"></a></h2>
+
+<pre><code class="python">    inx1 = DataFrame(np.random.randn(nSample_neg), columns = ['randVal'])
+    inx2 = DataFrame(range(nSample_neg), columns = ['inxVal'])
+    inx = pd.concat([inx1, inx2], axis = 1)
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Web正文提取(偏純文本类)]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/"/>
+    <updated>2017-05-02T20:48:47+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 算法原理介绍</a>
+<ul>
+<li><a href="#sec-1-1">1.1. 简介</a></li>
+<li><a href="#sec-1-2">1.2. 定义</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. 基本步骤</a>
+<ul>
+<li><a href="#sec-2-1">2.1. 前提需求</a></li>
+<li><a href="#sec-2-2">2.2. 提取网页正文</a></li>
+<li><a href="#sec-2-3">2.3. 算法实现</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 效果测试</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>算法原理介绍<a id="sec-1" name="sec-1"></a></h1>
+
+<h2>简介<a id="sec-1-1" name="sec-1-1"></a></h2>
+
+<p>本文主要采用基于标记窗的方法来提取网页的正文信息，不仅仅适合于处理一个网页中所有正文
+信息均放在一个td的情况，也适合于处理网页正文放在多个td中的情况。即，它能够解决非Table
+结构的网页正文提取问题。</p>
+
+<h2>定义<a id="sec-1-2" name="sec-1-2"></a></h2>
+
+<p>一般称HTML中成对出现的标记为标记对，称HTML格式的网页中出现在Title之后显示内容为非空的
+标记对为标记窗</p>
+
+<h1>基本步骤<a id="sec-2" name="sec-2"></a></h1>
+
+<h2>前提需求<a id="sec-2-1" name="sec-2-1"></a></h2>
+
+<p>满足规范化网页，即：</p>
+
+<ul>
+<li>除了网页标记tag外的地方出现"&lt;&ldquo;,&rdquo;>&ldquo;用&lt;&gt;替代</li>
+<li>所有标记的属性值放在引号中，如 a herf=&ldquo;www.baidu.com"。</li>
+<li>所有标记都是匹配的，即每个开始标记均对应着一个结束，如<body></body></li>
+<li>所有标记都是正确嵌套的</li>
+</ul>
+
+
+<h2>提取网页正文<a id="sec-2-2" name="sec-2-2"></a></h2>
+
+<ol>
+<li>找出所有的标记窗Tw，对每一个标记窗Tw<sub>i</sub>(i=1,&#x2026;,N),去掉其中的HTML标记，得到不含任何HTML</li>
+</ol>
+
+
+<p>标记的字符串。
+2.  对每个标记窗Tw<sub>i</sub> 内的字符串分词，得到字符串序列。取出S<sub>twi</sub> 中的实词，得到S<sub>twi</sub> ＝{</p>
+
+<p>W<sub>tw1</sub>,W<sub>tw2</sub>,&#x2026;,W<sub>twq</sub>}。使用Levenshtein Distance公式计算标题词序列S<sub>title与字符串</sub>
+序列S<sub>twi的距离（即主题相关性）</sub>
+3.  比较计算结果和閥值大小，如果小于则为正文信息，将其提取，否则，舍弃。</p>
+
+<h2>算法实现<a id="sec-2-3" name="sec-2-3"></a></h2>
+
+<pre><code class="python">    #encoding=utf-8
+    import jieba
+    from bs4 import BeautifulSoup
+    import re
+    import requests
+    #虚词列表
+    excludeWords = ()
+    with open('excludeWords','r+') as f:
+        excludeWords=f.read()
+        f.close()
+    excludeWords = eval(excludeWords)
+    class domNode:
+        parentNode=None
+        currNode=None
+        innerText=None
+        posi=0
+        def __init__(self,parentNode,currNode,innerText,posi):
+            self.parentNode=parentNode
+            self.currNode=currNode
+            self.innerText=innerText
+            self.posi=posi
+    def levenshtein(a,b):
+        "相似度计算."
+        n, m = len(a), len(b)
+        if n &gt; m:
+            # Make sure n &lt;= m, to use O(min(n,m)) space
+            a,b = b,a
+            n,m = m,n
+
+        current = range(n+1)
+        for i in range(1,m+1):
+            previous, current = current, [i]+[0]*n
+            for j in range(1,n+1):
+                add, delete = previous[j]+1, current[j-1]+1
+                change = previous[j-1]
+                if a[j-1] != b[i-1]:
+                    change = change + 1
+                current[j] = min(add, delete, change)
+        return current[n]
+
+    def filter_words(sourList,filterList):
+        dest=[]
+        if type(sourList)!="&lt;type 'set'&gt;":
+            dest=list(sourList)
+        else:
+            dest=sourList
+        if filterList==None or len(filterList)==0:
+            return dest
+        dest = [ i for i in dest if not(i in filterList) ]
+        return dest
+
+    def getContextByNode(htmlSoup,titleKeyWordList,filterList):
+        sentenceList=jieba.cut(htmlSoup.string)
+        sentenceList=filter_words(sentenceList,excludeWords)
+        sentenceList=filter_words(sentenceList,filterList)
+        if levenshtein(sentenceList,titleKeyWordList)&gt;=len(sentenceList):
+            return None
+        return sentenceList
+
+    def getHTMLContext(html,filterList):
+        "获取html的正文内容，不包含tag标签"
+        if html==None:
+            return ""
+        if len(html)==0:
+            return ""
+        encodeHtml=encodeSpecialTag(html)
+        htmlSoup=BeautifulSoup(encodeHtml)
+
+        #去除script和style内容
+        if  htmlSoup.script!=None:
+            htmlSoup.script.replaceWith("")
+        if htmlSoup.style!=None:
+            htmlSoup.style.replaceWith("")
+
+        if htmlSoup==None or htmlSoup.html==None or htmlSoup.html.head==None or htmlSoup.html.head.title==None:
+            return ""
+
+        #提取标题
+        title=htmlSoup.html.head.title.string
+        #print(title)
+        if title==None:
+            return ""
+
+        titleKeyWordList=jieba.cut(title)
+        titleKeyWordList = list(filter(lambda w:w.strip(),titleKeyWordList))
+        titleKeyWordList=filter_words(titleKeyWordList,excludeWords)
+        titleKeyWordList=filter_words(titleKeyWordList,filterList)
+        #print(titleKeyWordList)
+        # 实词是否为空
+        if len(titleKeyWordList)==0:
+            return ""
+
+        markWindowsList=getMarkWindowsList(htmlSoup.html.body)
+        #print(type(markWindowsList))
+        #print(markWindowsList)
+        markWindowsList = sorted(markWindowsList,key=cmp_to_key(lambda x,y: cmp(x.posi, y.posi)))
+
+        #print(titleKeyWordList)
+        context=""
+        for item in markWindowsList:
+            innerText=item.innerText
+            markWindowKeyWordList=jieba.cut(innerText)
+            markWindowKeyWordList=filter_words(markWindowKeyWordList,excludeWords)
+            markWindowKeyWordList=filter_words(markWindowKeyWordList,filterList)
+            kl=len(markWindowKeyWordList)
+            if kl==0:
+                continue
+
+            l=levenshtein(titleKeyWordList,markWindowKeyWordList)
+            #print(markWindowsList,l)
+            if l&lt;kl:
+                context+=innerText.strip()+'.\n'
+
+        return  decodeSpecialTag(context)
+    def cmp(x,y):
+        return x-y
+    def cmp_to_key(mycmp):
+        'Convert a cmp= function into a key= function'
+        class K(object):
+            def __init__(self, obj, *args):
+                self.obj = obj
+            def __lt__(self, other):
+                return mycmp(self.obj, other.obj) &lt; 0
+            def __gt__(self, other):
+                return mycmp(self.obj, other.obj) &gt; 0
+            def __eq__(self, other):
+                return mycmp(self.obj, other.obj) == 0
+            def __le__(self, other):
+                return mycmp(self.obj, other.obj) &lt;= 0
+            def __ge__(self, other):
+                return mycmp(self.obj, other.obj) &gt;= 0
+            def __ne__(self, other):
+                return mycmp(self.obj, other.obj) != 0
+        return K
+
+
+    def repl(m):
+        contents = m.group(3)
+        if contents == '&lt;/p&gt;':
+            return '[[p]]'
+        return contents
+    def encodeSpecialTag(html):
+        "这里的规则有助于正文内容的识别,还可以保留部分标签，如下面就保留了P，br等标签"
+        comment=re.compile(r"&lt;!--[.\s\S]*?--&gt;")
+        html=comment.sub('', html)
+
+
+        #h tag
+        hPre=re.compile(r"&lt;[\t ]*?[hH][1-6][^&lt;&gt;]*&gt;")
+        html=hPre.sub('[[h4]]', html)
+        hAfter=re.compile(r"&lt;[\t ]*?/[hH][1-6][^&lt;&gt;]*&gt;")
+        html=hAfter.sub('[[/h4]]', html)
+
+        br=re.compile(r"&lt;[ \t]*?br[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=br.sub('[[br /]]', html)
+
+        hr=re.compile(r"&lt;[ \t]*?hr[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=hr.sub('[[hr /]]', html)
+
+
+        strongPre=re.compile(r"&lt;[\t ]*?strong[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=strongPre.sub('[[strong]]', html)
+        strongAfter=re.compile(r"&lt;[\t ]*?/strong[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=strongAfter.sub('[[/strong]]', html)
+
+    #    labelPre=re.compile(r"&lt;[\t ]*?label[^&lt;&gt;]*&gt;", re.IGNORECASE)
+    #    html=labelPre.sub('[[label]]', html)
+    #    labelAfter=re.compile(r"&lt;[\t ]*?/label[^&lt;&gt;]*&gt;", re.IGNORECASE)
+    #    html=labelAfter.sub('[[/label]]', html)
+    #
+    #    spanPre=re.compile(r"&lt;[\t ]*?span[^&lt;&gt;]*&gt;", re.IGNORECASE)
+    #    html=spanPre.sub('[[span]]', html)
+    #    spanAfter=re.compile(r"&lt;[\t ]*?/span[^&lt;&gt;]*&gt;", re.IGNORECASE)
+    #    html=spanAfter.sub('[[/span]]', html)
+        pPre=re.compile(r"&lt;[\t ]*?/p[^&lt;&gt;]*&gt;[^&lt;&gt;]*&lt;[\t ]*?p[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=pPre.sub('[[/p]][[p]]', html)
+        pAfter=re.compile(r"&lt;[\t ]*?p[^&lt;&gt;]*&gt;(?=[^(\[\[)]*\[\[/p\]\]\[\[p\]\])", re.IGNORECASE)
+        html=pAfter.sub('[[p]]', html)
+    #
+    #    pAfter=re.compile(r"(\[\[p\]\].*&gt;)([^&lt;&gt;]*)(&lt;/p&gt;)", re.IGNORECASE)
+    #    html=pAfter.sub(repl,html)
+
+
+
+        aPre=re.compile(r"&lt;[\t ]*?a[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=aPre.sub('', html)
+        aAfter=re.compile(r"&lt;[\t ]*?/a[^&lt;&gt;]*&gt;", re.IGNORECASE)
+        html=aAfter.sub('', html)
+
+    #    chardet.detect(html)['encoding']
+
+        js=re.compile(r"&lt;(script)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)", re.IGNORECASE)
+        html=js.sub('', html)
+        css=re.compile(r"&lt;(style)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)", re.IGNORECASE)
+        html=css.sub('', html)
+
+
+        return html
+    def decodeSpecialTag(html):
+        html=html.replace("[[strong]]","&lt;strong&gt;")
+        html=html.replace("[[/strong]]","&lt;/strong&gt;")
+        html=html.replace("[[hr /]]","&lt;hr /&gt;")
+        html=html.replace("[[br /]]","&lt;br /&gt;")
+        html=html.replace("[[h4]]","&lt;h4&gt;")
+        html=html.replace("[[/h4]]","&lt;/h4&gt;")
+        html=html.replace("[[label]]","&lt;label&gt;")
+        html=html.replace("[[/label]]","&lt;/label&gt;")
+        html=html.replace("[[span]]","&lt;span&gt;")
+        html=html.replace("[[/span]]","&lt;/span&gt;")
+        html=html.replace("[[p]]","&lt;p&gt;")
+        html=html.replace("[[/p]]","&lt;/p&gt;")
+        return html
+
+    def getMarkWindowsList(bodySoup):
+        #过滤a标签
+        nodeQueue=[]
+        innerTextNodeList=[]
+        nodeQueue.append(bodySoup)
+        i=0
+        while len(nodeQueue)&gt;0:
+            currNode=nodeQueue[0]
+            del nodeQueue[0]
+            for childNode  in currNode:
+                if childNode.string!=None:
+                    innerText=childNode.string
+                    innerText=innerText.replace('\r\n','').replace('\r','').replace('\n','')
+                    tmp=innerText.replace('\t','').replace('  ',' ').replace('  ',' ')
+                    tmpInt=len(tmp.replace(" ",""))
+                    if tmpInt==0:continue
+                    if len(tmp.split(' '))&lt;=2 and len(innerText)-tmpInt&gt;tmpInt:continue
+                    if len(tmp)&gt;1  and innerText.find("©")==-1 and innerText.find("&amp;copy;")==-1 :
+                        dn=domNode(childNode.parent,childNode,innerText,i)
+                        innerTextNodeList.append(dn)
+                        i+=1
+    #                    print "i",
+    #                    print i,
+    #                    print "=",
+    #                    print childNode
+                else:
+                    #这里的规则可能有助于垃圾信息的排除
+                    if childNode.name!=None and childNode.name=='style':continue
+                    if childNode.name!=None and childNode.name=='script':continue
+                    if childNode.name!=None and childNode.name=="a" and len(childNode.text)&lt;=2:continue
+                    if childNode.name!=None and childNode.parent.name!=None   and  childNode.name=="span" and ( childNode.parent.name=="li" )and len(childNode.text)&lt;=3:
+                        continue
+                    nodeQueue.append(childNode)
+        return innerTextNodeList
+
+    #soup=BeautifulSoup(html)
+    def test():
+        headers={
+        'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+        }
+        c=requests.get('http://www.xfocus.net/articles/200808/984.html',headers=headers)
+        content=c.content.decode('gbk')
+        #content=c.text
+        # #print(content)
+        print(getHTMLContext(content,['']))
+    if __name__ == '__main__':
+        test()
+</code></pre>
+
+<h1>效果测试<a id="sec-3" name="sec-3"></a></h1>
+
+<p><img src="/images/webcrawl.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[比较网页结构相似度]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/"/>
+    <updated>2017-04-23T12:34:29+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 总体介绍</a></li>
+<li><a href="#sec-2">2. 最长公共子序列</a></li>
+<li><a href="#sec-3">3. 递归式展示</a></li>
+<li><a href="#sec-4">4. 算法实现（python实现）</a></li>
+<li><a href="#sec-5">5. 网页相似度计算</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>总体介绍<a id="sec-1" name="sec-1"></a></h1>
+
+<p>网页网页结构相似度计算通常是网页自动分类的基础，在一般的网页信息提取中，判断网页片断是“噪声”还是“有效信息”通常是个两类分类问题。
+简单地，我们可以把一般网页分为三个类，即：</p>
+
+<ul>
+<li>目录导航式页面（List\Index Page）</li>
+<li>详细页面（Detail Page）</li>
+<li>未知页面（Unknown Page）</li>
+</ul>
+
+
+<p>由于网页本身就可以抽象成串行的节点或者是DOM树，那么对于串行序列，就可以常用最长公共子序列来衡量相似度</p>
+
+<h1>最长公共子序列<a id="sec-2" name="sec-2"></a></h1>
+
+<p>最长公共子序列是动态规划的基本问题：</p>
+
+<p>序列a共有m个元素，序列b共有n个元素，如果a[m-1]==b[n-1]，</p>
+
+<p>那么a[:m]和b[:n]的最长公共子序列长度就是a[:m-1]和b[:n-1]的最长公共子序列长度+1；</p>
+
+<p>如果a[m-1]!=b[n-1]，那么a[:m]和b[:n]的最长公共子序列长度就是</p>
+
+<p>MAX（a[:m-1]和b[:n]的最长公共子序列长度，a[:m]和b[:n-1]的最长公共子序列长度）</p>
+
+<h1>递归式展示<a id="sec-3" name="sec-3"></a></h1>
+
+<p>　<img src="/images/lcs.png"></p>
+
+<h1>算法实现（python实现）<a id="sec-4" name="sec-4"></a></h1>
+
+<pre><code class="python">    #params：
+    # - a : str
+    # - b : str
+    #return
+    # - c : 过程处理矩阵
+    # - c[x][y] : the lcs-length(最长公共子序列长度)
+    def lcs(a,b):
+        lena=len(a)
+        lenb=len(b)
+        c=[[0 for i in range(lenb+1)] for j in range(lena+1)]
+        for i in range(lena):
+            for j in range(lenb):
+                if a[i]==b[j]:
+                    c[i+1][j+1]=c[i][j]+1
+                elif c[i+1][j]&gt;c[i][j+1]:
+                    c[i+1][j+1]=c[i+1][j]
+                else:
+                    c[i+1][j+1]=c[i][j+1]
+        return c,c[lena][lenb]
+</code></pre>
+
+<h1>网页相似度计算<a id="sec-5" name="sec-5"></a></h1>
+
+<pre><code class="python">    #-*-coding:utf-8-*-
+    import lxml.html.soupparser as soupparser
+    import requests
+    headers = {
+        "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
+    }
+    def get_domtree(html):
+        dom = soupparser.fromstring(html)
+        for child in dom.iter():
+            yield child.tag
+
+    def similar_web(a_url,b_url):
+        html1 = requests.get(a_url,headers=headers).text
+        html2 = requests.get(b_url,headers=headers).text
+        dom_tree1 = "&gt;".join(list(filter(lambda e: isinstance(e,str),list(get_domtree(html1)))))
+        dom_tree2 = "&gt;".join(list(filter(lambda e: isinstance(e,str),list(get_domtree(html2)))))
+        c,flag,length = lcs(dom_tree1,dom_tree2)
+        return 2.0*length/(len(dom_tree1)+len(dom_tree2))
+
+    percent = similar_web(
+    'http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/',
+    'http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/')
+    print(percent) #相似度（百分比）
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[认识网络爬虫]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong/"/>
+    <updated>2017-03-10T19:39:43+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/03/10/ren-shi-wang-luo-pa-chong</id>
+    <content type="html"><![CDATA[<h2>认识网络爬虫</h2>
+
+<h3>什么是网络爬虫</h3>
+
+<p>   <em>传统网络爬虫是一个自动提取网页的程序,它为搜索引擎从万维网上下载网页,是搜索引擎的重要组成。
+一般从一个或若干初始网页的URL开始,获得初始网页上的URL,在抓取网页的过程中,不断从当前页面上抽取新的URL放入队列,直到满
+足系统的一定停止条件。</em></p>
+
+<h3>爬虫有什么用？</h3>
+
+<p>   <em>随着现代商业元素的发展，网络爬虫也开始呈现出一种多元化发展的趋势，应用在各种不同的领域。例如：商业数据收集、科学数据采集、社会特征分析等等</em>
+   <img src="http://p1.bqimg.com/567571/795209d053f87619.png" alt="" /></p>
+
+<ol>
+<li>通用搜索引擎网页搜集器</li>
+<li>垂直搜索引擎（招聘网，二手车，买房网）</li>
+<li>科学研究</li>
+<li>hacking
+&hellip;&hellip;</li>
+</ol>
+
+
+<h3>一个简单的python爬虫</h3>
+
+<pre><code class="python">#！/usr/bin/env python
+#coding=utf-8
+import requests
+from pyquery import PyQuery as pq
+
+url = 'http://zhixing.bjtu.edu.cn/portal.php'
+r = requests.get(url)
+print r.text
+print r.content
+p = pq(r.text).find('#portal_block_617 li&gt;a')
+for d in p:
+    print pq(d).text()
+    print 'http://zhixing.bjtu.edu.cn/'+pq(d).attr('href')
+</code></pre>
+
+<h3>爬虫工作过程解析</h3>
+
+<pre><code>网络爬虫框架主要由控制器、解析器和索引库三大部分组成，而爬虫工作原理主要是解析器这个环节，解析器的主要工作是下载网页，进行页面的处理，主要是将一些JS脚本标签、CSS代码内容、空格字符、HTML标签等内容处理掉，爬虫的基本工作是由解析器完成。所以解析器的具体流程是：
+</code></pre>
+
+<blockquote><p><strong>入口访问->下载内容->分析结构->提取内容</strong></p></blockquote>
+
+<h4>下面以爬取<a href="http://www.luoo.net/">落网</a>为例子</h4>
+
+<p><strong>第一步 确定目的</strong>
+抓取目标网站的某一期所有音乐</p>
+
+<p><strong>第二步 分析页面结构</strong>
+访问落网的某一期刊，通过Chrome的（F12）开发者模式查看播放列表中的歌曲，右侧选中的是一些需要特别注意的语义结构，见下图所示：</p>
+
+<p><img src="http://i1.piimg.com/567571/ed8e842e2bb1bb13.png" alt="" /></p>
+
+<p>这时我们可以看到在Chrome的开发者模式的Network中看到实际请求的播放文件。
+根据以上分析我们可以得到播放清单的位置和音乐文件的路径，接下来我们通过Python来实现这个目的。</p>
+
+<p><strong>实现爬虫</strong>
+```python</p>
+
+<h1>-<em>- coding: utf-8 -</em>-</h1>
+
+<p>import os
+import requests
+from bs4 import BeautifulSoup
+import random
+from faker import Factory
+import Queue
+import threading</p>
+
+<p>fake = Factory.create()
+luoo_site = &lsquo;<a href="http://www.luoo.net/music/">http://www.luoo.net/music/</a>&rsquo;
+luoo_site_mp3 = &lsquo;<a href="http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio%s/%s.mp3">http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio%s/%s.mp3</a>&rsquo;</p>
+
+<p>headers = {&lsquo;Connection&rsquo;: &lsquo;keep-alive&rsquo;,
+    &lsquo;User-Agent&rsquo;: fake.user_agent()
+    }</p>
+
+<p>def random_proxies():
+    ip_index = random.randint(0, len(proxy_ips)-1)
+    res = { &lsquo;http&rsquo;: proxy_ips[ip_index] }
+    return res</p>
+
+<p>def fix_characters(s):
+    for c in [&lsquo;&lt;&rsquo;, &lsquo;>&rsquo;, &lsquo;:&rsquo;, &lsquo;&ldquo;&rsquo;, &lsquo;/&rsquo;, &lsquo;\\&rsquo;, &lsquo;|&rsquo;, &lsquo;?&rsquo;, &lsquo;*&rsquo;]:
+        s = s.replace(c, &lsquo;&rsquo;)
+    return s</p>
+
+<p>class LuooSpider(threading.Thread):
+    def <strong>init</strong>(self, url, vols, queue=None):
+        threading.Thread.<strong>init</strong>(self)
+        print &lsquo;[luoo spider]&rsquo;
+        print &lsquo;=&rsquo; * 20
+        self.url = url
+        self.queue = queue
+        self.vol = &lsquo;1&rsquo;
+        self.vols = vols</p>
+
+<pre><code>def run(self):
+    for vol in self.vols:
+        self.spider(vol)
+    print '\\ncrawl end\\n\\n'
+    def spider(self, vol):
+    url = luoo_site + vol
+    print 'crawling: ' + url + '\\n'
+    res = requests.get(url, proxies=random_proxies())
+            soup = BeautifulSoup(res.content, 'html.parser')
+    title = soup.find('span', attrs={'class': 'vol-title'}).text
+    cover = soup.find('img', attrs={'class': 'vol-cover'})['src']
+    desc = soup.find('div', attrs={'class': 'vol-desc'})
+    track_names = soup.find_all('a', attrs={'class': 'trackname'})
+    track_count = len(track_names)
+    tracks = []
+    for track in track_names:
+        _id = str(int(track.text[:2])) if (int(vol) &lt; 12) else track.text[:2]  
+        _name = fix_characters(track.text[4:])
+        tracks.append({'id': _id, 'name': _name})
+        phases = {
+            'phase': vol,                         # 期刊编号
+            'title': title,                       # 期刊标题
+             'cover': cover,                      # 期刊封面
+             'desc': desc,                        # 期刊描述
+             'track_count': track_count,          # 节目数
+             'tracks': tracks                     # 节目清单(节目编号，节目名称)
+        }
+        self.queue.put(phases)
+</code></pre>
+
+<p>class LuooDownloader(threading.Thread):
+    def <strong>init</strong>(self, url, dist, queue=None):
+        threading.Thread.<strong>init</strong>(self)
+        self.url = url
+        self.queue = queue
+        self.dist = dist
+        self.__counter = 0</p>
+
+<pre><code> def run(self):
+    while True:
+        if self.queue.qsize() &lt;= 0:
+            pass
+        else:
+            phases = self.queue.get()
+            self.download(phases)
+
+def download(self, phases):
+    for track in phases['tracks']:
+        file_url = self.url % (phases['phase'], track['id'])
+
+        local_file_dict = '%s/%s' % (self.dist, phases['phase'])
+        if not os.path.exists(local_file_dict):
+            os.makedirs(local_file_dict)              
+
+        local_file = '%s/%s.%s.mp3' % (local_file_dict, track['id'], track['name'])
+        if not os.path.isfile(local_file):
+            print 'downloading: ' + track['name']
+            res = requests.get(file_url, proxies=random_proxies(), headers=headers)
+            with open(local_file, 'wb') as f:
+                f.write(res.content)
+                f.close()
+            print 'done.\\n'
+        else:
+            print 'break: ' + track['name']
+</code></pre>
+
+<p>if <strong>name</strong> == &lsquo;<strong>main</strong>&rsquo;:
+    spider_queue = Queue.Queue()</p>
+
+<pre><code>luoo = LuooSpider(luoo_site, vols=['680', '721', '725', '720'],queue=spider_queue)
+luoo.setDaemon(True)
+luoo.start()
+
+downloader_count = 5
+for i in range(downloader_count):
+    luoo_download = LuooDownloader(luoo_site_mp3, '/home/luoo', queue=spider_queue)
+    luoo_download.setDaemon(True)
+    luoo_download.start()
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

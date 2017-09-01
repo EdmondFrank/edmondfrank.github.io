@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 机器学习 | EdmondFrank's 时光足迹]]></title>
+  <link href="http://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
+  <link href="http://edmondfrank.github.io/"/>
+  <updated>2017-09-01T11:03:42+08:00</updated>
+  <id>http://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Python实现Fisher判别分析]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/"/>
+    <updated>2017-08-30T09:06:21+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi</id>
+    <content type="html"><![CDATA[<h1 id="python实现fisher-判别分析">Python实现Fisher 判别分析</h1>
+
+
+
+
+<h2 id="fisher原理">Fisher原理</h2>
+
+
+
+
+<p>费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小，而不同类间的投影值所形成的类间距离差尽可能大。 <br>
+<img src="https://app.yinxiang.com/shard/s12/res/5e795663-de42-4ad4-806f-a0457f8967a3" alt="" title=""></p>
+
+
+
+
+<p><img src="https://app.yinxiang.com/shard/s12/res/dece3d38-2882-4581-95d5-1400dbd4347d" alt="enter image description here" title=""></p>
+
+
+
+
+<p>这样如果我们想要同类样列的投影点尽可能接近，可以让同类样列投影点的协方差尽可能小，即<script type="math/tex" id="MathJax-Element-1">w^T \left(\sum _0 w\right)+w^T \left(\sum _1 w\right)</script>尽可能小;而欲使异类样列的投影点尽可能远离，可以让类中心之间的距离尽可能大，即<script type="math/tex" id="MathJax-Element-2">\left[\left[u_0 w^T-u_1 w^T\right]\right]</script>尽可能大。同时结合两者我们可以得到欲最大化的目标： <br>
+<img src="https://app.yinxiang.com/shard/s12/res/9123e7b1-dfd8-4c0f-bac2-a75aeeaee3d6" alt="enter image description here" title=""></p>
+
+
+
+
+<p>(本文图片截取自<a href="https://book.douban.com/subject/26708119/">《机器学习》</a>周志华)</p>
+
+
+
+
+<p><img src="https://app.yinxiang.com/shard/s12/res/9895e937-2172-4874-af44-0a81b8c4acf4" alt="enter image description here" title=""></p>
+
+
+
+
+<p>有了上面的推理之后我们接下来就以DNA分类为例来实现一下Fisher线性判别。</p>
+
+
+
+
+<h2 id="数据准备">数据准备</h2>
+
+
+<pre><code class="python">from sklearn.cross_validation import train_test_split
+dna_list = []
+with open('dna2','r') as f:
+    dna_list = list(map(str.strip,f.readlines()))
+    f.close()
+print(len(dna_list))
+def generate_feature(seq):
+    for i in seq:
+        size = len(i)
+        yield [
+        chary.count(i,'a')/size,
+        chary.count(i,'t')/size,
+        chary.count(i,'c')/size,
+        chary.count(i,'g')/size]
+
+X = np.array(list(generate_feature(dna_list)),dtype=float)
+y = np.ones(20)
+y[10:]=2
+X_train, X_test, y_train, y_test = train_test_split(X[:20], y, test_size=0.1)
+print(X_train,'\n',y_train)
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+  40 <br>
+  [[ 0.2972973   0.13513514  0.17117117  0.3963964 ] <br>
+   [ 0.35454545  0.5         0.04545455  0.1       ] <br>
+   [ 0.42342342  0.28828829  0.10810811  0.18018018] <br>
+   [ 0.35135135  0.12612613  0.12612613  0.3963964 ] <br>
+   [ 0.27927928  0.18918919  0.16216216  0.36936937] <br>
+   [ 0.21818182  0.56363636  0.14545455  0.07272727] <br>
+   [ 0.20720721  0.15315315  0.20720721  0.43243243] <br>
+   [ 0.3         0.5         0.08181818  0.11818182] <br>
+   [ 0.2         0.56363636  0.17272727  0.06363636] <br>
+   [ 0.27027027  0.06306306  0.21621622  0.45045045] <br>
+   [ 0.32727273  0.5         0.02727273  0.14545455] <br>
+   [ 0.23423423  0.10810811  0.23423423  0.42342342] <br>
+   [ 0.29090909  0.64545455  0.          0.06363636] <br>
+   [ 0.18181818  0.13636364  0.27272727  0.40909091] <br>
+   [ 0.29090909  0.5         0.11818182  0.09090909] <br>
+   [ 0.25454545  0.51818182  0.1         0.12727273] <br>
+   [ 0.27433628  0.36283186  0.19469027  0.16814159] <br>
+   [ 0.27027027  0.15315315  0.16216216  0.41441441]]  <br>
+   [ 1.  2.  1.  1.  1.  2.  1.  2.  2.  1.  2.  1.  2.  1.  2.  2.  2.  1.]</p>
+</blockquote>
+
+
+
+
+<h2 id="fisher算法实现">Fisher算法实现</h2>
+
+
+<pre><code class="python">
+def cal_cov_and_avg(samples):
+    """
+    给定一个类别的数据，计算协方差矩阵和平均向量
+    :param samples: 
+    :return: 
+    """
+    u1 = np.mean(samples, axis=0)
+    cov_m = np.zeros((samples.shape[1], samples.shape[1]))
+    for s in samples:
+        t = s - u1
+        cov_m += t * t.reshape(4, 1)
+    return cov_m, u1
+
+
+def fisher(c_1, c_2):
+    """
+    fisher算法实现(请参考上面推导出来的公式，那个才是精华部分)
+    :param c_1: 
+    :param c_2: 
+    :return: 
+    """
+    cov_1, u1 = cal_cov_and_avg(c_1)
+    cov_2, u2 = cal_cov_and_avg(c_2)
+    s_w = cov_1 + cov_2
+    u, s, v = np.linalg.svd(s_w)  # 奇异值分解
+    s_w_inv = np.dot(np.dot(v.T, np.linalg.inv(np.diag(s))), u.T)
+    return np.dot(s_w_inv, u1 - u2)
+</code></pre>
+
+<h2 id="判别类型">判别类型</h2>
+
+
+<pre><code class="python">
+def judge(sample, w, c_1, c_2):
+    """
+    true 属于1
+    false 属于2
+    :param sample:
+    :param w:
+    :param center_1:
+    :param center_2:
+    :return:
+    """
+    u1 = np.mean(c_1, axis=0)
+    u2 = np.mean(c_2, axis=0)
+    center_1 = np.dot(w.T, u1)
+    center_2 = np.dot(w.T, u2)
+    pos = np.dot(w.T, sample)
+    return abs(pos - center_1) &lt; abs(pos - center_2)
+
+
+w = fisher(X_train[:10], X_train[10:20])  # 调用函数，得到参数w
+pred = []
+for i in range(20):
+    pred.append( 1 if judge(X[i], w, X_train[:10], X_train[10:20]) else 2)   # 判断所属的类别
+# evaluate accuracy
+pred = np.array(pred)
+print(y,pred)
+print(metrics.accuracy_score(y, pred))
+out = []
+for i in range(20,40):
+    out.append( 1 if judge(X[i], w, X_train[:10], X_train[10:20]) else 2)   # 判断所属的类别
+print(out)
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+  [ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  2.  2.  2.  2.  2.  2.  2.  2. <br>
+    2.  2.] [1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 1] <br>
+  0.95 <br>
+  [1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1]</p>
+</blockquote>
+
+
+
+
+<p>在这我们可以看出我们的Fisher算法在测试集中的误差率还算理想，误判率仅有5%。但是，我们可以看出其预测分类并不如其他KNN，SVM，等算法的预测效果。</p>
+
+
+
+
+<p>最后，有关Fisher算法的介绍也就到此结束了！</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[K-近邻算法-Part2]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
+    <updated>2017-08-23T12:19:17+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
+    <content type="html"><![CDATA[<h1>K-近邻算法-Part2</h1>
+
+<h2>使用交叉验证来调整k值</h2>
+
+<p>通常来说,一个最优的KNN模型其k参数所对应的预估错误率应该是最低的。因此，在选定模型k值的时候应该反复尝试不同的k值在预估上的效果，对比其错误率。初学者在这里为了降低模型的误差通常会将全部样本数据也作为训练集一起代入模型进行训练。虽然这种做法在训练时确实能够有效降低误差，对现有数据进行更好的拟合。但是，同时带来的后果是：我们会将数据的各种无法避免的真实误差，如测量误差，抽样误差等也训练进了我们的模型之中，使得训练出来的模型在新数据或未知数据上的预估效果特别差，这种现象也被称为<strong>过拟合（overfitting）</strong>。</p>
+
+<p>为了降低预估的错误率以及避免过拟合现象的发生，我们可以在某种意义下将<strong>原始数据(dataset)</strong>进行分组,一部分做为<strong>训练集(train set)</strong>,另一部分做为<strong>验证集(validation set or test set)</strong>，首先用训练集对分类器进行训练,再利用验证集来测试训练得到的<strong>模型(model)</strong>,以此来做为评价分类器的性能指标。这种方法也就是所谓的<strong>交叉验证（Cross Validation）</strong>。</p>
+
+<p>而在交叉验证中，<strong>K折交叉验证（k-fold cross validation）</strong>是比较常用的。其主要思想是：初始采样分割成K个子样本，一个单独的子样本被保留作为验证模型的数据，其他K-1个样本用来训练。交叉验证重复K次，每个子样本验证一次，平均K次的结果或者使用其它结合方式，最终得到一个单一估测。这个方法的优势在于，同时重复运用随机产生的子样本进行训练和验证，每次的结果验证一次，10折交叉验证是最常用的。</p>
+
+<p><img src="https://kevinzakka.github.io/assets/k_fold_cv.jpg" alt="enter image description here" /></p>
+
+<p>为了更好的理解k折交叉验证，我们继续沿用part1部分的训练数据，使用10折交叉验证的方法来调整我们的k值。</p>
+
+<pre><code class="python">
+import matplotlib.pyplot as plt
+from sklearn.cross_validation import cross_val_score
+# creating odd list of K for KNN
+myList = list(range(1,50))
+
+# subsetting just the odd ones
+neighbors = list(filter(lambda x: x % 2 != 0, myList))
+
+# empty list that will hold cv scores
+cv_scores = []
+
+# perform 10-fold cross validation
+for k in neighbors:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    scores = cross_val_score(knn, X_train, y_train, cv=10, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+# changing to misclassification error
+MSE = [1 - x for x in cv_scores]
+
+# determining best k
+optimal_k = neighbors[MSE.index(min(MSE))]
+print ("The optimal number of neighbors is %d" % optimal_k)
+
+# plot misclassification error vs k
+plt.plot(neighbors, MSE)
+plt.xlabel('Number of Neighbors K')
+plt.ylabel('Misclassification Error')
+plt.show()
+</code></pre>
+
+<p>在上面的程序中，我们在1-50的奇数中选取k值，并根据k值训练模型进行预估验证。最后根据不同k值训练出去的模型的<strong>均方误差（Mean Squared Error, MSE）</strong>作出折线图，并求出使得MSE最小的最优k值。</p>
+
+<blockquote><p>输出结果:</p>
+
+<p>The optimal number of neighbors is 7
+<img src="https://kevinzakka.github.io/assets/cv_knn.png" alt="enter image description here" /></p></blockquote>
+
+<p>由此我们可以得出：在这个模型中，10折交叉验证告诉我们最优的k值是7。</p>
+
+<h2>尝试自己实现KNN算法</h2>
+
+<p>到目前为止，我们都是调用sklearn库中的KNN来完成分类任务。那么，下面我们来尝试自己实现一个简单的KNN算法并用它来分类我们之前的数据。</p>
+
+<p>经过上一篇文章的介绍，我们可以知道KNN算法的关键是计算出新的<strong>待分类数据</strong>与现有的样本数据的<strong>“距离”</strong>，而其中较为常用的还是<strong>欧式距离（euclidean distance ）</strong>。然后提取出k个最相邻的点，并根据他们大多数点的分类属性来给待分类点进行归类。</p>
+
+<p>因此核心计算代码我们可以这样写：</p>
+
+<pre><code class="python">def predict(X_train, y_train, x_test, k):
+    # create list for distances and targets
+    distances = []
+    targets = []
+
+    for i in range(len(X_train)):
+        # first we compute the euclidean distance
+        distance = np.sqrt(np.sum(np.square(x_test - X_train[i, :])))
+        # add it to list of distances
+        distances.append([distance, i])
+
+    # sort the list
+    distances = sorted(distances)
+
+    # make a list of the k neighbors' targets
+    for i in range(k):
+        index = distances[i][1]
+        targets.append(y_train[index])
+
+    # return most common target
+    return Counter(targets).most_common(1)[0][0]
+</code></pre>
+
+<p>在上面的代码中，我们首先创建一个保存距离的数组，并在存储完计算出的待测点与各样本点的距离后对数组进行升序排列，然后取出前k个最接近待测点的样本点，返回其出现最多的分类标签。</p>
+
+<p>然后接下来让我继续完成整个KNN算法。</p>
+
+<pre><code class="python">def kNearestNeighbor(X_train, y_train, X_test, predictions, k):
+
+    # loop over all observations
+    for i in range(len(X_test)):
+        predictions.append(predict(X_train, y_train, X_test[i, :], k))
+</code></pre>
+
+<p>使用我们上面得出最优的 k = 7作为参数生成模型并进行预估。</p>
+
+<pre><code class="python"># making our predictions 
+from sklearn.metrics import accuracy_score
+predictions = []
+
+kNearestNeighbor(X_train, y_train, X_test, predictions, 7)
+
+# transform the list into an array
+predictions = np.asarray(predictions)
+#print(y_test,predictions)
+# evaluating accuracy
+#for i in range(predictions.size):
+#    print(predictions.tolist()[i],list(y_test)[i])
+accuracy = accuracy_score(y_test, predictions)
+print('\nThe accuracy of our classifier is %d%%' % int(accuracy*100))
+</code></pre>
+
+<blockquote><p>输出结果：
+The accuracy of our classifier is 98%</p></blockquote>
+
+<p>到此，我们基本已经完成了一个类似于sklearn库中的KNN算法了，并且还有不错的准确率。</p>
+
+<h2>小结</h2>
+
+<p>最后，KNN算法介绍性文章到这就结束了。我们来总结一下KNN算法的优点与不足。</p>
+
+<h4>优点</h4>
+
+<ul>
+<li>易于理解</li>
+<li>无需训练</li>
+<li>容易迁移至多分类情况</li>
+</ul>
+
+
+<h4>不足</h4>
+
+<ul>
+<li>计算量大，时间复杂度随数据规模增大而增大</li>
+<li>分类情况容易受高频分类影响</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[K-近邻算法-Part1]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/"/>
+    <updated>2017-08-14T23:48:56+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1</id>
+    <content type="html"><![CDATA[<h1>K-近邻算法-Part1</h1>
+
+<h2>概述</h2>
+
+<p>K-近邻算法，即K-近邻分类算法，简称KNN其通过采用测量不同的特征值之间的距离方法进行分类。</p>
+
+<h3>有关K-近邻算法的问题</h3>
+
+<p>优点：精度高，对异常值不敏感，无数据输入假定</p>
+
+<p>缺点：计算复杂度较高，空间复杂度较高</p>
+
+<p>适用数据范围：数值型和标称型</p>
+
+<h3>工作原理</h3>
+
+<p>存在一个样本数据集合，即训练样本集，并且训练样本中的每一个数据都存在标签，我们可以清楚地知道每一个数据条目其与对应分类的所属关系。</p>
+
+<p>然后在接受没有标记的新数据输入时，将新数据的特征提取出来将其一一与训练样本集中数据对应的特征进行比较，然后算法提取样本集中特征最相似的（即所谓的最近邻）的分类标签来作为新数据的标签。</p>
+
+<p>其中为了避免偶尔性和离群值造成的误差因此有了以样本数据集中前k个最相似的数据作为判别的参考的标准这种做法。<strong>通常k是不大于20的整数而且一般选取奇数作为k值</strong>（奇数可以在投票分类时避免出现等票的情况），最终的分类结果由k个样本的分类标签投票形成，出现最多的分类标签作为新数据的分类。</p>
+
+<h3>一般算法流程</h3>
+
+<ol>
+<li>收集数据</li>
+<li>准备数据：对数据进行清洗和结构化处理，使得数据可以进行距离计算</li>
+<li>分析数据：提取相关特征</li>
+<li>训练分类：knn算法并不需要训练</li>
+<li>测试算法：计算错误率</li>
+<li>使用算法：将新数据输入进行对应结构化之后，运行算法进行判定分类情况，并对后续的分类结果进行进一步处理应用</li>
+</ol>
+
+
+<h2>用KNN 制作简单的分类器</h2>
+
+<p>使用数据：<a href="https://archive.ics.uci.edu/ml/datasets/Iris">UCI的鸢尾花数据集</a>
+点击进入目标链接后:</p>
+
+<blockquote><p>按照 Download Data Folder > iris.data 路径来下载指定数据集</p></blockquote>
+
+<h4>准备数据</h4>
+
+<p>在这里我们使用Python 的 Pandas 包以没有标题栏的csv文件的形式读入数据</p>
+
+<p><strong>关键函数：read_csv</strong></p>
+
+<pre><code class="python">
+# loading libraries
+import pandas as pd
+
+# define column names
+names = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'class']
+
+# loading training data
+df = pd.read_csv('iris.data.txt', header=None, names=names)
+df.head()
+</code></pre>
+
+<p><strong>输出</strong>：</p>
+
+<table>
+<thead>
+<tr>
+<th> index </th>
+<th> sepal_length </th>
+<th> sepal_width </th>
+<th> petal_length </th>
+<th> petal_width </th>
+<th> class       </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 0     </td>
+<td> 5.1          </td>
+<td> 3.5         </td>
+<td> 1.4          </td>
+<td> 0.2         </td>
+<td> Iris-setosa </td>
+</tr>
+<tr>
+<td> 1     </td>
+<td> 4.9          </td>
+<td> 3.0         </td>
+<td> 1.4          </td>
+<td> 0.2         </td>
+<td> Iris-setosa </td>
+</tr>
+<tr>
+<td> 2     </td>
+<td> 4.7          </td>
+<td> 3.2         </td>
+<td> 1.3          </td>
+<td> 0.2         </td>
+<td> Iris-setosa </td>
+</tr>
+<tr>
+<td> 3     </td>
+<td> 4.6          </td>
+<td> 3.1         </td>
+<td> 1.5          </td>
+<td> 0.2         </td>
+<td> Iris-setosa </td>
+</tr>
+<tr>
+<td> 4     </td>
+<td> 5.0          </td>
+<td> 3.6         </td>
+<td> 1.4          </td>
+<td> 0.2         </td>
+<td> Iris-setosa </td>
+</tr>
+</tbody>
+</table>
+
+
+<h4>构建算法</h4>
+
+<p><strong>距离函数</strong></p>
+
+<p>我a们在上面的例子中把一个很重要的概念隐藏了起来，在选择一个数量k还只是小问题，更重要的是距离的计算方法。毕竟，当我们说“最近的k个点”时，这个“近”是怎么衡量的？</p>
+
+<p>在数学中，一个空间上距离的严格定义如下：
+设 M 为一个空间，M上的一个距离函数是一个函数<math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='TraditionalForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>
+ <mrow>
+  <mi>d</mi>
+  <mo>:</mo>
+  <mrow>
+   <mrow>
+    <mrow>
+     <mi>M</mi>
+     <mo>&#8290;</mo>
+     <mi>x</mi>
+     <mo>&#8290;</mo>
+     <mi>M</mi>
+    </mrow>
+    <mo>-</mo>
+   </mrow>
+   <mo>&gt;</mo>
+   <mi>R</mi>
+  </mrow>
+ </mrow>
+</math>，满足</p>
+
+<ul>
+<li>d(x,y)≥0  ∀x,y∈M</li>
+<li>d(x,y)=0⟺x=y</li>
+<li>d(x,y)=d(y,x) ∀x,y∈M</li>
+<li>d(x,z)≤d(x,y)+d(y,z) ∀x,y,z∈M
+两个点 x,y 之间的距离就是<math xmlns='http://www.w3.org/1998/Math/MathML'
+  mathematica:form='TraditionalForm'
+  xmlns:mathematica='http://www.wolfram.com/XML/'>
+<mrow>
+<mi>d</mi>
+<mo>(</mo>
+<mrow>
+ <mi>x</mi>
+ <mo>,</mo>
+ <mi>y</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+</math>。</li>
+</ul>
+
+
+<p>我们一般最常用的距离函数是欧氏距离，也称作<math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='TraditionalForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>
+ <msub>
+  <mi>L</mi>
+  <mn>2</mn>
+ </msub>
+</math>距离。</p>
+
+<p>如果
+x=(x1,x2,…,xn) 和 y=(y1,y2,…,yn)是 n 维欧式空间 Rn 上的两个点，那它们之间的<math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='TraditionalForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>
+ <msub>
+  <mi>L</mi>
+  <mn>2</mn>
+ </msub>
+</math>距离是</p>
+
+<p><math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='TraditionalForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>
+ <mrow>
+  <mrow>
+   <msub>
+    <mi>d</mi>
+    <mn>2</mn>
+   </msub>
+   <mo>(</mo>
+   <mrow>
+    <mi>X</mi>
+    <mo>,</mo>
+    <mi>Y</mi>
+   </mrow>
+   <mo>)</mo>
+  </mrow>
+  <mo>&#63449;</mo>
+  <msqrt>
+   <mrow>
+    <munderover>
+     <mo movablelimits='true'>&#8721;</mo>
+     <mrow>
+      <mi>i</mi>
+      <mo>=</mo>
+      <mn>1</mn>
+     </mrow>
+     <mi>n</mi>
+    </munderover>
+    <mrow>
+     <mrow>
+      <mo>(</mo>
+      <mrow>
+       <msub>
+        <mi>X</mi>
+        <mi>i</mi>
+       </msub>
+       <mo>-</mo>
+       <msub>
+        <mi>Y</mi>
+        <mi>i</mi>
+       </msub>
+      </mrow>
+      <mo>)</mo>
+     </mrow>
+     <mo>&#8290;</mo>
+     <msup>
+      <mo>&#8202;</mo>
+      <mn>2</mn>
+     </msup>
+    </mrow>
+   </mrow>
+  </msqrt>
+ </mrow>
+</math></p>
+
+<p>由于Python 的scikit-learn包已经实现了KNN算法，因此我们在这里可以直接调用。</p>
+
+<p>在<a href="http://scikit-learn.org/stable/index.html">scikit—learn</a>中，需要以matrix的形式和目标向量的形式来导入和训练数据。</p>
+
+<p>因此在使用scikit-learn之前需要做额外的数据结构处理，同时还应该把原数据划分成训练数据和测试数据这样更加有利于我们下面的算法正确率评估。</p>
+
+<pre><code class="python">
+# loading libraries
+import numpy as np
+from sklearn.cross_validation import train_test_split
+
+# create design matrix X and target vector y
+X = np.array(df.ix[:, 0:4])     # end index is exclusive
+y = np.array(df['class'])   # another way of indexing a pandas df
+
+# split into train and test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+</code></pre>
+
+<p>最后，我们根据划分好的数据集来构建真正的分类器，并用构建出来的分类器来进行数据拟合以及评估他的正确率。</p>
+
+<pre><code class="python">
+# loading library
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+# instantiate learning model (k = 3)
+knn = KNeighborsClassifier(n_neighbors=3)
+
+# fitting the model
+knn.fit(X_train, y_train)
+
+# predict the response
+pred = knn.predict(X_test)
+
+# evaluate accuracy
+# print(y_test,pred)
+print(metrics.accuracy_score(y_test, pred))
+</code></pre>
+
+<p><strong>输出</strong></p>
+
+<blockquote><p>0.98</p></blockquote>
+
+<p>由此可见，在适用的场合之下，KNN分类器的准确率也是可以达到一个较为理想的水平的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[机器学习概述-科普向]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/"/>
+    <updated>2017-08-06T23:02:41+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang</id>
+    <content type="html"><![CDATA[<h1>机器学习概论-科普篇</h1>
+
+<h2>什么是机器学习？</h2>
+
+<p>机器学习是一门多领域交叉学科。专门研究计算机或其他软硬件设备怎样模拟或实现人类的学习行为，以获取新的知识或技能，重新组织已有知识结构使不断改善自身的性能。</p>
+
+<h2>机器学习的应用领域</h2>
+
+<p>机器学习是人工智能研究的核心内容。它的应用已遍及人工智能的各个分支。如：专家系统，自动推理，自然语言处理，模式识别，计算机视觉，智能机器人等领域。</p>
+
+<h2>机器学习与数据挖掘的区别</h2>
+
+<p>机器学习在数据挖掘中被大量使用，其技术内涵几乎通用，可以看作同一座山峰在不同角度下的侧影。</p>
+
+<h2>机器学习与统计学的关系</h2>
+
+<p>机器学习和统计学是非常接近的两个领域。根据 Michael I. Jordan在机器学习领域的理念，从方法论原则到理论工具，在统计学领域是有一段很长的史前史。他也建议数据科学这一术语作为全部领域的前置。 Leo Breiman区别两个统计学的模型：数据模型和算法模型，在算法模型中意味着或多或少包含着机器学习的算法，比如随机森林（Random forest）。 一些统计学家已经采纳了机器学习中的一些做法，引申出了一个联结领域&mdash;&ndash;统计学习。</p>
+
+<h2>机器学习方法</h2>
+
+<p><strong>决策树学习：</strong>决策树学习使用了一个决策树作为预测性模型，映射一个对象的观察结果给其目标价值一个推论。</p>
+
+<p><strong>关联规则学习:</strong>是一种用来在大型数据库中发现变量之间的有趣联系的方法,例如频繁模式挖掘。</p>
+
+<p><strong>人工神经网络：</strong>一个人工神经网络学习（ANN）算法，通常被称为神经网络（NN），是一个由生物的神经网络所激发出的一个算法。计算结构是由联结的人工神经元组所构成，通过联结式的方法来传递信息和计算。现代神经网络是非线性的统计学数据模型工具。它们通常被用来在输入和输出之间模拟复杂关系，找到数据中的关系，或者在观测变量中从不知道的节点捕获统计学结构。</p>
+
+<p><strong>深度学习：</strong>个人不能承受硬件的价格和GPU的发展推动了这些年深度学习的进步，深度学习是由人工神经网络中的多个隐藏层组成的。这条道路试图去模拟人脑的过程，光、声进入视觉和听觉。一些成功的应用有计算机视觉和演讲识别。</p>
+
+<p><strong>归纳逻辑编程：</strong>归纳逻辑编程（ILP）是一门用逻辑编程控制规则的学科，它使用统一的表示法来处理输入样例，背景知识和假说。给定已知的背景知识的编码和一组被表示为事实的逻辑数据库的示例，ILP系统将派生出一个假设的逻辑程序，该程序包含所有积极的和没有负面的示例。归纳编程是一个相关的领域，它考虑任何一种表示假设(而不仅仅是逻辑编程)的编程语言，例如函数式编程。</p>
+
+<p><strong>支持向量机：</strong>支持向量机是一系列关于监督学习在分类和回归上的应用。给出训练样本的数据集，每一个标记属于两类中的一类，一个SVM训练算法构成了一个模型，可以用来预测一个新的样本是否进入一个类别或者是另一个。</p>
+
+<p><strong>集群：</strong>集群分析是将一组观察结果分配到子集(称为集群)，这样，同一集群中的观察与一些预先确定的标准或标准相似，而来自不同集群的观察则不同。不同的聚类技术对数据的结构作出不同的假设，通常由一些相似性度量定义，并通过内部紧度(相同集群的成员之间的相似性)和不同的集群之间的分离来评估。其他方法基于估计的密度和图连通性。摘要聚类是一种非引导性学习的方法，是一种统计数据分析的常用技术。</p>
+
+<p><strong>贝叶斯网络：</strong>一个贝叶斯网络，信任网络或者有向无环图模型是一个概率性图的模型，它通过有向无环图代表了一系列的随机变量和他们的条件独立性。举例，一个贝叶斯网络代表着疾病和症状可能的关系。给出症状，网络可以被用来计算疾病出现的可能性。有效的算法存在于执行推理和学习的过程中。</p>
+
+<p><strong>增强学习：</strong>增强学习关心代理人如何在一个环境中采取行动，从而最大化一些长期受益的概念。增强学习算法尝试去寻找一些策略，映射当前世界的状态给代理在这些状态中应该采取的行动。</p>
+
+<p><strong>相似度量学习：</strong>在这个问题中，学习机被给予了很多对相似或者不相似的例子。它需要去学习一个相似的函数，以用来预测一个新的对象是否相似。它有时被用到推荐系统中。</p>
+
+<p><strong>遗传算法：</strong>遗传算法是一种启发式搜索，它模仿自然选择的过程，并且使用一些突变和变向来生成新的基因型，以找到好的情况解决问题。在机器学习中，遗传算法在20世纪80年代和90年代使用过。反之，机器学习技术被用来提高遗传和进化算法的表现。</p>
+
+<p><strong>基于规则的机器学习：</strong>基于规则的机器学习是任何机器学习方法的通用术语，它可以识别、学习或发展规则来存储、操作或应用知识。基于规则的机器学习者的定义特征是一组关系规则的标识和利用，这些规则集合了系统所捕获的知识。这与其他机器学习者形成鲜明对比，他们通常会识别出一种特殊的模型，这种模型可以普遍应用于任何实例，以便做出预测。基于规则的机器学习方法包括学习分类器系统、关联规则学习和人工免疫系统。</p>
+
+<h2>机器学习应用场景</h2>
+
+<h3>活跃的领域：</h3>
+
+<ul>
+<li>数据分析</li>
+<li>数据挖掘。</li>
+<li>图像和语音识别</li>
+<li>智能机器，机器人，人机对话，电脑博弈。</li>
+</ul>
+
+
+<h3>推荐系统：</h3>
+
+<ul>
+<li>基于物品的协同过滤</li>
+<li>频繁模式挖掘</li>
+</ul>
+
+
+<h3>贝叶斯分类器：</h3>
+
+<ul>
+<li>垃圾邮件过滤</li>
+<li>网页自动分类：自动化门户系统</li>
+<li>评论自动分析</li>
+</ul>
+
+
+<h3>决策树</h3>
+
+<ul>
+<li>量化交易</li>
+<li>智能博弈</li>
+<li>局面标准化</li>
+<li>局面评估函数</li>
+<li>棋谱学习</li>
+</ul>
+
+
+<h3>神经网络和深度学习</h3>
+
+<ul>
+<li>语音识别,图像识别</li>
+<li>图形识别：</li>
+<li>车牌识别</li>
+<li>指纹，虹膜纹识别</li>
+<li>脸像识别</li>
+<li>动态图像识别</li>
+<li>小波分析</li>
+</ul>
+
+
+<h2>机器学习常用软件</h2>
+
+<p>常用软件列表：</p>
+
+<ul>
+<li>R（及其扩展包）</li>
+<li>Weka（Waikato Environment for Knowledge Analysis）</li>
+<li>Matlab</li>
+<li>Python,numpy,matplotlib,sklearn,tensorflow</li>
+</ul>
+
+
+<h2>代表性算法</h2>
+
+<h3>回归预测及降维技术：</h3>
+
+<ul>
+<li>线性回归</li>
+<li>Logistic回归</li>
+<li>主成分分析</li>
+<li>因子分析</li>
+<li>岭回归</li>
+<li>LASSO</li>
+</ul>
+
+
+<h3>分类器:</h3>
+
+<ul>
+<li>决策树</li>
+<li>朴素贝叶斯</li>
+<li>贝叶斯信念网络</li>
+<li>支持向量机(SVM)</li>
+<li>提升分类器准确率的Adaboost和随机森林算法</li>
+</ul>
+
+
+<h3>聚类和孤立点判别</h3>
+
+<ul>
+<li>Kmeans聚类</li>
+</ul>
+
+
+<h3>人工神经网路及深度学习</h3>
+
+<ul>
+<li>CNN</li>
+<li>RNN</li>
+</ul>
+
+
+<p>&hellip;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[贝叶斯算法在检测群聊垃圾广告中的应用]]></title>
+    <link href="http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
+    <updated>2017-07-03T12:18:45+08:00</updated>
+    <id>http://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
+    <content type="html"><![CDATA[<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 背景：</a></li>
+<li><a href="#sec-2">2. 基本原理：</a></li>
+<li><a href="#sec-3">3. 联合概率计算</a></li>
+<li><a href="#sec-4">4. 算法实现</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>贝叶斯算法在检测群聊垃圾广告中的应用</h1>
+
+<h1>背景：<a id="sec-1" name="sec-1"></a></h1>
+
+<p>贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
+之前需要先建立历史资料库，即，先提供两组已经标注好的训练数据。
+在此附上训练数据链接：<a href="https://pan.baidu.com/s/1nuGW2Ul">https://pan.baidu.com/s/1nuGW2Ul</a></p>
+
+<h1>基本原理：<a id="sec-2" name="sec-2"></a></h1>
+
+<p>当看到一段文本时，我们先假定它是广告文本的概率为50%，其实整个识别模式就像垃圾邮件过滤
+一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
+50%：</p>
+
+<p>$ P(S) = P(H) = 50% $</p>
+
+<p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
+某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
+P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
+
+<p>$ P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) $</p>
+
+<p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
+我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
+概率分别为5%和0.05%，那么我们可以计算出P(S|W)＝ 99.0%</p>
+
+<p>因此，根据我们得出的99%的后验概率，我们可以说词语W的推断能力很强，在垃圾文本和正常文本之
+中有十分良好的推断效果。</p>
+
+<h1>联合概率计算<a id="sec-3" name="sec-3"></a></h1>
+
+<p>但是，一段文本中存在非常多的词汇，我们不能单凭一个单词就推断出这段文本的分类属性。因此，
+常规的做法是我们需要选取出整段文本中，P(S|W)最高的15个词，然后计算它们的联合概率。
+（其中可能存在的问题有：某些新词在历史数据中都不曾出现过，我们无法计算其P(S|W)的值，
+对于这样的问题需要用到贝叶斯平滑的思想进行处理，本文为了从简，我们都先假设这类词的P(S|W)
+值为0.4）</p>
+
+<p>对于联合概率的补充解释：联合概率是指在多个事件发生的情况之下，另一个发生的概率有多大。
+例如：已知，W<sub>1</sub> 和 W<sub>2</sub>为两个不同的词语，它们都出现在某段文本之中，那么这段文本为广告
+文本的概率就是W<sub>1</sub>和W<sub>2</sub>的联合概率。</p>
+
+<p>最后，根据提取的15个词，得出最终的概率计算公式</p>
+
+<p>$ P ＝ P<sub>1</sub>P<sub>2</sub>P<sub>3</sub>&#x2026;P<sub>15</sub>/(P<sub>1</sub>P<sub>2</sub>&#x2026;P<sub>15</sub>+(1-P<sub>1</sub>)(1-P<sub>2</sub>)&#x2026;(1-P<sub>15</sub>)) $</p>
+
+<p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
+认定为90%为垃圾文本！</p>
+
+<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
+
+<pre><code class="python">    #encoding=utf-8
+    import re
+    import pickle
+    #spam类对象
+    import jieba;
+    import os;
+    class spamEmailBayes:
+        #获得停用词表
+        def getStopWords(self):
+            stopList=[]
+            for line in open("../data/stopwords"):
+                stopList.append(line[:len(line)-1])
+            return stopList;
+        #获得词典
+        def get_word_list(self,content,wordsList,stopList):
+            #分词结果放入res_list
+            res_list = list(jieba.cut(content))
+            for i in res_list:
+                if i not in stopList and i.strip()!='' and i!=None:
+                    if i not in wordsList:
+                        wordsList.append(i)
+
+        #若列表中的词已在词典中，则加1，否则添加进去
+        def addToDict(self,wordsList,wordsDict):
+            for item in wordsList:
+                if item in wordsDict.keys():
+                    wordsDict[item]+=1
+                else:
+                    wordsDict.setdefault(item,1)
+
+        def get_File_List(self,filePath):
+            filenames=os.listdir(filePath)
+            return filenames
+
+        #通过计算每个文件中p(s|w)来得到对分类影响最大的15个词
+        def getTestWords(self,testDict,spamDict,normDict,normFilelen,spamFilelen):
+            wordProbList={}
+            for word,num  in testDict.items():
+                if word in spamDict.keys() and word in normDict.keys():
+                    #该文件中包含词个数
+                    pw_s=spamDict[word]/spamFilelen
+                    pw_n=normDict[word]/normFilelen
+                    ps_w=pw_s/(pw_s+pw_n)
+                    wordProbList.setdefault(word,ps_w)
+                if word in spamDict.keys() and word not in normDict.keys():
+                    pw_s=spamDict[word]/spamFilelen
+                    pw_n=0.01
+                    ps_w=pw_s/(pw_s+pw_n)
+                    wordProbList.setdefault(word,ps_w)
+                if word not in spamDict.keys() and word in normDict.keys():
+                    pw_s=0.01
+                    pw_n=normDict[word]/normFilelen
+                    ps_w=pw_s/(pw_s+pw_n)
+                    wordProbList.setdefault(word,ps_w)
+                if word not in spamDict.keys() and word not in normDict.keys():
+                    #若该词不在脏词词典中，概率设为0.4
+                    wordProbList.setdefault(word,0.4)
+            sorted(wordProbList.items(),key=lambda d:d[1],reverse=True)[0:15]
+            return (wordProbList)
+
+        #计算贝叶斯概率
+        def calBayes(self,wordList,spamdict,normdict):
+            ps_w=1
+            ps_n=1
+
+            for word,prob in wordList.items() :
+                print(word+"/"+str(prob))
+                ps_w*=(prob)
+                ps_n*=(1-prob)
+            p=ps_w/(ps_w+ps_n)
+    #         print(str(ps_w)+"////"+str(ps_n))
+            return p
+
+        #计算预测结果正确率
+        def calAccuracy(self,testResult):
+            rightCount=0
+            errorCount=0
+            for name ,catagory in testResult.items():
+                if (int(name)&lt;1000 and catagory==0) or(int(name)&gt;1000 and catagory==1):
+                    rightCount+=1
+                else:
+                    errorCount+=1
+            return rightCount/(rightCount+errorCount)
+
+    spam=spamEmailBayes()
+    #保存词频的词典
+    spamDict={}
+    normDict={}
+    testDict={}
+    #保存每封邮件中出现的词
+    wordsList=[]
+    wordsDict={}
+    #保存预测结果,key为文件名，值为预测类别
+    testResult={}
+    #分别获得正常邮件、垃圾邮件及测试文件名称列表
+    normFileList=spam.get_File_List("../data/normal")
+    spamFileList=spam.get_File_List("../data/spam")
+    testFileList=spam.get_File_List("../data/test2")
+    #获取训练集中正常邮件与垃圾邮件的数量
+    normFilelen=len(normFileList)
+    spamFilelen=len(spamFileList)
+    #获得停用词表，用于对停用词过滤
+    stopList=spam.getStopWords()
+    #获得正常邮件中的词频
+    for fileName in normFileList:
+        wordsList.clear()
+        for line in open("../data/normal/"+fileName,encoding='gbk'):
+            #过滤掉非中文字符
+            rule=re.compile(r"[^\u4e00-\u9fa5]")
+            line=rule.sub("",line)
+            #将每封邮件出现的词保存在wordsList中
+            spam.get_word_list(line,wordsList,stopList)
+        #统计每个词在所有邮件中出现的次数
+        spam.addToDict(wordsList, wordsDict)
+    normDict=wordsDict.copy()
+
+    output = open('norm.pkl','wb')
+    pickle.dump(normDict,output,-1)
+    output.close()
+
+    #获得垃圾邮件中的词频
+    wordsDict.clear()
+    for fileName in spamFileList:
+        wordsList.clear()
+        for line in open("../data/spam/"+fileName,encoding='gbk'):
+            rule=re.compile(r"[^\u4e00-\u9fa5]")
+            line=rule.sub("",line)
+            spam.get_word_list(line,wordsList,stopList)
+        spam.addToDict(wordsList, wordsDict)
+    spamDict=wordsDict.copy()
+
+    output = open('spam.pkl','wb')
+    pickle.dump(spamDict,output,-1)
+    output.close()
+
+    output = open('model.pkl','wb')
+    pickle.dump(spam,output,-1)
+    output.close()
+
+    # 测试邮件
+    for fileName in testFileList:
+        testDict.clear( )
+        wordsDict.clear()
+        wordsList.clear()
+        for line in open("../data/test2/"+fileName):
+        #for line in open("../data/test/"+fileName,encoding='gbk'):
+            rule=re.compile(r"[^\u4e00-\u9fa5]")
+            line=rule.sub("",line)
+            spam.get_word_list(line,wordsList,stopList)
+        spam.addToDict(wordsList, wordsDict)
+        testDict=wordsDict.copy()
+        #通过计算每个文件中p(s|w)来得到对分类影响最大的15个词
+        wordProbList=spam.getTestWords(testDict, spamDict,normDict,normFilelen,spamFilelen)
+        #对每封邮件得到的15个词计算贝叶斯概率
+        p=spam.calBayes(wordProbList, spamDict, normDict)
+        if(p&gt;0.9):
+            testResult.setdefault(fileName,1)
+        else:
+            testResult.setdefault(fileName,0)
+    #计算分类准确率（测试集中文件名低于1000的为正常邮件）
+    testAccuracy=spam.calAccuracy(testResult)
+    for i,ic in testResult.items():
+        print(i+"/"+str(ic))
+    print(testAccuracy)
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
