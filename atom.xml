@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-09-03T14:31:01+08:00</updated>
+  <updated>2017-09-03T23:45:25+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -2510,13 +2510,15 @@ The accuracy of our classifier is 98%</p></blockquote>
 一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
 50%：</p>
 
-<p>$ P(S) = P(H) = 50% $</p>
+<p><script type="math/tex" id="MathJax-Element-115"> P(S) = P(H) = 50% </script></p>
+
 
 <p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
 某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
 P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
 
-<p>$ P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) $</p>
+<p><script type="math/tex" id="MathJax-Element-116"> P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) </script></p>
+
 
 <p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
 我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
@@ -2539,7 +2541,8 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
 
 <p>最后，根据提取的15个词，得出最终的概率计算公式</p>
 
-<p>$ P ＝ P<sub>1</sub>P<sub>2</sub>P<sub>3</sub>&#x2026;P<sub>15</sub>/(P<sub>1</sub>P<sub>2</sub>&#x2026;P<sub>15</sub>+(1-P<sub>1</sub>)(1-P<sub>2</sub>)&#x2026;(1-P<sub>15</sub>)) $</p>
+<p><script type="math/tex" id="MathJax-Element-118"> P ＝ P_1P_2P_3…P_{15}/(P_1P_2…P_{15}+(1-P_1)(1-P_2)…(1-P_{15})) </script></p>
+
 
 <p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
 认定为90%为垃圾文本！</p>
