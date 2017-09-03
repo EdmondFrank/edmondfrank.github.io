@@ -9,53 +9,9 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Xlib编程之-创建全屏透明窗口 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47 &hellip;">
+  <meta name="description" content="大数据下的Hadoop (1) 什么是大数据概念？ 大数据(big data,mega data)，或称巨量资料，指的是需要新处理模式才能具有更强的决策力、洞察力和流程优化能力的海量、高增长率和多样化的信息资产。 (2) 常规的数据处理 * 数据的采集
+* 明确数据处理的目的
+* 数据清洗 : &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +28,7 @@
   <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
   
   
 
@@ -109,6 +66,150 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/22/da-shu-ju-xia-de-hadoop/">大数据下的Hadoop</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-12-22T20:00:09+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>大数据下的Hadoop</h2>
+
+<p><strong>(1) 什么是大数据概念？</strong>
+    <a href="http://baike.baidu.com/item/%E5%A4%A7%E6%95%B0%E6%8D%AE/1356941">大数据(big data,mega data)</a>，或称巨量资料，指的是需要新处理模式才能具有更强的决策力、洞察力和流程优化能力的海量、高增长率和多样化的信息资产。</p>
+
+<p><strong>(2) 常规的数据处理 </strong>
+* 数据的采集
+* 明确数据处理的目的
+* 数据清洗 : 统一数据格式、删除重复值、处理缺失字段、检查数据逻辑错误等
+* 数据加工 : 数据抽取、数据计算、数据分组和数据转换等
+* 数据抽样
+数据处理完毕后，就可以进行数据分析了</p>
+
+<p><strong>(3) 主流的三大分布式计算系统</strong></p>
+
+<blockquote><p>一.Hadoop 基于java</p></blockquote>
+
+<p>   Hadoop采用MapReduce分布式计算框架，并根据GFS开发了HDFS分布式文件系统，根据BigTable开发了HBase数据存储系统。</p>
+
+<blockquote><p>二.Spark  基于scala</p></blockquote>
+
+<pre><code>Spark也是Apache基金会的开源项目，它由加州大学伯克利分校的实验室开发，是另外一种重要的分布式计算系统。它在Hadoop的基础上进行了一些架构上的改良。Spark与Hadoop最大的不同点在于，Hadoop使用硬盘来存储数据，而Spark使用内存来存储数据，因此Spark可以提供超过Hadoop 100倍的运算速度。但是，由于内存断电后会丢失数据，Spark不能用于处理需要长期保存的数据。
+</code></pre>
+
+<blockquote><p>三.Storm  基于clojure</p></blockquote>
+
+<pre><code>Storm是Twitter主推的分布式计算系统，它由BackType团队开发，是Apache基金会的孵化项目。它在Hadoop的基础上提供了实时运算的特性，可以实时的处理大数据流。不同于Hadoop和Spark，Storm不进行数据的收集和存储工作，它直接通过网络实时的接受数据并且实时的处理数据，然后直接通过网络实时的传回结果。
+</code></pre>
+
+<p>   <em>然而,以上的平台的语言开发组件都有一个共同点,即,基于java的JVM</em></p>
+
+<p><strong>(4) 有关hadoop</strong></p>
+
+<p>Hadoop核心 HDFS和MapReduce</p>
+
+<pre><code>HDFS
+</code></pre>
+
+<p>   HDFS（Hadoop Distributed File System，Hadoop分布式文件系统），它是一个高度容错性的系统，适合部署在廉价的机器上。HDFS能提供高吞吐量的数据访问，适合那些有着超大数据集（large data set）的应用程序。</p>
+
+<blockquote><p>HDFS的设计特点是：</p></blockquote>
+
+<ol>
+<li>大数据文件，非常适合上T级别的大文件或者一堆大数据文件的存储，如果文件只有几个G甚至更小就没啥意思了。</li>
+<li>文件分块存储，HDFS会将一个完整的大文件平均分块存储到不同计算器上，它的意义在于读取文件时可以同时从多个主机取不同区块的文件，多主机读取比单主机读取效率要高得多得都。</li>
+<li>流式数据访问，一次写入多次读写，这种模式跟传统文件不同，它不支持动态改变文件内容，而是要求让文件一次写入就不做变化，要变化也只能在文件末添加内容。</li>
+<li>廉价硬件，HDFS可以应用在普通PC机上，这种机制能够让给一些公司用几十台廉价的计算机就可以撑起一个大数据集群。</li>
+<li>硬件故障，HDFS认为所有计算机都可能会出问题，为了防止某个主机失效读取不到该主机的块文件，它将同一个文件块副本分配到其它某几个主机上，如果其中一台主机失效，可以迅速找另一块副本取文件。</li>
+</ol>
+
+
+<blockquote><p>HDFS的关键元素：</p></blockquote>
+
+<p><strong>Block：将一个文件进行分块，通常是64M。</strong></p>
+
+<p>NameNode：保存整个文件系统的目录信息、文件信息及分块信息，这是由唯一一台主机专门保存，当然这台主机如果出错，NameNode就失效了。在Hadoop2.*开始支持activity-standy模式&mdash;-如果主NameNode失效，启动备用主机运行NameNode。</p>
+
+<p><strong>DataNode：分布在廉价的计算机上，用于存储Block块文件。</strong></p>
+
+<p><img src="/images/hdfs.jpg"></p>
+
+<pre><code>MapReduce
+</code></pre>
+
+<p>   通俗说MapReduce是一套从海量·源数据提取分析元素最后返回结果集的编程模型，将文件分布式存储到硬盘是第一步，而从海量数据中提取分析我们需要的内容就是MapReduce做的事了。</p>
+
+<p>   下面以一个计算海量数据最大值为例：一个银行有上亿储户，银行希望找到存储金额最高的金额是多少，按照传统的计算方式，我们会这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//java</span>
+</span><span class='line'><span class="n">Long</span> <span class="n">moneys</span><span class="o">[]</span> <span class="o">...</span>
+</span><span class='line'><span class="n">Long</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">0L</span><span class="o">;</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">moneys</span><span class="o">.</span><span class="na">length</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">moneys</span><span class="o">[</span><span class="n">i</span><span class="o">]&gt;</span><span class="n">max</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">max</span> <span class="o">=</span> <span class="n">moneys</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果计算的数组长度少的话，这样实现是不会有问题的，还是面对海量数据的时候就会有问题。</p>
+
+<p>MapReduce会这样做：首先数字是分布存储在不同块中的，以某几个块为一个Map，计算出Map中最大的值，然后将每个Map中的最大值做Reduce操作，Reduce再取最大值给用户。</p>
+
+<p><img src="/images/map.jpg"></p>
+
+<p>MapReduce的基本原理就是：将大的数据分析分成小块逐个分析，最后再将提取出来的数据汇总分析，最终获得我们想要的内容。当然怎么分块分析，怎么做Reduce操作非常复杂，Hadoop已经提供了数据分析的实现，我们只需要编写简单的需求命令即可达成我们想要的数据。</p>
+
+<h2>总结</h2>
+
+<p>   <strong>总的来说:</strong> <em>Hadoop适合应用于大数据存储和大数据分析的应用，适合于服务器几千台到几万台的集群运行，支持PB级的存储容量。Hadoop典型应用有：搜索、日志处理、推荐系统、数据分析、视频图像分析、数据保存等。</em></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/12/22/da-shu-ju-xia-de-hadoop/">大数据下的Hadoop</a>
+      <time datetime="2016-12-22T20:00:09+08:00" pubdate><span class='month'>Dec</span> <span class='day'>22</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1932,283 +2033,6 @@ new malloc:0x9e51010 <br/></p></blockquote>
       
       - <a href="/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/">Linux进程内存管理</a>
       <time datetime="2016-08-10T11:24:22+08:00" pubdate><span class='month'>Aug</span> <span class='day'>10</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/">Linux程序开发-命令行选项及参数</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-08-09T16:16:57+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Linux程序开发-命令行选项及参数</h2>
-
-<h3>1.C语言中命令行参数的读取与输出</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">argc</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;argv[%d] = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>当命令行选项很多时,可以使用库函数获取</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">getopt</span>      <span class="c1">//短选项</span>
-</span><span class='line'><span class="n">getlongopt</span>  <span class="c1">//长选项</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>函数声明</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;unistd.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">getopt</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="k">const</span> <span class="n">argv</span><span class="p">[],</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optstring</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以下全局变量用于配合getopt函数</p>
-
-<blockquote><p>extern char *optargr;<br/>
-extern int optind;<br/>
-extern int optopt;<br/>
-extern int opterr;<br/></p></blockquote>
-
-<h3>2.有关选项和参数的区别</h3>
-
-<p>eg:</p>
-
-<p>-a : 选项,一般表示所有</p>
-
-<p>-h host: 其中,h表示选项,而host代表了一个主机ip也就是选项h的参数</p>
-
-<p><strong>具体参数的解析,可以参考getopt的第三个参数的使用约定</strong></p>
-
-<h3>3.getopt的执行过程</h3>
-
-<p>当getopt每成功执行一次</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">extern</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optarg</span><span class="p">;</span> <span class="c1">//指向下一个要扫描的参数</span>
-</span><span class='line'><span class="k">extern</span> <span class="kt">int</span> <span class="n">optind</span><span class="p">;</span>   <span class="c1">//索引修改为下一个要处理的指针的下标</span>
-</span><span class='line'><span class="k">extern</span> <span class="kt">int</span> <span class="n">optopt</span><span class="p">;</span>   <span class="c1">//用于存储可能的错误</span>
-</span><span class='line'><span class="k">extern</span> <span class="kt">int</span> <span class="n">opterr</span><span class="p">;</span>   <span class="c1">//如果opterr == 0;则不将错误输出到标准错误输出设备</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4.getopt使用实例</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">opterr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">while</span> <span class="p">((</span><span class="n">result</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="n">argv</span><span class="p">,</span><span class="s">&quot;ab:c::&quot;</span><span class="p">))</span><span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>        <span class="k">case</span> <span class="sc">&#39;a&#39;</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;option=a,optopt=%c,optarg=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optopt</span><span class="p">,</span><span class="n">optarg</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">case</span> <span class="sc">&#39;b&#39;</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;option=b,optopt=%c,optarg=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optopt</span><span class="p">,</span><span class="n">optarg</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">case</span> <span class="sc">&#39;c&#39;</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;option=c,optopt=%c,optarg=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optopt</span><span class="p">,</span><span class="n">optarg</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">case</span> <span class="sc">&#39;?&#39;</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;result=?,optopt=%c,optarg=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optopt</span><span class="p">,</span><span class="n">optarg</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;default,result=%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;argv[%d]=%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optind</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="n">optind</span><span class="p">]);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;result=-1,optind=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">optind</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>输入示例
-./first -a -b host -cShell</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">输出结果</span>
-</span><span class='line'><span class="n">option</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="n">optopt</span><span class="o">=</span><span class="p">,</span><span class="n">optarg</span><span class="o">=</span><span class="p">(</span><span class="n">null</span><span class="p">)</span>
-</span><span class='line'><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=-</span><span class="n">b</span>
-</span><span class='line'><span class="n">option</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">optopt</span><span class="o">=</span><span class="p">,</span><span class="n">optarg</span><span class="o">=</span><span class="n">host</span>
-</span><span class='line'><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="n">cShell</span>
-</span><span class='line'><span class="n">option</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">optopt</span><span class="o">=</span><span class="p">,</span><span class="n">optarg</span><span class="o">=</span><span class="n">Shell</span>
-</span><span class='line'><span class="n">argv</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">null</span><span class="p">)</span>
-</span><span class='line'><span class="n">result</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">optind</span><span class="o">=</span><span class="mi">5</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5.长选项判断函数getopt_long的声明</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">getopt</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">argv</span><span class="p">[],</span>
-</span><span class='line'>                  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optstring</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">extern</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optarg</span><span class="p">;</span>
-</span><span class='line'><span class="k">extern</span> <span class="kt">int</span> <span class="n">optind</span><span class="p">,</span> <span class="n">opterr</span><span class="p">,</span> <span class="n">optopt</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#include &lt;getopt.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">getopt_long</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span>
-</span><span class='line'>                  <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">argv</span><span class="p">[],</span>
-</span><span class='line'>                  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optstring</span><span class="p">,</span>          <span class="c1">//当前支持的短选项列表</span>
-</span><span class='line'>                  <span class="k">const</span> <span class="k">struct</span> <span class="n">option</span> <span class="o">*</span><span class="n">longopts</span><span class="p">,</span>  <span class="c1">//长选项信息</span>
-</span><span class='line'>                  <span class="kt">int</span> <span class="o">*</span><span class="n">longindex</span><span class="p">);</span>                <span class="c1">//索引</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">struct</span> <span class="n">option</span> <span class="p">{</span>
-</span><span class='line'>               <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>         <span class="c1">//选项名</span>
-</span><span class='line'>               <span class="kt">int</span>         <span class="n">has_arg</span><span class="p">;</span>      <span class="c1">//是否有参数</span>
-</span><span class='line'>               <span class="kt">int</span>        <span class="o">*</span><span class="n">flag</span><span class="p">;</span>         <span class="c1">//标志</span>
-</span><span class='line'>               <span class="kt">int</span>         <span class="n">val</span><span class="p">;</span>          <span class="c1">//返回值</span>
-</span><span class='line'>                                <span class="p">};</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">getopt_long_only</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">argv</span><span class="p">[],</span>
-</span><span class='line'>                  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">optstring</span><span class="p">,</span>
-</span><span class='line'>                  <span class="k">const</span> <span class="k">struct</span> <span class="n">option</span> <span class="o">*</span><span class="n">longopts</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">longindex</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>第四个参数的使用示例:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">optino</span> <span class="n">my_option</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>   <span class="p">{</span><span class="s">&quot;help&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nb">NULL</span><span class="p">,</span><span class="sc">&#39;h&#39;</span><span class="p">},</span>
-</span><span class='line'>   <span class="p">{</span><span class="s">&quot;output&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="nb">NULL</span><span class="p">,</span><span class="sc">&#39;o&#39;</span><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>除了以上区别外,长选项与短选项的使用方法类似.</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/">Linux程序开发-命令行选项及参数</a>
-      <time datetime="2016-08-09T16:16:57+08:00" pubdate><span class='month'>Aug</span> <span class='day'>09</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
       
