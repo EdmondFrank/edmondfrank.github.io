@@ -9,11 +9,11 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Table of Contents 1. 问题一：大数据量的csv读入到内存中 1.1. 问题分析：
-1.2. 应对思路：
-1.3. 简易示例： 2. 问题二：如何高效读取csv文件成python内部的list结构 2.1. 问题分析：
-2.2. 应对思路：
-2.3. 简易示例： 3. 问题三： &hellip;">
+  <meta name="description" content="Table of Contents 1. 背景：
+2. 基本原理：
+3. 联合概率计算
+4. 算法实现 贝叶斯算法在检测群聊垃圾广告中的应用 背景： 贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
+之前需要先建立历史资料库，即， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +68,448 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-07-03T12:18:45+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 背景：</a></li>
+<li><a href="#sec-2">2. 基本原理：</a></li>
+<li><a href="#sec-3">3. 联合概率计算</a></li>
+<li><a href="#sec-4">4. 算法实现</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>贝叶斯算法在检测群聊垃圾广告中的应用</h1>
+
+<h1>背景：<a id="sec-1" name="sec-1"></a></h1>
+
+<p>贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
+之前需要先建立历史资料库，即，先提供两组已经标注好的训练数据。
+在此附上训练数据链接：<a href="https://pan.baidu.com/s/1nuGW2Ul">https://pan.baidu.com/s/1nuGW2Ul</a></p>
+
+<h1>基本原理：<a id="sec-2" name="sec-2"></a></h1>
+
+<p>当看到一段文本时，我们先假定它是广告文本的概率为50%，其实整个识别模式就像垃圾邮件过滤
+一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
+50%：</p>
+
+<p><script type="math/tex" id="MathJax-Element-115"> P(S) = P(H) = 50% </script></p>
+
+
+<p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
+某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
+P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
+
+<p><script type="math/tex" id="MathJax-Element-116"> P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) </script></p>
+
+
+<p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
+我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
+概率分别为5%和0.05%，那么我们可以计算出P(S|W)＝ 99.0%</p>
+
+<p>因此，根据我们得出的99%的后验概率，我们可以说词语W的推断能力很强，在垃圾文本和正常文本之
+中有十分良好的推断效果。</p>
+
+<h1>联合概率计算<a id="sec-3" name="sec-3"></a></h1>
+
+<p>但是，一段文本中存在非常多的词汇，我们不能单凭一个单词就推断出这段文本的分类属性。因此，
+常规的做法是我们需要选取出整段文本中，P(S|W)最高的15个词，然后计算它们的联合概率。
+（其中可能存在的问题有：某些新词在历史数据中都不曾出现过，我们无法计算其P(S|W)的值，
+对于这样的问题需要用到贝叶斯平滑的思想进行处理，本文为了从简，我们都先假设这类词的P(S|W)
+值为0.4）</p>
+
+<p>对于联合概率的补充解释：联合概率是指在多个事件发生的情况之下，另一个发生的概率有多大。
+例如：已知，W<sub>1</sub> 和 W<sub>2</sub>为两个不同的词语，它们都出现在某段文本之中，那么这段文本为广告
+文本的概率就是W<sub>1</sub>和W<sub>2</sub>的联合概率。</p>
+
+<p>最后，根据提取的15个词，得出最终的概率计算公式</p>
+
+<p><script type="math/tex" id="MathJax-Element-118"> P ＝ P_1P_2P_3…P_{15}/(P_1P_2…P_{15}+(1-P_1)(1-P_2)…(1-P_{15})) </script></p>
+
+
+<p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
+认定为90%为垃圾文本！</p>
+
+<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pickle</span>
+</span><span class='line'><span class="c">#spam类对象</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span><span class="p">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">spamEmailBayes</span><span class="p">:</span>
+</span><span class='line'>    <span class="c">#获得停用词表</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">getStopWords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">stopList</span><span class="o">=</span><span class="p">[]</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/stopwords&quot;</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">stopList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">stopList</span><span class="p">;</span>
+</span><span class='line'>    <span class="c">#获得词典</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_word_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">content</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">):</span>
+</span><span class='line'>        <span class="c">#分词结果放入res_list</span>
+</span><span class='line'>        <span class="n">res_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res_list</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopList</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">!=</span><span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">wordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#若列表中的词已在词典中，则加1，否则添加进去</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">addToDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">wordsDict</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>                <span class="n">wordsDict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">wordsDict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_File_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filePath</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">filenames</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">filenames</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">getTestWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testDict</span><span class="p">,</span><span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">wordProbList</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">num</span>  <span class="ow">in</span> <span class="n">testDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>                <span class="c">#该文件中包含词个数</span>
+</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
+</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
+</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
+</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="mf">0.01</span>
+</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="mf">0.01</span>
+</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
+</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>                <span class="c">#若该词不在脏词词典中，概率设为0.4</span>
+</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
+</span><span class='line'>        <span class="nb">sorted</span><span class="p">(</span><span class="n">wordProbList</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="n">wordProbList</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#计算贝叶斯概率</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">calBayes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordList</span><span class="p">,</span><span class="n">spamdict</span><span class="p">,</span><span class="n">normdict</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">ps_w</span><span class="o">=</span><span class="mi">1</span>
+</span><span class='line'>        <span class="n">ps_n</span><span class="o">=</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">prob</span> <span class="ow">in</span> <span class="n">wordList</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">word</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">ps_w</span><span class="o">*=</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">ps_n</span><span class="o">*=</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">prob</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">p</span><span class="o">=</span><span class="n">ps_w</span><span class="o">/</span><span class="p">(</span><span class="n">ps_w</span><span class="o">+</span><span class="n">ps_n</span><span class="p">)</span>
+</span><span class='line'><span class="c">#         print(str(ps_w)+&quot;////&quot;+str(ps_n))</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">p</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#计算预测结果正确率</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">calAccuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testResult</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">rightCount</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'>        <span class="n">errorCount</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">name</span> <span class="p">,</span><span class="n">catagory</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">rightCount</span><span class="o">+=</span><span class="mi">1</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">errorCount</span><span class="o">+=</span><span class="mi">1</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">rightCount</span><span class="o">/</span><span class="p">(</span><span class="n">rightCount</span><span class="o">+</span><span class="n">errorCount</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">spam</span><span class="o">=</span><span class="n">spamEmailBayes</span><span class="p">()</span>
+</span><span class='line'><span class="c">#保存词频的词典</span>
+</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'><span class="n">testDict</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'><span class="c">#保存每封邮件中出现的词</span>
+</span><span class='line'><span class="n">wordsList</span><span class="o">=</span><span class="p">[]</span>
+</span><span class='line'><span class="n">wordsDict</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'><span class="c">#保存预测结果,key为文件名，值为预测类别</span>
+</span><span class='line'><span class="n">testResult</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'><span class="c">#分别获得正常邮件、垃圾邮件及测试文件名称列表</span>
+</span><span class='line'><span class="n">normFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/normal&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">spamFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/spam&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">testFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/test2&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="c">#获取训练集中正常邮件与垃圾邮件的数量</span>
+</span><span class='line'><span class="n">normFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">normFileList</span><span class="p">)</span>
+</span><span class='line'><span class="n">spamFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spamFileList</span><span class="p">)</span>
+</span><span class='line'><span class="c">#获得停用词表，用于对停用词过滤</span>
+</span><span class='line'><span class="n">stopList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getStopWords</span><span class="p">()</span>
+</span><span class='line'><span class="c">#获得正常邮件中的词频</span>
+</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">normFileList</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/normal/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
+</span><span class='line'>        <span class="c">#过滤掉非中文字符</span>
+</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+</span><span class='line'>        <span class="c">#将每封邮件出现的词保存在wordsList中</span>
+</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#统计每个词在所有邮件中出现的次数</span>
+</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
+</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;norm.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">normDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#获得垃圾邮件中的词频</span>
+</span><span class='line'><span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">spamFileList</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/spam/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
+</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;spam.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spamDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;model.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spam</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 测试邮件</span>
+</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">testFileList</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">testDict</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/test2/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">):</span>
+</span><span class='line'>    <span class="c">#for line in open(&quot;../data/test/&quot;+fileName,encoding=&#39;gbk&#39;):</span>
+</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">testDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
+</span><span class='line'>    <span class="n">wordProbList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getTestWords</span><span class="p">(</span><span class="n">testDict</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#对每封邮件得到的15个词计算贝叶斯概率</span>
+</span><span class='line'>    <span class="n">p</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calBayes</span><span class="p">(</span><span class="n">wordProbList</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span> <span class="n">normDict</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="c">#计算分类准确率（测试集中文件名低于1000的为正常邮件）</span>
+</span><span class='line'><span class="n">testAccuracy</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calAccuracy</span><span class="p">(</span><span class="n">testResult</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">ic</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ic</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">testAccuracy</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a>
+      <time datetime="2017-07-03T12:18:45+08:00" pubdate><span class='month'>Jul</span> <span class='day'>03</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2715,361 +3157,6 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
       <time datetime="2017-03-22T17:33:02+08:00" pubdate><span class='month'>Mar</span> <span class='day'>22</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/">认识网络爬虫</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-03-10T19:39:43+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>认识网络爬虫</h2>
-
-<h3>什么是网络爬虫</h3>
-
-<p>   <em>传统网络爬虫是一个自动提取网页的程序,它为搜索引擎从万维网上下载网页,是搜索引擎的重要组成。
-一般从一个或若干初始网页的URL开始,获得初始网页上的URL,在抓取网页的过程中,不断从当前页面上抽取新的URL放入队列,直到满
-足系统的一定停止条件。</em></p>
-
-<h3>爬虫有什么用？</h3>
-
-<p>   <em>随着现代商业元素的发展，网络爬虫也开始呈现出一种多元化发展的趋势，应用在各种不同的领域。例如：商业数据收集、科学数据采集、社会特征分析等等</em>
-   <img src="http://p1.bqimg.com/567571/795209d053f87619.png" alt="" /></p>
-
-<ol>
-<li>通用搜索引擎网页搜集器</li>
-<li>垂直搜索引擎（招聘网，二手车，买房网）</li>
-<li>科学研究</li>
-<li>hacking
-&hellip;&hellip;</li>
-</ol>
-
-
-<h3>一个简单的python爬虫</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#！/usr/bin/env python</span>
-</span><span class='line'><span class="c">#coding=utf-8</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pyquery</span> <span class="kn">import</span> <span class="n">PyQuery</span> <span class="k">as</span> <span class="n">pq</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/portal.php&#39;</span>
-</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
-</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span>
-</span><span class='line'><span class="n">p</span> <span class="o">=</span> <span class="n">pq</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#portal_block_617 li&gt;a&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
-</span><span class='line'>    <span class="k">print</span> <span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/&#39;</span><span class="o">+</span><span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&#39;href&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>爬虫工作过程解析</h3>
-
-<pre><code>网络爬虫框架主要由控制器、解析器和索引库三大部分组成，而爬虫工作原理主要是解析器这个环节，解析器的主要工作是下载网页，进行页面的处理，主要是将一些JS脚本标签、CSS代码内容、空格字符、HTML标签等内容处理掉，爬虫的基本工作是由解析器完成。所以解析器的具体流程是：
-</code></pre>
-
-<blockquote><p><strong>入口访问->下载内容->分析结构->提取内容</strong></p></blockquote>
-
-<h4>下面以爬取<a href="http://www.luoo.net/">落网</a>为例子</h4>
-
-<p><strong>第一步 确定目的</strong>
-抓取目标网站的某一期所有音乐</p>
-
-<p><strong>第二步 分析页面结构</strong>
-访问落网的某一期刊，通过Chrome的（F12）开发者模式查看播放列表中的歌曲，右侧选中的是一些需要特别注意的语义结构，见下图所示：</p>
-
-<p><img src="http://i1.piimg.com/567571/ed8e842e2bb1bb13.png" alt="" /></p>
-
-<p>这时我们可以看到在Chrome的开发者模式的Network中看到实际请求的播放文件。
-根据以上分析我们可以得到播放清单的位置和音乐文件的路径，接下来我们通过Python来实现这个目的。</p>
-
-<p><strong>实现爬虫</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#-*- coding: utf-8 -*-</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">random</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Factory</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">Queue</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">fake</span> <span class="o">=</span> <span class="n">Factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
-</span><span class='line'><span class="n">luoo_site</span> <span class="o">=</span> <span class="s">&#39;http://www.luoo.net/music/&#39;</span>
-</span><span class='line'><span class="n">luoo_site_mp3</span> <span class="o">=</span> <span class="s">&#39;http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.mp3&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Connection&#39;</span><span class="p">:</span> <span class="s">&#39;keep-alive&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="n">fake</span><span class="o">.</span><span class="n">user_agent</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">random_proxies</span><span class="p">():</span>
-</span><span class='line'>    <span class="n">ip_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">proxy_ips</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">res</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;http&#39;</span><span class="p">:</span> <span class="n">proxy_ips</span><span class="p">[</span><span class="n">ip_index</span><span class="p">]</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">res</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">fix_characters</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="s">&#39;*&#39;</span><span class="p">]:</span>
-</span><span class='line'>        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">s</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">LuooSpider</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">vols</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;[luoo spider]&#39;</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">20</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="s">&#39;1&#39;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vols</span> <span class="o">=</span> <span class="n">vols</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">vol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vols</span><span class="p">:</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">spider</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">ncrawl end</span><span class="se">\\</span><span class="s">n</span><span class="se">\\</span><span class="s">n&#39;</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">spider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">url</span> <span class="o">=</span> <span class="n">luoo_site</span> <span class="o">+</span> <span class="n">vol</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;crawling: &#39;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">n&#39;</span>
-</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">())</span>
-</span><span class='line'>                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;html.parser&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">title</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-title&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
-</span><span class='line'>        <span class="n">cover</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-cover&#39;</span><span class="p">})[</span><span class="s">&#39;src&#39;</span><span class="p">]</span>
-</span><span class='line'>        <span class="n">desc</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-desc&#39;</span><span class="p">})</span>
-</span><span class='line'>        <span class="n">track_names</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;trackname&#39;</span><span class="p">})</span>
-</span><span class='line'>        <span class="n">track_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">track_names</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">track_names</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]))</span> <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">)</span> <span class="k">else</span> <span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-</span><span class='line'>            <span class="n">_name</span> <span class="o">=</span> <span class="n">fix_characters</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
-</span><span class='line'>            <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">_name</span><span class="p">})</span>
-</span><span class='line'>            <span class="n">phases</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>                <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">vol</span><span class="p">,</span>                         <span class="c"># 期刊编号</span>
-</span><span class='line'>                <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>                       <span class="c"># 期刊标题</span>
-</span><span class='line'>                 <span class="s">&#39;cover&#39;</span><span class="p">:</span> <span class="n">cover</span><span class="p">,</span>                      <span class="c"># 期刊封面</span>
-</span><span class='line'>                 <span class="s">&#39;desc&#39;</span><span class="p">:</span> <span class="n">desc</span><span class="p">,</span>                        <span class="c"># 期刊描述</span>
-</span><span class='line'>                 <span class="s">&#39;track_count&#39;</span><span class="p">:</span> <span class="n">track_count</span><span class="p">,</span>          <span class="c"># 节目数</span>
-</span><span class='line'>                 <span class="s">&#39;tracks&#39;</span><span class="p">:</span> <span class="n">tracks</span>                     <span class="c"># 节目清单(节目编号，节目名称)</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">LuooDownloader</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'>     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">pass</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</span><span class='line'>                <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;tracks&#39;</span><span class="p">]:</span>
-</span><span class='line'>            <span class="n">file_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">%</span> <span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">local_file_dict</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">])</span>
-</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">):</span>
-</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">local_file</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.mp3&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">local_file_dict</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
-</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_file</span><span class="p">):</span>
-</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;downloading: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-</span><span class='line'>                <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
-</span><span class='line'>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;done.</span><span class="se">\\</span><span class="s">n&#39;</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;break: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">spider_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">luoo</span> <span class="o">=</span> <span class="n">LuooSpider</span><span class="p">(</span><span class="n">luoo_site</span><span class="p">,</span> <span class="n">vols</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;680&#39;</span><span class="p">,</span> <span class="s">&#39;721&#39;</span><span class="p">,</span> <span class="s">&#39;725&#39;</span><span class="p">,</span> <span class="s">&#39;720&#39;</span><span class="p">],</span><span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">downloader_count</span> <span class="o">=</span> <span class="mi">5</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">downloader_count</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">luoo_download</span> <span class="o">=</span> <span class="n">LuooDownloader</span><span class="p">(</span><span class="n">luoo_site_mp3</span><span class="p">,</span> <span class="s">&#39;/home/luoo&#39;</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/">认识网络爬虫</a>
-      <time datetime="2017-03-10T19:39:43+08:00" pubdate><span class='month'>Mar</span> <span class='day'>10</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
       
       </footer>
     </article>

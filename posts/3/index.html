@@ -9,8 +9,9 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="中文分词的简介 一：中文分词是什么？ 中文分词指的是将一个汉字序列切分成一个一个单独的词。
-中文分词技术属于自然语言处理技术范畴，对于一句话，人可以通过自己的知识来明白哪些是词，哪些不是词，但如何让计算机也能理解？其处理过程就是分词算法。 二：为什么要进行中文分词？ &hellip;">
+  <meta name="description" content="认识网络爬虫 什么是网络爬虫 传统网络爬虫是一个自动提取网页的程序,它为搜索引擎从万维网上下载网页,是搜索引擎的重要组成。
+一般从一个或若干初始网页的URL开始,获得初始网页上的URL,在抓取网页的过程中,不断从当前页面上抽取新的URL放入队列,直到满
+足系统的一定停止条件。 爬虫有什么用？ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,361 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/">认识网络爬虫</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-03-10T19:39:43+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>认识网络爬虫</h2>
+
+<h3>什么是网络爬虫</h3>
+
+<p>   <em>传统网络爬虫是一个自动提取网页的程序,它为搜索引擎从万维网上下载网页,是搜索引擎的重要组成。
+一般从一个或若干初始网页的URL开始,获得初始网页上的URL,在抓取网页的过程中,不断从当前页面上抽取新的URL放入队列,直到满
+足系统的一定停止条件。</em></p>
+
+<h3>爬虫有什么用？</h3>
+
+<p>   <em>随着现代商业元素的发展，网络爬虫也开始呈现出一种多元化发展的趋势，应用在各种不同的领域。例如：商业数据收集、科学数据采集、社会特征分析等等</em>
+   <img src="http://p1.bqimg.com/567571/795209d053f87619.png" alt="" /></p>
+
+<ol>
+<li>通用搜索引擎网页搜集器</li>
+<li>垂直搜索引擎（招聘网，二手车，买房网）</li>
+<li>科学研究</li>
+<li>hacking
+&hellip;&hellip;</li>
+</ol>
+
+
+<h3>一个简单的python爬虫</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#！/usr/bin/env python</span>
+</span><span class='line'><span class="c">#coding=utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pyquery</span> <span class="kn">import</span> <span class="n">PyQuery</span> <span class="k">as</span> <span class="n">pq</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/portal.php&#39;</span>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'><span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span>
+</span><span class='line'><span class="n">p</span> <span class="o">=</span> <span class="n">pq</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#portal_block_617 li&gt;a&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span> <span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;http://zhixing.bjtu.edu.cn/&#39;</span><span class="o">+</span><span class="n">pq</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&#39;href&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>爬虫工作过程解析</h3>
+
+<pre><code>网络爬虫框架主要由控制器、解析器和索引库三大部分组成，而爬虫工作原理主要是解析器这个环节，解析器的主要工作是下载网页，进行页面的处理，主要是将一些JS脚本标签、CSS代码内容、空格字符、HTML标签等内容处理掉，爬虫的基本工作是由解析器完成。所以解析器的具体流程是：
+</code></pre>
+
+<blockquote><p><strong>入口访问->下载内容->分析结构->提取内容</strong></p></blockquote>
+
+<h4>下面以爬取<a href="http://www.luoo.net/">落网</a>为例子</h4>
+
+<p><strong>第一步 确定目的</strong>
+抓取目标网站的某一期所有音乐</p>
+
+<p><strong>第二步 分析页面结构</strong>
+访问落网的某一期刊，通过Chrome的（F12）开发者模式查看播放列表中的歌曲，右侧选中的是一些需要特别注意的语义结构，见下图所示：</p>
+
+<p><img src="http://i1.piimg.com/567571/ed8e842e2bb1bb13.png" alt="" /></p>
+
+<p>这时我们可以看到在Chrome的开发者模式的Network中看到实际请求的播放文件。
+根据以上分析我们可以得到播放清单的位置和音乐文件的路径，接下来我们通过Python来实现这个目的。</p>
+
+<p><strong>实现爬虫</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#-*- coding: utf-8 -*-</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Factory</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">Queue</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">fake</span> <span class="o">=</span> <span class="n">Factory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</span><span class='line'><span class="n">luoo_site</span> <span class="o">=</span> <span class="s">&#39;http://www.luoo.net/music/&#39;</span>
+</span><span class='line'><span class="n">luoo_site_mp3</span> <span class="o">=</span> <span class="s">&#39;http://luoo-mp3.kssws.ks-cdn.com/low/luoo/radio</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.mp3&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;Connection&#39;</span><span class="p">:</span> <span class="s">&#39;keep-alive&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="n">fake</span><span class="o">.</span><span class="n">user_agent</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">random_proxies</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">ip_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">proxy_ips</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">res</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;http&#39;</span><span class="p">:</span> <span class="n">proxy_ips</span><span class="p">[</span><span class="n">ip_index</span><span class="p">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">res</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">fix_characters</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="s">&#39;*&#39;</span><span class="p">]:</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">s</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LuooSpider</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">vols</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;[luoo spider]&#39;</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">20</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vol</span> <span class="o">=</span> <span class="s">&#39;1&#39;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">vols</span> <span class="o">=</span> <span class="n">vols</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">vol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vols</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">spider</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">ncrawl end</span><span class="se">\\</span><span class="s">n</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">spider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">url</span> <span class="o">=</span> <span class="n">luoo_site</span> <span class="o">+</span> <span class="n">vol</span>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;crawling: &#39;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">())</span>
+</span><span class='line'>                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;html.parser&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">title</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-title&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="n">cover</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-cover&#39;</span><span class="p">})[</span><span class="s">&#39;src&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">desc</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;vol-desc&#39;</span><span class="p">})</span>
+</span><span class='line'>        <span class="n">track_names</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;trackname&#39;</span><span class="p">})</span>
+</span><span class='line'>        <span class="n">track_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">track_names</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">track_names</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]))</span> <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">)</span> <span class="k">else</span> <span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">_name</span> <span class="o">=</span> <span class="n">fix_characters</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+</span><span class='line'>            <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">_id</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">_name</span><span class="p">})</span>
+</span><span class='line'>            <span class="n">phases</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>                <span class="s">&#39;phase&#39;</span><span class="p">:</span> <span class="n">vol</span><span class="p">,</span>                         <span class="c"># 期刊编号</span>
+</span><span class='line'>                <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>                       <span class="c"># 期刊标题</span>
+</span><span class='line'>                 <span class="s">&#39;cover&#39;</span><span class="p">:</span> <span class="n">cover</span><span class="p">,</span>                      <span class="c"># 期刊封面</span>
+</span><span class='line'>                 <span class="s">&#39;desc&#39;</span><span class="p">:</span> <span class="n">desc</span><span class="p">,</span>                        <span class="c"># 期刊描述</span>
+</span><span class='line'>                 <span class="s">&#39;track_count&#39;</span><span class="p">:</span> <span class="n">track_count</span><span class="p">,</span>          <span class="c"># 节目数</span>
+</span><span class='line'>                 <span class="s">&#39;tracks&#39;</span><span class="p">:</span> <span class="n">tracks</span>                     <span class="c"># 节目清单(节目编号，节目名称)</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LuooDownloader</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">pass</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</span><span class='line'>                <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;tracks&#39;</span><span class="p">]:</span>
+</span><span class='line'>            <span class="n">file_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">%</span> <span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">local_file_dict</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="n">phases</span><span class="p">[</span><span class="s">&#39;phase&#39;</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">local_file_dict</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">local_file</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.mp3&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">local_file_dict</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_file</span><span class="p">):</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;downloading: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</span><span class='line'>                <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">random_proxies</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;done.</span><span class="se">\\</span><span class="s">n&#39;</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s">&#39;break: &#39;</span> <span class="o">+</span> <span class="n">track</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">spider_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">luoo</span> <span class="o">=</span> <span class="n">LuooSpider</span><span class="p">(</span><span class="n">luoo_site</span><span class="p">,</span> <span class="n">vols</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;680&#39;</span><span class="p">,</span> <span class="s">&#39;721&#39;</span><span class="p">,</span> <span class="s">&#39;725&#39;</span><span class="p">,</span> <span class="s">&#39;720&#39;</span><span class="p">],</span><span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">luoo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">downloader_count</span> <span class="o">=</span> <span class="mi">5</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">downloader_count</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">luoo_download</span> <span class="o">=</span> <span class="n">LuooDownloader</span><span class="p">(</span><span class="n">luoo_site_mp3</span><span class="p">,</span> <span class="s">&#39;/home/luoo&#39;</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">spider_queue</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">luoo_download</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/03/10/ren-shi-wang-luo-pa-chong/">认识网络爬虫</a>
+      <time datetime="2017-03-10T19:39:43+08:00" pubdate><span class='month'>Mar</span> <span class='day'>10</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1449,438 +1805,6 @@ i = 4 and j = 9 <br/>
       <time datetime="2016-08-12T10:44:05+08:00" pubdate><span class='month'>Aug</span> <span class='day'>12</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">Gdb的简单使用</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-08-11T14:26:20+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>gdb的简单使用</h2>
-
-<h3>1.单步执行和跟踪函数调用</h3>
-
-<p><strong>测试源码</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">add_range</span><span class="p">(</span><span class="kt">int</span> <span class="n">low</span><span class="p">,</span><span class="kt">int</span> <span class="n">high</span><span class="p">)</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">sum</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">low</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">high</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;sum = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">sum</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">result</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
-</span><span class='line'>    <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;result[0]=%d </span><span class="se">\n</span><span class="s"> result[1]=%d </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在编译并运行以上代码后,我们会发现最后的输出结果并非如我们预料一样.
-无论是result[0]或result[1]基本都是错误的结果,然而代码中的逻辑却没有任何的问题.
-在这里心细的朋友可能已经发现问题的所在了.
-但既然是练习gdb的使用,那么我们就加上 -g 选项,再重新编译一次代码以便生成的可执行文件可以用gdb进行调试.</p>
-
-<blockquote><p>$ gcc -g main.c -o main
-$ gdb main</p></blockquote>
-
-<p><strong>注:-g选项的作用是在可执行文件中加入源代码的信息,比如可执行文件中第几条机器指令对应源代码的第几行,但并不是把整个源文件嵌入到可执行文件中,所以在调试时必须保证gdb能找到源文件</strong></p>
-
-<p><strong>除此之外</strong>,gdb提供一个类似shell的命令行环境,上面的 (gdb) 就是提示符,在这个提示符下输
-入help可以查看命令的类别.</p>
-
-<p><strong>help命令</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">help</span>
-</span><span class='line'><span class="n">List</span> <span class="n">of</span> <span class="n">classes</span> <span class="n">of</span> <span class="nl">commands</span><span class="p">:</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">aliases</span> <span class="o">--</span> <span class="n">Aliases</span> <span class="n">of</span> <span class="n">other</span> <span class="n">commands</span>
-</span><span class='line'><span class="n">breakpoints</span> <span class="o">--</span> <span class="n">Making</span> <span class="n">program</span> <span class="n">stop</span> <span class="n">at</span> <span class="n">certain</span> <span class="n">points</span>
-</span><span class='line'><span class="n">data</span> <span class="o">--</span> <span class="n">Examining</span> <span class="n">data</span>
-</span><span class='line'><span class="n">files</span> <span class="o">--</span> <span class="n">Specifying</span> <span class="n">and</span> <span class="n">examining</span> <span class="n">files</span>
-</span><span class='line'><span class="n">internals</span> <span class="o">--</span> <span class="n">Maintenance</span> <span class="n">commands</span>
-</span><span class='line'><span class="n">obscure</span> <span class="o">--</span> <span class="n">Obscure</span> <span class="n">features</span>
-</span><span class='line'><span class="n">running</span> <span class="o">--</span> <span class="n">Running</span> <span class="n">the</span> <span class="n">program</span>
-</span><span class='line'><span class="n">stack</span> <span class="o">--</span> <span class="n">Examining</span> <span class="n">the</span> <span class="n">stack</span>
-</span><span class='line'><span class="n">status</span> <span class="o">--</span> <span class="n">Status</span> <span class="n">inquiries</span>
-</span><span class='line'><span class="n">support</span> <span class="o">--</span> <span class="n">Support</span> <span class="n">facilities</span>
-</span><span class='line'><span class="n">tracepoints</span> <span class="o">--</span> <span class="n">Tracing</span> <span class="n">of</span> <span class="n">program</span> <span class="n">execution</span> <span class="n">without</span> <span class="n">stopping</span> <span class="n">the</span> <span class="n">program</span>
-</span><span class='line'><span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="o">--</span> <span class="n">User</span><span class="o">-</span><span class="n">defined</span> <span class="n">commands</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help&quot;</span> <span class="n">followed</span> <span class="n">by</span> <span class="n">a</span> <span class="n">class</span> <span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="n">list</span> <span class="n">of</span> <span class="n">commands</span> <span class="n">in</span> <span class="n">that</span> <span class="n">class</span><span class="p">.</span>
-</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help all&quot;</span> <span class="k">for</span> <span class="n">the</span> <span class="n">list</span> <span class="n">of</span> <span class="n">all</span> <span class="n">commands</span><span class="p">.</span>
-</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help&quot;</span> <span class="n">followed</span> <span class="n">by</span> <span class="n">command</span> <span class="n">name</span> <span class="k">for</span> <span class="n">full</span> <span class="n">documentation</span><span class="p">.</span>
-</span><span class='line'><span class="n">Type</span> <span class="s">&quot;apropos word&quot;</span> <span class="n">to</span> <span class="n">search</span> <span class="k">for</span> <span class="n">commands</span> <span class="n">related</span> <span class="n">to</span> <span class="s">&quot;word&quot;</span><span class="p">.</span>
-</span><span class='line'><span class="n">Command</span> <span class="n">name</span> <span class="n">abbreviations</span> <span class="n">are</span> <span class="n">allowed</span> <span class="k">if</span> <span class="n">unambiguous</span><span class="p">.</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>list命令</strong>
-list命令用于列出代码或指定函数,列出的代码行的起始位置为上一次列出的代码的结尾,
-第一次使用时,默认从第一行开始.每次默认列出十行代码.list命令也可简写成l.
-要是要列出指定函数的代码,直接在list后面加函数名即可.</p>
-
-<blockquote><p>eg: list add_range</p></blockquote>
-
-<p>且可以通过 show listsize  和 show listsize NUM(NUM为整数)来查询和修改每次最大列出代码行数.</p>
-
-<p><strong>在什么都不输入的情况下敲击回车,gdb默认会执行上一条命令</strong></p>
-
-<p><strong>quit命令</strong>
-退出gdb环境</p>
-
-<p><strong>start命令</strong>
-开始执行程序,start命令默认停在main函数变量定义后的第一条语句,并等待下一次命令.</p>
-
-<p><strong>next命令(简写n)</strong>
-单步步过</p>
-
-<p><strong>step命令(简写s)</strong>
-单步步入</p>
-
-<p><strong>backtrace命令(简写bt)</strong>
-查看函数调用栈帧</p>
-
-<p><strong>info命令(简写i)</strong>
-查询相关信息</p>
-
-<blockquote><p>eg:查询add_range函数局部变量的值,i locals</p></blockquote>
-
-<p><strong>print命令(简写p)</strong>
-打印指定变量值</p>
-
-<p><strong>finish命令</strong>
-执行到返回</p>
-
-<p>介绍完以上几个简单的命令之后再返回到测试代码的调试之中.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">start</span>
-</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="mh">0x80484c7</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">13.</span>
-</span><span class='line'><span class="n">Starting</span> <span class="nl">program</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ef</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">gdbtest2</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">13</span>
-</span><span class='line'><span class="mi">13</span>    <span class="p">{</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">n</span>
-</span><span class='line'><span class="mi">15</span>        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">s</span>
-</span><span class='line'><span class="n">add_range</span> <span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">5</span>
-</span><span class='line'><span class="mi">5</span>     <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">low</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">high</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">bt</span>
-</span><span class='line'><span class="cp">#0  add_range (low=1, high=10) at ./gdbtest2.c:5</span>
-</span><span class='line'><span class="cp">#1  0x080484de in main () at ./gdbtest2.c:15</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">i</span> <span class="n">locals</span>
-</span><span class='line'><span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1208074951</span>
-</span><span class='line'><span class="n">sum</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1208114904</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在以上最后两行输出我们可以明白,程序之所以没有输出我们预期的结果,
-其根本原因就是因为局部变量i和sum没有进行初始化.虽然变量i会在for循环之前进行重新赋值,
-但作为累积变量的sum由于初始值不是0,导致最后的累加结果错误.</p>
-
-<p>找出错误的所在后,我们即可以退出gdb,修改源码再重新进行调试;或者直接通过gdb的命令</p>
-
-<blockquote><p>set var sum = 0</p></blockquote>
-
-<p>修改局部变量sum的值,然后再寻找下一处Bug.</p>
-
-<h3>2.断点的使用</h3>
-
-<p><strong>测试代码</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="n">input</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
-</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">input</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;input=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>编译以上代码并运行</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">$</span> <span class="n">gcc</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">o</span> <span class="n">main</span>
-</span><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">main</span>
-</span><span class='line'><span class="mi">123</span>
-</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123</span>
-</span><span class='line'><span class="mi">234</span>
-</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123234</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们发现程序第一次运行是对的,但第二次却又出乎了我们意料.
-于是我们也把这个程序也放入gdb中调试.</p>
-
-<p><strong>display命令</strong>
-display命令可以使得每次停下来的时候都显示执行变量的值,亦称变量跟踪.</p>
-
-<p><strong>undisplay命令</strong>
-取消之前设置的变量跟踪</p>
-
-<p><strong>break命令(简称b)</strong>
-在指定位置设定断点,参数可以是指定行也可以是某个函数</p>
-
-<p><strong>i breakpoints</strong>
-输出目前已有断点的信息</p>
-
-<p><strong>enable breakpoints NUM(NUM为断点号)</strong>
-启用指定断点(NUM为空时,默认为全部断点)</p>
-
-<p><strong>disable breakpoints NUM(NUM为断点号)</strong>
-禁用指定断点(NUM为空时,默认为全部断点)</p>
-
-<p><strong>delete breakpoints NUM(NUM为断点号)</strong>
-删除指定断点(NUM为空时,默认为全部断点)</p>
-
-<p><strong>continue命令(简称c)</strong>
-继续执行,注意,continue命令是连续运行而非单步执行.</p>
-
-<p>介绍完命令后我们又再次回到调试中,首先我们执行完start命令后,使用</p>
-
-<blockquote><p>b 9</p></blockquote>
-
-<p>在sum的赋值处下一个断点,并用命令</p>
-
-<blockquote><p>display sum</p></blockquote>
-
-<p>来时刻监视变量sum的变化<br/>
-这时我们发现在我们输入完"123"后,再次想输入"456"时,gdb显示
-&ldquo;sum = 123&rdquo; ,这样我们便发现错误所在,即我们并没有在新的循环中清空sum的先值</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">start</span>
-</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="mh">0x804848c</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">3.</span>
-</span><span class='line'><span class="n">Starting</span> <span class="nl">program</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ef</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">gdbtest3</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">3</span>
-</span><span class='line'><span class="mi">3</span> <span class="p">{</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">list</span>
-</span><span class='line'><span class="mi">1</span> <span class="err">#</span><span class="n">include</span> <span class="o">&lt;</span><span class="n">stdio</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;</span>
-</span><span class='line'><span class="mi">2</span> <span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span><span class='line'><span class="mi">3</span> <span class="p">{</span>
-</span><span class='line'><span class="mi">4</span> <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="mi">5</span> <span class="kt">char</span> <span class="n">input</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
-</span><span class='line'><span class="mi">6</span> <span class="nf">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'><span class="mi">7</span> <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">input</span><span class="p">);</span>
-</span><span class='line'><span class="mi">8</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="mi">10</span>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;input=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">b</span> <span class="mi">9</span>
-</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span> <span class="n">at</span> <span class="mh">0x80484c2</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">9.</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">display</span> <span class="n">sum</span>
-</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">134514011</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
-</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
-</span><span class='line'><span class="mi">123</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
-</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
-</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
-</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
-</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
-</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">12</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
-</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
-</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123</span>
-</span><span class='line'><span class="mi">456</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
-</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">123</span>
-</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">gdb的简单使用</a>
-      <time datetime="2016-08-11T14:26:20+08:00" pubdate><span class='month'>Aug</span> <span class='day'>11</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
       
       </footer>
     </article>
