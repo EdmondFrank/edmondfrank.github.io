@@ -1,0 +1,852 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Geek的写作方式——LaTeX 入门 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="Geek的写作方式——LaTeX 入门 有关LaTex的简介 说道LaTex首先要提到TeX （文本排版系统） TeX是由著名的计算机科学家Donald E. Knuth（高德纳）发明的排版系统，利用TeX可以很容易地生成高质量的dvi文件，打印输出。利用dvips,dvipdfmx, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/09/14/geekde-xie-zuo-fang-shi-latex-ru-men/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Geek的写作方式——LaTeX 入门</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-14T21:25:58+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1 id="geek的写作方式latex-入门">Geek的写作方式——LaTeX 入门</h1>
+
+
+
+
+<h2 id="有关latex的简介">有关LaTex的简介</h2>
+
+
+
+
+<p>说道LaTex首先要提到<strong>TeX （文本排版系统）</strong>  <br>
+TeX是由著名的计算机科学家Donald E. Knuth（高德纳）发明的排版系统，利用TeX可以很容易地生成高质量的dvi文件，打印输出。利用dvips,dvipdfmx,pdfLaTeX等程序生成pdf，ps，文件，LaTeX2html生成html文件。它在学术界十分流行，特别是数学、物理学和计算机科学界。TeX被普遍认为是一个很好的排版工具，特别是在处理复杂的数学公式时。</p>
+
+
+
+
+<p>而LaTeX使用TeX作为它的格式化引擎。 <br>
+Leslie Lamport开发的LaTeX是当今世界上最流行和使用最为广泛的TeX宏集。它构筑在Plain TeX的基础之上，并加进了很多的功能以使得使用者可以更为方便的利用TeX的强大功能。使用LaTeX基本上不需要使用者自己设计命令和宏等，因为LaTeX已经替你做好了。因此，即使使用者并不是很了解TeX，也可以在短短的时间内生成高质量的文档。对于生成复杂的数学公式，LaTeX表现的更为出色。</p>
+
+
+
+
+<h2 id="latex的应用">LaTex的应用</h2>
+
+
+
+
+<ol>
+<li>使用 (La)TeX进行简单的中英混排；</li>
+<li>简单的文章组织结构；</li>
+<li>使用 (La)TeX 进行数学公式的排版；</li>
+<li>在 (La)TeX 的文档中插入图片/表格；</li>
+<li>最常见的带有 TeX 的单词的含义；</li>
+</ol>
+
+
+
+
+<h4 id="简单的规则">简单的规则</h4>
+
+
+
+
+<p>为了实现强大的排版能力，LaTex背后定义了一些非常严谨的语法和规则。 <br>
+（1）空格：Latex中空格不起作用。 <br>
+（2）换行：用控制命令“\”,或“ \newline”. <br>
+（3）分段：用控制命令“\par” 或空出一行。 <br>
+（4）换页：用控制命令“\newpage”或“\clearpage” <br>
+（5）特殊控制字符：#，$, %, &amp;, - ,{, }, ^, ~ <br>
+要想输出这些控制符用下列命令：</p>
+
+
+
+
+<blockquote>
+  <p>\# <span>\</span>$   \%  \&amp;  \-  \{  \}    \^{}  \~{}    其中 \blackslash 表示“ \”。</p>
+</blockquote>
+
+
+
+
+<p>在讲具体如何使用LaTex之前，先给大家推荐一下LaTex在线编辑器方便大家做测试。</p>
+
+
+
+
+<p><a href="http://gongshi.baidu.com/latex.html">kityformula：WEB mathematical formulas projects</a> ，同时项目的Github地址在「<a href="https://github.com/fex-team/kityformula">这里</a>」</p>
+
+
+
+
+<h3 id="尝试第一次中英文排版">尝试第一次中英文排版</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
+<span class="hljs-comment">%这里是导言区</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+Blahblahblah... 
+你好，世界。etc.
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p>此处的第一行 \documentclass{article} 中包含了一个控制序列（或称命令/标记）。所谓控制序列，是以反斜杠\开头，以第一个空格或非字母 的字符结束的一串文字，他们并不被输出，但是他们会影响输出文档的效果。这里的控制序列是 documentclass，它后面紧跟着的 {article} 代表这个控制序列有一个必要的参数，该参数的值为 article。这个控制序列的作用，是调用名为 “article” 的文档类。</p>
+
+
+
+
+<p>方括号[]包括的可选参数，这里表示采用UTF-8编码。</p>
+
+
+
+
+<p><strong>请注意，(La)TeX 对控制序列的大小写是敏感的。</strong></p>
+
+
+
+
+<p>此处的第二行以 % 开头。在 TeX 风格的文档中，从 “%” 开始，到该行末尾的所有字符，都会被 TeX 系统无视，只作为供人类阅读的注释。除非在 “%” 前加上反斜杠来取消这一特性。</p>
+
+
+
+
+<h3 id="组织你的文章">组织你的文章</h3>
+
+
+
+
+<h4 id="作者标题日期">作者、标题、日期</h4>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
+<span class="hljs-command">\title</span><span class="hljs-special">{</span>Cartesian closed categories and the price of eggs<span class="hljs-special">}</span>
+<span class="hljs-command">\author</span><span class="hljs-special">{</span>Jane Doe<span class="hljs-special">}</span>
+<span class="hljs-command">\date</span><span class="hljs-special">{</span>September 1994<span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+   <span class="hljs-command">\maketitle</span>
+   Hello world!
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<h4 id="章节和段落">章节和段落</h4>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>ctexart<span class="hljs-special">}</span>
+<span class="hljs-command">\title</span><span class="hljs-special">{</span>hello，world!<span class="hljs-special">}</span>
+<span class="hljs-command">\author</span><span class="hljs-special">{</span>Liam<span class="hljs-special">}</span>
+<span class="hljs-command">\date</span><span class="hljs-special">{</span><span class="hljs-command">\today</span><span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+<span class="hljs-command">\maketitle</span>
+<span class="hljs-command">\section</span><span class="hljs-special">{</span>你好，世界<span class="hljs-special">}</span>
+Welcome to 中国.
+<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello China<span class="hljs-special">}</span>
+北京是capital of China.
+<span class="hljs-command">\subsubsection</span><span class="hljs-special">{</span>Hello BeiJing<span class="hljs-special">}</span>
+<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>Tian'anmen Square<span class="hljs-special">}</span>
+is in the center of Beijing
+<span class="hljs-command">\subparagraph</span><span class="hljs-special">{</span>Chairman Mao<span class="hljs-special">}</span>
+is in the center of 天安门广场。
+<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello 广东<span class="hljs-special">}</span>
+<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>中山大学<span class="hljs-special">}</span> is one of the best university in 广东。
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p>在文档类 article/ctexart 中，定义了五个控制序列来调整行文组织结构。他们分别是</p>
+
+
+
+
+<ul>
+<li>\section{·}</li>
+<li>\subsection{·}</li>
+<li>\subsubsection{·}</li>
+<li>\paragraph{·}</li>
+<li>\subparagraph{·}</li>
+</ul>
+
+
+
+
+<h4 id="插入目录">插入目录</h4>
+
+
+
+
+<p>在上一节的文档中，找到 \maketitle，在它的下面插入控制序列 \tableofcontents</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>ctexart<span class="hljs-special">}</span>
+<span class="hljs-command">\title</span><span class="hljs-special">{</span>hello，world!<span class="hljs-special">}</span>
+<span class="hljs-command">\author</span><span class="hljs-special">{</span>Liam<span class="hljs-special">}</span>
+<span class="hljs-command">\date</span><span class="hljs-special">{</span><span class="hljs-command">\today</span><span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+<span class="hljs-command">\maketitle</span>
+<span class="hljs-command">\tableofcontents</span>
+<span class="hljs-command">\section</span><span class="hljs-special">{</span>你好，世界<span class="hljs-special">}</span>
+Welcome to 中国.
+<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello China<span class="hljs-special">}</span>
+北京是capital of China.
+<span class="hljs-command">\subsubsection</span><span class="hljs-special">{</span>Hello BeiJing<span class="hljs-special">}</span>
+<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>Tian'anmen Square<span class="hljs-special">}</span>
+is in the center of Beijing
+<span class="hljs-command">\subparagraph</span><span class="hljs-special">{</span>Chairman Mao<span class="hljs-special">}</span>
+is in the center of 天安门广场。
+<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello 广东<span class="hljs-special">}</span>
+<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>中山大学<span class="hljs-special">}</span> is one of the best university in 广东。
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<h3 id="数学公式排版">数学公式排版</h3>
+
+
+
+
+<p>数学公式排版功能是LaTeX 最为强大的部分。</p>
+
+
+
+
+<h4 id="数学模式">数学模式</h4>
+
+
+
+
+<p>LaTeX 的数学模式有两种：<strong>行内模式 (inline)</strong> 和<strong>行间模式 (display)</strong>。前者在正文的行文中，插入数学公式；后者独立排列单独成行，并自动居中。</p>
+
+
+
+
+<p>在行文中，使用 <script type="math/tex" id="MathJax-Element-77"> ... </script> 可以插入行内公式，使用 [ … ] 可以插入行间公式，如果需要对行间公式进行编号，则可以使用 equation 环境： <br>
+<strong>eg：</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
+...
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<h4 id="上下标">上下标</h4>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
+<span class="hljs-command">\usepackage</span><span class="hljs-special">{</span>amsmath<span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+Einstein 's <span class="hljs-formula">$E=mc^2$</span>.
+
+<span class="hljs-command">\[</span> E=mc^2. <span class="hljs-command">\]</span>
+
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
+E=mc^2.
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex; mode=display" id="MathJax-Element-149">\begin{equation}
+E=mc^2 \\
+2H_2+O_2==2H_2O
+\end{equation}</script></p>
+
+
+
+
+<p>在数学模式中，需要表示上标，可以使用 ^ 来实现（下标则是 _）。它默认只作用于之后的一个字符，如果想对连续的几个字符起作用，请将这些字符用花括号 {} 括起来。</p>
+
+
+
+
+<h4 id="根式与分式">根式与分式</h4>
+
+
+
+
+<p>根式用 \sqrt{·} 来表示，分式用 \frac{·}{·} 来表示（第一个参数为分子，第二个为分母）。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
+<span class="hljs-command">\usepackage</span><span class="hljs-special">{</span>amsmath<span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
+<span class="hljs-command">\sqrt</span><span class="hljs-special">{</span>x<span class="hljs-special">}</span><span class="hljs-formula">$, $</span><span class="hljs-command">\frac</span><span class="hljs-special">{</span>1<span class="hljs-special">}</span><span class="hljs-special">{</span>2<span class="hljs-special">}</span><span class="hljs-formula">$.
+<span class="hljs-command">\[</span> <span class="hljs-command">\sqrt</span><span class="hljs-special">{</span>x<span class="hljs-special">}</span>, <span class="hljs-command">\]</span>
+<span class="hljs-command">\[</span> <span class="hljs-command">\frac</span><span class="hljs-special">{</span>1<span class="hljs-special">}</span><span class="hljs-special">{</span>2<span class="hljs-special">}</span>. <span class="hljs-command">\]</span>
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-151">\sqrt{x} \\ \frac{1}{2}</script></p>
+
+
+
+
+<h4 id="运算符号">运算符号</h4>
+
+
+
+
+<p>一些小的运算符，可以在数学模式下直接输入；另一些需要用控制序列生成。 <br>
+[ \pm\; \times \; \div\; \cdot\; \cap\; \cup\; <br>
+\geq\; \leq\; \neq\; \approx \; \equiv ]</p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-400">[ \pm\; \times \; \div\; \cdot\; \cap\; \cup\;  
+\geq\; \leq\; \neq\; \approx \; \equiv ]</script></p>
+
+
+
+
+<p>连加、连乘、极限、积分等大型运算符分别用 \sum, \prod, \lim, \int生成。他们的上下标在行内公式中被压缩，以适应行高。我们可以用 \limits 和 \nolimits 来强制显式地指定是否压缩这些上下标。 <br>
+ \sum_{i=1}^n i <br>
+ \prod_{i=1}^n  <br>
+ \sum\limits <em>{i=1}^n i\quad \prod\limits </em>{i=1}^n  <br>
+[ \lim_{x\to0}x^2 \quad \int_a^b x^2 dx ] <br>
+[ \lim\nolimits _{x\to0}x^2\quad \int\nolimits_a^b x^2 dx ]</p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-401">\sum_{i=1}^n i</script>  <br>
+<script type="math/tex" id="MathJax-Element-402">\prod_{i=1}^n</script> <br>
+<script type="math/tex" id="MathJax-Element-403">\sum\limits _{i=1}^n i\quad \prod\limits _{i=1}^n</script> <br>
+<script type="math/tex" id="MathJax-Element-404">[ \lim_{x\to0}x^2 \quad \int_a^b x^2 dx ]</script> <br>
+<script type="math/tex" id="MathJax-Element-405">[ \lim\nolimits _{x\to0}x^2\quad \int\nolimits_a^b x^2 dx ]</script></p>
+
+
+
+
+<p>多重积分可以使用 \iint, \iiint, \iiiint, \idotsint 等命令输入。 <br>
+[ \iint\quad \iiint\quad \iiiint\quad \idotsint ]</p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-406">[ \iint\quad \iiint\quad \iiiint\quad \idotsint ]</script></p>
+
+
+
+
+<h4 id="定界符括号等">定界符（括号等）</h4>
+
+
+
+
+<p>各种括号用 (), [], {}, \langle\rangle 等命令表示； <br>
+注意花括号通常用来输入命令和环境的参数，所以在数学公式中它们前面要加 \。</p>
+
+
+
+
+<p>[ \Biggl(\biggl(\Bigl(\bigl((x)\bigr)\Bigr)\biggr)\Biggr) ]</p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-413"> \Biggl(\biggl(\Bigl(\bigl((x)\bigr)\Bigr)\biggr)\Biggr) </script></p>
+
+
+
+
+<h4 id="省略号">省略号</h4>
+
+
+
+
+<p>省略号用 \dots, \cdots, \vdots, \ddots 等命令表示。\dots 和 \cdots 的纵向位置不同，前者一般用于有下标的序列。 <br>
+[ x_1,x_2,\dots ,x_n\quad 1,2,\cdots ,n\quad <br>
+\vdots\quad \ddots ]</p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-418">  
+[ x_1,x_2,\dots ,x_n\quad 1,2,\cdots ,n\quad  
+\vdots\quad \ddots ]</script></p>
+
+
+
+
+<h4 id="矩阵">矩阵</h4>
+
+
+
+
+<p>pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix 等环境可以在矩阵两边加上各种分隔符。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\[</span> <span class="hljs-command">\begin</span><span class="hljs-special">{</span>pmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>pmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>bmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>bmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>Bmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>Bmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>vmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>vmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>Vmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>Vmatrix<span class="hljs-special">}</span> <span class="hljs-command">\]</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex; mode=display" id="MathJax-Element-649">\begin{pmatrix} a&b\\c&d \end{pmatrix}</script>  <br>
+<script type="math/tex; mode=display" id="MathJax-Element-650">\begin{bmatrix} a&b\\c&d \end{bmatrix}</script>  <br>
+<script type="math/tex; mode=display" id="MathJax-Element-651">\begin{Bmatrix} a&b\\c&d \end{Bmatrix}</script>  <br>
+<script type="math/tex; mode=display" id="MathJax-Element-652">\begin{vmatrix} a&b\\c&d \end{vmatrix}</script>  <br>
+<script type="math/tex; mode=display" id="MathJax-Element-653">\begin{Vmatrix} a&b\\c&d \end{Vmatrix}</script></p>
+
+
+
+
+<p>而使用 smallmatrix 环境，可以生成行内公式的小矩阵。</p>
+
+
+
+
+<p><code>( \begin{smallmatrix} a&amp;b\\c&amp;d \end{smallmatrix} )</code> </p>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+this is a little matrix <script type="math/tex" id="MathJax-Element-654"> ( \begin{smallmatrix} a&b\\c&d \end{smallmatrix} ) </script>.</p>
+
+
+
+
+<h4 id="公式组">公式组</h4>
+
+
+
+
+<p>无需对齐的公式组可以使用 gather 环境，需要对齐的公式组可以使用 align 环境。他们都带有编号，如果不需要编号可以使用带星花的版本。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>gather<span class="hljs-special">}</span>
+a = b+c+d <span class="hljs-command">\\</span>
+x = y+z
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>gather<span class="hljs-special">}</span>
+<span class="hljs-command">\begin</span><span class="hljs-special">{</span>align<span class="hljs-special">}</span>
+a <span class="hljs-special">&amp;</span>= b+c+d <span class="hljs-command">\\</span>
+x <span class="hljs-special">&amp;</span>= y+z
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>align<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex; mode=display" id="MathJax-Element-673">\begin{gather}
+a = b+c+d \\
+x = y+z
+\end{gather}</script> <br>
+<script type="math/tex; mode=display" id="MathJax-Element-674">\begin{align}
+a &= b+c+d \\
+x &= y+z
+\end{align}</script></p>
+
+
+
+
+<h4 id="分段函数">分段函数</h4>
+
+
+
+
+<p>分段函数可以用cases次环境来实现，它必须包含在数学环境之内。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span> y=<span class="hljs-command">\begin</span><span class="hljs-special">{</span>cases<span class="hljs-special">}</span>
+-x,<span class="hljs-command">\quad</span> x<span class="hljs-command">\leq</span> 0 <span class="hljs-command">\\</span>
+x,<span class="hljs-command">\quad</span> x&gt;0
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>cases<span class="hljs-special">}</span>
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex; mode=display" id="MathJax-Element-730">\begin{equation} y=\begin{cases}
+-x,\quad x\leq 0 \\
+x,\quad x>0
+\end{cases}
+\end{equation}</script></p>
+
+
+
+
+<h3 id="插入图表">插入图表</h3>
+
+
+
+
+<p>在LaTeX文档中插入图片都是通过使用一些latex图形处理宏命令来实现的, 有很多宏命令都支持在在LaTeX文档中插入eps格式的图形文件, 主要有: <br>
+（1）用includegraphics宏命令(graphicx包)  <br>
+（2）用psfig宏命令 <br>
+（3）用epsfig宏命令  <br>
+（4）用epsf宏命令 <br>
+由于插入图片较为麻烦，且不如Markdown语法方便，这里就略过了。有兴趣的朋友可以自行查询下命令的使用方法。</p>
+
+
+
+
+<h4 id="表格">表格</h4>
+
+
+
+
+<p>tabular 环境提供了最简单的表格功能。它用 \hline 命令表示横线，在列格式中用 | 表示竖线；用 &amp; 来分列，用 \\ 来换行；每列可以采用居左、居中、居右等横向对齐方式，分别用 l、c、r 来表示。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>tabular<span class="hljs-special">}</span><span class="hljs-special">{</span>|l|c|r|<span class="hljs-special">}</span>
+ <span class="hljs-command">\hline</span>
+OS<span class="hljs-special">&amp;</span> Release<span class="hljs-special">&amp;</span> Editor<span class="hljs-command">\\</span>
+ <span class="hljs-command">\hline</span>
+Windows <span class="hljs-special">&amp;</span> MikTeX <span class="hljs-special">&amp;</span> TexMakerX <span class="hljs-command">\\</span>
+ <span class="hljs-command">\hline</span>
+Unix/Linux <span class="hljs-special">&amp;</span> teTeX <span class="hljs-special">&amp;</span> Kile <span class="hljs-command">\\</span>
+ <span class="hljs-command">\hline</span>
+Mac OS <span class="hljs-special">&amp;</span> MacTeX <span class="hljs-special">&amp;</span> TeXShop <span class="hljs-command">\\</span>
+ <span class="hljs-command">\hline</span>
+通用<span class="hljs-special">&amp;</span> TeX Live <span class="hljs-special">&amp;</span> TeXworks <span class="hljs-command">\\</span>
+ <span class="hljs-command">\hline</span>
+<span class="hljs-command">\end</span><span class="hljs-special">{</span>tabular<span class="hljs-special">}</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong></p>
+
+
+
+
+<table>
+<thead>
+<tr>
+  <th align="center">OS</th>
+  <th>Release</th>
+  <th>Editor</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td align="center">Windows</td>
+  <td>MikTeX</td>
+  <td>TexMakerX</td>
+</tr>
+<tr>
+  <td align="center">Unix/Linux</td>
+  <td>teTeX</td>
+  <td>Kile</td>
+</tr>
+<tr>
+  <td align="center">Mac OS</td>
+  <td>MacTeX</td>
+  <td>TeXShop</td>
+</tr>
+<tr>
+  <td align="center">通用</td>
+  <td>TeX LIve</td>
+  <td>TeXworks</td>
+</tr>
+</tbody></table>
+
+
+
+
+<h3 id="其他">其他</h3>
+
+
+
+
+<p>到目前为止，常用的(La)Tex常用的功能已经介绍的基本差不多了。 <br>
+当然，除此之外，(La)Tex还有一些版面设置，以及常用字母符号输入等功能。 <br>
+例如我们常用的希腊字母</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\alpha</span> <span class="hljs-command">\beta</span> <span class="hljs-command">\gamma</span> <span class="hljs-command">\theta</span><span class="hljs-command">\omega</span> <span class="hljs-command">\mu</span> <span class="hljs-command">\pi</span> <span class="hljs-command">\dots</span></code></pre>
+
+
+
+
+<p><strong>示例如下：</strong> <br>
+<script type="math/tex" id="MathJax-Element-844">\alpha \beta \gamma \theta\omega \mu \pi \dots</script></p>
+
+
+
+
+<p>到此文章基本结束了，但依旧还有十分多的功能（不常用）没有在此文提及。有兴趣的朋友可以自行查询<a href="http://texdoc.net/texmf-dist/doc/latex/latex2e-help-texinfo/latex2e.pdf">LaTex相关手册</a>。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-14T21:25:58+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/09/14/geekde-xie-zuo-fang-shi-latex-ru-men/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/09/14/geekde-xie-zuo-fang-shi-latex-ru-men/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/09/09/ru-he-zai-pythonzhong-shi-xian-jue-ce-shu-suan-fa/" title="Previous Post: 如何在Python中实现决策树算法">&laquo; 如何在Python中实现决策树算法</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
