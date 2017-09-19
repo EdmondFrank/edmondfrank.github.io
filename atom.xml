@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-09-14T21:28:07+08:00</updated>
+  <updated>2017-09-19T13:34:11+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,954 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Apriori与关联分析]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/09/19/aprioriyu-guan-lian-fen-xi/"/>
+    <updated>2017-09-19T13:33:11+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/09/19/aprioriyu-guan-lian-fen-xi</id>
+    <content type="html"><![CDATA[<h1 id="关联分析">关联分析</h1>
+
+
+
+
+<h2 id="相关概念">相关概念</h2>
+
+
+
+
+<p>作为经典的机器学习算法来说，关联分析并不算复杂。简单来说，从大规模数据集中寻找物品间的隐含关系被称作<strong>关联分析(association analysis)</strong>或者<strong>关联规则学习(association rule learning)</strong>。而其中关联分析的关键就是在众多的物品组成的<strong>项集(itemset)</strong>中找到那些经常一起出现的物品集合，也就是我们所谓的<strong>频繁项集</strong>。由于寻找物品的不同组合是一项非常耗时的任务，所需的计算代价也非常的高，这样显然用蛮力的搜索方法是不可取的。为了解决这样的问题，我们需要用到<strong>Apriori算法</strong>来解决。</p>
+
+
+
+
+<h4 id="有关关联分析的一些应用">有关关联分析的一些应用</h4>
+
+
+
+
+<ol>
+<li>购物篮分析，这是关联分析最经典的一项应用。我们耳熟能详的<a href="http://www.jianshu.com/p/a22890153f93"><em>尿布与啤酒</em></a>就是来源于此（虽然这个故事的真实性有待考据，但这并不影响它成为一个营销界的小故事）。</li>
+<li>公众热点发现</li>
+<li>新闻及流行趋势挖掘</li>
+<li>搜索引擎推荐</li>
+<li>发现毒蘑菇的相似特征（该例子取自《机器学习实战》一书）</li>
+</ol>
+
+
+
+
+<h2 id="apriori算法">Apriori算法</h2>
+
+
+
+
+<p>优点：易编码实现 <br>
+缺点：在大数据集上计算效果较慢</p>
+
+
+
+
+<p>既然关联分析是一种在大规模数据集中寻找有趣的关系的任务。这些关系可以有两种形式：一种就是我们上面所说的<strong>频繁项集(frequent itemsets)</strong>;另外一种则是<strong>关联规则(association rules)</strong>。关联规则，其暗示了两种物品之间可能存在很强的关系。</p>
+
+
+
+
+<p>那么我们该如何定义有趣的关系呢？以及，频繁项集中的频繁有怎么划定呢？虽然，许多概念都可以说明这些问题，但是最重要及最通用的莫过于其<strong>支持度</strong>和<strong>可信度</strong>。</p>
+
+
+
+
+<p><strong>支持度(support)：</strong>一个项集的支持度被定义为数据集包含该项集的记录比例。</p>
+
+
+
+
+<blockquote>
+  <p>举个例子: <br>
+  <img src="https://app.yinxiang.com/shard/s12/res/32d57c60-1a2d-40de-bc32-d6863271bca4" alt="" title=""> <br>
+  如上图所示，因为5项记录中有4条包含了{豆奶}，所以其支持度为4/5;依此类推，{豆奶，尿布}的支持读为3/5。</p>
+</blockquote>
+
+
+
+
+<p><strong>可信度或置信度(confidence)：</strong>这个概念是针对一条{尿布} -&gt; {葡萄酒}这样的关联规则来定义的。</p>
+
+
+
+
+<blockquote>
+  <p><script type="math/tex" id="MathJax-Element-1">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
+</blockquote>
+
+
+
+
+<p>支持度和可信度是用来量化关联分析是否成功的方法。</p>
+
+
+
+
+<h4 id="apriori原理">Apriori原理</h4>
+
+
+
+
+<p>如果计算一个集合中的频繁项集的支持度，首先需要遍历全部可能的项集，比如针对一个包含了4个产品的集合，那么购买该集合产品的可能集合数目为2^4-1=15，而针对包含N项的集合，就需要遍历2^N-1。显然，这样的计算量很大。为了降低所需计算时间，就需要我们所谓的Apriori原理。</p>
+
+
+
+
+<p><strong>其基本思路：</strong>如果某个项集是频繁的，那么它的所有子集也是频繁的。该定理的逆反定理为：如果某一个项集是非频繁的，那么它的所有超集（包含该集合的集合）也是非频繁的。Apriori原理的出现，可以在得知某些项集是非频繁之后，不需要计算该集合的超集，有效地避免项集数目的指数增长，从而在合理时间内计算出频繁项集。</p>
+
+
+
+
+<h4 id="算法基本流程">算法基本流程</h4>
+
+
+
+
+<p>当集合中项的个数大于0时： <br>
+    创建一个长度为k的候选项集列表 <br>
+    检查数据以确认每个项集都是频繁的 <br>
+    保留频繁项集，并构建k+1项组成的候选集列表</p>
+
+
+
+
+<h4 id="代码实现">代码实现</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">():</span>
+</span><span class='line'>    <span class="s">&quot;Load the sample dataset.&quot;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">createC1</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Create a list of candidate item sets of size one.&quot;</span>
+</span><span class='line'>    <span class="n">c1</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">transaction</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">in</span> <span class="n">c1</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">c1</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">c1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>    <span class="c">#frozenset because it will be a ket of a dictionary.</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">,</span> <span class="n">c1</span><span class="p">))</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">scanD</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">min_support</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Returns all candidates that meets a minimum support level&quot;</span>
+</span><span class='line'>    <span class="n">sscnt</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+</span><span class='line'>        <span class="c">#print(tid)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">can</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">can</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">tid</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">sscnt</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">can</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">sscnt</span><span class="p">[</span><span class="n">can</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">num_items</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">retlist</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">support_data</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sscnt</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">support</span> <span class="o">=</span> <span class="n">sscnt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">/</span> <span class="n">num_items</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">support</span> <span class="o">&gt;=</span> <span class="n">min_support</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">retlist</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">support_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">support</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retlist</span><span class="p">,</span> <span class="n">support_data</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">aprioriGen</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate the joint transactions from candidate sets&quot;</span>
+</span><span class='line'>    <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">lenLk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenLk</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lenLk</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">L1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">i</span><span class="p">])[:</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">L2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">j</span><span class="p">])[:</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">L1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>            <span class="n">L2</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">L1</span> <span class="o">==</span> <span class="n">L2</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">retList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">|</span> <span class="n">freq_sets</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retList</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">minsupport</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate a list of candidate item sets&quot;</span>
+</span><span class='line'>    <span class="n">C1</span> <span class="o">=</span> <span class="n">createC1</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">D</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">dataset</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">L1</span><span class="p">,</span> <span class="n">support_data</span> <span class="o">=</span> <span class="n">scanD</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">minsupport</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="n">L1</span><span class="p">]</span>
+</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">Ck</span> <span class="o">=</span> <span class="n">aprioriGen</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="n">k</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">Lk</span><span class="p">,</span> <span class="n">supK</span> <span class="o">=</span> <span class="n">scanD</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">Ck</span><span class="p">,</span> <span class="n">minsupport</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">support_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">supK</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Lk</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">L</span><span class="p">,</span> <span class="n">support_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4 id="挖掘关联规则">挖掘关联规则</h4>
+
+
+
+
+<p>上面，我们实现了用apriori算法找出了频繁项集。现在我们来尝试找出关联规则。那么什么是关联规则呢？我们可以举这样一个例子：假设我们有一个频繁项集是：{豆奶，莴苣}。那么则意味着一个人如果他已经购买了豆奶，那么他也有很大的几率会购买莴苣;但反过来却不一定成立：则如果一个人购买了莴苣，但还是不能说明他有很大几率会接着购买豆奶。</p>
+
+
+
+
+<p>既然，在上面的例子中我们已经用支持度作为一种参考单位去量化一个集合的频繁关系，在这里我们同理也可以通过另一个概念来度量关联规则。没错，它就是我们已经在上面提过的<strong>可信度</strong>。根据可信度的计算法则和定义可知：</p>
+
+
+
+
+<blockquote>
+  <p><script type="math/tex" id="MathJax-Element-2">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
+</blockquote>
+
+
+
+
+<p>这也是我们上面已经提及过的问题。加上，在上面的例子之中我们已经得到了所有的频繁项集的支持度，那么为了求出各关联规则的可信度也就是剩下一个除法的问题而已。</p>
+
+
+
+
+<h4 id="如何从频繁项集中生成关联规则">如何从频繁项集中生成关联规则</h4>
+
+
+
+
+<p>一般对于一个频繁项集而言，如果我们直接生成关联规则的话，往往会有很多条。例如：我们对一个频繁项集{0，1，2，3}直接生成关联规则的话结果就如下图所示一样： <br>
+<img src="https://app.yinxiang.com/shard/s12/res/f068f879-d976-4aeb-bd8a-27cc11029819" alt="enter image description here" title=""> <br>
+从上图我们就可以看出仅仅含4项的频繁项集就会生成出如此多的关联规则，那么如果频繁项集中含有10，20，甚至100个元素那么生成的候选关联规则的数据是相当庞大。</p>
+
+
+
+
+<p>在此，我们可以参考apriori算法中挖掘频繁项集的思路。在发现频繁项集时我们通过最低支持度的方法来忽略掉一些项集支持度的计算;同理，在这里我们将这个思想应用在关联规则的生成之上，即：如果一条规则的不满足最低可信度的要求，那么其子集自然也不能满足最低可信度的要求。对于这部分规则的可信度计算我们可以直接忽略。如上图中的阴影部分。我们假设规则{0，1，2} -&gt; 3不能满足最低可信度，那么，他的子集{1，2}-&gt;{0，3}，{0，2}-&gt;{1，3}等将不能满足最低可信度。</p>
+
+
+
+
+<h4 id="代码实现-1">代码实现</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;Create the association rules</span>
+</span><span class='line'><span class="sd">    L: list of frequent item sets</span>
+</span><span class='line'><span class="sd">    support_data: support data for those itemsets</span>
+</span><span class='line'><span class="sd">    min_confidence: minimum confidence threshold</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">freqSet</span> <span class="ow">in</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+</span><span class='line'>            <span class="n">H1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">frozenset</span><span class="p">([</span><span class="n">item</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">freqSet</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;freqSet&quot;</span><span class="p">,</span> <span class="n">freqSet</span><span class="p">,</span> <span class="s">&#39;H1&#39;</span><span class="p">,</span> <span class="n">H1</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">rules</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Evaluate the rule generated&quot;</span>
+</span><span class='line'>    <span class="n">pruned_H</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">conseq</span> <span class="ow">in</span> <span class="n">H</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">conf</span> <span class="o">=</span> <span class="n">support_data</span><span class="p">[</span><span class="n">freqSet</span><span class="p">]</span> <span class="o">/</span> <span class="n">support_data</span><span class="p">[</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">conf</span> <span class="o">&gt;=</span> <span class="n">min_confidence</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">,</span> <span class="s">&#39;---&gt;&#39;</span><span class="p">,</span> <span class="n">conseq</span><span class="p">,</span> <span class="s">&#39;conf:&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">,</span> <span class="n">conseq</span><span class="p">,</span> <span class="n">conf</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">pruned_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conseq</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">pruned_H</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate a set of candidate rules&quot;</span>
+</span><span class='line'>    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqSet</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+</span><span class='line'>        <span class="n">Hmp1</span> <span class="o">=</span> <span class="n">aprioriGen</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">Hmp1</span> <span class="o">=</span> <span class="n">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">Hmp1</span><span class="p">,</span>  <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Hmp1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">Hmp1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>运行测试</p>
+</blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">()</span>
+</span><span class='line'><span class="n">L</span><span class="p">,</span><span class="n">support_data</span> <span class="o">=</span> <span class="n">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'><span class="n">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">support_data</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
+  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
+  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
+  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
+  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
+  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
+  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
+  Out[6]: <br>
+  [(frozenset({1}), frozenset({3}), 1.0), <br>
+   (frozenset({5}), frozenset({2}), 1.0), <br>
+   (frozenset({2}), frozenset({5}), 1.0)]</p>
+</blockquote>
+
+
+
+
+<p>从输出结果可以看出，其中{1} —&gt; {3}，{5} —&gt; {2}，{2} —&gt; {5}这三条关联规则的可信度居然达到了1.0，而且{2}，{5}还存在一个相互关联的关系。除此之外，我们还可以发现：虽然{1} —&gt; {3}这条关联的可信度达到了1.0，但是{3} —&gt; {1}却不足0.7（因为我们的最低可信度标准为0.7，没有输出显示的规则，则意味着它们的可信度低于0.7)。为了可以看见输出更多的规则，我们可以降低下最低可信度的标准，再来执行一遍代码。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">()</span>
+</span><span class='line'><span class="n">L</span><span class="p">,</span><span class="n">support_data</span> <span class="o">=</span> <span class="n">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'><span class="n">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">support_data</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
+  frozenset({3}) —&gt; frozenset({5}) conf: 0.6666666666666666 <br>
+  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
+  frozenset({3}) —&gt; frozenset({1}) conf: 0.6666666666666666 <br>
+  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
+  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
+  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
+  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
+  frozenset({3}) —&gt; frozenset({2}) conf: 0.6666666666666666 <br>
+  frozenset({2}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
+  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2, 3}) conf: 0.6666666666666666 <br>
+  frozenset({3}) —&gt; frozenset({2, 5}) conf: 0.6666666666666666 <br>
+  frozenset({2}) —&gt; frozenset({3, 5}) conf: 0.6666666666666666 <br>
+  Out[7]: <br>
+  [(frozenset({5}), frozenset({3}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({5}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({1}), 0.6666666666666666), <br>
+   (frozenset({1}), frozenset({3}), 1.0), <br>
+   (frozenset({5}), frozenset({2}), 1.0), <br>
+   (frozenset({2}), frozenset({5}), 1.0), <br>
+   (frozenset({3}), frozenset({2}), 0.6666666666666666), <br>
+   (frozenset({2}), frozenset({3}), 0.6666666666666666), <br>
+   (frozenset({5}), frozenset({2, 3}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({2, 5}), 0.6666666666666666), <br>
+   (frozenset({2}), frozenset({3, 5}), 0.6666666666666666)]</p>
+</blockquote>
+
+
+
+
+<p>这次我们就可以在输出中看见{3} —&gt; {1}了，它的可信度为0.6666666666666666。</p>
+
+
+
+
+<p>到此，有关关联分析的apriori算法就告一段落了。后续还会有有关关联分析FP-growth算法的文章讲解。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Guan Lian Fen Xi]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/09/19/guan-lian-fen-xi/"/>
+    <updated>2017-09-19T00:00:00+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/09/19/guan-lian-fen-xi</id>
+    <content type="html"><![CDATA[<h1 id="关联分析">关联分析</h1>
+
+
+
+
+<h2 id="相关概念">相关概念</h2>
+
+
+
+
+<p>作为经典的机器学习算法来说，关联分析并不算复杂。简单来说，从大规模数据集中寻找物品间的隐含关系被称作<strong>关联分析(association analysis)</strong>或者<strong>关联规则学习(association rule learning)</strong>。而其中关联分析的关键就是在众多的物品组成的<strong>项集(itemset)</strong>中找到那些经常一起出现的物品集合，也就是我们所谓的<strong>频繁项集</strong>。由于寻找物品的不同组合是一项非常耗时的任务，所需的计算代价也非常的高，这样显然用蛮力的搜索方法是不可取的。为了解决这样的问题，我们需要用到<strong>Apriori算法</strong>来解决。</p>
+
+
+
+
+<h4 id="有关关联分析的一些应用">有关关联分析的一些应用</h4>
+
+
+
+
+<ol>
+<li>购物篮分析，这是关联分析最经典的一项应用。我们耳熟能详的<a href="http://www.jianshu.com/p/a22890153f93"><em>尿布与啤酒</em></a>就是来源于此（虽然这个故事的真实性有待考据，但这并不影响它成为一个营销界的小故事）。</li>
+<li>公众热点发现</li>
+<li>新闻及流行趋势挖掘</li>
+<li>搜索引擎推荐</li>
+<li>发现毒蘑菇的相似特征（该例子取自《机器学习实战》一书）</li>
+</ol>
+
+
+
+
+<h2 id="apriori算法">Apriori算法</h2>
+
+
+
+
+<p>优点：易编码实现 <br>
+缺点：在大数据集上计算效果较慢</p>
+
+
+
+
+<p>既然关联分析是一种在大规模数据集中寻找有趣的关系的任务。这些关系可以有两种形式：一种就是我们上面所说的<strong>频繁项集(frequent itemsets)</strong>;另外一种则是<strong>关联规则(association rules)</strong>。关联规则，其暗示了两种物品之间可能存在很强的关系。</p>
+
+
+
+
+<p>那么我们该如何定义有趣的关系呢？以及，频繁项集中的频繁有怎么划定呢？虽然，许多概念都可以说明这些问题，但是最重要及最通用的莫过于其<strong>支持度</strong>和<strong>可信度</strong>。</p>
+
+
+
+
+<p><strong>支持度(support)：</strong>一个项集的支持度被定义为数据集包含该项集的记录比例。</p>
+
+
+
+
+<blockquote>
+  <p>举个例子: <br>
+  <img src="https://app.yinxiang.com/shard/s12/res/32d57c60-1a2d-40de-bc32-d6863271bca4" alt="" title=""> <br>
+  如上图所示，因为5项记录中有4条包含了{豆奶}，所以其支持度为4/5;依此类推，{豆奶，尿布}的支持读为3/5。</p>
+</blockquote>
+
+
+
+
+<p><strong>可信度或置信度(confidence)：</strong>这个概念是针对一条{尿布} -&gt; {葡萄酒}这样的关联规则来定义的。</p>
+
+
+
+
+<blockquote>
+  <p><script type="math/tex" id="MathJax-Element-1">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
+</blockquote>
+
+
+
+
+<p>支持度和可信度是用来量化关联分析是否成功的方法。</p>
+
+
+
+
+<h4 id="apriori原理">Apriori原理</h4>
+
+
+
+
+<p>如果计算一个集合中的频繁项集的支持度，首先需要遍历全部可能的项集，比如针对一个包含了4个产品的集合，那么购买该集合产品的可能集合数目为2^4-1=15，而针对包含N项的集合，就需要遍历2^N-1。显然，这样的计算量很大。为了降低所需计算时间，就需要我们所谓的Apriori原理。</p>
+
+
+
+
+<p><strong>其基本思路：</strong>如果某个项集是频繁的，那么它的所有子集也是频繁的。该定理的逆反定理为：如果某一个项集是非频繁的，那么它的所有超集（包含该集合的集合）也是非频繁的。Apriori原理的出现，可以在得知某些项集是非频繁之后，不需要计算该集合的超集，有效地避免项集数目的指数增长，从而在合理时间内计算出频繁项集。</p>
+
+
+
+
+<h4 id="算法基本流程">算法基本流程</h4>
+
+
+
+
+<p>当集合中项的个数大于0时： <br>
+    创建一个长度为k的候选项集列表 <br>
+    检查数据以确认每个项集都是频繁的 <br>
+    保留频繁项集，并构建k+1项组成的候选集列表</p>
+
+
+
+
+<h4 id="代码实现">代码实现</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">():</span>
+</span><span class='line'>    <span class="s">&quot;Load the sample dataset.&quot;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">createC1</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Create a list of candidate item sets of size one.&quot;</span>
+</span><span class='line'>    <span class="n">c1</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">transaction</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="ow">not</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">in</span> <span class="n">c1</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">c1</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">c1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>    <span class="c">#frozenset because it will be a ket of a dictionary.</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">,</span> <span class="n">c1</span><span class="p">))</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">scanD</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">min_support</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Returns all candidates that meets a minimum support level&quot;</span>
+</span><span class='line'>    <span class="n">sscnt</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+</span><span class='line'>        <span class="c">#print(tid)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">can</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">can</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">tid</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">sscnt</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">can</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">sscnt</span><span class="p">[</span><span class="n">can</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">num_items</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">retlist</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">support_data</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sscnt</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">support</span> <span class="o">=</span> <span class="n">sscnt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">/</span> <span class="n">num_items</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">support</span> <span class="o">&gt;=</span> <span class="n">min_support</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">retlist</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">support_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">support</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retlist</span><span class="p">,</span> <span class="n">support_data</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">aprioriGen</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate the joint transactions from candidate sets&quot;</span>
+</span><span class='line'>    <span class="n">retList</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">lenLk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenLk</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lenLk</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">L1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">i</span><span class="p">])[:</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">L2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">j</span><span class="p">])[:</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">L1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>            <span class="n">L2</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">L1</span> <span class="o">==</span> <span class="n">L2</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">retList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">freq_sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">|</span> <span class="n">freq_sets</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retList</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">minsupport</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate a list of candidate item sets&quot;</span>
+</span><span class='line'>    <span class="n">C1</span> <span class="o">=</span> <span class="n">createC1</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">D</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">dataset</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">L1</span><span class="p">,</span> <span class="n">support_data</span> <span class="o">=</span> <span class="n">scanD</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">C1</span><span class="p">,</span> <span class="n">minsupport</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="n">L1</span><span class="p">]</span>
+</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">Ck</span> <span class="o">=</span> <span class="n">aprioriGen</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="n">k</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">Lk</span><span class="p">,</span> <span class="n">supK</span> <span class="o">=</span> <span class="n">scanD</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">Ck</span><span class="p">,</span> <span class="n">minsupport</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">support_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">supK</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Lk</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">L</span><span class="p">,</span> <span class="n">support_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4 id="挖掘关联规则">挖掘关联规则</h4>
+
+
+
+
+<p>上面，我们实现了用apriori算法找出了频繁项集。现在我们来尝试找出关联规则。那么什么是关联规则呢？我们可以举这样一个例子：假设我们有一个频繁项集是：{豆奶，莴苣}。那么则意味着一个人如果他已经购买了豆奶，那么他也有很大的几率会购买莴苣;但反过来却不一定成立：则如果一个人购买了莴苣，但还是不能说明他有很大几率会接着购买豆奶。</p>
+
+
+
+
+<p>既然，在上面的例子中我们已经用支持度作为一种参考单位去量化一个集合的频繁关系，在这里我们同理也可以通过另一个概念来度量关联规则。没错，它就是我们已经在上面提过的<strong>可信度</strong>。根据可信度的计算法则和定义可知：</p>
+
+
+
+
+<blockquote>
+  <p><script type="math/tex" id="MathJax-Element-2">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
+</blockquote>
+
+
+
+
+<p>这也是我们上面已经提及过的问题。加上，在上面的例子之中我们已经得到了所有的频繁项集的支持度，那么为了求出各关联规则的可信度也就是剩下一个除法的问题而已。</p>
+
+
+
+
+<h4 id="如何从频繁项集中生成关联规则">如何从频繁项集中生成关联规则</h4>
+
+
+
+
+<p>一般对于一个频繁项集而言，如果我们直接生成关联规则的话，往往会有很多条。例如：我们对一个频繁项集{0，1，2，3}直接生成关联规则的话结果就如下图所示一样： <br>
+<img src="https://app.yinxiang.com/shard/s12/res/f068f879-d976-4aeb-bd8a-27cc11029819" alt="enter image description here" title=""> <br>
+从上图我们就可以看出仅仅含4项的频繁项集就会生成出如此多的关联规则，那么如果频繁项集中含有10，20，甚至100个元素那么生成的候选关联规则的数据是相当庞大。</p>
+
+
+
+
+<p>在此，我们可以参考apriori算法中挖掘频繁项集的思路。在发现频繁项集时我们通过最低支持度的方法来忽略掉一些项集支持度的计算;同理，在这里我们将这个思想应用在关联规则的生成之上，即：如果一条规则的不满足最低可信度的要求，那么其子集自然也不能满足最低可信度的要求。对于这部分规则的可信度计算我们可以直接忽略。如上图中的阴影部分。我们假设规则{0，1，2} -&gt; 3不能满足最低可信度，那么，他的子集{1，2}-&gt;{0，3}，{0，2}-&gt;{1，3}等将不能满足最低可信度。</p>
+
+
+
+
+<h4 id="代码实现-1">代码实现</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;Create the association rules</span>
+</span><span class='line'><span class="sd">    L: list of frequent item sets</span>
+</span><span class='line'><span class="sd">    support_data: support data for those itemsets</span>
+</span><span class='line'><span class="sd">    min_confidence: minimum confidence threshold</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">freqSet</span> <span class="ow">in</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+</span><span class='line'>            <span class="n">H1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">frozenset</span><span class="p">([</span><span class="n">item</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">freqSet</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;freqSet&quot;</span><span class="p">,</span> <span class="n">freqSet</span><span class="p">,</span> <span class="s">&#39;H1&#39;</span><span class="p">,</span> <span class="n">H1</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">rules</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Evaluate the rule generated&quot;</span>
+</span><span class='line'>    <span class="n">pruned_H</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">conseq</span> <span class="ow">in</span> <span class="n">H</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">conf</span> <span class="o">=</span> <span class="n">support_data</span><span class="p">[</span><span class="n">freqSet</span><span class="p">]</span> <span class="o">/</span> <span class="n">support_data</span><span class="p">[</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">conf</span> <span class="o">&gt;=</span> <span class="n">min_confidence</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">,</span> <span class="s">&#39;---&gt;&#39;</span><span class="p">,</span> <span class="n">conseq</span><span class="p">,</span> <span class="s">&#39;conf:&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">freqSet</span> <span class="o">-</span> <span class="n">conseq</span><span class="p">,</span> <span class="n">conseq</span><span class="p">,</span> <span class="n">conf</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">pruned_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conseq</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">pruned_H</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;Generate a set of candidate rules&quot;</span>
+</span><span class='line'>    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqSet</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+</span><span class='line'>        <span class="n">Hmp1</span> <span class="o">=</span> <span class="n">aprioriGen</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">Hmp1</span> <span class="o">=</span> <span class="n">calc_confidence</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">Hmp1</span><span class="p">,</span>  <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Hmp1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">rules_from_conseq</span><span class="p">(</span><span class="n">freqSet</span><span class="p">,</span> <span class="n">Hmp1</span><span class="p">,</span> <span class="n">support_data</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">min_confidence</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>运行测试</p>
+</blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">()</span>
+</span><span class='line'><span class="n">L</span><span class="p">,</span><span class="n">support_data</span> <span class="o">=</span> <span class="n">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'><span class="n">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">support_data</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
+  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
+  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
+  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
+  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
+  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
+  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
+  Out[6]: <br>
+  [(frozenset({1}), frozenset({3}), 1.0), <br>
+   (frozenset({5}), frozenset({2}), 1.0), <br>
+   (frozenset({2}), frozenset({5}), 1.0)]</p>
+</blockquote>
+
+
+
+
+<p>从输出结果可以看出，其中{1} —&gt; {3}，{5} —&gt; {2}，{2} —&gt; {5}这三条关联规则的可信度居然达到了1.0，而且{2}，{5}还存在一个相互关联的关系。除此之外，我们还可以发现：虽然{1} —&gt; {3}这条关联的可信度达到了1.0，但是{3} —&gt; {1}却不足0.7（因为我们的最低可信度标准为0.7，没有输出显示的规则，则意味着它们的可信度低于0.7)。为了可以看见输出更多的规则，我们可以降低下最低可信度的标准，再来执行一遍代码。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">()</span>
+</span><span class='line'><span class="n">L</span><span class="p">,</span><span class="n">support_data</span> <span class="o">=</span> <span class="n">apriori</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</span><span class='line'><span class="n">generateRules</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">support_data</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
+  frozenset({3}) —&gt; frozenset({5}) conf: 0.6666666666666666 <br>
+  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
+  frozenset({3}) —&gt; frozenset({1}) conf: 0.6666666666666666 <br>
+  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
+  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
+  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
+  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
+  frozenset({3}) —&gt; frozenset({2}) conf: 0.6666666666666666 <br>
+  frozenset({2}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
+  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
+  frozenset({5}) —&gt; frozenset({2, 3}) conf: 0.6666666666666666 <br>
+  frozenset({3}) —&gt; frozenset({2, 5}) conf: 0.6666666666666666 <br>
+  frozenset({2}) —&gt; frozenset({3, 5}) conf: 0.6666666666666666 <br>
+  Out[7]: <br>
+  [(frozenset({5}), frozenset({3}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({5}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({1}), 0.6666666666666666), <br>
+   (frozenset({1}), frozenset({3}), 1.0), <br>
+   (frozenset({5}), frozenset({2}), 1.0), <br>
+   (frozenset({2}), frozenset({5}), 1.0), <br>
+   (frozenset({3}), frozenset({2}), 0.6666666666666666), <br>
+   (frozenset({2}), frozenset({3}), 0.6666666666666666), <br>
+   (frozenset({5}), frozenset({2, 3}), 0.6666666666666666), <br>
+   (frozenset({3}), frozenset({2, 5}), 0.6666666666666666), <br>
+   (frozenset({2}), frozenset({3, 5}), 0.6666666666666666)]</p>
+</blockquote>
+
+
+
+
+<p>这次我们就可以在输出中看见{3} —&gt; {1}了，它的可信度为0.6666666666666666。</p>
+
+
+
+
+<p>到此，有关关联分析的apriori算法就告一段落了。后续还会有有关关联分析FP-growth算法的文章讲解。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Geek的写作方式——LaTeX 入门]]></title>
@@ -5783,501 +6731,6 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
 </span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/&#39;</span><span class="p">,</span>
 </span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/&#39;</span><span class="p">)</span>
 </span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="c">#相似度（百分比）</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[浅谈MongoDB]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/"/>
-    <updated>2017-04-05T14:28:56+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb</id>
-    <content type="html"><![CDATA[<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. Mongodb 简介</a>
-<ul>
-<li><a href="#sec-1-1">1.1. 基本概念</a>
-<ul>
-<li><a href="#sec-1-1-1">1.1.1. 数据库（database）</a></li>
-<li><a href="#sec-1-1-2">1.1.2. 文档（document）</a></li>
-<li><a href="#sec-1-1-3">1.1.3. 集合（collection）</a></li>
-</ul>
-</li>
-<li><a href="#sec-1-2">1.2. 基本设计</a></li>
-</ul>
-</li>
-<li><a href="#sec-2">2. MongoDB 启动</a></li>
-<li><a href="#sec-3">3. MongoDB shell 简介</a>
-<ul>
-<li><a href="#sec-3-1">3.1. 运行shell</a></li>
-</ul>
-</li>
-<li><a href="#sec-4">4. MongoDB 客户端</a></li>
-<li><a href="#sec-5">5. MongoDB 基本操作</a>
-<ul>
-<li><a href="#sec-5-1">5.1. 创建</a></li>
-<li><a href="#sec-5-2">5.2. 读取</a></li>
-<li><a href="#sec-5-3">5.3. 更新</a></li>
-<li><a href="#sec-5-4">5.4. 删除</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-
-
-<h1>Mongodb 简介<a id="sec-1" name="sec-1"></a></h1>
-
-<p>MongoDB 是一款强大，灵活，且易于扩展的通用型数据库。</p>
-
-<p>它能够扩展出非常多的功能，如二级索引，范围查询，排序，聚合以及本地空间索引的功能</p>
-
-<h2>基本概念<a id="sec-1-1" name="sec-1-1"></a></h2>
-
-<p>Mongodb 是一个面向文档的NoSQL型数据库，不采用关系模型。
-其中mongodb 不再有“行”的概念，而是以文档取而代之。</p>
-
-<p>另外也不存在预定义模式，即文档的键（key）和值（value）不再是固定的类型和大小</p>
-
-<h3>数据库（database）<a id="sec-1-1-1" name="sec-1-1-1"></a></h3>
-
-<p>Mongodb 的一个实例可以拥有多个相互独立的数据库,</p>
-
-<p>在Mongodb中，多个文档组合成集合，而多个集合即组成数据库。</p>
-
-<h3>文档（document）<a id="sec-1-1-2" name="sec-1-1-2"></a></h3>
-
-<p>Mongodb 中的数据的基本单元，类似于关系型数据库管理系统中的行</p>
-
-<p>表示形式：</p>
-
-<p>{&ldquo;greeting&rdquo;:&ldquo;Hello World&rdquo;,
-          &#x2026;.           }</p>
-
-<h3>集合（collection）<a id="sec-1-1-3" name="sec-1-1-3"></a></h3>
-
-<p>类似的，可以看作是一个拥有动态模式的表</p>
-
-<h2>基本设计<a id="sec-1-2" name="sec-1-2"></a></h2>
-
-<p>Mongodb 的设计采用横向扩展。同时面向文档的数据模型</p>
-
-<p>使它能够很容易的在多台服务器之间进行数据分割。</p>
-
-<h1>MongoDB 启动<a id="sec-2" name="sec-2"></a></h1>
-
-<p>通常，MongoDB做为网络服务守护进程运行，客户端可连接到该服务器并执行操作。</p>
-
-<ol>
-<li><p>下载MongoDB（<a href="http://www.mongodb.org/downloads">http://www.mongodb.org/downloads</a>）</p></li>
-<li><p>解压，并运行 <strong>mongod</strong> 命令</p></li>
-</ol>
-
-
-<p>启动后，在默认情况下服务器会打印版本和系统信息，并监听27017端口。</p>
-
-<p>除此之外 mongod 还会启动一个非常基本的HTTP服务器，监听比主端口号高1000的端口</p>
-
-<p>这意味着你可以访问 <a href="http://localhost:28017">http://localhost:28017</a> 来获取数据库管理信息</p>
-
-<h1>MongoDB shell 简介<a id="sec-3" name="sec-3"></a></h1>
-
-<p>MongoDB 自带JavaScript Shell，可以在shell中用命令行与Mongodb实例交互</p>
-
-<h2>运行shell<a id="sec-3-1" name="sec-3-1"></a></h2>
-
-<pre><code>mongo
-
-MongoDB Shell version: 2.4.0
-
-connecting to :test
-
-&gt;
-</code></pre>
-
-<p>shell 是一个功能完备的JavaScript解释器，可以运行任意JavaScript程序，另外还可以充分使用JavaScript的标准库</p>
-
-<h1>MongoDB 客户端<a id="sec-4" name="sec-4"></a></h1>
-
-<p>在客户端的shell启动后，如果要查看db当前执行哪个数据库，可以使用 <strong>db</strong> 命令</p>
-
-<pre><code>&gt; db
-
-test
-</code></pre>
-
-<h1>MongoDB 基本操作<a id="sec-5" name="sec-5"></a></h1>
-
-<h2>创建<a id="sec-5-1" name="sec-5-1"></a></h2>
-
-<p><em>insert</em> 函数可以将一个文档添加到集合中。举一个存储文章的例子：首先，</p>
-
-<p>创建一个名为post的局部变量，这是一个JavaScript对象，用于表示我们的文档</p>
-
-<p>他会有几个键：“ <strong>title</strong> ”、“ <strong>content</strong> ”和 “ <strong>date</strong> ”（发布时间）</p>
-
-<pre><code>&gt; post = {
-"title":"hello",
-"content":"Here's my blog post",
-"date":new Date()
-}
-
-&gt; db.blog.insert(post)
-</code></pre>
-
-<p>此时，这篇文章已经存到数据库中了，要查看它可用调用集合的 <em>find</em> 方法</p>
-
-<pre><code>&gt; db.blog.find()
-</code></pre>
-
-<h2>读取<a id="sec-5-2" name="sec-5-2"></a></h2>
-
-<p><em>find</em> 和 <em>findOne</em> 可以接收一个 <strong>查询文档</strong> 为限定条件，并返回符合一定条件的文件，使用</p>
-
-<p><em>find</em> 的默认自动显示最多20个匹配的文档。</p>
-
-<h2>更新<a id="sec-5-3" name="sec-5-3"></a></h2>
-
-<p>使用 <em>update</em> 修改文章：</p>
-
-<p>update接收（至少）两个参数：
--   第一个是限定条件（用于匹配待更新的文档）
--   第二个是新的文档</p>
-
-<p>例如我们为之前的文章增加评论功能，就需要新增一个键，用于保存评论数组。</p>
-
-<pre><code>&gt; post.comments = []
-[ ]
-
-&gt; db.blog.update({ title : "hello"} , post)
-</code></pre>
-
-<p>再用 find 查看一下，就可以看见新的键。</p>
-
-<pre><code>&gt; db.blog.find()
-</code></pre>
-
-<h2>删除<a id="sec-5-4" name="sec-5-4"></a></h2>
-
-<p>使用remove方法可以将文档从数据库中永久删除。如果没用任何参数传入，他将删除集合内的全部文档。</p>
-
-<p>同时，它可以接收一个做为限定条件的文档做为参数。例如：</p>
-
-<pre><code>&gt; db.blog.reomve({ title : "hello" })
-</code></pre>
-
-<hr />
-
-<p><strong><em>有关Mongodb的简单描述到此结束，更多Mongdb使用操作内容，欢迎参考下一篇文章</em></strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Emacs使用指南]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/"/>
-    <updated>2017-03-27T20:33:02+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan</id>
-    <content type="html"><![CDATA[<h1>Emacs快速指南</h1>
-
-<h2>传说中的神级编辑器？？</h2>
-
-<h3>基础介绍</h3>
-
-<p>vim 和 emacs 分别被称为「 编辑器之神」与「 神之编辑器」，自有其独到之处。</p>
-
-<blockquote><p>快捷键的无差别延续</p></blockquote>
-
-<p>vim 和 emacs 诞生于 30 年前，快捷键基本没什么变化。这意味着，一旦你学会使用这两个编辑器，无论以后软件怎么更新，都不需要学习别的快捷键了。因为历史较长，加上快捷键变化不大，新兴编辑器大多提供模拟 vim/emacs 操作的插件。这也方便了用户迁移到其他编辑器，无需学习更多的同质快捷键。</p>
-
-<blockquote><p>基础和适用的默认配置</p></blockquote>
-
-<p>vim 和 emacs 都可以运行在终端，也有图形化的软件，非常适合快速编辑文件。当需要在无法运行图形界面的服务器上编辑代码的时候，二者也足以胜任。虽然在终端也有 nano 这样的编辑器，但毕竟过于简洁，无法支撑较为复杂的编辑工作。这两个编辑器的默认配置的功能就已经很强大了，语法着色、补全、缩进等功能都很不错。</p>
-
-<blockquote><p>emacs有别于vim的地方</p></blockquote>
-
-<p>为了实现强大的功能，vim 选择了多模式编辑（Normal, Insert, Visual 模式），而 emacs 没有输入上的 mode 差别，所以需要依赖复杂的快捷键来实现强大的编辑功能，正如上图所示。emacs 插件想象力更加丰富，有「伪装成编辑器的操作系统」之称。插件的 major mode 和 minor mode 的设计很出彩，对一个文件，只有一个 major mode，但是可以有多个 minor mode，这样一个文件一个主插件，多个附加插件，可以实现很多有趣的效果。</p>
-
-<h3>快捷键说明</h3>
-
-<p>在网上的Emacs文档或手册中，总有一些快捷键说明如下所示：</p>
-
-<p>C-v : 其中C 代表 Ctrl，因此这项快捷键代表 Ctrl + C
-M-v : 其中M 代表 Alt，这项快捷键代表 Alt + V</p>
-
-<h3>基本光标控制</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>                    上一行 C-p
-</span><span class='line'>                      ：
-</span><span class='line'>                      ：
-</span><span class='line'>    向左移 C-b：：： 目前光标位置 ：：： 向右移 C-f
-</span><span class='line'>                      ：
-</span><span class='line'>                      ：
-</span><span class='line'>                    下一行 C-n
-</span><span class='line'>
-</span><span class='line'>                 亦可使用小键盘方向键
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>M-f 移动到词的末尾
-M-b 移动到词的首部</p>
-
-<p>请注意 C-f 、C-b 和 M-f 、M-b 两对之间的类比关系。通常的惯例是：META 系
-列组合键用来操作“由语言定义的单位（比如词、句子、段落）”，而 CONTROL
-系列组合键用来操作“与语言无关的基本单位（比如字符、行等等）”。</p>
-
-<p>这里对简单的光标移动命令做一个总结，其中也包括了整词和整句的移动：</p>
-
-<pre><code>    C-f     向右移动一个字符
-    C-b     向左移动一个字符
-
-    M-f     向右移动一个词【对中文是移动到下一个标点符号】
-    M-b     向左移动一个词【对中文是移动到上一个标点符号】
-
-    C-n     移动到下一行
-    C-p     移动到上一行
-
-    C-a     移动到行首
-    C-e     移动到行尾
-
-    M-a     移动到句首
-    M-e     移动到句尾
-</code></pre>
-
-<h2><em>窗格(WINDOWS)</em></h2>
-
-<p>Emacs 可以有多个“窗格”，每个窗格显示不同的文字。后面会介绍怎么对付多个窗
-格，现在我们先学会如何关掉多余的窗格。其实也很简单：</p>
-
-<pre><code>    C-x 1   只保留一个窗格（也就是关掉其它所有窗格）。
-</code></pre>
-
-<p>也就是先按 CONTROL-x 然后再按 1。C-x 1 会保留光标所在的窗格，并将其扩大
-到整个屏幕，同时关掉所有其它的窗格。</p>
-
-<blockquote><p>把光标移到本行然后输入 C-u 0 C-l。</p>
-
-<p>输入 C-h k C-f。观察当一个新窗格出现时当前窗格（用来显示
-  C-f 命令的文档）是如何缩小的。</p>
-
-<p>输入 C-x 1 关掉文档窗格。</p></blockquote>
-
-<p><em>Emacs中的删除</em></p>
-
-<p>在Emacs删除文字有很多种方法。在说明相应的操作方法前，我们需要先弄明白几个概念：“删除（Delete）”、“移除（Kill）”、“召回（Yank）”还有“移除环（Kill-Ring）”</p>
-
-<p>好吧，“删除”和“移除”在文本编辑的过程中实现的效果非常类似——对应的字符或内容在文档中“消失”了。存在细微差别的地方在与取回这些“消失”的内容的方法上：</p>
-
-<p>被“删除”的内容，只能使用“撤销（Undo）”的办法来找回这些“消失的字符”。和大多数人预想的一样，这些“消失的字符”只会重新出现在原来它们所在的地方。</p>
-
-<p><em>Emacs的剪贴板以及Undo/Redo</em></p>
-
-<p>被“移除”的内容，除了可以使用“撤销”的方法了找回内容以外，还可以使用“召回”的方法让这些“消失”的内容出现在当前光标之后。这样的操作效果和使用了“剪贴板”的效果类似了。</p>
-
-<p>“召回”，是将移除的内容插入到光标所在位置的一种操作。使用召回操作，让人有一种使用“剪贴板”的感觉。不过Emacs会记录多次“移除”操作的内容，这一点可要比windows操作系统提供的“剪贴板”功能要强大多了。这种记录多次“移除”操作内容的机制在Emacs中叫做“移除环”——Yank Ring。</p>
-
-<p><em>Emacs中的查找和替换</em></p>
-
-<p>任何编辑器都有查找和替换的功能，Emacs也不例外。在Emacs中最常用的查找方法是“增量查找”。除此之外，Emacs还提供了“正则查找”、“词组查找”、“简单查找”三种方法。这些查找方法，一般来说，熟练掌握其中的一至两类就足够应付日常使用的需要了。</p>
-
-<p><em>Emacs中的文件操作</em></p>
-
-<p>基础的Emacs文件操作是创建、保存、另存。</p>
-
-<p>创建新文件：
-使用组合键 Ctrl-x Ctrl-f 打开“find file”
-在提示符处输入一个不存在的文件名
-回车确认后，Emacs即创建了一个空的Buffer供输入使用。
-保存文件
-Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
-另存文件
-要另存一个文件，按下组合键Ctrl-x Ctrl-w，按提示输入新的文件名即可。</p>
-
-<h3>常用快捷键</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>C-v : 向前移动一屏（PageUp）
-</span><span class='line'>M-v : 向后移动一屏（PageDn）
-</span><span class='line'>
-</span><span class='line'>导航操作：
-</span><span class='line'>c-p            上一行
-</span><span class='line'>c-n            下一行
-</span><span class='line'>c-f            下一个字符
-</span><span class='line'>c-b            上一个字符
-</span><span class='line'>c-a            行首
-</span><span class='line'>c-e            行尾
-</span><span class='line'>
-</span><span class='line'>M-p            下一段
-</span><span class='line'>M-b            上一段
-</span><span class='line'>M-f            下一个单词
-</span><span class='line'>M-b            上一个单词
-</span><span class='line'>M-a            句首
-</span><span class='line'>M-e            句尾
-</span><span class='line'>
-</span><span class='line'>c-v            下一页
-</span><span class='line'>M-v            上一页
-</span><span class='line'>
-</span><span class='line'>c-l            以本行为中间显示
-</span><span class='line'>
-</span><span class='line'>M-&lt;            文本头
-</span><span class='line'>M-&gt;            文本尾部
-</span><span class='line'>
-</span><span class='line'>c-M-v            不移动光标让另一个窗口翻下一页
-</span><span class='line'>c-S-M-v<span class="o">(</span>S:shift<span class="o">)</span>    不移动光标让另一个窗口翻上一页
-</span><span class='line'>
-</span><span class='line'>撤销操作：
-</span><span class='line'>c-_ / c-x c-u        撤销
-</span><span class='line'>c-h l            列出最近操作
-</span><span class='line'>M-x revert-buffer    重新读入buffer<span class="o">(</span>撤销本次全部更改<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>文件操作:
-</span><span class='line'>c-x c-f            打开文件（没有就创建一个新的）
-</span><span class='line'>c-x c-s            保存文件
-</span><span class='line'>c-x c-w            另存为文件
-</span><span class='line'>M-x recover-file 文件名    从错误中恢复<span class="o">(</span>读取自动保存的文件<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>buffers:
-</span><span class='line'>c-x b 输入buffer名字    切换buffer
-</span><span class='line'>    方向键可以切换buffer
-</span><span class='line'>c-x k 输入buffer名字    终止buffer
-</span><span class='line'>c-x c-b            列出所有buffer
-</span><span class='line'>    之后按下：
-</span><span class='line'>    <span class="m">1</span>            让选中的个buffer全屏
-</span><span class='line'>    o            让选中的buffer在另外的窗口显示并且切换到该窗口
-</span><span class='line'>    c-o         让选中的buffer在另外的窗口显示并且不切换到该窗口
-</span><span class='line'>    s            标记当前buffer为保存
-</span><span class='line'>    d/c-d        标记一个要删除的buffer并且光标下/上移动
-</span><span class='line'>    x            按下x后执行标记了要删除的buffer或者标记要保存的buffer
-</span><span class='line'>
-</span><span class='line'>fram<span class="p">&amp;</span>windows：
-</span><span class='line'>c-x <span class="m">2</span>            在frame内横向分割两个windows
-</span><span class='line'>c-x <span class="m">3</span>            在frame内纵向分割两个windows
-</span><span class='line'>c-x <span class="m">1</span>            删除其他windows
-</span><span class='line'>c-x <span class="m">0</span>            删除当前windows
-</span><span class='line'>c-x o            切换到另外的窗口
-</span><span class='line'><span class="c">#c-x {            水平缩小当前窗口（分两个窗口的时候）</span>
-</span><span class='line'><span class="c">#c-x }            水平扩大当前窗口</span>
-</span><span class='line'>c-x <span class="m">5</span> <span class="m">2</span>            水平创建一个新的frame
-</span><span class='line'>c-x <span class="m">5</span> <span class="m">0</span>         杀死当前的fram（最后一个不可以哦）
-</span><span class='line'>c-x <span class="m">5</span> o            切换fram
-</span><span class='line'>
-</span><span class='line'>Searching:
-</span><span class='line'>c-s            向前搜索
-</span><span class='line'>c-r            向后搜索
-</span><span class='line'>搜索时按下：
-</span><span class='line'>    M-p        搜索历史向上
-</span><span class='line'>    M-n        搜索历史向后
-</span><span class='line'>M-%            搜索并替换，替换时询问每一个是否需要被替换（y表示是n表示否!表示全部y）
-</span><span class='line'>M-x replace-string    搜索并替换，不询问
-</span><span class='line'>c-r             进入紧急编辑<span class="o">(</span>保存当前的查询替换的状态<span class="o">)</span>
-</span><span class='line'>c-M-c            退出紧急编辑
-</span><span class='line'>c-<span class="o">[</span>            取消紧急编辑<span class="o">(</span>无视原来保护的现场Orz<span class="o">)</span>
-</span><span class='line'>M-x occur 匹配串    找到并列出所有匹配串
-</span><span class='line'>
-</span><span class='line'>helping:
-</span><span class='line'>c-h            帮助首菜单
-</span><span class='line'>c-h c-h            帮助buffer
-</span><span class='line'>c-h k    按键        显示绑定这个键位的功能
-</span><span class='line'>c-h a    输入功能    显示对应的按键<span class="o">(</span>正则匹配<span class="o">)</span>
-</span><span class='line'>c-x c-h            显示全部c-x的命令
-</span><span class='line'>c-x w    输入功能    显示对应的按键（非正则匹配）
-</span><span class='line'>c-x h    输入功能    显示这个功能的具体功能
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
