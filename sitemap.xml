@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong/</loc>
+<lastmod>2017-09-24T10:51:37+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2017/09/19/aprioriyu-guan-lian-fen-xi/</loc>
 <lastmod>2017-09-19T13:33:11+08:00</lastmod>
 </url>
@@ -289,5 +293,20 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/ke-cheng-bi-ji/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/2/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/3/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/4/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/5/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/6/</loc>
 </url>
 </urlset>
