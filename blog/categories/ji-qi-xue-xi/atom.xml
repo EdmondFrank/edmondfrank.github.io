@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 机器学习 | EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-09-30T00:04:39+08:00</updated>
+  <updated>2017-09-30T00:35:06+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -440,7 +440,7 @@ print('User-based CF MSE: ' + str(rmse(x_pred, test_data_matrix)))
 
 <blockquote>
   <p>举个例子: <br>
-  <img src="https://app.yinxiang.com/shard/s12/res/32d57c60-1a2d-40de-bc32-d6863271bca4" alt="" title=""> <br>
+<img src="https://i.loli.net/2017/09/30/59ce75c2b9080.jpg" alt="apriori.jpg" title="apriori.jpg" /><br>
   如上图所示，因为5项记录中有4条包含了{豆奶}，所以其支持度为4/5;依此类推，{豆奶，尿布}的支持读为3/5。</p>
 </blockquote>
 
@@ -591,7 +591,7 @@ def apriori(dataset, minsupport=0.5):
 
 
 <p>一般对于一个频繁项集而言，如果我们直接生成关联规则的话，往往会有很多条。例如：我们对一个频繁项集{0，1，2，3}直接生成关联规则的话结果就如下图所示一样： <br>
-<img src="https://app.yinxiang.com/shard/s12/res/f068f879-d976-4aeb-bd8a-27cc11029819" alt="enter image description here" title=""> <br>
+<img src="https://i.loli.net/2017/09/30/59ce75dc70dd2.png" alt="assrule.png" title="assrule.png" /><br>
 从上图我们就可以看出仅仅含4项的频繁项集就会生成出如此多的关联规则，那么如果频繁项集中含有10，20，甚至100个元素那么生成的候选关联规则的数据是相当庞大。</p>
 
 
