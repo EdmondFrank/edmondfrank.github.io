@@ -9,10 +9,11 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Table of Contents 1. Mongodb 简介 1.1. 基本概念 1.1.1. 数据库（database）
-1.1.2. 文档（document）
-1.1.3. 集合（collection） 1.2. 基本设计 2. MongoDB 启动
-3. MongoDB shell 简介 &hellip;">
+  <meta name="description" content="Table of Contents 1. 总体介绍
+2. 最长公共子序列
+3. 递归式展示
+4. 算法实现（python实现）
+5. 网页相似度计算 总体介绍 网页网页结构相似度计算通常是网页自动分类的基础，在一般的网页信息提取中，判断网页片断是“噪声”还是“有效信息”通常是个两类分类问题。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +68,189 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/">比较网页结构相似度</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-04-23T12:34:29+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 总体介绍</a></li>
+<li><a href="#sec-2">2. 最长公共子序列</a></li>
+<li><a href="#sec-3">3. 递归式展示</a></li>
+<li><a href="#sec-4">4. 算法实现（python实现）</a></li>
+<li><a href="#sec-5">5. 网页相似度计算</a></li>
+</ul>
+</div>
+</div>
+
+
+<h1>总体介绍<a id="sec-1" name="sec-1"></a></h1>
+
+<p>网页网页结构相似度计算通常是网页自动分类的基础，在一般的网页信息提取中，判断网页片断是“噪声”还是“有效信息”通常是个两类分类问题。
+简单地，我们可以把一般网页分为三个类，即：</p>
+
+<ul>
+<li>目录导航式页面（List\Index Page）</li>
+<li>详细页面（Detail Page）</li>
+<li>未知页面（Unknown Page）</li>
+</ul>
+
+
+<p>由于网页本身就可以抽象成串行的节点或者是DOM树，那么对于串行序列，就可以常用最长公共子序列来衡量相似度</p>
+
+<h1>最长公共子序列<a id="sec-2" name="sec-2"></a></h1>
+
+<p>最长公共子序列是动态规划的基本问题：</p>
+
+<p>序列a共有m个元素，序列b共有n个元素，如果a[m-1]==b[n-1]，</p>
+
+<p>那么a[:m]和b[:n]的最长公共子序列长度就是a[:m-1]和b[:n-1]的最长公共子序列长度+1；</p>
+
+<p>如果a[m-1]!=b[n-1]，那么a[:m]和b[:n]的最长公共子序列长度就是</p>
+
+<p>MAX（a[:m-1]和b[:n]的最长公共子序列长度，a[:m]和b[:n-1]的最长公共子序列长度）</p>
+
+<h1>递归式展示<a id="sec-3" name="sec-3"></a></h1>
+
+<p>　<img src="/images/lcs.png"></p>
+
+<h1>算法实现（python实现）<a id="sec-4" name="sec-4"></a></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#params：</span>
+</span><span class='line'><span class="c"># - a : str</span>
+</span><span class='line'><span class="c"># - b : str</span>
+</span><span class='line'><span class="c">#return</span>
+</span><span class='line'><span class="c"># - c : 过程处理矩阵</span>
+</span><span class='line'><span class="c"># - c[x][y] : the lcs-length(最长公共子序列长度)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">lcs</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">lena</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">lenb</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">c</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenb</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lena</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lena</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenb</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+</span><span class='line'>            <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">c</span><span class="p">,</span><span class="n">c</span><span class="p">[</span><span class="n">lena</span><span class="p">][</span><span class="n">lenb</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>网页相似度计算<a id="sec-5" name="sec-5"></a></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#-*-coding:utf-8-*-</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">lxml.html.soupparser</span> <span class="kn">as</span> <span class="nn">soupparser</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s">&quot;User-Agent&quot;</span><span class="p">:</span><span class="s">&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">get_domtree</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">dom</span> <span class="o">=</span> <span class="n">soupparser</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">dom</span><span class="o">.</span><span class="n">iter</span><span class="p">():</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">similar_web</span><span class="p">(</span><span class="n">a_url</span><span class="p">,</span><span class="n">b_url</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">html1</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a_url</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>    <span class="n">html2</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b_url</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>    <span class="n">dom_tree1</span> <span class="o">=</span> <span class="s">&quot;&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="nb">str</span><span class="p">),</span><span class="nb">list</span><span class="p">(</span><span class="n">get_domtree</span><span class="p">(</span><span class="n">html1</span><span class="p">)))))</span>
+</span><span class='line'>    <span class="n">dom_tree2</span> <span class="o">=</span> <span class="s">&quot;&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="nb">str</span><span class="p">),</span><span class="nb">list</span><span class="p">(</span><span class="n">get_domtree</span><span class="p">(</span><span class="n">html2</span><span class="p">)))))</span>
+</span><span class='line'>    <span class="n">c</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">length</span> <span class="o">=</span> <span class="n">lcs</span><span class="p">(</span><span class="n">dom_tree1</span><span class="p">,</span><span class="n">dom_tree2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">length</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dom_tree1</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">dom_tree2</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">percent</span> <span class="o">=</span> <span class="n">similar_web</span><span class="p">(</span>
+</span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="c">#相似度（百分比）</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/">比较网页结构相似度</a>
+      <time datetime="2017-04-23T12:34:29+08:00" pubdate><span class='month'>Apr</span> <span class='day'>23</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1956,142 +2140,6 @@ i = 4 and j = 9 <br/>
       <time datetime="2016-09-21T19:37:14+08:00" pubdate><span class='month'>Sep</span> <span class='day'>21</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/">简单cat的实现-1.0</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-09-06T23:47:23+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>简单cat的实现-1.0</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;ctype.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">vis</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">strip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">while</span><span class="p">(</span><span class="n">argc</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span><span class="sc">&#39;-&#39;</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]){</span>
-</span><span class='line'>        <span class="k">case</span> <span class="sc">&#39;s&#39;</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">strip</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
-</span><span class='line'>            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;%s:unknown arg %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-</span><span class='line'>            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="n">argc</span><span class="o">--</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">argv</span><span class="o">++</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">vis</span><span class="p">(</span><span class="n">stdin</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">else</span>
-</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">argc</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">((</span><span class="n">fp</span><span class="o">=</span><span class="n">fopen</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s">&quot;r&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">){</span>
-</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;%s:can&#39;t open %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="n">vis</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">vis</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">){</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">while</span><span class="p">((</span><span class="n">c</span><span class="o">=</span><span class="n">getc</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span><span class="o">!=</span><span class="n">EOF</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">isascii</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">isprint</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">&#39;\n&#39;</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">&#39;\t&#39;</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">&#39; &#39;</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">strip</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">%03o&quot;</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/">简单cat的实现-1.0</a>
-      <time datetime="2016-09-06T23:47:23+08:00" pubdate><span class='month'>Sep</span> <span class='day'>06</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/lian-xi-dai-ma/'>练习代码</a></span>
       
       </footer>
     </article>

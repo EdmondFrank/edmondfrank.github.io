@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>机器学习之梯度下降 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="机器学习之梯度下降 梯度下降(gradient descent) 是线性回归的一种(Linear Regression)，在Andrew Ng的machine learning前期课程中有着详细的讲解，首先给出一个关于课程中经典的例子:预测房屋的价格。 面积(feet2) 房间个数 价格（1000 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">机器学习之梯度下降</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-30T20:19:04+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1 id="机器学习之梯度下降">机器学习之梯度下降</h1>
+
+
+
+
+<h2 id="梯度下降gradient-descent">梯度下降(gradient descent)</h2>
+
+
+
+
+<p>是线性回归的一种(Linear Regression)，在<a href="https://www.bilibili.com/video/av9912938/?from=search&amp;seid=3888228796805461518">Andrew Ng的machine learning</a>前期课程中有着详细的讲解，首先给出一个关于课程中经典的例子:预测房屋的价格。</p>
+
+
+
+
+<table>
+<thead>
+<tr>
+  <th>面积(feet2)</th>
+  <th>房间个数</th>
+  <th>价格（1000$）</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>2104</td>
+  <td>3</td>
+  <td>400</td>
+</tr>
+<tr>
+  <td>1600</td>
+  <td>3</td>
+  <td>330</td>
+</tr>
+<tr>
+  <td>2400</td>
+  <td>3</td>
+  <td>369</td>
+</tr>
+<tr>
+  <td>1416</td>
+  <td>2</td>
+  <td>232</td>
+</tr>
+<tr>
+  <td>3000</td>
+  <td>4</td>
+  <td>540</td>
+</tr>
+</tbody></table>
+
+
+
+
+<p>在上面的表格中，房间的个数以及房屋的面积都是输入变量而，价格就是我们要预测输出的值。其中，面积和房屋个数分别表示一个特征，我们在这将他们一起用X来表示。价格用Y来表示。同时表格的每一行表示成一个样本，具体表示为：<script type="math/tex" id="MathJax-Element-1">f: X_1=[24104,3] \to Y_1=400</script>。</p>
+
+
+
+
+<p>那么我们具体的任务就可以概括成给定一个训练集合，学习出一个函数<script type="math/tex" id="MathJax-Element-2">f</script>，使得<script type="math/tex" id="MathJax-Element-3">f(x)</script>能够符合结果Y，或者说能够使得<script type="math/tex" id="MathJax-Element-4">f(x)</script>与Y的之间的误差最小。</p>
+
+
+
+
+<p>我们可以用以下的式子来表达上述的关系：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-5">f(x) = \theta_1 x_1 + \theta_2 x_2 + \beta</script></p>
+
+
+
+
+<p>其中，<script type="math/tex" id="MathJax-Element-6">\theta 表示X映射成Y的权重，而x表示为各组特征。</script> <br>
+我们再分别用<script type="math/tex" id="MathJax-Element-7">x^{j},y^{j}来表示第J个样本</script>。这样我们就可以写出代价函数：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-8">J(\theta) = \frac {1}{2}\sum ^m_{i=0}(f_\theta(x^{i})-y^{(i)})^2</script></p>
+
+
+
+
+<p>然后我们要使得计算的结果无限接近真实值y的话，我们就要令得我们的代价函数（俗称的误差）最小化。要使得<script type="math/tex" id="MathJax-Element-9">J(\theta)</script>最小，即对<script type="math/tex" id="MathJax-Element-10">J(\theta)</script>进行求导操作，并使得其结果为0。</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-11">\theta_j = \theta_j - \frac{\partial J(\theta)}{\partial \theta_j}</script></p>
+
+
+
+
+<p>当只有单个特征时，上式中的j表示系数（权重）的编号，右边的值赋给左边的变量后完成一次迭代过程。</p>
+
+
+
+
+<p>而多个特征时，其迭代过程如下： <br>
+<img src="https://i.loli.net/2017/09/23/59c5f7bb6ccee.png" alt="gd.png" title=""></p>
+
+
+
+
+<p>上式就是<strong>批梯度下降算法(batch gradient descent)</strong>，当上式收敛时则退出迭代，何为收敛，即前后两次迭代的值不再发生变化了。一般情况下，会设置一个具体的参数，当前后两次迭代差值小于该参数时候结束迭代。注意以下几点：</p>
+
+
+
+
+<p>(1) <strong>a 即学习率（learning rate</strong>），决定的下降步伐，如果太小，则找到函数最小值的速度就很慢，如果太大，则可能会出现无法逼近最小值的现象；</p>
+
+
+
+
+<p>(2) 初始点不同，获得的最小值也不同，因此梯度下降求得的只是局部最小值；</p>
+
+
+
+
+<p>(3) 越接近最小值时，下降速度越慢；</p>
+
+
+
+
+<p>(4) 计算批梯度下降算法时候，计算每一个θ值都需要遍历计算所有样本，当数据量的时候这是比较费时的计算。</p>
+
+
+
+
+<p>批梯度下降算法的步骤可以归纳为以下几步：</p>
+
+
+
+
+<p>(1)先确定向下一步的步伐大小，我们称为Learning rate ；</p>
+
+
+
+
+<p>(2)任意给定一个初始值：θ向量，一般为0向量</p>
+
+
+
+
+<p>(3)确定一个向下的方向，并向下走预先规定的步伐，并更新θ向量</p>
+
+
+
+
+<p>(4)当下降的高度小于某个定义的值，则停止下降；</p>
+
+
+
+
+<h2 id="随机梯度下降算法">随机梯度下降算法</h2>
+
+
+
+
+<p>因为每次计算梯度都需要遍历所有的样本点。这是因为梯度是J(θ)的导数，而J(θ)是需要考虑所有样本的误差和 ，这个方法问题就是，扩展性问题，当样本点很大的时候，基本就没法算了。</p>
+
+
+
+
+<p>所以接下来又提出了<strong>随机梯度下降算法(stochastic gradient descent )</strong>。随机梯度下降算法，每次迭代只是考虑让该样本点的J(θ)趋向最小，而不管其他的样本点，这样算法会很快，但是收敛的过程会比较曲折，整体效果上，大多数时候它只能接近局部最优解，而无法真正达到局部最优解。所以适合用于较大训练集的例子。</p>
+
+
+
+
+<p>其具体流程用公式表达如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/23/59c5f947573e4.png" alt="sgd.png" title=""></p>
+
+
+
+
+<h2 id="代码实现">代码实现</h2>
+
+
+
+
+<h3 id="批梯度下降算法">批梯度下降算法</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Training data set</span>
+</span><span class='line'><span class="c">#each element in x represents (x0,x1,x2)</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">3.</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">4.</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+</span><span class='line'><span class="c">#y[i] is the output of y = theta0 * x[0] + theta1 * x[1] +theta2 * x[2]</span>
+</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">95.364</span><span class="p">,</span><span class="mf">97.217205</span><span class="p">,</span><span class="mf">75.195834</span><span class="p">,</span><span class="mf">60.105519</span><span class="p">,</span><span class="mf">49.342380</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.000001</span>
+</span><span class='line'><span class="c">#learning rate</span>
+</span><span class='line'><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.001</span>
+</span><span class='line'><span class="n">diff</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'><span class="n">error1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">error0</span> <span class="o">=</span><span class="mi">0</span>
+</span><span class='line'><span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#init the parameters to zero</span>
+</span><span class='line'><span class="n">theta0</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">theta1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">theta2</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">sum0</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">sum1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">sum2</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#calculate the parameters</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><span class='line'>        <span class="c">#begin batch gradient descent</span>
+</span><span class='line'>        <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span> <span class="n">theta0</span> <span class="o">+</span> <span class="n">theta1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'>        <span class="n">sum0</span> <span class="o">=</span> <span class="n">sum0</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">sum1</span> <span class="o">=</span> <span class="n">sum1</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">sum2</span> <span class="o">=</span> <span class="n">sum2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>        <span class="c">#end  batch gradient descent</span>
+</span><span class='line'>    <span class="n">theta0</span> <span class="o">=</span> <span class="n">sum0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">theta1</span> <span class="o">=</span> <span class="n">sum1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">theta2</span> <span class="o">=</span> <span class="n">sum2</span><span class="p">;</span>
+</span><span class='line'>    <span class="c">#calculate the cost function</span>
+</span><span class='line'>    <span class="n">error1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">lp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+</span><span class='line'>        <span class="n">error1</span> <span class="o">+=</span> <span class="p">(</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span> <span class="n">theta0</span> <span class="o">+</span> <span class="n">theta1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">error1</span><span class="o">-</span><span class="n">error0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">break</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">error0</span> <span class="o">=</span> <span class="n">error1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&#39; theta0 : </span><span class="si">%f</span><span class="s">, theta1 : </span><span class="si">%f</span><span class="s">, theta2 : </span><span class="si">%f</span><span class="s">, error1 : </span><span class="si">%f</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span><span class="n">theta1</span><span class="p">,</span><span class="n">theta2</span><span class="p">,</span><span class="n">error1</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;Done: theta0 : </span><span class="si">%f</span><span class="s">, theta1 : </span><span class="si">%f</span><span class="s">, theta2 : </span><span class="si">%f</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span><span class="n">theta1</span><span class="p">,</span><span class="n">theta2</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果： <br>
+   theta0 : 0.377225, theta1 : 0.625295, theta2 : 1.120912, error1 : 4405.869965 <br>
+   theta0 : 0.729497, theta1 : 1.193311, theta2 : 2.164098, error1 : 3094.652486 <br>
+   theta0 : 1.058680, theta1 : 1.708424, theta2 : 3.135362, error1 : 2089.261446 <br>
+   theta0 : 1.366497, theta1 : 2.174683, theta2 : 4.040070, error1 : 1335.974025 <br>
+   theta0 : 1.654541, theta1 : 2.595831, theta2 : 4.883186, error1 : 789.589683 <br>
+   theta0 : 1.924288, theta1 : 2.975327, theta2 : 5.669299, error1 : 412.137681 <br>
+   theta0 : 2.177098, theta1 : 3.316371, theta2 : 6.402654, error1 : 171.776368 <br>
+   theta0 : 2.414234, theta1 : 3.621921, theta2 : 7.087177, error1 : 41.856096 <br>
+   theta0 : 2.636861, theta1 : 3.894714, theta2 : 7.726499, error1 : 0.121739 <br>
+   theta0 : 2.846057, theta1 : 4.137277, theta2 : 8.323976, error1 : 28.034282 <br>
+   theta0 : 3.042819, theta1 : 4.351950, theta2 : 8.882714, error1 : 110.193963 <br>
+   …… <br>
+    theta0 : 98.101057, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473679 <br>
+   theta0 : 98.101058, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473678 <br>
+   theta0 : 98.101058, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473677 <br>
+   theta0 : 98.101059, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473676 <br>
+   theta0 : 98.101059, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473675 <br>
+   theta0 : 98.101060, theta1 : -13.028753, theta2 : 1.133772, error1 : 3.473674 <br>
+   theta0 : 98.101061, theta1 : -13.028753, theta2 : 1.133772, error1 : 3.473673 <br>
+  Done: theta0 : 98.101061, theta1 : -13.028753, theta2 : 1.133772</p>
+</blockquote>
+
+
+
+
+<p>由上面的输出结果可以知道，梯度下降算法会在迭代一定次数后收敛于一个较少的损失值（即error）然而这并不是最优解而只是一个局部最小值（因为我们也可以从结果看到 theta0 : 2.636861, theta1 : 3.894714, theta2 : 7.726499, error1 : 0.121739，这项数据的最终error反而优于我们的最终解）。</p>
+
+
+
+
+<h3 id="随机梯度下降算法-1">随机梯度下降算法</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Training data set</span>
+</span><span class='line'><span class="c">#each element in x represents (x0,x1,x2)</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">3.</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">4.</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+</span><span class='line'><span class="c">#y[i] is the output of y = theta0 * x[0] + theta1 * x[1] +theta2 * x[2]</span>
+</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mf">95.364</span><span class="p">,</span><span class="mf">97.217205</span><span class="p">,</span><span class="mf">75.195834</span><span class="p">,</span><span class="mf">60.105519</span><span class="p">,</span><span class="mf">49.342380</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.0001</span>
+</span><span class='line'><span class="c">#learning rate</span>
+</span><span class='line'><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.01</span>
+</span><span class='line'><span class="n">diff</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'><span class="n">error1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">error0</span> <span class="o">=</span><span class="mi">0</span>
+</span><span class='line'><span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c">#init the parameters to zero</span>
+</span><span class='line'><span class="n">theta0</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">theta1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">theta2</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#calculate the parameters</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span> <span class="n">theta0</span> <span class="o">+</span> <span class="n">theta1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">theta0</span> <span class="o">=</span> <span class="n">theta0</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">theta1</span> <span class="o">=</span> <span class="n">theta1</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">theta2</span> <span class="o">=</span> <span class="n">theta2</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">diff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#calculate the cost function</span>
+</span><span class='line'>    <span class="n">error1</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">lp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+</span><span class='line'>        <span class="n">error1</span> <span class="o">+=</span> <span class="p">(</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span> <span class="n">theta0</span> <span class="o">+</span> <span class="n">theta1</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">theta2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">error1</span><span class="o">-</span><span class="n">error0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">break</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">error0</span> <span class="o">=</span> <span class="n">error1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">print</span> <span class="p">(</span><span class="s">&#39; theta0 : </span><span class="si">%f</span><span class="s">, theta1 : </span><span class="si">%f</span><span class="s">, theta2 : </span><span class="si">%f</span><span class="s">, error1 : </span><span class="si">%f</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span><span class="n">theta1</span><span class="p">,</span><span class="n">theta2</span><span class="p">,</span><span class="n">error1</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;Done: theta0 : </span><span class="si">%f</span><span class="s">, theta1 : </span><span class="si">%f</span><span class="s">, theta2 : </span><span class="si">%f</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span><span class="n">theta1</span><span class="p">,</span><span class="n">theta2</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果： <br>
+   theta0 : 2.782632, theta1 : 3.207850, theta2 : 7.998823, error1 : 7.508687 <br>
+   theta0 : 4.254302, theta1 : 3.809652, theta2 : 11.972218, error1 : 813.550287 <br>
+   theta0 : 5.154766, theta1 : 3.351648, theta2 : 14.188535, error1 : 1686.507256 <br>
+   theta0 : 5.800348, theta1 : 2.489862, theta2 : 15.617995, error1 : 2086.492788 <br>
+   theta0 : 6.326710, theta1 : 1.500854, theta2 : 16.676947, error1 : 2204.562407 <br>
+   theta0 : 6.792409, theta1 : 0.499552, theta2 : 17.545335, error1 : 2194.779569 <br>
+   theta0 : 7.223066, theta1 : -0.467855, theta2 : 18.302105, error1 : 2134.182794 <br>
+   theta0 : 7.630213, theta1 : -1.384304, theta2 : 18.982980, error1 : 2056.719790 <br>
+   …… <br>
+    theta0 : 97.986505, theta1 : -13.221170, theta2 : 1.257223, error1 : 1.553680 <br>
+   theta0 : 97.986620, theta1 : -13.221169, theta2 : 1.257186, error1 : 1.553579 <br>
+   theta0 : 97.986735, theta1 : -13.221167, theta2 : 1.257150, error1 : 1.553479 <br>
+   theta0 : 97.986849, theta1 : -13.221166, theta2 : 1.257113, error1 : 1.553379 <br>
+   theta0 : 97.986963, theta1 : -13.221165, theta2 : 1.257077, error1 : 1.553278 <br>
+  Done: theta0 : 97.987078, theta1 : -13.221163, theta2 : 1.257041</p>
+</blockquote>
+
+
+
+
+<p>通过上述批梯度下降和随机梯度下降算法代码的对比，不难发现两者的区别： <br>
+随机梯度下降算法在迭代的时候，每迭代一个新的样本，就会更新一次所有的theta参数。 <br>
+因此当样本数量很大时候，批梯度得做完所有样本的计算才能更新一次theta，从而花费的时间远大于随机梯度下降。但是随机梯度下降过早的结束了迭代，使得它获取的值只是接近局部最优解，而并非像批梯度下降算法那样就是局部最优解。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-30T20:19:04+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong/" title="Previous Post: Python 实现推荐系统">&laquo; Python 实现推荐系统</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
