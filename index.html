@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="机器学习之梯度下降 梯度下降(gradient descent) 是线性回归的一种(Linear Regression)，在Andrew Ng的machine learning前期课程中有着详细的讲解，首先给出一个关于课程中经典的例子:预测房屋的价格。 面积(feet2) 房间个数 价格（1000 &hellip;">
+  <meta name="description" content="﻿K-means聚类简介 前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别） &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,273 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/10/06/k-meansju-lei-jian-jie/">K-means聚类简介</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-06T14:28:25+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="k-means聚类简介">K-means聚类简介</h1></p>
+
+<p>前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别）而其最后分成的组数则由参数K来决定。</p>
+
+
+
+
+<h2 id="算法基本步骤">算法基本步骤</h2>
+
+
+
+
+<ol>
+<li>随机初始化K个簇心。用作标识各组数据。</li>
+<li>根据各个数据的特征/属性，将他们聚类到距离最接近的一个簇，并打上分类标识。</li>
+<li>根据加入的数据重新计算每个簇的质心（均值，Means）</li>
+<li>重复2，3步，直至最后所有数据被划分成k个簇。</li>
+</ol>
+
+
+
+
+<p>从以后的步骤我们也可以充分地看出，再聚类完毕之前数据是没有分组和标识的，而是通过聚类来查找和分析被划分在一起的数据。</p>
+
+
+
+
+<p>同时，每个簇的质心是定义组的特征的代表，我们往往可以通过一个簇的质心看出该分组的特征以及属性。从而判断出这个簇代表了一个怎么样的组。</p>
+
+
+
+
+<h2 id="应用领域">应用领域</h2>
+
+
+
+
+<ul>
+<li>网站，App的用户群体聚类</li>
+<li>信用卡诈骗监测（这个是利用了聚类算法的反原理，寻找离群值）</li>
+<li>文章自动归类</li>
+<li>图像归类</li>
+<li>人群健康状态监测（同信用卡诈骗检测同原理）</li>
+</ul>
+
+
+
+
+<p>此外，我们还可以通过监控数据点根据时间的变化而造成的组间切换现象找到状态变化的方法。</p>
+
+
+
+
+<h2 id="算法主要原理">算法主要原理</h2>
+
+
+
+
+<p>（1）在数据划分方面，我们主要依赖的思路是：<strong>欧氏距离</strong>。即，每个簇的质心定义了一种聚类，然后每个点根据其到每个簇的质心的欧几里德距离的平方的大小，将其分配到最近的簇中。我们假设<script type="math/tex" id="MathJax-Element-1">c_i</script>是簇集合C中质心i，那么我们可以将其聚类的过程表达成下列形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-2">argmin_{c_i \in C} dist(c_i,x)^2</script></p>
+
+
+
+
+<p>（2）<strong>质心的更新</strong>，在这一步骤中，各个簇的质心将要被重新计算，通过加入新的数据再重新计算包括i新数据在内的的整个簇的均值以此作为新的质心。该过程可以表达为一下形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-3">c_i=\frac{1}{|S_i|}\sum_{x_i \in S_i }x_i</script></p>
+
+
+
+
+<p>在多次迭代之后，该算法可以保证收敛于一个结果，虽然有可能只是一个局部的最优解而已。为了使得最后结果更加稳定和可靠，我们也可以通过多次运行算法然后再在多个结果中取得一个均衡（为什么说多次计算可以得到更好的结果呢？ 因为每次随机初始化的质心都是不同的，这样使得每次的运行结果都不尽相同，为了得到一个更加稳定的结果和更好的鲁棒性，多次运行往往是一个简单但却有效的方法。）</p>
+
+
+
+
+<h2 id="有关k值的选择">有关K值的选择</h2>
+
+
+
+
+<p>在K-means聚类算法中，K值的选择往往是一个较为难以抉择的问题。最后的情况是，在你应用这个算法之前，已经知道数据应该分为多少个类别合适，或者将这种方法应用在一个半监督学习的场合，使得最后的分类结果有据可依。</p>
+
+
+
+
+<p>那么，在一般我们不太清楚分类的情况之下，我们能做的就是通过为K值制定一个范围，然后在这个范围之上，我们尝试运行我们的分类器，然后根据分类效果来评判我们的k的取值。</p>
+
+
+
+
+<p>另外一方面，聚类算法通常会不断降低各个样本点到质心之间的距离，随着k值的增加，“距离”更是一直下降。但是，当k值增大到一定程度时，虽然“距离”仍在下降，但下降的速率已经变得十分缓慢了。我们常常称这个点的k值为<strong>肘点</strong>。往往到达肘点的k值已经能够很好地将各个类别之间的差异信息给描述出来，所以我们可以在不清楚数据具体分类信息的情况下，选择肘点值来作为我们的k值。</p>
+
+
+
+
+<p><img src="https://www.datascience.com/hs-fs/hubfs/Blog/introduction-to-k-means-clustering-elbow-point-example.png?t=1507257936532&amp;width=760&amp;height=411&amp;name=introduction-to-k-means-clustering-elbow-point-example.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h2 id="example">Example</h2>
+
+
+
+
+<p>在这里我们通过Python的Sklearn库来看一下K-means的应用实例</p>
+
+
+
+
+<p><a href="https://raw.githubusercontent.com/datascienceinc/learn-data-science/master/Introduction-to-K-means-Clustering/Data/data_1024.csv">Delivery Fleet Data 数据下载</a></p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data_1024.csv&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">])</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote>
+  <p>输出结果 <br>
+    Driver_ID   Distance_Feature    Speeding_Feature <br>
+  0   3423311935  71.24   28.0 <br>
+  1   3423313212  52.53   25.0 <br>
+  2   3423313724  64.54   27.0 <br>
+  3   3423311373  55.69   22.0 <br>
+  4   3423310999  54.58   25.0 <br>
+  <img src="https://i.loli.net/2017/10/06/59d71bde43c28.png" alt="kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<h3 id="算法使用">算法使用</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+</span><span class='line'><span class="n">X_train</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">,</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">]]</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  <img src="https://i.loli.net/2017/10/06/59d720b726068.png" alt="sk-kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<p>上面的结果展示了，K分别等于2和4时对数据的聚类的结果，由于这个算法使用还算简单，在这里我也不做赘述了。那么有关K-means的简介到这里也就结束了，谢谢大家的阅读。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/10/06/k-meansju-lei-jian-jie/">K-means聚类简介</a>
+      <time datetime="2017-10-06T14:28:25+08:00" pubdate><span class='month'>Oct</span> <span class='day'>06</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -4402,387 +4669,6 @@ The accuracy of our classifier is 98%</p></blockquote>
       
       - <a href="/blog/2017/08/23/k-jin-lin-suan-fa-part2/">K-近邻算法-Part2</a>
       <time datetime="2017-08-23T12:19:17+08:00" pubdate><span class='month'>Aug</span> <span class='day'>23</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/14/k-jin-lin-suan-fa-part1/">K-近邻算法-Part1</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-08-14T23:48:56+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="k-近邻算法-part1">K-近邻算法-Part1</h1>
-
-
-
-
-<h2 id="概述">概述</h2>
-
-
-
-
-<p>K-近邻算法，即K-近邻分类算法，简称KNN其通过采用测量不同的特征值之间的距离方法进行分类。</p>
-
-
-
-
-<h3 id="有关k-近邻算法的问题">有关K-近邻算法的问题</h3>
-
-
-
-
-<p>优点：精度高，对异常值不敏感，无数据输入假定</p>
-
-
-
-
-<p>缺点：计算复杂度较高，空间复杂度较高</p>
-
-
-
-
-<p>适用数据范围：数值型和标称型</p>
-
-
-
-
-<h3 id="工作原理">工作原理</h3>
-
-
-
-
-<p>存在一个样本数据集合，即训练样本集，并且训练样本中的每一个数据都存在标签，我们可以清楚地知道每一个数据条目其与对应分类的所属关系。</p>
-
-
-
-
-<p>然后在接受没有标记的新数据输入时，将新数据的特征提取出来将其一一与训练样本集中数据对应的特征进行比较，然后算法提取样本集中特征最相似的（即所谓的最近邻）的分类标签来作为新数据的标签。</p>
-
-
-
-
-<p>其中为了避免偶尔性和离群值造成的误差因此有了以样本数据集中前k个最相似的数据作为判别的参考的标准这种做法。<strong>通常k是不大于20的整数而且一般选取奇数作为k值</strong>（奇数可以在投票分类时避免出现等票的情况），最终的分类结果由k个样本的分类标签投票形成，出现最多的分类标签作为新数据的分类。</p>
-
-
-
-
-<h3 id="一般算法流程">一般算法流程</h3>
-
-
-
-
-<ol>
-<li>收集数据</li>
-<li>准备数据：对数据进行清洗和结构化处理，使得数据可以进行距离计算</li>
-<li>分析数据：提取相关特征</li>
-<li>训练分类：knn算法并不需要训练</li>
-<li>测试算法：计算错误率</li>
-<li>使用算法：将新数据输入进行对应结构化之后，运行算法进行判定分类情况，并对后续的分类结果进行进一步处理应用</li>
-</ol>
-
-
-
-
-<h2 id="用knn-制作简单的分类器">用KNN 制作简单的分类器</h2>
-
-
-
-
-<p>使用数据：<a href="https://archive.ics.uci.edu/ml/datasets/Iris">UCI的鸢尾花数据集</a> <br>
-点击进入目标链接后: </p>
-
-
-
-
-<blockquote>
-  <p>按照 Download Data Folder &gt; iris.data 路径来下载指定数据集</p>
-</blockquote>
-
-
-
-
-<h4 id="准备数据">准备数据</h4>
-
-
-
-
-<p>在这里我们使用Python 的 Pandas 包以没有标题栏的csv文件的形式读入数据</p>
-
-
-
-
-<p><strong>关键函数：read_csv</strong></p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading libraries</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># define column names</span>
-</span><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;sepal_length&#39;</span><span class="p">,</span> <span class="s">&#39;sepal_width&#39;</span><span class="p">,</span> <span class="s">&#39;petal_length&#39;</span><span class="p">,</span> <span class="s">&#39;petal_width&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># loading training data</span>
-</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;iris.data.txt&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
-</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><strong>输出</strong>：</p>
-
-
-
-
-<table>
-<thead>
-<tr>
-  <th>index</th>
-  <th>sepal_length</th>
-  <th>sepal_width</th>
-  <th>petal_length</th>
-  <th>petal_width</th>
-  <th>class</th>
-</tr>
-</thead>
-<tbody><tr>
-  <td>0</td>
-  <td>5.1</td>
-  <td>3.5</td>
-  <td>1.4</td>
-  <td>0.2</td>
-  <td>Iris-setosa</td>
-</tr>
-<tr>
-  <td>1</td>
-  <td>4.9</td>
-  <td>3.0</td>
-  <td>1.4</td>
-  <td>0.2</td>
-  <td>Iris-setosa</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td>4.7</td>
-  <td>3.2</td>
-  <td>1.3</td>
-  <td>0.2</td>
-  <td>Iris-setosa</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td>4.6</td>
-  <td>3.1</td>
-  <td>1.5</td>
-  <td>0.2</td>
-  <td>Iris-setosa</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td>5.0</td>
-  <td>3.6</td>
-  <td>1.4</td>
-  <td>0.2</td>
-  <td>Iris-setosa</td>
-</tr>
-</tbody></table>
-
-
-
-
-<h4 id="构建算法">构建算法</h4>
-
-
-
-
-<p><strong>距离函数</strong></p>
-
-
-
-
-<p>我a们在上面的例子中把一个很重要的概念隐藏了起来，在选择一个数量k还只是小问题，更重要的是距离的计算方法。毕竟，当我们说“最近的k个点”时，这个“近”是怎么衡量的？</p>
-
-
-
-
-<p>在数学中，一个空间上距离的严格定义如下： <br>
-设 M 为一个空间，M上的一个距离函数是一个函数<script type="math/tex" id="MathJax-Element-383">d:M\times M \rightarrow R</script>，满足：</p>
-
-
-
-
-<ul>
-<li><script type="math/tex" id="MathJax-Element-384">d(x,y)≥0  ∀x,y∈M</script></li>
-<li><script type="math/tex" id="MathJax-Element-385">d(x,y)=0⟺x=y</script></li>
-<li><script type="math/tex" id="MathJax-Element-386">d(x,y)=d(y,x) ∀x,y∈M</script></li>
-<li><script type="math/tex" id="MathJax-Element-387">d(x,z)≤d(x,y)+d(y,z) ∀x,y,z∈M</script></li>
-</ul>
-
-
-
-
-<p>两个点 x,y 之间的距离就是<script type="math/tex" id="MathJax-Element-388">d(x,y)</script>。</p>
-
-
-
-
-<p>我们一般最常用的距离函数是欧氏距离，也称作<script type="math/tex" id="MathJax-Element-389">L_2</script>距离。</p>
-
-
-
-
-<p>如果 <br>
-<script type="math/tex" id="MathJax-Element-390">x=(x1,x2,…,xn)</script> 和 <script type="math/tex" id="MathJax-Element-391">y=(y1,y2,…,yn)</script>是 n 维欧式空间 Rn 上的两个点，那它们之间的<script type="math/tex" id="MathJax-Element-392">L_2</script>距离是</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-393">d_2(X,Y)=\sqrt{\sum _{i=1}^n \left(X_i-Y_i\right){}^2}</script></p>
-
-
-
-
-<p>由于Python 的scikit-learn包已经实现了KNN算法，因此我们在这里可以直接调用。</p>
-
-
-
-
-<p>在<a href="http://scikit-learn.org/stable/index.html">scikit-learn</a>中，需要以matrix的形式和目标向量的形式来导入和训练数据。</p>
-
-
-
-
-<p>因此在使用scikit-learn之前需要做额外的数据结构处理，同时还应该把原数据划分成训练数据和测试数据这样更加有利于我们下面的算法正确率评估。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading libraries</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># create design matrix X and target vector y</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>   <span class="c"># end index is exclusive</span>
-</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">])</span>   <span class="c"># another way of indexing a pandas df</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># split into train and test</span>
-</span><span class='line'><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>最后，我们根据划分好的数据集来构建真正的分类器，并用构建出来的分类器来进行数据拟合以及评估他的正确率。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading library</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
-</span><span class='line'><span class="c"># instantiate learning model (k = 3)</span>
-</span><span class='line'><span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># fitting the model</span>
-</span><span class='line'><span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># predict the response</span>
-</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># evaluate accuracy</span>
-</span><span class='line'><span class="c"># print(y_test,pred)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><strong>输出</strong></p>
-
-
-
-
-<blockquote>
-  <p>0.98</p>
-</blockquote>
-
-
-
-
-<p>由此可见，在适用的场合之下，KNN分类器的准确率也是可以达到一个较为理想的水平的。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/08/14/k-jin-lin-suan-fa-part1/">K-近邻算法-Part1</a>
-      <time datetime="2017-08-14T23:48:56+08:00" pubdate><span class='month'>Aug</span> <span class='day'>14</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       

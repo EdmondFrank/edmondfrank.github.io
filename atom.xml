@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-09-30T20:23:32+08:00</updated>
+  <updated>2017-10-06T14:30:42+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,235 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[K-means聚类简介]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/"/>
+    <updated>2017-10-06T14:28:25+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="k-means聚类简介">K-means聚类简介</h1></p>
+
+<p>前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别）而其最后分成的组数则由参数K来决定。</p>
+
+
+
+
+<h2 id="算法基本步骤">算法基本步骤</h2>
+
+
+
+
+<ol>
+<li>随机初始化K个簇心。用作标识各组数据。</li>
+<li>根据各个数据的特征/属性，将他们聚类到距离最接近的一个簇，并打上分类标识。</li>
+<li>根据加入的数据重新计算每个簇的质心（均值，Means）</li>
+<li>重复2，3步，直至最后所有数据被划分成k个簇。</li>
+</ol>
+
+
+
+
+<p>从以后的步骤我们也可以充分地看出，再聚类完毕之前数据是没有分组和标识的，而是通过聚类来查找和分析被划分在一起的数据。</p>
+
+
+
+
+<p>同时，每个簇的质心是定义组的特征的代表，我们往往可以通过一个簇的质心看出该分组的特征以及属性。从而判断出这个簇代表了一个怎么样的组。</p>
+
+
+
+
+<h2 id="应用领域">应用领域</h2>
+
+
+
+
+<ul>
+<li>网站，App的用户群体聚类</li>
+<li>信用卡诈骗监测（这个是利用了聚类算法的反原理，寻找离群值）</li>
+<li>文章自动归类</li>
+<li>图像归类</li>
+<li>人群健康状态监测（同信用卡诈骗检测同原理）</li>
+</ul>
+
+
+
+
+<p>此外，我们还可以通过监控数据点根据时间的变化而造成的组间切换现象找到状态变化的方法。</p>
+
+
+
+
+<h2 id="算法主要原理">算法主要原理</h2>
+
+
+
+
+<p>（1）在数据划分方面，我们主要依赖的思路是：<strong>欧氏距离</strong>。即，每个簇的质心定义了一种聚类，然后每个点根据其到每个簇的质心的欧几里德距离的平方的大小，将其分配到最近的簇中。我们假设<script type="math/tex" id="MathJax-Element-1">c_i</script>是簇集合C中质心i，那么我们可以将其聚类的过程表达成下列形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-2">argmin_{c_i \in C} dist(c_i,x)^2</script></p>
+
+
+
+
+<p>（2）<strong>质心的更新</strong>，在这一步骤中，各个簇的质心将要被重新计算，通过加入新的数据再重新计算包括i新数据在内的的整个簇的均值以此作为新的质心。该过程可以表达为一下形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-3">c_i=\frac{1}{|S_i|}\sum_{x_i \in S_i }x_i</script></p>
+
+
+
+
+<p>在多次迭代之后，该算法可以保证收敛于一个结果，虽然有可能只是一个局部的最优解而已。为了使得最后结果更加稳定和可靠，我们也可以通过多次运行算法然后再在多个结果中取得一个均衡（为什么说多次计算可以得到更好的结果呢？ 因为每次随机初始化的质心都是不同的，这样使得每次的运行结果都不尽相同，为了得到一个更加稳定的结果和更好的鲁棒性，多次运行往往是一个简单但却有效的方法。）</p>
+
+
+
+
+<h2 id="有关k值的选择">有关K值的选择</h2>
+
+
+
+
+<p>在K-means聚类算法中，K值的选择往往是一个较为难以抉择的问题。最后的情况是，在你应用这个算法之前，已经知道数据应该分为多少个类别合适，或者将这种方法应用在一个半监督学习的场合，使得最后的分类结果有据可依。</p>
+
+
+
+
+<p>那么，在一般我们不太清楚分类的情况之下，我们能做的就是通过为K值制定一个范围，然后在这个范围之上，我们尝试运行我们的分类器，然后根据分类效果来评判我们的k的取值。</p>
+
+
+
+
+<p>另外一方面，聚类算法通常会不断降低各个样本点到质心之间的距离，随着k值的增加，“距离”更是一直下降。但是，当k值增大到一定程度时，虽然“距离”仍在下降，但下降的速率已经变得十分缓慢了。我们常常称这个点的k值为<strong>肘点</strong>。往往到达肘点的k值已经能够很好地将各个类别之间的差异信息给描述出来，所以我们可以在不清楚数据具体分类信息的情况下，选择肘点值来作为我们的k值。</p>
+
+
+
+
+<p><img src="https://www.datascience.com/hs-fs/hubfs/Blog/introduction-to-k-means-clustering-elbow-point-example.png?t=1507257936532&amp;width=760&amp;height=411&amp;name=introduction-to-k-means-clustering-elbow-point-example.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h2 id="example">Example</h2>
+
+
+
+
+<p>在这里我们通过Python的Sklearn库来看一下K-means的应用实例</p>
+
+
+
+
+<p><a href="https://raw.githubusercontent.com/datascienceinc/learn-data-science/master/Introduction-to-K-means-Clustering/Data/data_1024.csv">Delivery Fleet Data 数据下载</a></p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data_1024.csv&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">])</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote>
+  <p>输出结果 <br>
+    Driver_ID   Distance_Feature    Speeding_Feature <br>
+  0   3423311935  71.24   28.0 <br>
+  1   3423313212  52.53   25.0 <br>
+  2   3423313724  64.54   27.0 <br>
+  3   3423311373  55.69   22.0 <br>
+  4   3423310999  54.58   25.0 <br>
+  <img src="https://i.loli.net/2017/10/06/59d71bde43c28.png" alt="kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<h3 id="算法使用">算法使用</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+</span><span class='line'><span class="n">X_train</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">,</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">]]</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  <img src="https://i.loli.net/2017/10/06/59d720b726068.png" alt="sk-kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<p>上面的结果展示了，K分别等于2和4时对数据的聚类的结果，由于这个算法使用还算简单，在这里我也不做赘述了。那么有关K-means的简介到这里也就结束了，谢谢大家的阅读。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[机器学习之梯度下降]]></title>
@@ -6405,606 +6634,6 @@ PCA的主要思想是移动坐标轴，找到方差最大的方向上的特征�
 
 
 <p><img src="https://edmondfrank.github.io/images/pca.png"></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Web正文提取(偏純文本类)]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/"/>
-    <updated>2017-05-02T20:48:47+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei</id>
-    <content type="html"><![CDATA[<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 算法原理介绍</a>
-<ul>
-<li><a href="#sec-1-1">1.1. 简介</a></li>
-<li><a href="#sec-1-2">1.2. 定义</a></li>
-</ul>
-</li>
-<li><a href="#sec-2">2. 基本步骤</a>
-<ul>
-<li><a href="#sec-2-1">2.1. 前提需求</a></li>
-<li><a href="#sec-2-2">2.2. 提取网页正文</a></li>
-<li><a href="#sec-2-3">2.3. 算法实现</a></li>
-</ul>
-</li>
-<li><a href="#sec-3">3. 效果测试</a></li>
-</ul>
-</div>
-</div>
-
-
-<h1>算法原理介绍<a id="sec-1" name="sec-1"></a></h1>
-
-<h2>简介<a id="sec-1-1" name="sec-1-1"></a></h2>
-
-<p>本文主要采用基于标记窗的方法来提取网页的正文信息，不仅仅适合于处理一个网页中所有正文
-信息均放在一个td的情况，也适合于处理网页正文放在多个td中的情况。即，它能够解决非Table
-结构的网页正文提取问题。</p>
-
-<h2>定义<a id="sec-1-2" name="sec-1-2"></a></h2>
-
-<p>一般称HTML中成对出现的标记为标记对，称HTML格式的网页中出现在Title之后显示内容为非空的
-标记对为标记窗</p>
-
-<h1>基本步骤<a id="sec-2" name="sec-2"></a></h1>
-
-<h2>前提需求<a id="sec-2-1" name="sec-2-1"></a></h2>
-
-<p>满足规范化网页，即：</p>
-
-<ul>
-<li>除了网页标记tag外的地方出现"&lt;&ldquo;,&rdquo;>&ldquo;用&lt;&gt;替代</li>
-<li>所有标记的属性值放在引号中，如 a herf=&ldquo;www.baidu.com"。</li>
-<li>所有标记都是匹配的，即每个开始标记均对应着一个结束，如<body></body></li>
-<li>所有标记都是正确嵌套的</li>
-</ul>
-
-
-<h2>提取网页正文<a id="sec-2-2" name="sec-2-2"></a></h2>
-
-<ol>
-<li>找出所有的标记窗Tw，对每一个标记窗Tw<sub>i</sub>(i=1,&#x2026;,N),去掉其中的HTML标记，得到不含任何HTML</li>
-</ol>
-
-
-<p>标记的字符串。
-2.  对每个标记窗Tw<sub>i</sub> 内的字符串分词，得到字符串序列。取出S<sub>twi</sub> 中的实词，得到S<sub>twi</sub> ＝{</p>
-
-<p>W<sub>tw1</sub>,W<sub>tw2</sub>,&#x2026;,W<sub>twq</sub>}。使用Levenshtein Distance公式计算标题词序列S<sub>title与字符串</sub>
-序列S<sub>twi的距离（即主题相关性）</sub>
-3.  比较计算结果和閥值大小，如果小于则为正文信息，将其提取，否则，舍弃。</p>
-
-<h2>算法实现<a id="sec-2-3" name="sec-2-3"></a></h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-<span class='line-number'>212</span>
-<span class='line-number'>213</span>
-<span class='line-number'>214</span>
-<span class='line-number'>215</span>
-<span class='line-number'>216</span>
-<span class='line-number'>217</span>
-<span class='line-number'>218</span>
-<span class='line-number'>219</span>
-<span class='line-number'>220</span>
-<span class='line-number'>221</span>
-<span class='line-number'>222</span>
-<span class='line-number'>223</span>
-<span class='line-number'>224</span>
-<span class='line-number'>225</span>
-<span class='line-number'>226</span>
-<span class='line-number'>227</span>
-<span class='line-number'>228</span>
-<span class='line-number'>229</span>
-<span class='line-number'>230</span>
-<span class='line-number'>231</span>
-<span class='line-number'>232</span>
-<span class='line-number'>233</span>
-<span class='line-number'>234</span>
-<span class='line-number'>235</span>
-<span class='line-number'>236</span>
-<span class='line-number'>237</span>
-<span class='line-number'>238</span>
-<span class='line-number'>239</span>
-<span class='line-number'>240</span>
-<span class='line-number'>241</span>
-<span class='line-number'>242</span>
-<span class='line-number'>243</span>
-<span class='line-number'>244</span>
-<span class='line-number'>245</span>
-<span class='line-number'>246</span>
-<span class='line-number'>247</span>
-<span class='line-number'>248</span>
-<span class='line-number'>249</span>
-<span class='line-number'>250</span>
-<span class='line-number'>251</span>
-<span class='line-number'>252</span>
-<span class='line-number'>253</span>
-<span class='line-number'>254</span>
-<span class='line-number'>255</span>
-<span class='line-number'>256</span>
-<span class='line-number'>257</span>
-<span class='line-number'>258</span>
-<span class='line-number'>259</span>
-<span class='line-number'>260</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
-</span><span class='line'><span class="c">#虚词列表</span>
-</span><span class='line'><span class="n">excludeWords</span> <span class="o">=</span> <span class="p">()</span>
-</span><span class='line'><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;excludeWords&#39;</span><span class="p">,</span><span class="s">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">excludeWords</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'><span class="n">excludeWords</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">excludeWords</span><span class="p">)</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">domNode</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">parentNode</span><span class="o">=</span><span class="bp">None</span>
-</span><span class='line'>    <span class="n">currNode</span><span class="o">=</span><span class="bp">None</span>
-</span><span class='line'>    <span class="n">innerText</span><span class="o">=</span><span class="bp">None</span>
-</span><span class='line'>    <span class="n">posi</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parentNode</span><span class="p">,</span><span class="n">currNode</span><span class="p">,</span><span class="n">innerText</span><span class="p">,</span><span class="n">posi</span><span class="p">):</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">=</span><span class="n">parentNode</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">currNode</span><span class="o">=</span><span class="n">currNode</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">innerText</span><span class="o">=</span><span class="n">innerText</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">posi</span><span class="o">=</span><span class="n">posi</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">levenshtein</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
-</span><span class='line'>    <span class="s">&quot;相似度计算.&quot;</span>
-</span><span class='line'>    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">:</span>
-</span><span class='line'>        <span class="c"># Make sure n &lt;= m, to use O(min(n,m)) space</span>
-</span><span class='line'>        <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span>
-</span><span class='line'>        <span class="n">n</span><span class="p">,</span><span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="p">,</span><span class="n">n</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">current</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">add</span><span class="p">,</span> <span class="n">delete</span> <span class="o">=</span> <span class="n">previous</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">current</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
-</span><span class='line'>            <span class="n">change</span> <span class="o">=</span> <span class="n">previous</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-</span><span class='line'>                <span class="n">change</span> <span class="o">=</span> <span class="n">change</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>            <span class="n">current</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">current</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">filter_words</span><span class="p">(</span><span class="n">sourList</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">dest</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sourList</span><span class="p">)</span><span class="o">!=</span><span class="s">&quot;&lt;type &#39;set&#39;&gt;&quot;</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">dest</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sourList</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">dest</span><span class="o">=</span><span class="n">sourList</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">filterList</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">filterList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">dest</span>
-</span><span class='line'>    <span class="n">dest</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dest</span> <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">filterList</span><span class="p">)</span> <span class="p">]</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">dest</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">getContextByNode</span><span class="p">(</span><span class="n">htmlSoup</span><span class="p">,</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">levenshtein</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">titleKeyWordList</span><span class="p">)</span><span class="o">&gt;=</span><span class="nb">len</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">return</span> <span class="bp">None</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">sentenceList</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">getHTMLContext</span><span class="p">(</span><span class="n">html</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
-</span><span class='line'>    <span class="s">&quot;获取html的正文内容，不包含tag标签&quot;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">html</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">html</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="n">encodeHtml</span><span class="o">=</span><span class="n">encodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">htmlSoup</span><span class="o">=</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">encodeHtml</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#去除script和style内容</span>
-</span><span class='line'>    <span class="k">if</span>  <span class="n">htmlSoup</span><span class="o">.</span><span class="n">script</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">htmlSoup</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">style</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">htmlSoup</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="n">htmlSoup</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">title</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#提取标题</span>
-</span><span class='line'>    <span class="n">title</span><span class="o">=</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">string</span>
-</span><span class='line'>    <span class="c">#print(title)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">title</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">titleKeyWordList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span><span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span><span class="n">titleKeyWordList</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#print(titleKeyWordList)</span>
-</span><span class='line'>    <span class="c"># 实词是否为空</span>
-</span><span class='line'>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">markWindowsList</span><span class="o">=</span><span class="n">getMarkWindowsList</span><span class="p">(</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#print(type(markWindowsList))</span>
-</span><span class='line'>    <span class="c">#print(markWindowsList)</span>
-</span><span class='line'>    <span class="n">markWindowsList</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">markWindowsList</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="n">cmp_to_key</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">posi</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">posi</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#print(titleKeyWordList)</span>
-</span><span class='line'>    <span class="n">context</span><span class="o">=</span><span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">markWindowsList</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">innerText</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">innerText</span>
-</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">innerText</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">kl</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">kl</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">continue</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">l</span><span class="o">=</span><span class="n">levenshtein</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">markWindowKeyWordList</span><span class="p">)</span>
-</span><span class='line'>        <span class="c">#print(markWindowsList,l)</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">l</span><span class="o">&lt;</span><span class="n">kl</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">context</span><span class="o">+=</span><span class="n">innerText</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">+</span><span class="s">&#39;.</span><span class="se">\n</span><span class="s">&#39;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span>  <span class="n">decodeSpecialTag</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">x</span><span class="o">-</span><span class="n">y</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">cmp_to_key</span><span class="p">(</span><span class="n">mycmp</span><span class="p">):</span>
-</span><span class='line'>    <span class="s">&#39;Convert a cmp= function into a key= function&#39;</span>
-</span><span class='line'>    <span class="k">class</span> <span class="nc">K</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">K</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">repl</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">contents</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">contents</span> <span class="o">==</span> <span class="s">&#39;&lt;/p&gt;&#39;</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s">&#39;[[p]]&#39;</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">contents</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">encodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
-</span><span class='line'>    <span class="s">&quot;这里的规则有助于正文内容的识别,还可以保留部分标签，如下面就保留了P，br等标签&quot;</span>
-</span><span class='line'>    <span class="n">comment</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;!--[.\s\S]*?--&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">comment</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#h tag</span>
-</span><span class='line'>    <span class="n">hPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?[hH][1-6][^&lt;&gt;]*&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[h4]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">hAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/[hH][1-6][^&lt;&gt;]*&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/h4]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">br</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[ \t]*?br[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">br</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[br /]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">hr</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[ \t]*?hr[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hr</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[hr /]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">strongPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?strong[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">strongPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[strong]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">strongAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/strong[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">strongAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/strong]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#    labelPre=re.compile(r&quot;&lt;[\t ]*?label[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
-</span><span class='line'><span class="c">#    html=labelPre.sub(&#39;[[label]]&#39;, html)</span>
-</span><span class='line'><span class="c">#    labelAfter=re.compile(r&quot;&lt;[\t ]*?/label[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
-</span><span class='line'><span class="c">#    html=labelAfter.sub(&#39;[[/label]]&#39;, html)</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#    spanPre=re.compile(r&quot;&lt;[\t ]*?span[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
-</span><span class='line'><span class="c">#    html=spanPre.sub(&#39;[[span]]&#39;, html)</span>
-</span><span class='line'><span class="c">#    spanAfter=re.compile(r&quot;&lt;[\t ]*?/span[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
-</span><span class='line'><span class="c">#    html=spanAfter.sub(&#39;[[/span]]&#39;, html)</span>
-</span><span class='line'>    <span class="n">pPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/p[^&lt;&gt;]*&gt;[^&lt;&gt;]*&lt;[\t ]*?p[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">pPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/p]][[p]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">pAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?p[^&lt;&gt;]*&gt;(?=[^(\[\[)]*\[\[/p\]\]\[\[p\]\])&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">pAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[p]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#    pAfter=re.compile(r&quot;(\[\[p\]\].*&gt;)([^&lt;&gt;]*)(&lt;/p&gt;)&quot;, re.IGNORECASE)</span>
-</span><span class='line'><span class="c">#    html=pAfter.sub(repl,html)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">aPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?a[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">aPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">aAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/a[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">aAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#    chardet.detect(html)[&#39;encoding&#39;]</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">js</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;(script)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">js</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">css</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;(style)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">css</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">html</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">decodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[strong]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;strong&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/strong]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/strong&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[hr /]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;hr /&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[br /]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;br /&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[h4]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;h4&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/h4]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/h4&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[label]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;label&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/label]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/label&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[span]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;span&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/span]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/span&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[p]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;p&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/p]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/p&gt;&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">html</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">getMarkWindowsList</span><span class="p">(</span><span class="n">bodySoup</span><span class="p">):</span>
-</span><span class='line'>    <span class="c">#过滤a标签</span>
-</span><span class='line'>    <span class="n">nodeQueue</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>    <span class="n">innerTextNodeList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>    <span class="n">nodeQueue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bodySoup</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeQueue</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">currNode</span><span class="o">=</span><span class="n">nodeQueue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">del</span> <span class="n">nodeQueue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">childNode</span>  <span class="ow">in</span> <span class="n">currNode</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">string</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">innerText</span><span class="o">=</span><span class="n">childNode</span><span class="o">.</span><span class="n">string</span>
-</span><span class='line'>                <span class="n">innerText</span><span class="o">=</span><span class="n">innerText</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">tmp</span><span class="o">=</span><span class="n">innerText</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;  &#39;</span><span class="p">,</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;  &#39;</span><span class="p">,</span><span class="s">&#39; &#39;</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">tmpInt</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">))</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">tmpInt</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span><span class="k">continue</span>
-</span><span class='line'>                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">))</span><span class="o">&lt;=</span><span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">innerText</span><span class="p">)</span><span class="o">-</span><span class="n">tmpInt</span><span class="o">&gt;</span><span class="n">tmpInt</span><span class="p">:</span><span class="k">continue</span>
-</span><span class='line'>                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span>  <span class="ow">and</span> <span class="n">innerText</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;©&quot;</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">innerText</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;&amp;copy;&quot;</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span> <span class="p">:</span>
-</span><span class='line'>                    <span class="n">dn</span><span class="o">=</span><span class="n">domNode</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span><span class="n">childNode</span><span class="p">,</span><span class="n">innerText</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>                    <span class="n">innerTextNodeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dn</span><span class="p">)</span>
-</span><span class='line'>                    <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'><span class="c">#                    print &quot;i&quot;,</span>
-</span><span class='line'><span class="c">#                    print i,</span>
-</span><span class='line'><span class="c">#                    print &quot;=&quot;,</span>
-</span><span class='line'><span class="c">#                    print childNode</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="c">#这里的规则可能有助于垃圾信息的排除</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&#39;style&#39;</span><span class="p">:</span><span class="k">continue</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&#39;script&#39;</span><span class="p">:</span><span class="k">continue</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;a&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">2</span><span class="p">:</span><span class="k">continue</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span>   <span class="ow">and</span>  <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;span&quot;</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;li&quot;</span> <span class="p">)</span><span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">:</span>
-</span><span class='line'>                    <span class="k">continue</span>
-</span><span class='line'>                <span class="n">nodeQueue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">childNode</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">innerTextNodeList</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#soup=BeautifulSoup(html)</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
-</span><span class='line'>    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
-</span><span class='line'>    <span class="s">&#39;User-Agent&#39;</span><span class="p">:</span><span class="s">&#39;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">c</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://www.xfocus.net/articles/200808/984.html&#39;</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">content</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;gbk&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#content=c.text</span>
-</span><span class='line'>    <span class="c"># #print(content)</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">getHTMLContext</span><span class="p">(</span><span class="n">content</span><span class="p">,[</span><span class="s">&#39;&#39;</span><span class="p">]))</span>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">test</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>效果测试<a id="sec-3" name="sec-3"></a></h1>
-
-<p><img src="https://edmondfrank.github.io/images/webcrawl.png"></p>
 ]]></content>
   </entry>
   
