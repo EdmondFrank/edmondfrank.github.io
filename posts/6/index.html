@@ -9,32 +9,8 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="JavaScript学习笔记2 一.流程控制 一般选择-if 结构 1
-2
-3
-4
-5
-6
-7
-if(表达式1){
-执行1
-} else if(表达式2) {
-执行2
-} else {
-执行3
-} 多重选择-switch 结构 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13 &hellip;">
+  <meta name="description" content="JavaScript DOM对象学习笔记 节点属性 在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性: (1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text. 1.元素节点的nodeName与标签名相同
+2. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -89,6 +65,197 @@ if(表达式1){
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-27T16:23:25+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript DOM对象学习笔记</h1>
+
+<h2>节点属性</h2>
+
+<p>在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性:</p>
+
+<p>(1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text.</p>
+
+<blockquote><p>1.元素节点的nodeName与标签名相同<br>
+2.属性节点的nodeName是属性的名称<br>
+3.文本节点的nodeName永远是#text<br>
+4.文档节点的nodeName永远是#document<br></p></blockquote>
+
+<p><strong>(注:nodeName,是只读的)</strong></p>
+
+<p>(2) noType:节点类型 => 返回值:</p>
+
+<blockquote><p>返回值为<br>
+1,元素节点;<br>
+2,属性节点;<br>
+3,文本节点;<br>
+8,注释;<br>
+9.文档;<br></p></blockquote>
+
+<p><strong>(注:nodeType,也是只读的)</strong></p>
+
+<p>(3) nodeValue:节点的值,返回一个字符串,表示这个节点的值.元素节点返回null,属性节点返回属性值,文本节点返回文本.</p>
+
+<blockquote><p>1.元素节点的nodeValue是undefined或null<br>
+2.文本节点的nodeValue是文本自身<br>
+3.属性节点的nodeValue是属性的值<br></p></blockquote>
+
+<p><strong>(nodeValue除了对元素节点不能写外,可读可写,但一般只用于设置文本节点的值)</strong></p>
+
+<h2>元素内容</h2>
+
+<p>我们有两种方法替换元素的内容,一个是innerHTML,另一个是innerText</p>
+
+<ul>
+<li>innerHTML属性用于获取或替换元素的内容.</li>
+<li>innerText属性用于获取或替换元素的文本内容，只有文本内容，没有其它HTML标签.</li>
+</ul>
+
+
+<h3>使用语法</h3>
+
+<blockquote><p>Object.innerHTML
+Object.innerText</p></blockquote>
+
+<p><strong>(Object 是获取的元素对象,如通过document.getElementById(&ldquo;ID&rdquo;)获取的元素)</strong></p>
+
+<p>innerHTML 和 innerText 都是既可读又可写的,他们既可以直接输出值或赋值给变量.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">alert</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">)</span><span class="err">或</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ostr</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>元素样式</h2>
+
+<h3>1.style的使用语法:</h3>
+
+<blockquote><p>Object.style.property = new style;</p></blockquote>
+
+<p><strong>(property为css样式属性,比如 color,width等等)</strong></p>
+
+<h3>2.className属性可以设置或返回元素的class 属性</h3>
+
+<blockquote><p>Object.className = classname;</p></blockquote>
+
+<p><strong>(className为元素的class属性)</strong></p>
+
+<h2>遍历节点树</h2>
+
+<h3>父子节点</h3>
+
+<p>可以使用childNodes对象访问选定元素节点下的所有子节点的列表,返回的值可以看作是一个数组,他具有length属性。如果选定的节点没有子节点,则该属性返回不包含节点的 NodeList.</p>
+
+<blockquote><p>elementNode.childNodes</p></blockquote>
+
+<p>有子节点,相应的,就有父亲节点.
+parentNode可获取指定节点的父节点</p>
+
+<blockquote><p>elementNode.parentNode</p></blockquote>
+
+<p><strong>(注意:父节点只能有一个)</strong></p>
+
+<h3>兄弟节点</h3>
+
+<p>在 DOM 树形结构中,除了父子关系属性外,还有同辈关系属性.
+同辈关系中,也分为两种,一种是向前的同辈关系 previousSibling,另一种是向后的同辈关系nextSibling
+<strong>(注:两个属性获取的是节点,所以我们可以先判断节点nodeType是否为1,如不为元素节点,跳过)</strong></p>
+
+<h2>创建节点</h2>
+
+<h3>创建元素</h3>
+
+<blockquote><p>document.createElement(tagName);</p>
+
+<p>参数说明：
+tagName：字符串值,这个字符串用来指明创建元素的类型.</p></blockquote>
+
+<p><strong>(注意:createElement()方法只是创建元素,并不会自动出现在文档中,如果想显示在浏览器中,还需要与appendChild() 或 insertBefore()方法联合使用)</strong></p>
+
+<h3>创建文本节点</h3>
+
+<blockquote><p>document.createTextNode(str);</p>
+
+<p>str,为字符串值,可规定此节点文本.</p></blockquote>
+
+<h2>添加与删除节点</h2>
+
+<blockquote><p>nodeObject.appendChild(newnode);</p></blockquote>
+
+<p>nodeObject:父节点;newnode指定追加的节点.</p>
+
+<blockquote><p>nodeObject.removeChild(node);</p></blockquote>
+
+<p>参数意义同上.</p>
+
+<p><strong>(注:把删除的子节点赋值给rm,这个子节点不在 DOM 树中,但是还存在内存中,如果要完全删除对象,需给rm赋null值)</strong></p>
+
+<h2>指定位置插入字节点</h2>
+
+<blockquote><p>fnode.insertBefore(newnode,node);</p></blockquote>
+
+<p>参数说明:</p>
+
+<blockquote><p>newnode:必需,表示需要插入的新节点<br>
+node:可选,在其之前插入新节点的子节点,默认为末尾插入<br>
+返回值:插入的节点<br></p></blockquote>
+
+<h2>子节点的替换</h2>
+
+<blockquote><p>fnode.replaceChild(newnode,oldnode);</p></blockquote>
+
+<p>参数说明:</p>
+
+<blockquote><p>newnode:用于替换的新节点<br>
+oldnode:被newnode替换的节点<br>
+返回值:被替换的节点<br></p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a>
+      <time datetime="2016-06-27T16:23:25+08:00" pubdate><span class='month'>Jun</span> <span class='day'>27</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1353,253 +1520,6 @@ apache2.conf的路径:</p>
       <time datetime="2016-06-12T16:37:33+08:00" pubdate><span class='month'>Jun</span> <span class='day'>12</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-11T20:16:12+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>标准化configure文件的生成</h1>
-
-<p>作为一个Linux系统下的开发者,都会或多或少地使用make这个命令来编译自己的程序，既然要用到make命令的话，一个简易的Makefile文件是必不可少的。平时大家自己编译时，如果要使用make命令编译的话，应该都是自己手写一个简单实用的Makefile文件。但一般软件需要发布的时候，由于自己手写的Makefile文件，不符合GNU的标准，且没有考虑各种诸多因素，导致程序在编译时也会出现各种问题。
-因此为了解决如何生成符合CNU标准的configure和Makefile文件，我们可以使用Linux中autotools系统的工具来进行自动生成configure脚本来创建Makefile文件。</p>
-
-<p>下面我以一个简单的HelloWorld程序作为例子：</p>
-
-<h2>一、建立项目文件夹</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir /tmp/hello
-</span><span class='line'>$ cd /tmp/hello</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二、编写源文件(博主此处以C++程序为例）</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim hello.cpp
-</span><span class='line'>(此处大家可以自己喜欢的编辑器编写）</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//hello.cpp</span>
-</span><span class='line'><span class="cp">#include&lt;iostream&gt;</span>
-</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>     <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;Hello World!&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'>     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>保存并退出后，当前目录下就有了一个hello.cpp的程序源文件了。</p>
-
-<h2>三、生成初步configure文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">autoscan</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大家用man来查看autoscan这个命令就会知道，这个命令使用扫描当前源代码目录并生成configure.in模板的，这个命令的输出文件是configure.scan,我们只要将它重命名为configure.in再编辑其中的内容即可。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">mv</span> <span class="n">configure</span><span class="p">.</span><span class="n">scan</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
-</span><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注："#&ldquo;在脚本语言或linux的大部分配置文件中代表注释，与C&amp;C++的“//”意义相同</strong>
-现在将configure.in修改下一下内容</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="cp"># -*- Autoconf -*-</span>
-</span><span class='line'><span class="cp"># Process this file with autoconf to produce a configure script.</span>
-</span><span class='line'><span class="n">AC_PREREQ</span><span class="p">([</span><span class="mf">2.63</span><span class="p">])</span>
-</span><span class='line'><span class="n">AC_INIT</span><span class="p">(</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>  <span class="err">#此项代表源代码的路径，</span><span class="mf">1.0</span><span class="err">为版本号（可省略）</span>
-</span><span class='line'><span class="n">AM_INIT_AUTOMAKE</span><span class="p">(</span><span class="n">hello</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="err">#此项为必需项，代表生成软件包的名字和版本号</span>
-</span><span class='line'><span class="cp">#AC_CONFIG_SRCDIR(hello.cpp) #为了简化操作，我们注释掉这两项内容</span>
-</span><span class='line'><span class="cp">#AC_CONFIG_HEADERS([config.h])</span>
-</span><span class='line'><span class="cp"># Checks for programs.</span>
-</span><span class='line'><span class="n">AC_PROG_CXX</span>   <span class="err">#此项代表使用</span><span class="n">C</span><span class="o">++</span><span class="err">编译器</span>
-</span><span class='line'><span class="cp"># Checks for libraries.</span>
-</span><span class='line'><span class="cp"># Checks for header files.</span>
-</span><span class='line'><span class="cp"># Checks for typedefs, structures, and compiler characteristics.</span>
-</span><span class='line'><span class="cp"># Checks for library functions.</span>
-</span><span class='line'><span class="n">AC_OUTPUT</span><span class="p">(</span><span class="n">Makefile</span><span class="p">)</span> <span class="err">#此项填写我们要输出的</span><span class="n">Makefile</span><span class="err">的名字</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>保存退出后。
-我们再来执行aclocal和autoconf这两个命令，来分别生成aclocal.m4和configure文件</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">aclocal</span> <span class="o">&amp;&amp;</span> <span class="n">autoconf</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中生成的两个文件</p>
-
-<p><strong>aclocal.m4</strong>: 是由aclocal这个perl脚本程序自动生成的，而aclocal的定义是："aclocal - create aclocal.m4 by scanning configure.ac"</p>
-
-<p><strong>configure</strong>:则是由autoconf根据GNU m4宏处理器处理aclocal.m4文件，生成的一个脚本。</p>
-
-<p><strong>所以，以上命令的顺序不可颠倒。</strong></p>
-
-<h2>四、手建一个Makefile.am文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">Makefile</span><span class="p">.</span><span class="n">am</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Makefile.am文件中主要包括三个项：</p>
-
-<h3>1.AUTOMAKE_OPTIONS：</h3>
-
-<p>这个是automake 的选项。在执行automake 时，它会检查目录下是否存在标准GNU 软件包中应具备的各种文件，例如AUTHORS 、ChangeLog 、NEWS 等文件。我们将其设置成foreign 时，automake 会改用一般软件包的标准来检查。除此之外，可选的条目还有如下所示：</p>
-
-<ul>
-<li>&ndash;cygnus
-     assume program is part of Cygnus-style tree</li>
-<li>&ndash;foreign
-        set strictness to foreign</li>
-<li>&ndash;gnits
-           set strictness to gnits</li>
-<li>&ndash;gnu
-           set strictness to gnu</li>
-</ul>
-
-
-<h3>2.bin_PROGRAMS:</h3>
-
-<p>这个是指定我们所要产生的可执行文件的文件名。如果你要产生多个可执行文件，那么在各个名字间用空格隔开。</p>
-
-<h3>3.hello_SOURCES:</h3>
-
-<p>这个是指定产生“hello” 时所需要的源代码。如果它用到了多个源文件，那么请使用空格符号将它们隔开。</p>
-
-<p><em>eg</em>:
-hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//编辑Makefile.am文件内容如下：</span>
-</span><span class='line'><span class="n">AUTOMAKE_OPTIONS</span><span class="o">=</span><span class="n">foreign</span>
-</span><span class='line'><span class="n">bin_PROGRAMS</span><span class="o">=</span><span class="n">hello</span>
-</span><span class='line'><span class="n">hello_SOURCES</span><span class="o">=</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>五、执行automake</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">automake</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">missing</span>
-</span><span class='line'><span class="err">（或</span> <span class="n">automake</span> <span class="o">-</span><span class="n">a</span><span class="err">，命令意义相同）</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中以上的命令选项</p>
-
-<ul>
-<li>-a, &ndash;add-missing
-        add missing standard files to package</li>
-</ul>
-
-
-<p>代表自动添加软件包所需要的标准文件。</p>
-
-<h2>六、执行configure脚本来生成我们的目标Makefile文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至此我们想要的标准的configure和Makefile文件都已经生成了。</p>
-
-<p>最后只要执行make命令就可以编译我们的hello程序了</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">make</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">hello</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出如下:</p>
-
-<blockquote><p>Hello World!</p></blockquote>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a>
-      <time datetime="2016-06-11T20:16:12+08:00" pubdate><span class='month'>Jun</span> <span class='day'>11</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
       
       </footer>
     </article>
