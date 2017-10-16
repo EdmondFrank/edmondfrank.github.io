@@ -9,13 +9,9 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Table of Contents 1. 背景
-2. PCA算法是如何实现的？
-3. 基本步骤
-4. 什么是协方差矩阵？
-5. 算法实现
-6. 测试数据
-7. Demo 机器学习算法 PCA（主成分分析）python实现 背景 PCA（Principal Component Analysis）, &hellip;">
+  <meta name="description" content="Table of Contents 1. 前言
+2. 基本采样方法的简介 2.1. 单纯随机抽样（simple random sampling）
+2.2. 系统抽样（systematic sampling） 3. 扩展 3.1. 蓄水池抽样算法 前言 在阅读机器学习以及神经网络的相关资料中， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +66,248 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/">基本抽样和蓄水池抽样</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-05-12T19:33:10+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 前言</a></li>
+<li><a href="#sec-2">2. 基本采样方法的简介</a>
+<ul>
+<li><a href="#sec-2-1">2.1. 单纯随机抽样（simple random sampling）</a></li>
+<li><a href="#sec-2-2">2.2. 系统抽样（systematic sampling）</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 扩展</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 蓄水池抽样算法</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<h1>前言<a id="sec-1" name="sec-1"></a></h1>
+
+<p>在阅读机器学习以及神经网络的相关资料中，我们总会时不时看见统计采样的身影。
+看似简单的统计采样，在各种学习算法中发挥的强大的作用，一份好的样本，不但可以大幅度降低算法的计算量，
+还能较为准确的代表整个样本空间，对算法的效率优化和整体的模型设计都有着非常大的意义。</p>
+
+<h1>基本采样方法的简介<a id="sec-2" name="sec-2"></a></h1>
+
+<h2>单纯随机抽样（simple random sampling）<a id="sec-2-1" name="sec-2-1"></a></h2>
+
+<p><strong>主要思想</strong> ：首先将整体编号，然后采用随机数的方法进行不放回性地抽取，并将所取得的数据组成新的样本。</p>
+
+<ul>
+<li><em>优点</em> :操作简单</li>
+<li><em>缺点</em> :数据量大时难以编号</li>
+</ul>
+
+
+<p><strong>代码实现</strong> ：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">dataMat</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">dataMat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">dataMat</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">simple_sampling</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">samples</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">samples</span>
+</span><span class='line'>    <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&#39;sample larger than population&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>系统抽样（systematic sampling）<a id="sec-2-2" name="sec-2-2"></a></h2>
+
+<p><strong>主要思想</strong> ：先将总体分成n个部分，然后依次用相等间隔，从每一个部分中抽取出一个数据项组成观察样本。</p>
+
+<ul>
+<li><em>优点</em> :易于理解，样本涵盖范围广，有利于避免边缘化。</li>
+<li><em>缺点</em> :容易受总体的增减趋势影响。</li>
+</ul>
+
+
+<p><strong>代码实现</strong> ：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">dataMat</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">dataMat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">dataMat</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">systematic_sampling</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataMat</span><span class="p">)</span><span class="o">/</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">dataMat</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">k</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">)]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">samples</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>扩展<a id="sec-3" name="sec-3"></a></h1>
+
+<h2>蓄水池抽样算法<a id="sec-3-1" name="sec-3-1"></a></h2>
+
+<p>蓄水池抽样是个很有趣的问题，这个问题的来源是关于等概率抽样的一种思考，
+问题是，如何能在不知道总体对象数量（或者数量巨大）的情况下抽取k个对象，
+使得每个对象被抽取到的概率相同。</p>
+
+<p><strong>原理</strong> ：考虑最终一定要抽取到k个对象，所以先任意抽出k个，
+然后对剩下的对象分别以某种概率概率，使得最终每个对象被抽到的概率相同。</p>
+
+<p><strong>算法步骤</strong> ：</p>
+
+<ul>
+<li>输入：长度为N的数组L（N未知或者很大）；输出：被等可能抽出的长度为k的数组l</li>
+<li>对输入L取前k个数组成的数组作为蓄水池</li>
+<li>对于L的第i(i=k+1,k+2,…,N)个数，任取r为0~i-1之间的整数，若r>k-1,则不进行替换，若r&lt;=k-1,则用第i个数去替换蓄水池中第r个数</li>
+<li>遍历一遍L，取到的l中的每个元素都是以概率k/n等可能取到的</li>
+</ul>
+
+
+<p><strong>代码实现</strong> ：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">pool</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">L</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span><span class="p">:]):</span>
+</span><span class='line'>        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">r</span><span class="o">&lt;=</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">arr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">arr</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">l1</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">l2</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">q</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">l1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">l2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">l1</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">l1</span><span class="p">,</span><span class="n">l2</span>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">10000000</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span><span class="c">#生成等量的0，1，2</span>
+</span><span class='line'>    <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="mi">300000</span><span class="c">#设置要抽取的样本的数量，一般远小于总体数量</span>
+</span><span class='line'>    <span class="n">p</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">l1</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;value=</span><span class="si">%d</span><span class="s">&#39;</span><span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="n">labels</span><span class="o">=</span><span class="n">l1</span><span class="p">,</span><span class="n">labeldistance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">autopct</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%1.2f%%</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Reservoir sampling&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/">基本抽样和蓄水池抽样</a>
+      <time datetime="2017-05-12T19:33:10+08:00" pubdate><span class='month'>May</span> <span class='day'>12</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2608,170 +2846,6 @@ Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
       <time datetime="2016-12-22T20:00:09+08:00" pubdate><span class='month'>Dec</span> <span class='day'>22</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/">Xlib编程之-创建全屏透明窗口</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-10-21T20:11:20+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Xlib编程之-创建全屏透明窗口</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="c1">//source file : win.c</span>
-</span><span class='line'> <span class="cp">#include &lt;X11/Xlib.h&gt;</span>
-</span><span class='line'> <span class="cp">#include &lt;X11/Xutil.h&gt;</span>
-</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
-</span><span class='line'> <span class="p">{</span>
-</span><span class='line'>    <span class="n">Display</span><span class="o">*</span> <span class="n">display</span> <span class="o">=</span> <span class="n">XOpenDisplay</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">XVisualInfo</span> <span class="n">vinfo</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">XMatchVisualInfo</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultScreen</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">32</span><span class="p">,</span> <span class="n">TrueColor</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vinfo</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">XSetWindowAttributes</span> <span class="n">attr</span><span class="p">;</span><span class="c1">//窗口属性设置</span>
-</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">XCreateColormap</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span> <span class="n">AllocNone</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">border_pixel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">attr</span><span class="p">.</span><span class="n">background_pixel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//取输出设备的长宽像素</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">screen</span> <span class="o">=</span> <span class="n">DefaultScreen</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="n">DisplayHeight</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">screen</span><span class="p">);</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="n">DisplayWidth</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">screen</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//开始创建窗口</span>
-</span><span class='line'>    <span class="n">Window</span> <span class="n">win</span> <span class="o">=</span> <span class="n">XCreateWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">DefaultRootWindow</span><span class="p">(</span><span class="n">display</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">InputOutput</span><span class="p">,</span> <span class="n">vinfo</span><span class="p">.</span><span class="n">visual</span><span class="p">,</span>  <span class="n">CWColormap</span> <span class="o">|</span> <span class="n">CWBorderPixel</span> <span class="o">|</span> <span class="n">CWBackPixel</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">XSelectInput</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">,</span> <span class="n">StructureNotifyMask</span><span class="p">);</span>
-</span><span class='line'>    <span class="c1">//GC gc = XCreateGC(display, win, 0, 0);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/*</span>
-</span><span class='line'><span class="cm">    Atom wm_delete_window = XInternAtom(display, &quot;WM_DELETE_WINDOW&quot;, 0);</span>
-</span><span class='line'><span class="cm">    XSetWMProtocols(display, win, &amp;wm_delete_window, 1);</span>
-</span><span class='line'><span class="cm">    */</span>
-</span><span class='line'>    <span class="n">XMapWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">XMoveWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">win</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">XFlush</span><span class="p">(</span><span class="n">display</span><span class="p">);</span><span class="c1">//刷新输出设备</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">keep_running</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">XEvent</span> <span class="n">event</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//窗口事件监听尝试</span>
-</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">keep_running</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">XNextEvent</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">ClientMessage</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">message_type</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="s">&quot;WM_PROTOCOLS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">Atom</span><span class="p">)</span><span class="n">event</span><span class="p">.</span><span class="n">xclient</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">XInternAtom</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="s">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-</span><span class='line'>                    <span class="n">keep_running</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">default</span><span class="o">:</span>
-</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//结束销毁</span>
-</span><span class='line'>    <span class="n">XDestroyWindow</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">win</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">XCloseDisplay</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>编译</strong></p>
-
-<blockquote><p>gcc -o win ./win.c -L/usr/lib -lX11</p></blockquote>
-
-<p><strong>That is All</strong></p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/">Xlib编程之-创建全屏透明窗口</a>
-      <time datetime="2016-10-21T20:11:20+08:00" pubdate><span class='month'>Oct</span> <span class='day'>21</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/lian-xi-dai-ma/'>练习代码</a></span>
       
       </footer>
     </article>

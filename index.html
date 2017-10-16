@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿SVM(Support Vector Machines)-支持向量机 曾经很多人都认为SVM是现在的最好的分类器，即：在不加以修改的前提之下，就能够在数据上进行训练并能够对训练集之外的数据点做出很好的分类决策。 基于最大间隔分割数据 支持向量机： 优点：泛化错误率低，计算开销不大，结果容易解释 &hellip;">
+  <meta name="description" content="﻿Python在Spark上的机器学习(一)之环境搭建 前面已经介绍了不少机器学习的算法了，那么机器学习又该如何结合大数据一起使用么？ 常言道：工欲善其事，必先利其器 既然来结合大数据与机器学习，我们就不得不提Spark了。 首先，Apache Spark &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,531 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-16T14:07:29+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习一之环境搭建">Python在Spark上的机器学习(一)之环境搭建</h1></p>
+
+<p>前面已经介绍了不少机器学习的算法了，那么机器学习又该如何结合大数据一起使用么？</p>
+
+
+
+
+<h2 id="常言道工欲善其事必先利其器">常言道：工欲善其事，必先利其器</h2>
+
+
+
+
+<p>既然来结合大数据与机器学习，我们就不得不提Spark了。</p>
+
+
+
+
+<p>首先，<a href="https://spark.apache.org/docs/latest/index.html">Apache Spark</a> 是专为大规模数据处理而设计的快速通用的计算引擎。Spark是UC Berkeley AMP lab (加州大学伯克利分校的AMP实验室)所开源的类Hadoop MapReduce的通用并行框架，Spark，拥有Hadoop MapReduce所具有的优点；但不同于MapReduce的是Job中间输出结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的MapReduce的算法。</p>
+
+
+
+
+<p>Spark 是一种与 Hadoop 相似的开源集群计算环境，但是两者之间还存在一些不同之处，这些有用的不同之处使 Spark 在某些工作负载方面表现得更加优越，换句话说，Spark 启用了内存分布数据集，除了能够提供交互式查询外，它还可以优化迭代工作负载。</p>
+
+
+
+
+<p>讲了这么多Spark的优点，那么现在我们就先开始来搭建一个Spark 集群环境吧！</p>
+
+
+
+
+<h3 id="安装基础环境">安装基础环境</h3>
+
+
+
+
+<p><strong>1. Java1.8环境搭建</strong>（下载JDK1.8的）：</p>
+
+
+
+
+<blockquote>
+  <p>下载页面： <br>
+  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
+</blockquote>
+
+
+
+
+<p>安装过程可以参考<a href="http://www.linuxidc.com/Linux/2016-05/131348.htm">Linux公社给出的教程</a></p>
+
+
+
+
+<p><strong>Ubuntu用户：</strong> <br>
+Ubuntu用户可以通过添加PPA源再通过Apt来进行安装</p>
+
+
+
+
+<blockquote>
+  <p><span>$</span> sudo add-apt-repository ppa:webupd8team/java <br>
+  <span>$</span> sudo apt-get update <br>
+  <span>$</span> sudo apt-get install oracle-java8-installer</p>
+</blockquote>
+
+
+
+
+<p><strong>2. Scala环境搭建</strong></p>
+
+
+
+
+<p>下载scala安装包：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">wget -O <span class="hljs-string">"scala-2.12.3.deb"</span> 
+<span class="hljs-label">https:</span>//downloads<span class="hljs-preprocessor">.lightbend</span><span class="hljs-preprocessor">.com</span>/scala/<span class="hljs-number">2.12</span><span class="hljs-number">.3</span>/scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span>
+或者
+wget -O <span class="hljs-string">"scala-2.12.3.rpm"</span> <span class="hljs-string">"https://downloads.lightbend.com/scala/2.12.3/scala-2.12.3.rpm"</span>
+</code></pre>
+
+
+
+
+<p>安装deb/rpm包：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">rpm -ivh scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.rpm</span>
+dpkg -i scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span></code></pre>
+
+
+
+
+<p>增加SCALA_HOME</p>
+
+
+
+
+<blockquote>
+  <p>$ vim /etc/profile</p>
+</blockquote>
+
+
+
+
+<p>增加如下内容;</p>
+
+
+
+
+<blockquote>
+  <p>export SCALA_HOME=/usr/share/scala</p>
+</blockquote>
+
+
+
+
+<p>刷新配置</p>
+
+
+
+
+<blockquote>
+  <p>$ source /etc/profile</p>
+</blockquote>
+
+
+
+
+<h3 id="安装hadoop">安装Hadoop</h3>
+
+
+
+
+<p><strong>1.下载二进制包：</strong> <br>
+wget <a href="http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz">http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz</a></p>
+
+
+
+
+<p><strong>2.解压并移动至相应目录：</strong></p>
+
+
+
+
+<p>我的习惯是将软件放置/opt目录下：</p>
+
+
+
+
+<blockquote>
+  <p>tar -xvf hadoop-2.7.3.tar.gz <br>
+  mv hadoop-2.7.3 /opt</p>
+</blockquote>
+
+
+
+
+<p><strong>3.修改相应的配置文件：</strong></p>
+
+
+
+
+<blockquote>
+  <p><strong>（1）</strong> $ vim /etc/profile</p>
+</blockquote>
+
+
+
+
+<p>增加如下内容：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#hadoop enviroment </span>
+<span class="hljs-keyword">export</span> HADOOP_HOME=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/
+<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$HADOOP_HOME</span>/bin:<span class="hljs-variable">$HADOOP_HOME</span>/sbin:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop
+<span class="hljs-keyword">export</span> YARN_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop</code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（2）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hadoop-env.sh</p>
+</blockquote>
+
+
+
+
+<p>修改JAVA_HOME 如下：</p>
+
+
+
+
+<blockquote>
+  <p>export JAVA_HOME=&lt;你的Java安装目录&gt;</p>
+</blockquote>
+
+
+
+
+<p>-</p>
+
+
+
+
+<blockquote>
+  <p><strong>（3）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/core-site.xml</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>fs.defaultFS<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>hdfs://master:9000<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>io.file.buffer.size<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>131072<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+       <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>hadoop.tmp.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>/opt/hadoop-2.7.3/tmp<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（4）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hdfs-site.xml</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:50090<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.replication<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.name.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/name<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.datanode.data.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/data<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（5）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/mapred-site.xml</p>
+</blockquote>
+
+
+
+
+<p>复制template，生成xml：</p>
+
+
+
+
+<blockquote>
+  <p>cp mapred-site.xml.template mapred-site.xml</p>
+</blockquote>
+
+
+
+
+<p>内容：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+ <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.framework.name<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>yarn<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:10020<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:19888<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<p><strong>（6）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/yarn-site.xml</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-comment">&lt;!-- Site specific YARN configuration properties --&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>mapreduce_shuffle<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+           <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+           <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8032<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.scheduler.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8030<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.resource-tracker.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8031<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.admin.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8033<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.webapp.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8088<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span></code></pre>
+
+
+
+
+<p>至此master节点的hadoop搭建完毕</p>
+
+
+
+
+<p>再启动之前我们需要</p>
+
+
+
+
+<p>格式化一下namenode</p>
+
+
+
+
+<blockquote>
+  <p>$ hadoop namenode -format</p>
+</blockquote>
+
+
+
+
+<h3 id="安装spark">安装Spark</h3>
+
+
+
+
+<p><strong>下载文件：</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs mathematica">wget -<span class="hljs-keyword">O</span> <span class="hljs-string">"spark-2.1.0-bin-hadoop2.7.tgz"</span> <span class="hljs-string">"http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz"</span></code></pre>
+
+
+
+
+<p><strong>解压并移动至相应的文件夹：</strong></p>
+
+
+
+
+<blockquote>
+  <p>tar -xvf spark-2.1.0-bin-hadoop2.7.tgz <br>
+  mv spark-2.1.0-bin-hadoop2.7 /opt</p>
+</blockquote>
+
+
+
+
+<p><strong>修改相应的配置文件：</strong></p>
+
+
+
+
+<blockquote>
+  <p><strong>（1）</strong> <span>$</span> vim /etc/profie</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#Spark enviroment</span>
+<span class="hljs-keyword">export</span> SPARK_HOME=/opt/spark-<span class="hljs-number">2.1</span>.<span class="hljs-number">0</span>-bin-hadoop2.<span class="hljs-number">7</span>/
+<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$SPARK_HOME</span>/bin:<span class="hljs-variable">$PATH</span>"</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（2）</strong> <span>$</span> vim $SPARK_HOME/conf/spark-env.sh</p>
+</blockquote>
+
+
+
+
+<p>-</p>
+
+
+
+
+<blockquote>
+  <p>cp spark-env.sh.template spark-env.sh</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#配置内容如下：</span>
+<span class="hljs-keyword">export</span> SCALA_HOME=/usr/share/scala
+<span class="hljs-keyword">export</span> JAVA_HOME=&lt;你的Java安装目录&gt;
+<span class="hljs-keyword">export</span> SPARK_MASTER_IP=master
+<span class="hljs-keyword">export</span> SPARK_WORKER_MEMORY=<span class="hljs-number">1</span>g
+<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/etc/hadoop</code></pre>
+
+
+
+
+<p>至此，我们大部分环境基本安装完毕！</p>
+
+
+
+
+<h2 id="测试spark">测试Spark</h2>
+
+
+
+
+<p>为了避免麻烦这里我们使用spark-shell以及本地的文件（非hdfs），做一个简单的worcount的测试。</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs livecodeserver">val <span class="hljs-built_in">file</span>=sc.textFile(<span class="hljs-string">"/home/ef/Desktop/Notes/wordcount_test"</span>)
+val rdd = <span class="hljs-built_in">file</span>.flatMap(<span class="hljs-built_in">line</span> =&gt; <span class="hljs-built_in">line</span>.<span class="hljs-built_in">split</span>(<span class="hljs-string">" "</span>)).map(<span class="hljs-built_in">word</span> =&gt; (<span class="hljs-built_in">word</span>,<span class="hljs-number">1</span>)).reduceByKey(_+_)
+rdd.collect()
+rdd.foreach(println)</code></pre>
+
+
+
+
+<p><strong>展示图：</strong> <br>
+<img src="https://i.loli.net/2017/10/10/59dc80d01e9ff.png" alt="spark-shell.png" title=""></p>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>到此，我们在Spark上进行机器学习训练的环境，就搭建完毕了，下章我们再开始讲Spark中的数据结构与Python中的区别，以及结合Pyspark来进行数据处理。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a>
+      <time datetime="2017-10-16T14:07:29+08:00" pubdate><span class='month'>Oct</span> <span class='day'>16</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -4397,319 +4922,6 @@ Mac OS <span class="hljs-special">&amp;</span> MacTeX <span class="hljs-special"
       
       - <a href="/blog/2017/09/03/ru-he-gou-jian-%5B%3F%5D-ge-po-su-bei-xie-si-fen-lei-qi/">如何构建一个朴素贝叶斯分类器</a>
       <time datetime="2017-09-03T13:22:23+08:00" pubdate><span class='month'>Sep</span> <span class='day'>03</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/">Python实现Fisher判别分析</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-08-30T09:06:21+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="python实现fisher-判别分析">Python实现Fisher 判别分析</h1>
-
-
-
-
-<h2 id="fisher原理">Fisher原理</h2>
-
-
-
-
-<p>费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小，而不同类间的投影值所形成的类间距离差尽可能大。 <br>
-<img src="https://i.loli.net/2017/09/01/59a90dda8790e.png" alt="" title=""></p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/09/01/59a9136f647d1.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p>这样如果我们想要同类样列的投影点尽可能接近，可以让同类样列投影点的协方差尽可能小，即<script type="math/tex" id="MathJax-Element-1">w^T \left(\sum _0 w\right)+w^T \left(\sum _1 w\right)</script>尽可能小;而欲使异类样列的投影点尽可能远离，可以让类中心之间的距离尽可能大，即<script type="math/tex" id="MathJax-Element-2">\left[\left[u_0 w^T-u_1 w^T\right]\right]</script>尽可能大。同时结合两者我们可以得到欲最大化的目标： <br>
-<img src="https://i.loli.net/2017/09/01/59a9136f56af9.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p>(本文图片截取自<a href="https://book.douban.com/subject/26708119/">《机器学习》</a>周志华)</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/09/01/59a9136f635c6.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p>有了上面的推理之后我们接下来就以DNA分类为例来实现一下Fisher线性判别。</p>
-
-
-
-
-<h2 id="数据准备">数据准备</h2>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-</span><span class='line'><span class="n">dna_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;dna2&#39;</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">dna_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()))</span>
-</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dna_list</span><span class="p">))</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">generate_feature</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">yield</span> <span class="p">[</span>
-</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;t&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;g&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">generate_feature</span><span class="p">(</span><span class="n">dna_list</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span class='line'><span class="n">y</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span><span class="o">=</span><span class="mi">2</span>
-</span><span class='line'><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">20</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote>
-  <p>输出结果： <br>
-  40 <br>
-  [[ 0.2972973   0.13513514  0.17117117  0.3963964 ] <br>
-   [ 0.35454545  0.5         0.04545455  0.1       ] <br>
-   [ 0.42342342  0.28828829  0.10810811  0.18018018] <br>
-   [ 0.35135135  0.12612613  0.12612613  0.3963964 ] <br>
-   [ 0.27927928  0.18918919  0.16216216  0.36936937] <br>
-   [ 0.21818182  0.56363636  0.14545455  0.07272727] <br>
-   [ 0.20720721  0.15315315  0.20720721  0.43243243] <br>
-   [ 0.3         0.5         0.08181818  0.11818182] <br>
-   [ 0.2         0.56363636  0.17272727  0.06363636] <br>
-   [ 0.27027027  0.06306306  0.21621622  0.45045045] <br>
-   [ 0.32727273  0.5         0.02727273  0.14545455] <br>
-   [ 0.23423423  0.10810811  0.23423423  0.42342342] <br>
-   [ 0.29090909  0.64545455  0.          0.06363636] <br>
-   [ 0.18181818  0.13636364  0.27272727  0.40909091] <br>
-   [ 0.29090909  0.5         0.11818182  0.09090909] <br>
-   [ 0.25454545  0.51818182  0.1         0.12727273] <br>
-   [ 0.27433628  0.36283186  0.19469027  0.16814159] <br>
-   [ 0.27027027  0.15315315  0.16216216  0.41441441]]  <br>
-   [ 1.  2.  1.  1.  1.  2.  1.  2.  2.  1.  2.  1.  2.  1.  2.  2.  2.  1.]</p>
-</blockquote>
-
-
-
-
-<h2 id="fisher算法实现">Fisher算法实现</h2>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">cal_cov_and_avg</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    给定一个类别的数据，计算协方差矩阵和平均向量</span>
-</span><span class='line'><span class="sd">    :param samples: </span>
-</span><span class='line'><span class="sd">    :return: </span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">u1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">cov_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">t</span> <span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="n">u1</span>
-</span><span class='line'>        <span class="n">cov_m</span> <span class="o">+=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">cov_m</span><span class="p">,</span> <span class="n">u1</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">fisher</span><span class="p">(</span><span class="n">c_1</span><span class="p">,</span> <span class="n">c_2</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    fisher算法实现(请参考上面推导出来的公式，那个才是精华部分)</span>
-</span><span class='line'><span class="sd">    :param c_1: </span>
-</span><span class='line'><span class="sd">    :param c_2: </span>
-</span><span class='line'><span class="sd">    :return: </span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">cov_1</span><span class="p">,</span> <span class="n">u1</span> <span class="o">=</span> <span class="n">cal_cov_and_avg</span><span class="p">(</span><span class="n">c_1</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">cov_2</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">cal_cov_and_avg</span><span class="p">(</span><span class="n">c_2</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">s_w</span> <span class="o">=</span> <span class="n">cov_1</span> <span class="o">+</span> <span class="n">cov_2</span>
-</span><span class='line'>    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">s_w</span><span class="p">)</span>  <span class="c"># 奇异值分解</span>
-</span><span class='line'>    <span class="n">s_w_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s</span><span class="p">))),</span> <span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s_w_inv</span><span class="p">,</span> <span class="n">u1</span> <span class="o">-</span> <span class="n">u2</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2 id="判别类型">判别类型</h2>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">judge</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c_1</span><span class="p">,</span> <span class="n">c_2</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    true 属于1</span>
-</span><span class='line'><span class="sd">    false 属于2</span>
-</span><span class='line'><span class="sd">    :param sample:</span>
-</span><span class='line'><span class="sd">    :param w:</span>
-</span><span class='line'><span class="sd">    :param center_1:</span>
-</span><span class='line'><span class="sd">    :param center_2:</span>
-</span><span class='line'><span class="sd">    :return:</span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">u1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">c_1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">u2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">c_2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">center_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">u1</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">center_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">u2</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sample</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="n">center_1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="n">center_2</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">w</span> <span class="o">=</span> <span class="n">fisher</span><span class="p">(</span><span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>  <span class="c"># 调用函数，得到参数w</span>
-</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">judge</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># 判断所属的类别</span>
-</span><span class='line'><span class="c"># evaluate accuracy</span>
-</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">pred</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
-</span><span class='line'><span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">judge</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># 判断所属的类别</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote>
-  <p>输出结果： <br>
-  [ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  2.  2.  2.  2.  2.  2.  2.  2. <br>
-    2.  2.] [1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 1] <br>
-  0.95 <br>
-  [1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1]</p>
-</blockquote>
-
-
-
-
-<p>在这我们可以看出我们的Fisher算法在测试集中的误差率还算理想，误判率仅有5%。但是，我们可以看出其预测分类并不如其他KNN，SVM，等算法的预测效果。</p>
-
-
-
-
-<p>最后，有关Fisher算法的介绍也就到此结束了！</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/">Python实现Fisher判别分析</a>
-      <time datetime="2017-08-30T09:06:21+08:00" pubdate><span class='month'>Aug</span> <span class='day'>30</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
