@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Python实现Fisher 判别分析 Fisher原理 费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小， &hellip;">
+  <meta name="description" content="如何构建一个朴素贝叶斯分类器 概念 朴素贝叶斯分类是一些使用概率论来进行分类的方法中的一种代表。之所以成为为朴素，是因为整个形式化过程只做了最原始，最简单的假设。其具体表现为：在分类过程中，我们都假设为特征条件都是相互独立的，不互相构成影响。而贝叶斯即说明该方法是基于贝叶斯定理的。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,836 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/09/03/ru-he-gou-jian-%5B%3F%5D-ge-po-su-bei-xie-si-fen-lei-qi/">如何构建一个朴素贝叶斯分类器</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-03T13:22:23+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="如何构建一个朴素贝叶斯分类器">如何构建一个朴素贝叶斯分类器</h1>
+
+
+
+
+<h3 id="概念">概念</h3>
+
+
+
+
+<p><strong>朴素贝叶斯分类</strong>是一些使用概率论来进行分类的方法中的一种代表。之所以成为为<strong>朴素</strong>，是因为整个形式化过程只做了最原始，最简单的假设。其具体表现为：在分类过程中，我们都假设为特征条件都是<strong>相互独立</strong>的，不互相构成影响。而贝叶斯即说明该方法是基于贝叶斯定理的。</p>
+
+
+
+
+<p>朴素贝叶斯是贝叶斯决策理论的一部分，对比其他分类方法而言，其<strong>优点</strong>有：在数据较少的情况下仍然有效，并且可以处理多类别的问题，而不仅仅是二分类。<strong>但</strong>也存在对输入数据的准备方式较为敏感的缺点。</p>
+
+
+
+
+<h3 id="目前在各方面的应用">目前在各方面的应用</h3>
+
+
+
+
+<ol>
+<li>垃圾邮件分类，即著名的贝叶斯过滤器</li>
+<li>文本自动归类</li>
+<li>文本情感的分析，话题分析。</li>
+</ol>
+
+
+
+
+<h3 id="核心思想">核心思想</h3>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/02/59aa6f0d7afce.png" alt="beyas.png" title=""></p>
+
+
+
+
+<p>现在假设我们有一张如上所示的两类数据的统计参数。 <br>
+我们现在用p1(x,y)来表示数据点(x,y)属于类别X（图中的蓝点）的概率，用p2(x,y)表示数据点属于类别Y（图中的黄点）的概率。那么对于一个新的数据点(x,y)，我们可以用以下的规则来判断它的类别：</p>
+
+
+
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-24">If p1(x,y) > p2(x,y) then (x,y) -> X</script></li>
+<li><script type="math/tex" id="MathJax-Element-25">If p2(x,y) > p1(x,y) then (x,y) -> Y</script></li>
+</ul>
+
+
+
+
+<p>也就是说，我们更倾向于选择高概率所对应的类别。这就是<strong>贝叶斯决策理论</strong>的核心思想。用一句话总结即：选择具有最高概率的决策。</p>
+
+
+
+
+<h3 id="使用条件概率进行分类">使用条件概率进行分类</h3>
+
+
+
+
+<p>从上面的推理我们得到两个分类准则：</p>
+
+
+
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-61">If p1(x,y) > p2(x,y) then (x,y) -> X</script></li>
+<li><script type="math/tex" id="MathJax-Element-62">If p2(x,y) > p1(x,y) then (x,y) -> Y</script></li>
+</ul>
+
+
+
+
+<p>但是，这两个准则只是为了简化描述整个分类问题，而真正来说，在使用贝叶斯方法进行分类时，我们需要计算和比较的应该是 p(X|x,y) 和 p(Y|x,y) ，它们所代表的意义是：在给定某个由（x，y）表示的数据点之后，它来自X类别的概率和它来自Y类别的概率分别是多少？知道这点之后，我们来重新定义我们的分类准则：</p>
+
+
+
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-63">If P(X|x,y) > P(Y|x,y) then (x,y) -> X</script></li>
+<li><script type="math/tex" id="MathJax-Element-64">If P(X|x,y) < P(Y|x,y) then (x,y) -> Y</script></li>
+</ul>
+
+
+
+
+<p>然后，我们可以再通过贝叶斯公式的转换把未知的概率用已知的概率计算出来。</p>
+
+
+
+
+<p><strong>使用实例：垃圾邮件判别</strong> <br>
+首先，我们假设有以下的统计数据：</p>
+
+
+
+
+<ul>
+<li>在74封电子邮件中，有30封为垃圾邮件。</li>
+<li>在以上的74封电子邮件中，有51封邮件包含“sex”一词。</li>
+<li>其中，20封包含了“sex”一词的邮件被认为是垃圾邮件。</li>
+</ul>
+
+
+
+
+<p>知道了以上这些简单的前提条件之后，我们可以尝试通过贝叶斯方法来求解我们下一封收到包含“sex”一词的邮件是垃圾邮件的概率是多少？</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-65">P (\text{spam}|\text{sex})=\frac{P(spam) * P  (\text{sex}|\text{spam})}{P (\text{sex})}=\frac {(20\div30)* (30\div74)} {51\div74} =\frac{20}{51}=0.39</script></p>
+
+
+
+
+<p>其中，公式中的<strong>spam</strong>代表垃圾邮件的意思（1937年7月5日，美国罐头肉制造商Jay Hormel发布以其名字命名的「Hormel Spiced Ham（荷美尔香料火腿）」，后来通过命名比赛改名为 SPAM(Spiced Pork and Ham)，有添加香料（Spices）的猪肉火腿罐头。至于为何 SPAM演变成垃圾邮件呢？有一说法是源于一部英国喜剧团（Monty Python）曾在一出讽刺剧「spam-loving vikings（爱吃肉罐头的维京人），剧中有对夫妻去餐厅用餐，妻子不想吃SPAM罐头，可是在餐厅里有一大群人，高声地唱讼赞美「SPAM」称颂肉罐头的美味多达120次，让其他的用餐客人无可奈何。从此 SPAM就成为「重复、毫无益处、喧宾夺主、令人厌烦邮件」的代名词。就像当年经济萧条，人们买不起鲜肉，而吃的SPAM 肉罐头一样,没有营养成分。）</p>
+
+
+
+
+<p>上面我们得出了一个词对整篇文章的分类判断情况，接下来我们可以进一步扩展这个问题，通过再增加以下为已知前提：</p>
+
+
+
+
+<ul>
+<li>25封邮件包含“money”一词，而其中24封被认为是垃圾邮件。</li>
+</ul>
+
+
+
+
+<p>那么现在当收到一封同时包含“sex”，“money”这两个词的邮件，它为垃圾邮件的可能性又有多大呢？</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-66">\frac{P(\text{spam}) P(\text{money}|\text{spam}) P(\text{sex}|\text{spam}\cap  
+   \text{money})}{P(\text{money}) P(\text{sex}|\text{monry})}</script></p>
+
+
+
+
+<p>写到这里我们发现，当我们不断增加相关词进行判定时，上述的贝叶斯推理公式也将越来越复杂。这时，就要开始应用朴素思想了，我们假设“sex”和“money”两者出现的事件都相互独立（虽然现实情况往往并不是这样的，当出现一些广告相关的词词语时，“金钱”一词往往就有很大的几率出现在后文，但这里采用朴素的思想来近似在分类上也足够准确了），这样我们就可以把上面的公式简化成：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-67">P(\text{spam}|\text{money},\text{sex})=\frac{P(\text{spam})  
+   P(\text{money}|\text{spam}) P(\text{sex}|\text{spam})}{p(\text{money})  
+   P(\text{sex})}</script></p>
+
+
+
+
+<p>这样，假如我们需要对一封收到的电子邮件进行分类的话，我们只要计算出在给出邮件内的词汇的情况下，它为一封垃圾邮件的条件概率即可。当然，这里存在的一个较大的缺陷就是，当一些词语极度相关时，而我们通过假设他们相互独立计算出来的概率可能并不是那么准确。</p>
+
+
+
+
+<h3 id="分类实现">分类实现</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># -*- encoding : utf-8 -*-</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">BeyesClassifier</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">BeyesClassifier</span><span class="o">::</span><span class="no">Storage</span><span class="o">::</span><span class="no">ActAsStorable</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:word_list</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:category_list</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:training_count</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:tokenizer</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:language</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:thresholds</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:min_prob</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">storable</span> <span class="ss">:version</span><span class="p">,</span><span class="ss">:word_list</span><span class="p">,</span><span class="ss">:category_list</span><span class="p">,</span><span class="ss">:training_count</span><span class="p">,</span><span class="ss">:thresholds</span><span class="p">,</span><span class="ss">:min_prob</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># opts :</span>
+</span><span class='line'>  <span class="c1"># language</span>
+</span><span class='line'>  <span class="c1"># stemming : true | false</span>
+</span><span class='line'>  <span class="c1"># weight</span>
+</span><span class='line'>  <span class="c1"># assumed_prob</span>
+</span><span class='line'>  <span class="c1"># storage</span>
+</span><span class='line'>  <span class="c1"># purge_state ?</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="p">{})</span>
+</span><span class='line'>    <span class="vi">@version</span> <span class="o">=</span> <span class="no">BeyesClassifier</span><span class="o">::</span><span class="no">VERSION</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># This values are nil or are loaded from storage</span>
+</span><span class='line'>    <span class="vi">@word_list</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@category_list</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@training_count</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># storage</span>
+</span><span class='line'>    <span class="n">purge_state</span> <span class="o">=</span> <span class="n">opts</span><span class="o">[</span><span class="ss">:purge_state</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@storage</span> <span class="o">=</span> <span class="n">opts</span><span class="o">[</span><span class="ss">:storage</span><span class="o">]</span> <span class="o">||</span> <span class="no">BeyesClassifier</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">storage</span>
+</span><span class='line'>    <span class="k">unless</span> <span class="n">purge_state</span>
+</span><span class='line'>      <span class="vi">@storage</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="vi">@storage</span><span class="o">.</span><span class="n">purge_state</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># This value can be set during initialization or overrided after load_state</span>
+</span><span class='line'>    <span class="vi">@thresholds</span> <span class="o">=</span> <span class="n">opts</span><span class="o">[</span><span class="ss">:thresholds</span><span class="o">]</span> <span class="o">||</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@min_prob</span> <span class="o">=</span> <span class="n">opts</span><span class="o">[</span><span class="ss">:min_prob</span><span class="o">]</span> <span class="o">||</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="vi">@ignore_words</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>    <span class="vi">@tokenizer</span> <span class="o">=</span> <span class="no">BeyesClassifier</span><span class="o">::</span><span class="no">Tokenizer</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">incr_word</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">][</span><span class="n">category</span><span class="o">]</span> <span class="o">||=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">][</span><span class="n">category</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span> <span class="o">||=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># words count by categroy</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span> <span class="o">||=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">incr_cat</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_count</span><span class="o">]</span> <span class="o">||=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_count</span><span class="o">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="vi">@training_count</span> <span class="o">||=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="vi">@training_count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return number of times the word appears in a category</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">word_count</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span> <span class="k">unless</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">][</span><span class="n">category</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">][</span><span class="n">category</span><span class="o">].</span><span class="n">to_f</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of times the word appears in all categories</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">total_word_count</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span> <span class="k">unless</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">].</span><span class="n">to_f</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of words in a categories</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">total_word_count_in_cat</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span> <span class="k">unless</span> <span class="vi">@category_list</span><span class="o">[</span><span class="n">cat</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@category_list</span><span class="o">[</span><span class="n">cat</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">cat</span><span class="o">][</span><span class="ss">:_total_word</span><span class="o">].</span><span class="n">to_f</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of training item</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">total_cat_count</span>
+</span><span class='line'>    <span class="vi">@training_count</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of training document for a category</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cat_count</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_count</span><span class="o">]</span> <span class="p">?</span> <span class="vi">@category_list</span><span class="o">[</span><span class="n">category</span><span class="o">][</span><span class="ss">:_count</span><span class="o">].</span><span class="n">to_f</span> <span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of time categories in wich a word appear</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">categories_with_word_count</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span> <span class="k">unless</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@word_list</span><span class="o">[</span><span class="n">word</span><span class="o">][</span><span class="ss">:categories</span><span class="o">].</span><span class="n">length</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return the number of categories</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">total_categories</span>
+</span><span class='line'>    <span class="n">categories</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># return categories list</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">categories</span>
+</span><span class='line'>    <span class="vi">@category_list</span><span class="o">.</span><span class="n">keys</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># train the classifier</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@tokenizer</span><span class="o">.</span><span class="n">each_word</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">w</span><span class="o">|</span> <span class="n">incr_word</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="n">incr_cat</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># classify a text</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1"># Find the category with the highest probability</span>
+</span><span class='line'>    <span class="n">max_prob</span> <span class="o">=</span> <span class="vi">@min_prob</span>
+</span><span class='line'>    <span class="n">best</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">scores</span> <span class="o">=</span> <span class="n">cat_scores</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">scores</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">score</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">cat</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">score</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">prob</span> <span class="o">&gt;</span> <span class="n">max_prob</span>
+</span><span class='line'>        <span class="n">max_prob</span> <span class="o">=</span> <span class="n">prob</span>
+</span><span class='line'>        <span class="n">best</span> <span class="o">=</span> <span class="n">cat</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Return the default category in case the threshold condition was</span>
+</span><span class='line'>    <span class="c1"># not met. For example, if the threshold for :spam is 1.2</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#    :spam =&gt; 0.73, :ham =&gt; 0.40  (OK)</span>
+</span><span class='line'>    <span class="c1">#    :spam =&gt; 0.80, :ham =&gt; 0.70  (Fail, :ham is too close)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">default</span> <span class="k">unless</span> <span class="n">best</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">threshold</span> <span class="o">=</span> <span class="vi">@thresholds</span><span class="o">[</span><span class="n">best</span><span class="o">]</span> <span class="o">||</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">scores</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">score</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">cat</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">score</span>
+</span><span class='line'>      <span class="k">next</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">==</span> <span class="n">best</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="n">max_prob</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">best</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">save_state</span>
+</span><span class='line'>    <span class="vi">@storage</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="kp">attr_writer</span> <span class="ss">:storage</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">storage</span>
+</span><span class='line'>      <span class="vi">@storage</span> <span class="o">=</span> <span class="no">BeyesClassifier</span><span class="o">::</span><span class="no">InMemoryStorage</span><span class="o">.</span><span class="n">new</span> <span class="k">unless</span> <span class="n">defined?</span> <span class="vi">@storage</span>
+</span><span class='line'>      <span class="vi">@storage</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">inst</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="n">inst</span>
+</span><span class='line'>        <span class="n">inst</span><span class="o">.</span><span class="n">save_state</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">inst</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整代码实现可以参考<a href="https://github.com/alexandru/stuff-classifier"><strong>alexandru大神的github项目stuff-classifier</strong></a></p>
+
+
+
+
+<h3 id="算法训练和使用">算法训练和使用</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 训练函数</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">each_word</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">w</span><span class="o">|</span> <span class="n">increment_word</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">increment_cat</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 使用</span>
+</span><span class='line'><span class="n">classifier</span><span class="o">.</span><span class="n">train</span> <span class="ss">:spam</span><span class="p">,</span> <span class="s2">&quot;Grow your penis to 20 inches in just 1 week&quot;</span>
+</span><span class='line'><span class="n">classifier</span><span class="o">.</span><span class="n">train</span> <span class="ss">:ham</span><span class="p">,</span>  <span class="s2">&quot;I&#39;m hungry, no I don&#39;t want your penis&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>由于本文主要的目标是讲解贝叶斯算法，所以为了方便分词，主要使用英文语料训练，对于中文邮件分类而言，只要采用分词库分词即可，其他部分不变。</p>
+
+
+
+
+<h3 id="提高准确度与算法优化">提高准确度与算法优化</h3>
+
+
+
+
+<h4 id="计算优化">计算优化</h4>
+
+
+
+
+<p>由于浮点数计算的一些先天性问题，如计算效率慢，精度不准确等。因此我们可以用自然对数来代替原本概率的形式。 <br>
+<script type="math/tex" id="MathJax-Element-3265">claaify(word_1,word_2,…word_n)=\text{argmax}\sum _{i=1}^n \frac{\log  
+   \left(P\left(\left.\text{word}_i\right|\text{spam}\right)\right)}{\log  
+   (e)}+\frac{\log (P(\text{spam}))}{\log (e)}</script></p>
+
+
+
+
+<h4 id="拉普拉斯平滑">拉普拉斯平滑</h4>
+
+
+
+
+<p>由于贝叶斯公式依赖的都是用已知概率求未知概率，但是在分类中无法避免的一个情况就是当我们计算<script type="math/tex" id="MathJax-Element-4127">P(word_i|spam)</script>即：在已有的训练的垃圾邮件样本中出现<script type="math/tex" id="MathJax-Element-4128">word_i</script>的概率是多少时，我们遇到了一个从未在训练样本中出现过的词，那么此时就会导致<script type="math/tex" id="MathJax-Element-4129">P(word_i|spam)=0</script>。这样就会影响整体的判别。</p>
+
+
+
+
+<p>这样由于训练样本不足导致分类器整体质量大大下降的问题很常见，为了解决这个问题，我们可以引入<strong>Laplace校准</strong>（即我们要讲的拉普拉斯平滑公式），它的原理非常简单，给未出现特征值，赋予一个“小”的值而不是0。</p>
+
+
+
+
+<p>具体平滑方法如下： <br>
+假设离散型随机变量z有{1,2,…,k}个值，我们用<script type="math/tex" id="MathJax-Element-4130">\phi _i=P(z=i)</script>来表示每个值的概率。假设有m个训练样本中，z的观察值是<script type="math/tex" id="MathJax-Element-4131">\left\{z^1,\text{...},z^m\right\}</script>其中每一个观察值对应k个值中的一个。那么根据原来的估计方法可以得到</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-4132">\phi _j=\frac{\sum _{i=1}^m 1 \left\{z^i=j\right\}}{m}</script></p>
+
+
+
+
+<p>简单来说就是<script type="math/tex" id="MathJax-Element-4133">z=j</script>出现的比例。</p>
+
+
+
+
+<p>拉普拉斯平滑法将每个k值出现次数事先都加1，即假设他们都出现过一次。 <br>
+那么修改后的表达式为：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-4134">\phi _j=\frac{\sum _{i=1}^m 1 \left\{z^i=j\right\}+1}{m+k}</script></p>
+
+
+
+
+<p>每个z=j的分子都加1，分母加k。可见<script type="math/tex" id="MathJax-Element-4135">\sum _{j=1}^k \phi _j=1</script>。</p>
+
+
+
+
+<p>这样在保持总体事件发现概率比例基本不变的同时，又避免了0概率的问题。</p>
+
+
+
+
+<h4 id="去除停用词">去除停用词</h4>
+
+
+
+
+<p><strong>停用词</strong>是指在信息检索中，为节省存储空间和提高搜索效率，在处理自然语言数据（或文本）之前或之后会自动过滤掉某些字或词，这些字或词即被称为<strong>Stop Words</strong>（停用词）。这些停用词都是人工输入、非自动化生成的，生成后的停用词会形成一个停用词表。但是，并没有一个明确的停用词表能够适用于所有的工具。</p>
+
+
+
+
+<p>通常意义上，Stop Words大致为如下两类：</p>
+
+
+
+
+<ol>
+<li>第一类是那些应用十分广泛的词，在Internet上随处可见，比如“Web”一词几乎在每个网站上均会出现，对这样的词搜索引擎无 法保证能够给出真正相关的搜索结果，难以帮助缩小搜索范围，同时还会降低搜索的效率。</li>
+<li>第二类就更多了，包括了语气助词、副词、介词、连接词等，通常自身并无明确的意义，只有将其放入一个完整的句子中才有一定作用，如常见的“的”、“在”之类。</li>
+</ol>
+
+
+
+
+<p>为了使得最后用于判别邮件类型的词向量能够更加贴近邮件本身真正想表达的含义，我们可以在读取扫描文本并生成词列表时，先<strong>剔除停用词</strong>，再进行下一步的概率计算。</p>
+
+
+
+
+<p>常用中文停用词表： <br>
+链接: <a href="https://pan.baidu.com/s/1o8hw5Cm">https://pan.baidu.com/s/1o8hw5Cm</a> 密码: crti</p>
+
+
+
+
+<p>常用英文停用词表： <br>
+链接: <a href="https://pan.baidu.com/s/1jIOOfgM">https://pan.baidu.com/s/1jIOOfgM</a> 密码: 7g95</p>
+
+
+
+
+<h4 id="阈值选取">阈值选取</h4>
+
+
+
+
+<p>假设我们计算出一封邮件的<script type="math/tex" id="MathJax-Element-4368">P(spam) = 0.6 </script>那么是否我们因为 <script type="math/tex" id="MathJax-Element-4369">P(spam) = 0.6 > P(not spam)=1-0.6=0.4</script> 就可以把它定义为垃圾邮件呢？显然这样做是不合理的，一个好的概率阈值应该是在训练及测试样本上使得发生误判情况最少时所取得的值。通常我们可以定义一个误差评判函数再通过不同阈值在样本上的评分来选取出最佳的阈值。简单实现就如下面的代码所示：</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># Find the category with the highest probability</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">max_prob</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'>  <span class="n">best</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">scores</span> <span class="o">=</span> <span class="n">cat_scores</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">scores</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">score</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">cat</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">score</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">prob</span> <span class="o">&gt;</span> <span class="n">max_prob</span>
+</span><span class='line'>      <span class="n">max_prob</span> <span class="o">=</span> <span class="n">prob</span>
+</span><span class='line'>      <span class="n">best</span> <span class="o">=</span> <span class="n">cat</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Return the default category in case the threshold condition was</span>
+</span><span class='line'>  <span class="c1"># not met. For example, if the threshold for :spam is 1.2</span>
+</span><span class='line'>  <span class="c1">#</span>
+</span><span class='line'>  <span class="c1">#    :spam =&gt; 0.73, :ham =&gt; 0.40  (OK)</span>
+</span><span class='line'>  <span class="c1">#    :spam =&gt; 0.80, :ham =&gt; 0.70  (Fail, :ham is too close)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">default</span> <span class="k">unless</span> <span class="n">best</span>
+</span><span class='line'>  <span class="n">threshold</span> <span class="o">=</span> <span class="vi">@thresholds</span><span class="o">[</span><span class="n">best</span><span class="o">]</span> <span class="o">||</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">scores</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">score</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">cat</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">score</span>
+</span><span class='line'>    <span class="k">next</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">==</span> <span class="n">best</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="n">max_prob</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">best</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>最后，写到这里，贝叶斯分类器构建的讲解基本就结束了。通观全篇，我们依旧有个问题并没有解决：朴素贝叶斯分类有一个限制条件，就是特征属性必须有条件独立或基本独立（实际上在现实应用中几乎不可能做到完全独立）。当这个条件成立时，朴素贝叶斯分类法的准确率是最高的，但不幸的是，现实中各个特征属性间往往并不条件独立，而是具有较强的相关性，这样就限制了朴素贝叶斯分类的能力。然而，这个问题也并不是无解的，贝叶斯分类中有一种更高级、应用范围更广的一种算法——<strong>贝叶斯网络（又称贝叶斯信念网络或信念网络）</strong>，信念网络在一定程度上使得模型更接近真实的实际情况，有兴趣的读者可以进一步深入了解。</p>
+
+
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/09/03/ru-he-gou-jian-%5B%3F%5D-ge-po-su-bei-xie-si-fen-lei-qi/">如何构建一个朴素贝叶斯分类器</a>
+      <time datetime="2017-09-03T13:22:23+08:00" pubdate><span class='month'>Sep</span> <span class='day'>03</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2631,278 +3461,6 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
       <time datetime="2017-06-07T13:43:01+08:00" pubdate><span class='month'>Jun</span> <span class='day'>07</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/05/21/ji-yu-redisde-bloomfilter/">基于Redis的Bloomfilter</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-05-21T11:05:15+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 背景</a></li>
-<li><a href="#sec-2">2. 前言及原理简介</a>
-<ul>
-<li><a href="#sec-2-1">2.1. 传统弊端</a></li>
-<li><a href="#sec-2-2">2.2. bloomfilter</a>
-<ul>
-<li><a href="#sec-2-2-1">2.2.1. 优点：</a></li>
-<li><a href="#sec-2-2-2">2.2.2. 缺点：</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#sec-3">3. 简单图示</a></li>
-<li><a href="#sec-4">4. 算法实现</a></li>
-</ul>
-</div>
-</div>
-
-
-<h1>背景<a id="sec-1" name="sec-1"></a></h1>
-
-<p>url去重一直是大型分布式爬虫的主题，在一般规模比较大的的情景，去重需要考虑到两个点：</p>
-
-<ol>
-<li>去重的数据量</li>
-<li>去重的速度</li>
-</ol>
-
-
-<p>并且，在一般情况下为了尽量降低去重对爬虫效率的影响一般选择在内存中去重。</p>
-
-<ul>
-<li>小数据：直接使用语言的逻辑判断及数据结构去重，如python的set，ruby的Set</li>
-<li>持续化去重： redis的set</li>
-<li>中型数据量去重：加密算法压缩url及长字符串在混合使用其他方法去重</li>
-<li>大型数据去重：使用bloomfilter（布隆过滤器）桉内存位去重</li>
-</ul>
-
-
-<h1>前言及原理简介<a id="sec-2" name="sec-2"></a></h1>
-
-<h2>传统弊端<a id="sec-2-1" name="sec-2-1"></a></h2>
-
-<p>按照以往惯例来说，我们一般判断一个元素是否在一个集合内的通常做法是：先将所有元素保存下来，
-然后通过比较判断它是否在集合之中。但是，这样的常规判断方法有一个很大的弊端就是，随着集合内的
-元素个数变大，我们需要的空间和时间都呈线性增长，检索速度也越来越慢。</p>
-
-<h2>bloomfilter<a id="sec-2-2" name="sec-2-2"></a></h2>
-
-<p>而Bloom filter 采用的是哈希函数的方法，将一个元素表示为一个点并将他映射到一个长度为m的
-阵列上。在检索时如果在阵列上发现对应的映射点为1时，那么这个元素在集合内，反之则不在集合内。</p>
-
-<h3>优点：<a id="sec-2-2-1" name="sec-2-2-1"></a></h3>
-
-<p>Bloom filter 优点在于它的插入和查询时间都是常数，另外它查询的元素不保存元素本身，具有良好的
-安全性。</p>
-
-<h3>缺点：<a id="sec-2-2-2" name="sec-2-2-2"></a></h3>
-
-<p>最明显的一点是，当插入元素越多，查询元素被错判成“在集合内”的概率就越大。针对这个问题常用的
-解决方法有：使用k个哈希函数来对应映射k个点，如果所对应的所有点都是1的话。那么元素在集合内，
-如果任何一个有0的话，则元素不在集合内。另外，Bloom filter也不能删除一个元素，因为多个元素的哈希
-的结果可能在bloom filter的阵列中都是占用同一个位。如果删除了一个比特位，可能会影响多个元素的检测。</p>
-
-<h1>简单图示<a id="sec-3" name="sec-3"></a></h1>
-
-<p>实现我们设我们的哈希函数有两个。</p>
-
-<p>开始时集合内没有元素：</p>
-
-<p><img src="http://e.hiphotos.baidu.com/baike/s%3D250/sign=0fd8813a78f0f736dcfe4b043a54b382/7af40ad162d9f2d3f39093aaa9ec8a136227ccf6.jpg" alt="img" /></p>
-
-<p>当来了一个元素a时，进行哈希计算再判断，当计算出对应的比特位上为0时，即a不在集合内，添加a的哈希值进去。</p>
-
-<p><img src="http://g.hiphotos.baidu.com/baike/s%3D250/sign=7debb7818c1001e94a3c130a880e7b06/9d82d158ccbf6c815e2dd280bd3eb13533fa4044.jpg" alt="img" /></p>
-
-<p>之后的元素，要判断是不是在集合内，也是同 a 一样的方法，只有对元素哈希后对应位置上都是 1 才认为这个元素在集合内</p>
-
-<p><img src="http://c.hiphotos.baidu.com/baike/s%3D250/sign=71f00574a18b87d65442ac1a37092860/d6ca7bcb0a46f21f7ce5e916f6246b600d33aea6.jpg" alt="img" /></p>
-
-<p>随着元素的插入，Bloom filter 中修改的值变多，出现误判的几率也随之变大，当新来一个元素时，
-满足其在集合内的条件，即所有对应位都是1，这样就可能有两种情况，
-一是这个元素就在集合内，没有发生误判；还有一种情况就是发生误判，出现了哈希碰撞，这个元素本不在集合内。</p>
-
-<p><img src="http://a.hiphotos.baidu.com/baike/s%3D250/sign=7dd68ea2912397ddd2799f016983b216/2cf5e0fe9925bc31448eb6dd5edf8db1ca1370a7.jpg" alt="img" /></p>
-
-<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># encoding=utf-8</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SimpleHash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">cap</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
-</span><span class='line'>            <span class="n">ret</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">*</span> <span class="n">ret</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ret</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">BloomFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blockNum</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s">&#39;bloomfilter&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">        :param host: the host of Redis</span>
-</span><span class='line'><span class="sd">        :param port: the port of Redis</span>
-</span><span class='line'><span class="sd">        :param db: witch db in Redis</span>
-</span><span class='line'><span class="sd">        :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.</span>
-</span><span class='line'><span class="sd">        :param key: the key&#39;s name in Redis</span>
-</span><span class='line'><span class="sd">        &quot;&quot;&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">bit_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span>  <span class="c"># Redis的String类型最大容量为512M，现使用256M</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">seeds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">61</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span> <span class="o">=</span> <span class="n">blockNum</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeds</span><span class="p">:</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SimpleHash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bit_size</span><span class="p">,</span> <span class="n">seed</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">isContains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_input</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">str_input</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">return</span> <span class="bp">False</span>
-</span><span class='line'>        <span class="n">m5</span> <span class="o">=</span> <span class="n">md5</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">m5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">str_input</span> <span class="o">=</span> <span class="n">m5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">str_input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">loc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">getbit</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">ret</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_input</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">m5</span> <span class="o">=</span> <span class="n">md5</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">m5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">str_input</span> <span class="o">=</span> <span class="n">m5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">str_input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">loc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setbit</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot; 第一次运行时会显示 not exists!，之后再运行会显示 exists! &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">bf</span> <span class="o">=</span> <span class="n">BloomFilter</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">bf</span><span class="o">.</span><span class="n">isContains</span><span class="p">(</span><span class="s">&#39;http://www.baidu.com&#39;</span><span class="p">):</span>   <span class="c"># 判断字符串是否存在</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;exists!&#39;</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;not exists!&#39;</span>
-</span><span class='line'>        <span class="n">bf</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;http://www.baidu.com&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/05/21/ji-yu-redisde-bloomfilter/">基于Redis的Bloomfilter</a>
-      <time datetime="2017-05-21T11:05:15+08:00" pubdate><span class='month'>May</span> <span class='day'>21</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
       
       </footer>
     </article>
