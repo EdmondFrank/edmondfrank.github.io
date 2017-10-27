@@ -9,7 +9,12 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿Python在Spark上的机器学习(二)之数据操作 PySpark PySpark 是 Spark 为 Python 开发者提供的 API。 Spark是用Scala语言写成的，Scala把要编译的东西编译为Java虚拟机（JVM）的字节码（bytecode）。 &hellip;">
+  <meta name="description" content="﻿Python在Spark上的机器学习(三)之统计分析 背景 通常来说，一个完整使用机器学习建模解决问题的过程包含一下步骤： 数据获取
+数据预处理
+数据统计分析
+算法建模
+训练
+预测/分类 这就意味着，在我们进行一般的数学建模或者挑选机器学习训练算法之前，应该先对数据进行清洗以及简单的统计分析， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +69,299 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/">Python在Spark上的机器学习(三)之统计分析</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-27T18:39:42+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习三之统计分析">Python在Spark上的机器学习(三)之统计分析</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>通常来说，一个完整使用机器学习建模解决问题的过程包含一下步骤：</p>
+
+
+
+
+<ul>
+<li>数据获取</li>
+<li>数据预处理</li>
+<li>数据统计分析</li>
+<li>算法建模</li>
+<li>训练</li>
+<li>预测/分类</li>
+</ul>
+
+
+
+
+<p>这就意味着，在我们进行一般的数学建模或者挑选机器学习训练算法之前，应该先对数据进行清洗以及简单的统计分析，以便了解数据中显著的特征或者规律（虽然现在的机器学习方法，很多情况下根本不需要了解数据的意义，仅仅是通过堆叠特征就能获得一个可行的结果，但这显然离一个优秀的结果还是有一段距离的）。为了得到更加鲁棒的模型，以及了解数据背后的含义，我们这篇文章就来讲讲如何在PySpark上进行简单的统计分析。</p>
+
+
+
+
+<h3 id="概念介绍">概念介绍</h3>
+
+
+
+
+<p><strong>描述性统计分析</strong> <br>
+这是一个统计学的概念，描述性统计是以揭示数据分布特性的方式汇总并表达定量数据的方法。主要包括数据的频数分析、数据的集中趋势分析、数据离散程度分析、数据的分布、以及一些基本的统计图形。特征括并表示定量数据，揭示数据分布的特征。 <br>
+描述性统计是一类统计方法的汇总，作用是提供了一种概括和表征数据的有效且相对简便的方法。通常用图示法来表述，易于看懂，能发现质量特性值（总体）的分布状况、趋势走向的一些规律，便于采取措施。用于汇总和表征数据，通常是对数据进一步定量分析的基础，或是对推断性统计方法的有效补充。</p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+
+
+<p>本文使用的是一个信用欺诈检测的一个数据集，具体下载地址：<a href="http://tomdrabas.com/data/LearningPySpark/ccFraud.csv.gz">这里</a></p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">PySpark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;data/ccFraud.csv&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span><span class="n">row</span><span class="o">!=</span><span class="n">header</span><span class="p">)</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:[</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)])</span>
+</span><span class='line'><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>    <span class="o">*</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">(),</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+</span><span class='line'><span class="n">fraud_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">fraud</span><span class="p">,</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  root <br>
+   |– custID: integer (nullable = true) <br>
+   |– gender: integer (nullable = true) <br>
+   |– state: integer (nullable = true) <br>
+   |– cardholder: integer (nullable = true) <br>
+   |– balance: integer (nullable = true) <br>
+   |– numTrans: integer (nullable = true) <br>
+   |– numIntlTrans: integer (nullable = true) <br>
+   |– creditLine: integer (nullable = true) <br>
+   |– fraudRisk: integer (nullable = true) <br>
+  Out: <br>
+  Row(custID=1, gender=1, state=35, cardholder=1, balance=3000, numTrans=4, numIntlTrans=14, creditLine=2, fraudRisk=0)</p>
+</blockquote>
+
+
+
+
+<p>在上面的代码中，我们读入了我们的数据集，以及创建了一个DataFrame，下面我们再进行一些简单的分析操作。</p>
+
+
+
+
+<h3 id="简单统计分析">简单统计分析</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;gender&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c">#按照性别分类汇总</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">numerical</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;balance&#39;</span><span class="p">,</span> <span class="s">&#39;numTrans&#39;</span><span class="p">,</span> <span class="s">&#39;numIntlTrans&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="n">desc</span> <span class="o">=</span> <span class="n">fraud_df</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
+</span><span class='line'><span class="c">##对balance，numTrans，numIntTrans进行描述性分析</span>
+</span><span class='line'><span class="n">desc</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 计算balance值分布的偏度</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s">&#39;balance&#39;</span><span class="p">:</span> <span class="s">&#39;skewness&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  +——+——-+ <br>
+  |gender|  count| <br>
+  +——+——-+ <br>
+  |     1|6178231| <br>
+  |     2|3821769| <br>
+  +——+——-+ <br>
+  +——-+—————–+——————+—————–+ <br>
+  |summary|          balance|          numTrans|     numIntlTrans| <br>
+  +——-+—————–+——————+—————–+ <br>
+  |  count|         10000000|          10000000|         10000000| <br>
+  |   mean|     4109.9199193|        28.9351871|        4.0471899| <br>
+  | stddev|3996.847309737258|26.553781024523122|8.602970115863904| <br>
+  |    min|                0|                 0|                0| <br>
+  |    max|            41485|               100|               60| <br>
+  +——-+—————–+——————+—————–+ <br>
+  +——————+ <br>
+  | skewness(balance)| <br>
+  +——————+ <br>
+  |1.1818315552993839| <br>
+  +——————+</p>
+</blockquote>
+
+
+
+
+<p>上面我们使用了一些常用的统计分析函数，以及简单地了解了一下PySpark 聚合函数agg()的使用。通常地，常用的聚合函数还有avg() , count(), countDistinct() , max() 等。</p>
+
+
+
+
+<h3 id="相关分析">相关分析</h3>
+
+
+
+
+<p><strong>相关分析</strong>（correlation analysis），相关分析是研究现象之间是否存在某种依存关系，并对具体有依存关系的现象探讨其相关方向以及相关程度，是研究随机变量之间的相关关系的一种统计方法。通常两个变量之间存在的相关关系有：正相关、完全正相关、负相关、完全负相关、无相关。</p>
+
+
+
+
+<p><strong>相关系数</strong>是最早由统计学家卡尔·皮尔逊设计的统计指标，是研究变量之间线性相关程度的量，一般用字母 r 表示。由于研究对象的不同，相关系数有多种定义方式，较为常用的是皮尔逊相关系数。简单来说，相关系数是衡量两个变量间相关关系的指标。</p>
+
+
+
+
+<p>在PySpark中计算两个变量之间的相关系数是非常简单的，往往只需要一条代码：</p>
+
+
+
+
+<blockquote>
+  <p>fraud_df.corr(‘balance’, ‘numTrans’)#计算balance和numTrans的相关系数</p>
+</blockquote>
+
+
+
+
+<p>输出</p>
+
+
+
+
+<blockquote>
+  <p>Out：0.0004452314017265385</p>
+</blockquote>
+
+
+
+
+<p>我们还可以通过下面的方法来创建一个相关矩阵。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">n_numerical</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
+</span><span class='line'><span class="n">corr</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fraud_df</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numerical</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">numerical</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+</span><span class='line'>    <span class="n">corr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果; <br>
+  [[1.0, 0.0004452314017265387, 0.0002713991339817875], [None, 1.0, -0.00028057128198165555], [None, None, 1.0]]</p>
+</blockquote>
+
+
+
+
+<p>正如输出结果所示，这个信用欺诈检测的数据集中的特征之间不存在过大的相关关系，基本全部都为相互独立关系。因此，在选择特征代入机器学习算法训练时，可以采用全部的变量。正也是统计分析的用处，可以帮助我们了解变量之间的线性相关关系，有利于帮住我们选取训练的特征变量。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/">Python在Spark上的机器学习(三)之统计分析</a>
+      <time datetime="2017-10-27T18:39:42+08:00" pubdate><span class='month'>Oct</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -4397,173 +4695,6 @@ Mac OS <span class="hljs-special">&amp;</span> MacTeX <span class="hljs-special"
       <time datetime="2017-09-09T15:33:50+08:00" pubdate><span class='month'>Sep</span> <span class='day'>09</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/09/05/laplacebian-huan/">Laplace变换</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-09-05T21:20:57+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="拉普拉斯变换">拉普拉斯变换</h1>
-
-
-
-
-<p>对于复值函数<script type="math/tex" id="MathJax-Element-1978">f(t)</script>,若<script type="math/tex" id="MathJax-Element-1979">\int_0^{\infty } f(t) \epsilon ^{-s t} \, dt</script>在复平面上的某一个区域<script type="math/tex" id="MathJax-Element-1980">D(s\in D)</script> 内收敛于<script type="math/tex" id="MathJax-Element-1981">F(s)</script>,则称：</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-1982">F(s)=\int_0^{\infty } f(t) \epsilon ^{-s t} \, dt</script></p>
-
-
-
-
-<p>为函数的拉普拉斯变换（Laplace）变换（简称拉氏变换），记为</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-1983">F(s)=L[f(t)]</script></p>
-
-
-
-
-<p>在科技领域，一般是对时间为自变量的函数进行拉普拉斯变换，即在t &lt; 0时，函数无意义或不需要考虑。</p>
-
-
-
-
-<h3 id="线性性质">线性性质</h3>
-
-
-
-
-<p>设<script type="math/tex" id="MathJax-Element-893">\alpha _1,\alpha _2</script>为常数， <br>
-<script type="math/tex" id="MathJax-Element-894">F_1(s) = L[f_1(t)] , F_2(s) = L[f_2(t)] </script> 则  <br>
-<script type="math/tex" id="MathJax-Element-895"> L[\alpha _1f_1(t) + \alpha _2f_2(t)] = \alpha_1F_1(s) + \alpha_2F_2(s)</script></p>
-
-
-
-
-<h3 id="时移性质">时移性质</h3>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-905">L[f(t)] = F(s)</script>，对于<script type="math/tex" id="MathJax-Element-906">t_0 > 0</script>，有<script type="math/tex" id="MathJax-Element-907">L[f( t-t_0 )] = e^{-st_0} F(s)</script></p>
-
-
-
-
-<h3 id="频移性质">频移性质</h3>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-947">L[f(t)] = F(s)</script>，则对任意常数a，有 <br>
-<script type="math/tex" id="MathJax-Element-948">L[e^{at}f(t)] = F(s-a)</script></p>
-
-
-
-
-<h3 id="微分性质">微分性质</h3>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-1369">L[f(t)] = F(s)</script>，且<script type="math/tex" id="MathJax-Element-1370">f'(t)也是象原函数，则</script> <br>
-<script type="math/tex" id="MathJax-Element-1371">L[f'(t)] = sF(s) - f(0^+)</script> <br>
-这里，<script type="math/tex" id="MathJax-Element-1372"> \lim_{t\to 0^+}f( t)</script></p>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-1373">L[f(t)] = F(s)</script>，则 <br>
-<script type="math/tex" id="MathJax-Element-1374">L[ (-t)^n f(t)] = F^{(n)}(s) , n=0,1,2,...</script></p>
-
-
-
-
-<h3 id="积分性质">积分性质</h3>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-1631">L[f(t)] = F(s)</script>，则 <br>
-<script type="math/tex" id="MathJax-Element-1632">L[\int_0^t f(\tau ) \, d\tau] = \frac{1}{s}F(s)</script></p>
-
-
-
-
-<p>若 <script type="math/tex" id="MathJax-Element-1633">L[f(t)] = F(s)</script>，积分<script type="math/tex" id="MathJax-Element-1634">\int_s^\infty F(u ) \, du</script>收敛，则<script type="math/tex" id="MathJax-Element-1635">\frac{f(t)}{t}</script>的拉普拉斯变换存在，且</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-1636">L[\frac{f(t)}{t}] = \int_s^\infty F(u ) \, du</script></p>
-
-
-
-
-<h3 id="极限性质">极限性质</h3>
-
-
-
-
-<p>1.初值关系 <br>
-若<script type="math/tex" id="MathJax-Element-1973">L[f(t)] = F(s)</script>，则<script type="math/tex" id="MathJax-Element-1974">f(0^+) =  \lim_{s\to \infty} sF( s)</script></p>
-
-
-
-
-<p>2.终值关系 <br>
-若<script type="math/tex" id="MathJax-Element-1975">L[f(t)] = F(s),且f(+\infty)存在,sF(s)</script>的所有奇点在半平面<script type="math/tex" id="MathJax-Element-1976">Re(s) < \sigma _0内，其中\sigma是f(t)的增长指数</script>，则</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-1977">f(+\infty) = lim_{s\to0}sF(s)</script></p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/09/05/laplacebian-huan/">Laplace变换</a>
-      <time datetime="2017-09-05T21:20:57+08:00" pubdate><span class='month'>Sep</span> <span class='day'>05</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ke-cheng-bi-ji/'>课程笔记</a></span>
       
       </footer>
     </article>
