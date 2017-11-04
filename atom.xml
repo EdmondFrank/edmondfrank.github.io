@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-10-27T18:42:09+08:00</updated>
+  <updated>2017-11-04T23:51:25+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,284 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python在Spark上的机器学习(四)之可视化工具的介绍与PySpark的结合使用示例]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/11/04/pythonzai-sparkshang-de-ji-qi-xue-xi-si-zhi-ke-shi-hua-gong-ju-de-jie-shao-yu-pysparkde-jie-he-shi-yong-shi-li/"/>
+    <updated>2017-11-04T23:20:17+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/11/04/pythonzai-sparkshang-de-ji-qi-xue-xi-si-zhi-ke-shi-hua-gong-ju-de-jie-shao-yu-pysparkde-jie-he-shi-yong-shi-li</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习四之可视化工具的介绍与pyspark的结合使用示例">Python在Spark上的机器学习(四)之可视化工具的介绍与PySpark的结合使用示例</h1></p>
+
+<h2 id="前言">前言</h2>
+
+
+
+
+<p>在Python和Java的生态圈中，有许多可用的可视化库，但是在这篇文章中，我们主要来介绍一下matplotlib 和 Bokeh的使用。</p>
+
+
+
+
+<p>首先，这两个库都是<a href="https://www.anaconda.com/">Anaconda</a>预装的。如果你是通过Anaconda来搭建的Python的科学计算环境的话，直接就可以通过import导入来使用这两个库了。</p>
+
+
+
+
+<p>但是如果还没安装和配置好环境的朋友，可以自行参考<a href="http://matplotlib.org/index.html">Matplotlib</a>和<a href="https://bokeh.pydata.org/en/latest/">Bokeh</a>的官方站点的教程来下载配置环境。</p>
+
+
+
+
+<blockquote>
+  <p>注：这一类对各系统平台支持良好的库，一般安装流程也就无非两条pip命令，如： <br>
+  python -mpip install -U pip <br>
+  python -mpip install -U matplotlib <br>
+  pip install bokeh <br>
+  或 <br>
+  conda install bokeh <br>
+  所以各位读者也没有必要担心配置麻烦。</p>
+</blockquote>
+
+
+
+
+<h2 id="有关matplotlib和bokeh的介绍">有关matplotlib和bokeh的介绍</h2>
+
+
+
+
+<h3 id="matplotlib">Matplotlib</h3>
+
+
+
+
+<p><strong>Matplotlib</strong>是一个Python 2D绘图库，可以跨平台生成各种通用格式和适用于交互式环境的高质量图表。 Matplotlib可直接用于Python脚本，IPython shell，Jupyter以及Web应用程序服务器之中。 <br>
+<strong>Matplotlib</strong>简化了许多繁琐的绘图操作，使得原本简单的图表在绘制上更加简单，而复杂的图表绘制也更容易上手。只需几行代码即可生成许多好看的图表。如，直方图、功率谱、条形图、错误图，散点图等。</p>
+
+
+
+
+<p>官方绘图预览：</p>
+
+
+
+
+<p><img src="http://matplotlib.org/_images/sphx_glr_simple_plot_0011.png" alt="enter image description here" title=""> <br>
+<img src="http://matplotlib.org/_images/sphx_glr_histogram_features_0011.png" alt="enter image description here" title=""></p>
+
+
+
+
+<p><img src="http://matplotlib.org/_images/sphx_glr_barchart_demo_0011.png" alt="enter image description here" title=""> <br>
+<img src="http://matplotlib.org/_images/sphx_glr_pie_features_0011.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h3 id="bokeh">Bokeh</h3>
+
+
+
+
+<p><strong>Bokeh</strong> (Bokeh.js) 是一个 Python 交互式可视化库，支持现代化 Web 浏览器，提供非常完美的展示功能。Bokeh 的目标是使用 D3.js 样式提供优雅，简洁新颖的图形化风格，同时提供大型数据集的高性能交互功能。Boken 可以快速的创建交互式的绘图，仪表盘和数据应用。</p>
+
+
+
+
+<p>鉴于Bokeh强调的更多是一种交互式的绘图体验，在这里我就不貼静态图了，不过下面我会附上一些官方demo的例子，让大家感受下Bokeh的强大之处。</p>
+
+
+
+
+<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/stocks.html">趋势走向图</a></p>
+
+
+
+
+<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/iris.html">散点图</a></p>
+
+
+
+
+<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/texas.html">地域分布图</a></p>
+
+
+
+
+<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/boxplot.html">箱型图</a></p>
+
+
+
+
+<h2 id="结合pyspark进行可视化分析">结合PySpark进行可视化分析</h2>
+
+
+
+
+<h3 id="模块加载">模块加载</h3>
+
+
+
+
+<p>以下实验均在Jupyter环境下进行 <br>
+<strong>matplotlib</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">%matplotlib inline
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+plt.style.use(<span class="hljs-string">'ggplot'</span>)</code></pre>
+
+
+
+
+<p><strong>bokeh</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">import</span> bokeh.charts <span class="hljs-keyword">as</span> chrt
+<span class="hljs-keyword">from</span> bokeh.io <span class="hljs-keyword">import</span> output_notebook
+output_notebook()</code></pre>
+
+
+
+
+<h3 id="频率分布分析">频率分布分析</h3>
+
+
+
+
+<p>频率分布图是最为简单有效的观察数据的分布情况的方法之一。</p>
+
+
+
+
+<h4 id="读取数据">读取数据</h4>
+
+
+
+
+<p>本文用到的数据文件依旧是上文所提及的信用欺诈检测的数据集，具体下载地址：<a href="http://tomdrabas.com/data/LearningPySpark/ccFraud.csv.gz">这里</a></p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;/home/ef/Desktop/learningPySpark-master/ccFraud.csv&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">fraud</span> \
+</span><span class='line'><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span> <span class="o">!=</span> <span class="n">header</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)])</span>
+</span><span class='line'><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="o">*</span><span class="p">[</span>
+</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+</span><span class='line'><span class="n">fraud_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">fraud</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+</span><span class='line'><span class="n">hists</span> <span class="o">=</span> <span class="n">fraud_df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;balance&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rdd</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span>
+</span><span class='line'><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出： <br>
+  root <br>
+   |– custID: integer (nullable = true) <br>
+   |– gender: integer (nullable = true) <br>
+   |– state: integer (nullable = true) <br>
+   |– cardholder: integer (nullable = true) <br>
+   |– balance: integer (nullable = true) <br>
+   |– numTrans: integer (nullable = true) <br>
+   |– numIntlTrans: integer (nullable = true) <br>
+   |– creditLine: integer (nullable = true) <br>
+   |– fraudRisk: integer (nullable = true)</p>
+</blockquote>
+
+
+
+
+<h4 id="绘制频率分布直方图">绘制频率分布直方图</h4>
+
+
+
+
+<p><strong>matplotlib</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">data = {
+<span class="hljs-string">'bins'</span>: hists[<span class="hljs-number">0</span>][:-<span class="hljs-number">1</span>],
+<span class="hljs-string">'freq'</span>: hists[<span class="hljs-number">1</span>]
+}
+plt.bar(data[<span class="hljs-string">'bins'</span>], data[<span class="hljs-string">'freq'</span>], width=<span class="hljs-number">2000</span>)
+plt.title(<span class="hljs-string">'Histogram of \'balance\''</span>)
+plt.show()</code></pre>
+
+
+
+
+<blockquote>
+  <p>输出: <br>
+  <img src="https://ooo.0o0.ooo/2017/10/27/59f2fbe5dc612.png" alt="mat_hist.png" title=""></p>
+</blockquote>
+
+
+
+
+<p><strong>bokeh</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">data = {
+<span class="hljs-string">'bins'</span>: hists[<span class="hljs-number">0</span>][:-<span class="hljs-number">1</span>],
+<span class="hljs-string">'freq'</span>: hists[<span class="hljs-number">1</span>]
+}
+b_hist = chrt.Bar(
+data,
+values=<span class="hljs-string">'freq'</span>, label=<span class="hljs-string">'bins'</span>,
+title=<span class="hljs-string">'Histogram of \'balance\''</span>)
+chrt.show(b_hist)</code></pre>
+
+
+
+
+<blockquote>
+  <p>输出: <br>
+  <img src="https://ooo.0o0.ooo/2017/10/27/59f2fbe5e1f34.png" alt="bokeh_hist.png" title=""></p>
+</blockquote>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python在Spark上的机器学习(三)之统计分析]]></title>
@@ -6853,410 +7131,6 @@ The accuracy of our classifier is 98%</p></blockquote>
 <h2>效应量</h2>
 
 <p><strong>效应量（effect sizes）</strong>一般用来描述策略组之间的差异程度，表明我们研究结果的大小。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[贝叶斯算法在检测群聊垃圾广告中的应用]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/"/>
-    <updated>2017-07-03T12:18:45+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong</id>
-    <content type="html"><![CDATA[<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 背景：</a></li>
-<li><a href="#sec-2">2. 基本原理：</a></li>
-<li><a href="#sec-3">3. 联合概率计算</a></li>
-<li><a href="#sec-4">4. 算法实现</a></li>
-</ul>
-</div>
-</div>
-
-
-<h1>贝叶斯算法在检测群聊垃圾广告中的应用</h1>
-
-<h1>背景：<a id="sec-1" name="sec-1"></a></h1>
-
-<p>贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
-之前需要先建立历史资料库，即，先提供两组已经标注好的训练数据。
-在此附上训练数据链接：<a href="https://pan.baidu.com/s/1nuGW2Ul">https://pan.baidu.com/s/1nuGW2Ul</a></p>
-
-<h1>基本原理：<a id="sec-2" name="sec-2"></a></h1>
-
-<p>当看到一段文本时，我们先假定它是广告文本的概率为50%，其实整个识别模式就像垃圾邮件过滤
-一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
-50%：</p>
-
-<p><script type="math/tex" id="MathJax-Element-115"> P(S) = P(H) = 50% </script></p>
-
-
-<p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
-某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
-P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
-
-<p><script type="math/tex" id="MathJax-Element-116"> P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) </script></p>
-
-
-<p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
-我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
-概率分别为5%和0.05%，那么我们可以计算出P(S|W)＝ 99.0%</p>
-
-<p>因此，根据我们得出的99%的后验概率，我们可以说词语W的推断能力很强，在垃圾文本和正常文本之
-中有十分良好的推断效果。</p>
-
-<h1>联合概率计算<a id="sec-3" name="sec-3"></a></h1>
-
-<p>但是，一段文本中存在非常多的词汇，我们不能单凭一个单词就推断出这段文本的分类属性。因此，
-常规的做法是我们需要选取出整段文本中，P(S|W)最高的15个词，然后计算它们的联合概率。
-（其中可能存在的问题有：某些新词在历史数据中都不曾出现过，我们无法计算其P(S|W)的值，
-对于这样的问题需要用到贝叶斯平滑的思想进行处理，本文为了从简，我们都先假设这类词的P(S|W)
-值为0.4）</p>
-
-<p>对于联合概率的补充解释：联合概率是指在多个事件发生的情况之下，另一个发生的概率有多大。
-例如：已知，W<sub>1</sub> 和 W<sub>2</sub>为两个不同的词语，它们都出现在某段文本之中，那么这段文本为广告
-文本的概率就是W<sub>1</sub>和W<sub>2</sub>的联合概率。</p>
-
-<p>最后，根据提取的15个词，得出最终的概率计算公式</p>
-
-<p><script type="math/tex" id="MathJax-Element-118"> P ＝ P_1P_2P_3…P_{15}/(P_1P_2…P_{15}+(1-P_1)(1-P_2)…(1-P_{15})) </script></p>
-
-
-<p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
-认定为90%为垃圾文本！</p>
-
-<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pickle</span>
-</span><span class='line'><span class="c">#spam类对象</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span><span class="p">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">spamEmailBayes</span><span class="p">:</span>
-</span><span class='line'>    <span class="c">#获得停用词表</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getStopWords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">stopList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/stopwords&quot;</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">stopList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">stopList</span><span class="p">;</span>
-</span><span class='line'>    <span class="c">#获得词典</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_word_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">content</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#分词结果放入res_list</span>
-</span><span class='line'>        <span class="n">res_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res_list</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopList</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">!=</span><span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">wordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#若列表中的词已在词典中，则加1，否则添加进去</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">addToDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">wordsDict</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_File_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filePath</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">filenames</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">filenames</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getTestWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testDict</span><span class="p">,</span><span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">wordProbList</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">num</span>  <span class="ow">in</span> <span class="n">testDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#该文件中包含词个数</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#若该词不在脏词词典中，概率设为0.4</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
-</span><span class='line'>        <span class="nb">sorted</span><span class="p">(</span><span class="n">wordProbList</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="n">wordProbList</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算贝叶斯概率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calBayes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordList</span><span class="p">,</span><span class="n">spamdict</span><span class="p">,</span><span class="n">normdict</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">ps_w</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="n">ps_n</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">prob</span> <span class="ow">in</span> <span class="n">wordList</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
-</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">word</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
-</span><span class='line'>            <span class="n">ps_w</span><span class="o">*=</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">ps_n</span><span class="o">*=</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">p</span><span class="o">=</span><span class="n">ps_w</span><span class="o">/</span><span class="p">(</span><span class="n">ps_w</span><span class="o">+</span><span class="n">ps_n</span><span class="p">)</span>
-</span><span class='line'><span class="c">#         print(str(ps_w)+&quot;////&quot;+str(ps_n))</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">p</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算预测结果正确率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calAccuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testResult</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rightCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="n">errorCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">name</span> <span class="p">,</span><span class="n">catagory</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>                <span class="n">rightCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">errorCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">rightCount</span><span class="o">/</span><span class="p">(</span><span class="n">rightCount</span><span class="o">+</span><span class="n">errorCount</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">spam</span><span class="o">=</span><span class="n">spamEmailBayes</span><span class="p">()</span>
-</span><span class='line'><span class="c">#保存词频的词典</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">testDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存每封邮件中出现的词</span>
-</span><span class='line'><span class="n">wordsList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存预测结果,key为文件名，值为预测类别</span>
-</span><span class='line'><span class="n">testResult</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#分别获得正常邮件、垃圾邮件及测试文件名称列表</span>
-</span><span class='line'><span class="n">normFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/normal&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/spam&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">testFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/test2&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获取训练集中正常邮件与垃圾邮件的数量</span>
-</span><span class='line'><span class="n">normFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">normFileList</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spamFileList</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获得停用词表，用于对停用词过滤</span>
-</span><span class='line'><span class="n">stopList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getStopWords</span><span class="p">()</span>
-</span><span class='line'><span class="c">#获得正常邮件中的词频</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">normFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/normal/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#过滤掉非中文字符</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="c">#将每封邮件出现的词保存在wordsList中</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#统计每个词在所有邮件中出现的次数</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;norm.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">normDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#获得垃圾邮件中的词频</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">spamFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/spam/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;spam.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spamDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;model.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spam</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 测试邮件</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">testFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/test2/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">):</span>
-</span><span class='line'>    <span class="c">#for line in open(&quot;../data/test/&quot;+fileName,encoding=&#39;gbk&#39;):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="n">wordProbList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getTestWords</span><span class="p">(</span><span class="n">testDict</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#对每封邮件得到的15个词计算贝叶斯概率</span>
-</span><span class='line'>    <span class="n">p</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calBayes</span><span class="p">(</span><span class="n">wordProbList</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span> <span class="n">normDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="c">#计算分类准确率（测试集中文件名低于1000的为正常邮件）</span>
-</span><span class='line'><span class="n">testAccuracy</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calAccuracy</span><span class="p">(</span><span class="n">testResult</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">ic</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ic</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">testAccuracy</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

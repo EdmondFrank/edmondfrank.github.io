@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2017/11/04/pythonzai-sparkshang-de-ji-qi-xue-xi-si-zhi-ke-shi-hua-gong-ju-de-jie-shao-yu-pysparkde-jie-he-shi-yong-shi-li/</loc>
+<lastmod>2017-11-04T23:20:17+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/</loc>
 <lastmod>2017-10-27T18:39:42+08:00</lastmod>
 </url>
@@ -265,16 +269,16 @@
 <lastmod>2016-06-10T12:22:01+08:00</lastmod>
 </url>
 <url>
-<loc>https://edmondfrank.github.io/</loc>
-</url>
-<url>
-<loc>https://edmondfrank.github.io/archives/</loc>
+<loc>https://edmondfrank.github.io/blog/archives/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/</loc>
 </url>
 <url>
-<loc>https://edmondfrank.github.io/blog/archives/</loc>
+<loc>https://edmondfrank.github.io/archives/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/test/</loc>
