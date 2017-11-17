@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Python在Spark上的机器学习之机器学习实战(上) - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(上) MLlib 的使用 在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。 MLlib：即Machine Learning &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Python在Spark上的机器学习之机器学习实战(上)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-11-17T09:16:10+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战上">Python在Spark上的机器学习之机器学习实战(上)</h1></p>
+
+<h2 id="mllib-的使用">MLlib 的使用</h2>
+
+
+
+
+<p>在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。</p>
+
+
+
+
+<p><strong>MLlib</strong>：即Machine Learning Library，MLlib 是Spark对常用的机器学习算法的实现库，同时包括相关的测试和数据生成器。MLlib 目前支持四种常见的机器学习问题：二元分类，回归，聚类以及协同过滤，同时也包括一个底层的梯度下降优化基础算法。</p>
+
+
+
+
+<h3 id="载入和转化数据">载入和转化数据</h3>
+
+
+
+
+<p>首先，我们在建立一个DataFrame之前，我们先针对性的指定下DataFrame中数据类型，方便我们数据后期的分析与计算。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
+</span><span class='line'><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_YEAR&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_MONTH&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_RACE_6CODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MONTH_PRECARE_RECODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_BREASTFED&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">())</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">([</span>
+</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">labels</span>
+</span><span class='line'><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>下一步，我们通过 <strong>.read.csv()</strong> 方法来载入数据，这个方法除了能够载入原数据之外还可以载入GZipped压缩后的csv数据。其实header参数设为 True 代表数据文件的第一行是数据的元信息（即为列表的说明字段）。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">births = spark.read.csv(<span class="hljs-string">'births_train.csv.gz'</span>,
+header=<span class="hljs-keyword">True</span>,
+schema=schema)</code></pre>
+
+
+
+
+<p>由于在我们的数据集中有大量的分类变量都是字符串，所以我们首先要想办法将这一类变量转换成数字的形式。</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs ruleslanguage"><span class="hljs-array"># </span>转换<span class="hljs-string">'INFANT_ALIVE_AT_REPORT'</span>
+recode_dictionary = {
+    <span class="hljs-string">'YNU'</span>: {
+        <span class="hljs-string">'Y'</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-string">'N'</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-string">'U'</span>: <span class="hljs-number">0</span>
+            }
+}</code></pre>
+
+
+
+
+<p>在这里总的来说，我们的目的就是一个二分类问题，即预测婴儿的存活情况，也就是“存活 1 ”或“死亡 0 ”。因为，要做到一种未雨绸缪的效果，我们要先去除所有与婴儿有关的特征信息，仅仅是通过婴儿父母的基本信息以及婴儿的出生地来预测一下婴儿出生后存活的概率。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selected_features</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">births_trimmed</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>在这个数据集中，大量的变量特征值都是Yes/No/Unknown值，我们将Yes编码成1，另外的其他值编码成0。</p>
+
+
+
+
+<p>而在代表怀孕妈妈的吸烟数量的这个特征值的编码上，我们采用这样的规则。0：代表妈妈在怀孕期间没有抽过烟；而1-97：代表妈妈在怀孕期间真实的抽烟次数，而98：则代表孕期抽烟次数高达98次及以上；但99：意味着妈妈的孕期抽烟情况未知。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="kn">as</span> <span class="nn">func</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">recode</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">recode_dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">correct_cig</span><span class="p">(</span><span class="n">feat</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">func</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">99</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>\
+</span><span class='line'>      <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">rec_integer</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">udf</span><span class="p">(</span><span class="n">recode</span><span class="p">,</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>由于Spark的机制问题，我们无法直接将DataFrame来用recode函数进行处理，所以我们首先要先它转换成Spark能够理解的UDF。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_trimmed</span> \
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">dataType</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">births_trimmed</span><span class="o">.</span><span class="n">schema</span><span class="p">]</span>
+</span><span class='line'><span class="n">YNU_cols</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+</span><span class='line'><span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">():</span>
+</span><span class='line'><span class="n">dis</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+</span><span class='line'><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
+</span><span class='line'><span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'><span class="k">if</span> <span class="s">&#39;Y&#39;</span> <span class="ow">in</span> <span class="n">dis</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">YNU_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>最后，为了一次性转换所有的 YNU_cols 数据，我们用以下的方法：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">exprs_YNU = [
+    rec_integer(x,
+    func.lit(<span class="hljs-string">'YNU'</span>)).alias(x)
+    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">in</span> YNU_cols
+    <span class="hljs-keyword">else</span> x
+    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> births_transformed.columns
+]
+births_transformed = births_transformed.select(exprs_YNU)</code></pre>
+
+
+
+
+<p>让我们来检查一下转换的结果吧：</p>
+
+
+
+
+<blockquote>
+  <p>births_transformed.select(YNU_cols[-5:]).show(5)</p>
+</blockquote>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cda7add15.png" alt="translate_res.png" title=""></p>
+
+
+
+
+<h3 id="数据预分析">数据预分析</h3>
+
+
+
+
+<p>为了建立一个良好的统计模型，我们首先需要了解清楚数据的组成分布以及背后的含义。</p>
+
+
+
+
+<p>下面我们可以通过Spark提供的一些函数来对数据进行描述性分析。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.stat</span> <span class="kn">as</span> <span class="nn">st</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="n">numeric_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">numeric_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">)</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+</span><span class='line'><span class="n">mllib_stats</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">colStats</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">variance</span><span class="p">()):</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}: </span><span class="se">\t</span><span class="s">{1:.2f} </span><span class="se">\t</span><span class="s"> {2:.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cf95819ec.png" alt="statics.png" title=""></p>
+
+
+
+
+<p>根据输出的统计结果我们可以看出：在婴儿父母的年龄对比上，妈妈是明显比爸爸年轻的。妈妈的平均年龄在28岁左右，而爸爸的平均年龄确是44岁。</p>
+
+
+
+
+<p>对于大部分的分类变量，我们也可以一一的来统计下他们的各个数值出现的频数：</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">columns</span>
+</span><span class='line'><span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_cols</span><span class="p">]</span>
+</span><span class='line'><span class="n">categorical_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">)</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">categorical_rdd</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">groupBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">(),</span>
+</span><span class='line'><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span><span class='line'><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d1109a62e.png" alt="frequence.png" title=""></p>
+
+
+
+
+<p>根据这次的结果，我们又可以看出大部分的婴儿都是在医院出现的（医院的出生地代号BIRTH_PLACE=1）</p>
+
+
+
+
+<h3 id="相关系数">相关系数</h3>
+
+
+
+
+<p>相关性的分析有利于我们发现特征变量中的多重共线性的情况，而多重共线性则是影响我们模型的鲁棒性的关键因素之一。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">corrs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">corrs</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">correlated</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">corrs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">correlated</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">correlated</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}-to-{1}: {2:.2f}&#39;</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>上面的代码会替我们计算特征变量之间的相关系数矩阵，并输出相关系数高于0.5的特征。</p>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d3831bd0f.png" alt="cor_matrix.png" title=""></p>
+
+
+
+
+<p>根据上图输出的结果，我们又可以看出 CIG_XXX 系列的特征都有些非常高的相关性，所以在这个系列的特征之中保留一个即可。 在这里我只保留 <strong>CIG_1_TRI</strong>这个特征。同理在WEIGHT系列中我只保留<strong>MOTHER_PRE_WEIGHT</strong>这个特征。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">features_to_keep</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">features_</span>
+</span><span class='line'><span class="n">to_keep</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="小结">小结</h3>
+
+
+
+
+<p>在这一篇实战的文章中，我讲解了：</p>
+
+
+
+
+<ul>
+<li>数据的载入和转换</li>
+<li>数据的描述性分析</li>
+<li>数据相关性分析</li>
+</ul>
+
+
+
+
+<p>限于时间和篇幅，我打算将有关分类变量的统计检验分析，以及最后的特征选取和建模放在下一篇文章之中，欢迎大家继续阅读我的下一篇文件。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-11-17T09:16:10+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/11/10/shen-ru-li-jie-spark-bian-cheng-mo-xing/" title="Previous Post: 深入理解Spark 编程模型">&laquo; 深入理解Spark 编程模型</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

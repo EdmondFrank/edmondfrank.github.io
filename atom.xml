@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-11-10T13:16:03+08:00</updated>
+  <updated>2017-11-17T09:21:30+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,488 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python在Spark上的机器学习之机器学习实战(上)]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/"/>
+    <updated>2017-11-17T09:16:10+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习之机器学习实战上">Python在Spark上的机器学习之机器学习实战(上)</h1></p>
+
+<h2 id="mllib-的使用">MLlib 的使用</h2>
+
+
+
+
+<p>在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。</p>
+
+
+
+
+<p><strong>MLlib</strong>：即Machine Learning Library，MLlib 是Spark对常用的机器学习算法的实现库，同时包括相关的测试和数据生成器。MLlib 目前支持四种常见的机器学习问题：二元分类，回归，聚类以及协同过滤，同时也包括一个底层的梯度下降优化基础算法。</p>
+
+
+
+
+<h3 id="载入和转化数据">载入和转化数据</h3>
+
+
+
+
+<p>首先，我们在建立一个DataFrame之前，我们先针对性的指定下DataFrame中数据类型，方便我们数据后期的分析与计算。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
+</span><span class='line'><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_YEAR&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_MONTH&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_RACE_6CODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;MONTH_PRECARE_RECODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_BREASTFED&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">())</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">([</span>
+</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">labels</span>
+</span><span class='line'><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>下一步，我们通过 <strong>.read.csv()</strong> 方法来载入数据，这个方法除了能够载入原数据之外还可以载入GZipped压缩后的csv数据。其实header参数设为 True 代表数据文件的第一行是数据的元信息（即为列表的说明字段）。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">births = spark.read.csv(<span class="hljs-string">'births_train.csv.gz'</span>,
+header=<span class="hljs-keyword">True</span>,
+schema=schema)</code></pre>
+
+
+
+
+<p>由于在我们的数据集中有大量的分类变量都是字符串，所以我们首先要想办法将这一类变量转换成数字的形式。</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs ruleslanguage"><span class="hljs-array"># </span>转换<span class="hljs-string">'INFANT_ALIVE_AT_REPORT'</span>
+recode_dictionary = {
+    <span class="hljs-string">'YNU'</span>: {
+        <span class="hljs-string">'Y'</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-string">'N'</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-string">'U'</span>: <span class="hljs-number">0</span>
+            }
+}</code></pre>
+
+
+
+
+<p>在这里总的来说，我们的目的就是一个二分类问题，即预测婴儿的存活情况，也就是“存活 1 ”或“死亡 0 ”。因为，要做到一种未雨绸缪的效果，我们要先去除所有与婴儿有关的特征信息，仅仅是通过婴儿父母的基本信息以及婴儿的出生地来预测一下婴儿出生后存活的概率。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selected_features</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">births_trimmed</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>在这个数据集中，大量的变量特征值都是Yes/No/Unknown值，我们将Yes编码成1，另外的其他值编码成0。</p>
+
+
+
+
+<p>而在代表怀孕妈妈的吸烟数量的这个特征值的编码上，我们采用这样的规则。0：代表妈妈在怀孕期间没有抽过烟；而1-97：代表妈妈在怀孕期间真实的抽烟次数，而98：则代表孕期抽烟次数高达98次及以上；但99：意味着妈妈的孕期抽烟情况未知。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="kn">as</span> <span class="nn">func</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">recode</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">recode_dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">correct_cig</span><span class="p">(</span><span class="n">feat</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">func</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">99</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>\
+</span><span class='line'>      <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">rec_integer</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">udf</span><span class="p">(</span><span class="n">recode</span><span class="p">,</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>由于Spark的机制问题，我们无法直接将DataFrame来用recode函数进行处理，所以我们首先要先它转换成Spark能够理解的UDF。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_trimmed</span> \
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">dataType</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">births_trimmed</span><span class="o">.</span><span class="n">schema</span><span class="p">]</span>
+</span><span class='line'><span class="n">YNU_cols</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+</span><span class='line'><span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">():</span>
+</span><span class='line'><span class="n">dis</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+</span><span class='line'><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
+</span><span class='line'><span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'><span class="k">if</span> <span class="s">&#39;Y&#39;</span> <span class="ow">in</span> <span class="n">dis</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">YNU_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>最后，为了一次性转换所有的 YNU_cols 数据，我们用以下的方法：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">exprs_YNU = [
+    rec_integer(x,
+    func.lit(<span class="hljs-string">'YNU'</span>)).alias(x)
+    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">in</span> YNU_cols
+    <span class="hljs-keyword">else</span> x
+    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> births_transformed.columns
+]
+births_transformed = births_transformed.select(exprs_YNU)</code></pre>
+
+
+
+
+<p>让我们来检查一下转换的结果吧：</p>
+
+
+
+
+<blockquote>
+  <p>births_transformed.select(YNU_cols[-5:]).show(5)</p>
+</blockquote>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cda7add15.png" alt="translate_res.png" title=""></p>
+
+
+
+
+<h3 id="数据预分析">数据预分析</h3>
+
+
+
+
+<p>为了建立一个良好的统计模型，我们首先需要了解清楚数据的组成分布以及背后的含义。</p>
+
+
+
+
+<p>下面我们可以通过Spark提供的一些函数来对数据进行描述性分析。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.stat</span> <span class="kn">as</span> <span class="nn">st</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="n">numeric_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">numeric_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">)</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+</span><span class='line'><span class="n">mllib_stats</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">colStats</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">variance</span><span class="p">()):</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}: </span><span class="se">\t</span><span class="s">{1:.2f} </span><span class="se">\t</span><span class="s"> {2:.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cf95819ec.png" alt="statics.png" title=""></p>
+
+
+
+
+<p>根据输出的统计结果我们可以看出：在婴儿父母的年龄对比上，妈妈是明显比爸爸年轻的。妈妈的平均年龄在28岁左右，而爸爸的平均年龄确是44岁。</p>
+
+
+
+
+<p>对于大部分的分类变量，我们也可以一一的来统计下他们的各个数值出现的频数：</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">columns</span>
+</span><span class='line'><span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_cols</span><span class="p">]</span>
+</span><span class='line'><span class="n">categorical_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">)</span>\
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">categorical_rdd</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">groupBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">(),</span>
+</span><span class='line'><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span><span class='line'><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d1109a62e.png" alt="frequence.png" title=""></p>
+
+
+
+
+<p>根据这次的结果，我们又可以看出大部分的婴儿都是在医院出现的（医院的出生地代号BIRTH_PLACE=1）</p>
+
+
+
+
+<h3 id="相关系数">相关系数</h3>
+
+
+
+
+<p>相关性的分析有利于我们发现特征变量中的多重共线性的情况，而多重共线性则是影响我们模型的鲁棒性的关键因素之一。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">corrs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">corrs</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">correlated</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">corrs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">correlated</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">correlated</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}-to-{1}: {2:.2f}&#39;</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>上面的代码会替我们计算特征变量之间的相关系数矩阵，并输出相关系数高于0.5的特征。</p>
+
+
+
+
+<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d3831bd0f.png" alt="cor_matrix.png" title=""></p>
+
+
+
+
+<p>根据上图输出的结果，我们又可以看出 CIG_XXX 系列的特征都有些非常高的相关性，所以在这个系列的特征之中保留一个即可。 在这里我只保留 <strong>CIG_1_TRI</strong>这个特征。同理在WEIGHT系列中我只保留<strong>MOTHER_PRE_WEIGHT</strong>这个特征。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">features_to_keep</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">features_</span>
+</span><span class='line'><span class="n">to_keep</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="小结">小结</h3>
+
+
+
+
+<p>在这一篇实战的文章中，我讲解了：</p>
+
+
+
+
+<ul>
+<li>数据的载入和转换</li>
+<li>数据的描述性分析</li>
+<li>数据相关性分析</li>
+</ul>
+
+
+
+
+<p>限于时间和篇幅，我打算将有关分类变量的统计检验分析，以及最后的特征选取和建模放在下一篇文章之中，欢迎大家继续阅读我的下一篇文件。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[深入理解Spark 编程模型]]></title>
@@ -6856,511 +7338,6 @@ The accuracy of our classifier is 98%</p></blockquote>
 </span><span class='line'>  <span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Python科学计算库NumPy的使用]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/"/>
-    <updated>2017-07-19T19:10:49+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong</id>
-    <content type="html"><![CDATA[<h1>Python科学计算库NumPy的使用</h1>
-
-<h2>NumPy的介绍</h2>
-
-<p>NumPy(Numerical Python的缩写)是一个开源的Python科学计算库。使用NumPy,就可以很自然地使用数组和矩阵。NumPy包含很多实用的数学函数,涵盖线性代数运算、傅里叶变换和随机数生成等功能。如果你的系统中已经装有LAPACK,NumPy的线性代数模块会调用它,否则NumPy将使用自己实现的库函数。LAPACK是一个著名的数值计算库,最初是用Fortran写成的,Matlab同样也需要调用它。从某种意义上讲,NumPy可以取代Matlab和Mathematica的部分功能,并且允许用户进行快速的交互式原型设计。</p>
-
-<h2>NumPy的数组对象</h2>
-
-<p>ndarray是一个多维数组对象，该对象由实际数据+描述性元数据组成。
-使用Numpy需要先安装和导入NumPy库，有关安装教程可以参考<a href="https://docs.scipy.org/doc/numpy/user/install.html">Installing NumPy</a></p>
-
-<blockquote><p>导入语法：import numpy as np</p></blockquote>
-
-<p>此处使用np为别名是为了避免命名空间被污染。</p>
-
-<p><strong>特点</strong>：</p>
-
-<ol>
-<li>NumPy数组一般是同质（即数组内的元素为相同类型，特殊类型除外）</li>
-<li>NumPy数组的下标也是从0开始</li>
-<li>可以方便地创建高维数组</li>
-</ol>
-
-
-<p><em>eg：</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>5<span class="o">)</span>
-</span><span class='line'>In: a.dtype
-</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;int64&#39;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而在32位系统中，得到的结果类型可能是int32。</p>
-
-<p><strong>多维数组的创建</strong>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">m</span> <span class="o">=</span> np.array<span class="o">([</span>np.arange<span class="o">(</span>2<span class="o">)</span>, np.arange<span class="o">(</span>2<span class="o">)])</span>
-</span><span class='line'>In: m
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span>0, 1<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>0, 1<span class="o">]])</span>
-</span><span class='line'>In: m.shape <span class="c">#shape可以输出数组行列（维度）信息</span>
-</span><span class='line'>Out: <span class="o">(</span>2, 2<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>选取数组元素</strong>：
-我们继续沿用上面创建的数组m</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: m<span class="o">[</span>0,0<span class="o">]</span>
-</span><span class='line'>Out: 0
-</span><span class='line'>In: m<span class="o">[</span>0,1<span class="o">]</span>
-</span><span class='line'>Out: 1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>是的,从数组中选取元素就是这么简单。对于数组 a ,只需要用 a[m,n] 选取各数组元素,其中 m 和 n 为元素下标。
-</code></pre>
-
-<p><strong>NumPy的数据类型</strong>:
-    Python支持的数据类型有整型、浮点型以及复数型,但这些类型不足以满足科学计算的需求,因此NumPy添加了很多其他的数据类型。在NumPy中,许多函数的参数中可以指定数据类型,通常这个参数是可选的:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.arange<span class="o">(</span>7, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
-</span><span class='line'>Out: array<span class="o">([</span>0, 1, 2, 3, 4, 5, 6<span class="o">]</span>, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中完整的数据类型可以通过np.sctypeDict.keys()查到：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>dict_keys<span class="o">([</span>0, 1, 2, 3, <span class="s1">&#39;D&#39;</span>, 5, 6, <span class="s1">&#39;ushort&#39;</span>, 8, <span class="s1">&#39;P&#39;</span>, 10, 11, 12, <span class="s1">&#39;uintp&#39;</span>, 14, 15, 16, 17, 18, 19, <span class="s1">&#39;Float16&#39;</span>, 21, 22, 23, <span class="s1">&#39;cfloat&#39;</span>, 4, <span class="s1">&#39;Object0&#39;</span>, <span class="s1">&#39;int32&#39;</span>, <span class="s1">&#39;UInt64&#39;</span>, <span class="s1">&#39;Complex128&#39;</span>, <span class="s1">&#39;uint0&#39;</span>, <span class="s1">&#39;i2&#39;</span>, 7, <span class="s1">&#39;Int16&#39;</span>, <span class="s1">&#39;int&#39;</span>, <span class="s1">&#39;complex&#39;</span>, <span class="s1">&#39;ubyte&#39;</span>, <span class="s1">&#39;Int32&#39;</span>, <span class="s1">&#39;float&#39;</span>, <span class="s1">&#39;i&#39;</span>, <span class="s1">&#39;short&#39;</span>, <span class="s1">&#39;B&#39;</span>, <span class="s1">&#39;str0&#39;</span>, 9, <span class="s1">&#39;complex_&#39;</span>, <span class="s1">&#39;O&#39;</span>, <span class="s1">&#39;long&#39;</span>, <span class="s1">&#39;bytes&#39;</span>, <span class="s1">&#39;float_&#39;</span>, <span class="s1">&#39;Int64&#39;</span>, <span class="s1">&#39;int0&#39;</span>, <span class="s1">&#39;Void0&#39;</span>, <span class="s1">&#39;float128&#39;</span>, <span class="s1">&#39;Float64&#39;</span>, <span class="s1">&#39;Str0&#39;</span>, <span class="s1">&#39;int64&#39;</span>, <span class="s1">&#39;b&#39;</span>, <span class="s1">&#39;longdouble&#39;</span>, <span class="s1">&#39;void&#39;</span>, <span class="s1">&#39;f&#39;</span>, <span class="s1">&#39;longcomplex&#39;</span>, <span class="s1">&#39;ulonglong&#39;</span>, <span class="s1">&#39;intp&#39;</span>, <span class="s1">&#39;UInt32&#39;</span>, <span class="s1">&#39;V&#39;</span>, <span class="s1">&#39;object_&#39;</span>, <span class="s1">&#39;longlong&#39;</span>, <span class="s1">&#39;csingle&#39;</span>, <span class="s1">&#39;uint&#39;</span>, <span class="s1">&#39;c32&#39;</span>, <span class="s1">&#39;M&#39;</span>, <span class="s1">&#39;I&#39;</span>, <span class="s1">&#39;singlecomplex&#39;</span>, <span class="s1">&#39;double&#39;</span>, <span class="s1">&#39;timedelta64&#39;</span>, <span class="s1">&#39;object&#39;</span>, <span class="s1">&#39;unicode_&#39;</span>, <span class="s1">&#39;Float128&#39;</span>, <span class="s1">&#39;uint64&#39;</span>, <span class="s1">&#39;h&#39;</span>, <span class="s1">&#39;str&#39;</span>, <span class="s1">&#39;d&#39;</span>, <span class="s1">&#39;UInt8&#39;</span>, 20, <span class="s1">&#39;complex128&#39;</span>, <span class="s1">&#39;string_&#39;</span>, <span class="s1">&#39;clongfloat&#39;</span>, <span class="s1">&#39;H&#39;</span>, <span class="s1">&#39;m8&#39;</span>, <span class="s1">&#39;clongdouble&#39;</span>, <span class="s1">&#39;S&#39;</span>, <span class="s1">&#39;g&#39;</span>, <span class="s1">&#39;bool_&#39;</span>, <span class="s1">&#39;unicode&#39;</span>, <span class="s1">&#39;f16&#39;</span>, 13, <span class="s1">&#39;int8&#39;</span>, <span class="s1">&#39;void0&#39;</span>, <span class="s1">&#39;L&#39;</span>, <span class="s1">&#39;M8&#39;</span>, <span class="s1">&#39;uint32&#39;</span>, <span class="s1">&#39;p&#39;</span>, <span class="s1">&#39;bytes0&#39;</span>, <span class="s1">&#39;e&#39;</span>, <span class="s1">&#39;datetime64&#39;</span>, <span class="s1">&#39;U&#39;</span>, <span class="s1">&#39;float16&#39;</span>, <span class="s1">&#39;c16&#39;</span>, <span class="s1">&#39;?&#39;</span>, <span class="s1">&#39;Bool&#39;</span>, <span class="s1">&#39;byte&#39;</span>, <span class="s1">&#39;i4&#39;</span>, <span class="s1">&#39;c8&#39;</span>, <span class="s1">&#39;int16&#39;</span>, <span class="s1">&#39;half&#39;</span>, <span class="s1">&#39;uint16&#39;</span>, <span class="s1">&#39;str_&#39;</span>, <span class="s1">&#39;i8&#39;</span>, <span class="s1">&#39;Complex32&#39;</span>, <span class="s1">&#39;Int8&#39;</span>, <span class="s1">&#39;bool&#39;</span>, <span class="s1">&#39;Bytes0&#39;</span>, <span class="s1">&#39;G&#39;</span>, <span class="s1">&#39;l&#39;</span>, <span class="s1">&#39;uint8&#39;</span>, <span class="s1">&#39;f2&#39;</span>, <span class="s1">&#39;single&#39;</span>, <span class="s1">&#39;f8&#39;</span>, <span class="s1">&#39;q&#39;</span>, <span class="s1">&#39;Q&#39;</span>, <span class="s1">&#39;m&#39;</span>, <span class="s1">&#39;Complex64&#39;</span>, <span class="s1">&#39;f4&#39;</span>, <span class="s1">&#39;u2&#39;</span>, <span class="s1">&#39;Float32&#39;</span>, <span class="s1">&#39;i1&#39;</span>, <span class="s1">&#39;u4&#39;</span>, <span class="s1">&#39;Datetime64&#39;</span>, <span class="s1">&#39;intc&#39;</span>, <span class="s1">&#39;float64&#39;</span>, <span class="s1">&#39;a&#39;</span>, <span class="s1">&#39;complex64&#39;</span>, <span class="s1">&#39;u1&#39;</span>, <span class="s1">&#39;bytes_&#39;</span>, <span class="s1">&#39;cdouble&#39;</span>, <span class="s1">&#39;object0&#39;</span>, <span class="s1">&#39;UInt16&#39;</span>, <span class="s1">&#39;bool8&#39;</span>, <span class="s1">&#39;float32&#39;</span>, <span class="s1">&#39;uintc&#39;</span>, <span class="s1">&#39;Timedelta64&#39;</span>, <span class="s1">&#39;F&#39;</span>, <span class="s1">&#39;longfloat&#39;</span>, <span class="s1">&#39;b1&#39;</span>, <span class="s1">&#39;u8&#39;</span>, <span class="s1">&#39;int_&#39;</span>, <span class="s1">&#39;complex256&#39;</span><span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>创建自定义数据类型</strong>：</p>
-
-<p>(1)创建数据类型</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">t</span> <span class="o">=</span> np.dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>,np.str_,128<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;count&#39;</span>,np.int32<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;price&#39;</span>,np.float64<span class="o">)])</span>
-</span><span class='line'>In: t
-</span><span class='line'>Out: dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>, <span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;count&#39;</span>, <span class="s1">&#39;&lt;i4&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;price&#39;</span>, <span class="s1">&#39;&lt;f8&#39;</span><span class="o">)])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)查看数据类型</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: t<span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span>
-</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)使用自定义数据</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">itemz</span> <span class="o">=</span> np.array<span class="o">([(</span><span class="s1">&#39;Meaning of life DVD&#39;</span>, 42, 3.14<span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)]</span>, <span class="nv">dtype</span><span class="o">=</span>t<span class="o">)</span>
-</span><span class='line'>In: itemz<span class="o">[</span>1<span class="o">]</span>
-</span><span class='line'>Out: <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>一维数组的索引和切片</strong>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>
-</span><span class='line'>In: a<span class="o">[</span>3:7<span class="o">]</span>
-</span><span class='line'>Out: array<span class="o">([</span>3, 4, 5, 6<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>多维数组索引和切片</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In： <span class="nv">b</span><span class="o">=</span>np.arange<span class="o">(</span>24<span class="o">)</span>.reshape<span class="o">(</span>2,3,4<span class="o">)</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out: array<span class="o">([[[</span> 0,  1,  2,  3<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 4,  5,  6,  7<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 8,  9, 10, 11<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>       <span class="o">[[</span>12, 13, 14, 15<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>16, 17, 18, 19<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>20, 21, 22, 23<span class="o">]]])</span>
-</span><span class='line'>In: b<span class="o">[</span>0,2,1<span class="o">]</span>
-</span><span class='line'>Out: 9-
-</span><span class='line'><span class="c">#我们还可以这样写,选取第0组的所有元素:</span>
-</span><span class='line'>In: b<span class="o">[</span>0,:,:<span class="o">]</span>
-</span><span class='line'>Out: array<span class="o">([[</span>
-</span><span class='line'>0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>4, 5, 6, 7<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>8, 9,10,11<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同时，b[0,:,:] == b[0,&hellip;]。</em>
-更多的多维数组的索引和切片操作可以参考<a href="https://docs.scipy.org/doc/numpy/reference/">NumPy使用手册</a></p>
-
-<p><strong>数组展平</strong>:</p>
-
-<p>(1)ravel</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b-
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[[</span> 0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]]</span>,
-</span><span class='line'><span class="o">[[</span>12,13,14,15<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]])</span>
-</span><span class='line'>In: b.ravel<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)flatten</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.flatten<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>flatten 和 ravel的区别在于：flatten函数会请求分配内存来保存结果，而reval函数只是返回数组的一个视图（view）</p>
-
-<p>(3)改变数组的shape属性</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.shape <span class="o">=</span> <span class="o">(</span>6,4<span class="o">)</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,-
-</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12,13,14,15<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]</span>,
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(4)transpose,相当与线性代数的转置</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.transpose<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span> 0, 4, 8,12,16,20<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 1, 5, 9,13,17,21<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 2, 6,10,14,18,22<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3, 7,11,15,19,23<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(5)resize，功能和reshape相同，但是resize会直接影响原操作数组</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.resize<span class="o">((</span>2,12<span class="o">))</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12,13,14,15,16,17,18,19,20,21, 22, 23<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>数组组合</strong>：</p>
-
-<p>(1)水平组合</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>.reshape<span class="o">(</span>3,3<span class="o">)</span>
-</span><span class='line'>In: <span class="nv">b</span><span class="o">=</span>2*a
-</span><span class='line'>In: np.hstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2,  0,  2,  4<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span> 3,  4,  5,  6,  8, 10<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span> 6,  7,  8, 12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同样可以使用concatenate函数实现同样效果</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>1<span class="o">)</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0, 1, 2, 0, 2, 4<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3, 4, 5, 6, 8,10<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6, 7, 8,12,14,16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)垂直组合</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsta-ck<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 3,  4,  5<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 6,  7,  8<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 0,  2,  4<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 6,  8, 10<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span>12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同样可以使用concatenate函数实现同样效果</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>0<span class="o">)</span>
-</span><span class='line'>Out: In: np.vstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3,  4,  5<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6,  7,  8<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 0,  2,  4<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6,  8, 10<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)深度组合</p>
-
-<p>深度组合,就是将一系列数组沿着纵轴(深度)方向进行层叠组合。举个例子,有若干张二维平面内的图像点阵数据,我们可以将这些图像数据沿纵轴方向层叠在一起,这就形象地解释了什么是深度组合。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[[</span> 0,  0<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 1,  2<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 2,  4<span class="o">]]</span>,
-</span><span class='line'>       <span class="o">[[</span> 3,  6<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 4,  8<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 5, 10<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>       <span class="o">[[</span> 6, 12<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 7, 14<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 8, 16<span class="o">]]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(4)列组合,column_stack 函数对于一维数组将按列方向进行组合,而对于二维数组, column_stack 与 hstack 的效果是相同的</p>
-
-<p>(5)行组合,当然,NumPy中也有按行方向进行组合的函数,它就是 row_stack 。对于两
-个一维数组,将直接层叠起来组合成一个二维数组。同样，对于二维数组，row_stack 与 vstack 的效果是相同的。</p>
-
-<p><strong>数组分割</strong>:</p>
-
-<p>NumPy数组可以进行水平、垂直或深度分割,相关的函数有 hsplit 、 vsplit 、 dsplit 和split 。我们可以将数组分割成相同大小的子数组,也可以指定原数组中需要分割的位置。</p>
-
-<p>(1)水平分割</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: a
-</span><span class='line'>Out: array<span class="o">([[</span>0, 1, 2<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span>3, 4, 5<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span>6, 7, 8<span class="o">]])</span>
-</span><span class='line'>In: np.hsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#沿水平方向分割成三个大小相同的子数组</span>
-</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[</span>0<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>3<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>6<span class="o">]])</span>, array<span class="o">([[</span>1<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>4<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>7<span class="o">]])</span>, array<span class="o">([[</span>2<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>5<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>8<span class="o">]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)垂直分割</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#在垂直方向上分割成三个大小相同的子数组</span>
-</span><span class='line'>Out： <span class="o">[</span>array<span class="o">([[</span>0, 1, 2<span class="o">]])</span>, array<span class="o">([[</span>3, 4, 5<span class="o">]])</span>, array<span class="o">([[</span>6, 7, 8<span class="o">]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)深度分割,dsplit函数将按深度方向分割数组。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dsplit<span class="o">(</span>np.arange<span class="o">(</span>27<span class="o">)</span>.reshape<span class="o">(</span>3,3,3<span class="o">)</span>,3<span class="o">)</span>
-</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[[</span> 0<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 3<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 6<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span> 9<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>12<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>15<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>18<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>21<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>24<span class="o">]]])</span>, array<span class="o">([[[</span> 1<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 4<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 7<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>10<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>13<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>16<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>19<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>22<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>25<span class="o">]]])</span>, array<span class="o">([[[</span> 2<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 5<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 8<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>11<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>14<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>17<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>20<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>23<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>26<span class="o">]]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同时，hsplit,vsplit同样也可以用函数split来实现，其使用就像上面的数组组合函数concatenate类似</em></p>
-
-<p><strong>到此，NumPy的常规的数组操作基本就结束了！</strong></p>
 ]]></content>
   </entry>
   
