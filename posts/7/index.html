@@ -9,10 +9,25 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="httpscan 爬虫扫描小工具 httpscan是一个扫描指定网段的Web主机的小工具。和端口扫描器不一样，httpscan是以爬虫的方式进行Web主机发现，因此相对来说不容易被防火墙拦截。
-httpscan会返回IP http状态码 Web容器版本 以及网站标题。 　 1
+  <meta name="description" content="Go语言var/init/main的执行顺序 执行顺序(降序): var
+init
+main 大家也可以亲自动手把下面的代码复制到Go Playground上执行看看! 示例代码 1
 2
-Usage：./ &hellip;">
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+package main var &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +82,109 @@ Usage：./ &hellip;">
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-23T18:04:40+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Go语言var/init/main的执行顺序</h1>
+
+<p>执行顺序(降序):</p>
+
+<ol>
+<li>var</li>
+<li>init</li>
+<li>main</li>
+</ol>
+
+
+<p>大家也可以亲自动手把下面的代码复制到<a href="https://play.golang.org/">Go Playground</a>上执行看看!</p>
+
+<h4>示例代码</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">someVar</span> <span class="p">=</span> <span class="nx">defaultVar</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.init was called&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.main was called&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">defaultVar</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.var was initialized&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>输出结果如下:</h4>
+
+<blockquote><p>main.var was initialized</p>
+
+<p>main.init was called</p>
+
+<p>main.main was called</p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a>
+      <time datetime="2016-06-23T18:04:40+08:00" pubdate><span class='month'>Jun</span> <span class='day'>23</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/wen-ti-ji/'>问题集</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>

@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(上) MLlib 的使用 在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。 MLlib：即Machine Learning &hellip;">
+  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(下) MLlib 的使用（续） 我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。 　统计校验 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,493 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-11-27T12:45:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战下">Python在Spark上的机器学习之机器学习实战(下)</h1></p>
+
+<h2 id="mllib-的使用续">MLlib 的使用（续）</h2>
+
+
+
+
+<p>我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。</p>
+
+
+
+
+<h3 id="统计校验">　统计校验</h3>
+
+
+
+
+<p>在通过特征变量的相关系数选择特征时，对于一般的分类变量而言，我们无法计算它们之间的相关系数，但是我们可以通过对它们进行卡方校验来检测它们的分布之间是否存在较大的差异。</p>
+
+
+
+
+<p><strong>卡方检验</strong>：是用途非常广的一种假设检验方法，它在分类资料统计推断中的应用，包括：两个样本率或两个构成比比较的卡方检验；多个样本率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
+
+
+
+
+<p><strong>卡方检验</strong>就是统计样本的实际观测值与理论推断值之间的偏离程度，实际观测值与理论推断值之间的偏离程度就决定卡方值的大小，卡方值越大，越不符合；卡方值越小，偏差越小，越趋于符合，若两个值完全相等时，卡方值就为0，表明理论值完全符合。</p>
+
+
+
+
+<p>而在PySpark中你可以用 <strong>.chiSqTest()</strong> 方法来轻松实现卡方检验。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.linalg</span> <span class="kn">as</span> <span class="nn">ln</span>
+</span><span class='line'><span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">agg_rdd</span> <span class="o">=</span> <span class="n">agg</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">row_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">Matrices</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">agg_rdd</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">chiSqTest</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>我们遍历所有的分类变量并以 <strong>infant_alive_ at_report</strong>进行分类统计。下一步，我们需要将其转化成RDD，所以我们要先利用pyspark.mllib.linalg模将它们转换成一个矩阵。 <br>
+当我们成功将其转换成矩阵的形式之后，我们就可以用<strong>.chiSqTest()</strong>来校验我们的结果。</p>
+
+
+
+
+<p>最后结果显示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/16/5a0daece4fae9.png" alt="chisqtest.png" title=""></p>
+
+
+
+
+<p>从结果我们可以看出，所有分类变量对理论值的预测都是有意义的，因此，我们在构建最后的预测模型的时候都要考虑上这些分类型特征变量。</p>
+
+
+
+
+<h3 id="创建最后的待训练数据集">创建最后的待训练数据集</h3>
+
+
+
+
+<p>经过一轮的数据分析和特征变量筛选之后，最终到了我们最终的建模阶段了。首先我们将筛选出来以DataFrame数据结构模型表达的数据转换成以LabeledPoints形式表示的RDD。</p>
+
+
+
+
+<p>LabeledPoint 是 MLlib 中的一种数据结构，它包含了两个属性值：label（标识），features（特征）一般用作机器学习模型的训练。</p>
+
+
+
+
+<p>其中，label就是我们目标的分类的标识而features就是我们用于分类的特征， <br>
+通常是一个Numpy 数组，列表，psyspark.mllib.linalg.SparseVector,pyspark.mllib,linalg.DenseVector或者是scipy.sparse的形式。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">as</span> <span class="nn">ft</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.regression</span> <span class="kn">as</span> <span class="nn">reg</span>
+</span><span class='line'><span class="n">hashing</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">HashingTF</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="n">births_hashed</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="nb">list</span><span class="p">(</span><span class="n">hashing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">toArray</span><span class="p">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s">&#39;BIRTH_PLACE&#39;</span>
+</span><span class='line'>          <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span>
+</span><span class='line'>      <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_to_keep</span><span class="p">)])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[[</span><span class="n">e</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">e</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">row</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span class='line'>      <span class="n">ln</span><span class="o">.</span><span class="n">Vectors</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="划分训练集和测试集">划分训练集和测试集</h3>
+
+
+
+
+<p>形如sklearn.model_selection.train_test_split随机划分训练集和测试集的模块一般，在PySpark中RDDs也有一个便利的<strong>.randomSplit(…)</strong>方法用于随机划分训练集和测试集。</p>
+
+
+
+
+<p>在本例中可以这样使用</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">births_train, births_test = births_hashed.randomSplit([<span class="hljs-number">0.6</span>, <span class="hljs-number">0.4</span>])</code></pre>
+
+
+
+
+<p>没错，仅仅需要上面这样一行的代码，我们就可以将我们的待训练数据按照随机60%，40%来划分好我们的训练集和测试集了。</p>
+
+
+
+
+<h3 id="开始建模">开始建模</h3>
+
+
+
+
+<p>在一切准备就绪之后，我们就可以开始通过我们上面的训练数据集来建模了。在这里我们来尝试建立两个模型：一个线性的Logistic回归模型，一个非线性的随机森林模型。然后，在初次建模的时候，我们先采用筛选出来的全部特征来建模，然后我们再通过<strong>ChiSqSelector（…）</strong>方法来归纳出最能代表全部整体的四个主成分。</p>
+
+
+
+
+<h4 id="logistic-回归模型">Logistic 回归模型</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.classification</span> \
+</span><span class='line'><span class="kn">import</span> <span class="n">LogisticRegressionWithLBFGS</span>
+</span><span class='line'><span class="n">LR_Model</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">births_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">LR_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">births_test</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.evaluation</span> <span class="kn">as</span> <span class="nn">ev</span>
+</span><span class='line'><span class="n">LR_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>从上面的建模过程可以看出，使用PySpark训练一个模型也是非常简单的。我们只需要调用<strong>.train(…)</strong>方法，并传入之前处理好的LabeledPoints数据即可。不过需要注意的一点是我们要提前指定一个较小训练的迭代次数以免训练时间过长。</p>
+
+
+
+
+<p>同时，在上面的代码中，我们在训练完一个模型之后使用MLlib中为我们提供的评估分类和回归准确度的<strong>.BinaryClassificationMetrics（…）</strong>方法来分析我们最后预测的结果。</p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc13a5ea1a.png" alt="logistic_roc.png" title=""></p>
+
+
+
+
+<p>通过PR，ROC的结果，我们可以看出，这个模型还是可接受的。</p>
+
+
+
+
+<h3 id="选取出最具代表性的分类特征">选取出最具代表性的分类特征</h3>
+
+
+
+
+<p>通常来说，一个采取更少的特征的简单模型，往往会比一个复杂的模型，在分类问题上更具有代表性和可解释性。而在MLlib中，则可以通过<strong>.Chi-Square selector</strong>来提取出模型中最具代表性的一些分类特征变量来简化我们的模型。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selector</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">ChiSqSelector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">births_train</span><span class="p">)</span>
+</span><span class='line'><span class="n">topFeatures_train</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_train</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_train</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'>  <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span class='line'><span class="n">topFeatures_test</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_test</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="随机森林模型">随机森林模型</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.tree</span> <span class="kn">import</span> <span class="n">RandomForest</span>
+</span><span class='line'><span class="n">RF_model</span> <span class="o">=</span> <span class="n">RandomForest</span> \
+</span><span class='line'><span class="o">.</span><span class="n">trainClassifier</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">topFeatures_train</span><span class="p">,</span>
+</span><span class='line'><span class="n">numClasses</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'><span class="n">categoricalFeaturesInfo</span><span class="o">=</span><span class="p">{},</span>
+</span><span class='line'><span class="n">numTrees</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+</span><span class='line'><span class="n">featureSubsetStrategy</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="n">seed</span><span class="o">=</span><span class="mi">666</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">RF_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">RF_model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="n">RF_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">RF_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">model_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>随机森林模型（Random forest 后面简称RF）在训练上总体与Logistic类似，不同的参数是RF在训练前需要指定类别总数：numClasses，树的棵数：numTrees（这两个参数的意义大家可以参照下随机森林模型的<a href="https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/1974765?fr=aladdin">百科介绍</a>）</p>
+
+
+
+
+<p><strong>注：在随机森林模型的创建中，我们采用的是上面提取出来的最具代表性的有效特征，这就意味着模型用到的特征是比之前的Logistic要少的。</strong></p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc8621d985.png" alt="rf_roc.png" title=""></p>
+
+
+
+
+<p>通过结果我们可以看出，随机森林模型，在采用比之前更少的特征下的建模的最终预测效果是由于之前的Logistic回归模型的。</p>
+
+
+
+
+<p>下面我们同样使用代表性特征来重建一次Logistic回归模型</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">LR_Model_2</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">topFeatures_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">LR_results_2</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model_2</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results_2</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终结果： <br>
+<img src="https://i.loli.net/2017/11/17/5a0dc9d2aa75c.png" alt="logistic_lbfgs.png" title=""></p>
+
+
+
+
+<p>通过结果，我们可以看出，虽然没有达到RF模型的准确度，但是与采用了全特征的Logistic回归模型处于同一水平。所以，我们在可选的情况下，通常采用更少的特征来构建更为简化和有效的模型。</p>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
+      <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -3562,478 +4049,6 @@ rdd.foreach(println)</code></pre>
       
       - <a href="/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/">机器学习之梯度下降</a>
       <time datetime="2017-09-30T20:19:04+08:00" pubdate><span class='month'>Sep</span> <span class='day'>30</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong/">Python 实现推荐系统</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-09-24T10:51:37+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1 id="python-实现推荐系统">Python 实现推荐系统</h1>
-
-
-
-
-<h2 id="引言">引言</h2>
-
-
-
-
-<p>最早的推荐系统应该是亚马逊为了提升长尾货物的用户抵达率而发明的。已经有数据证明，长尾商品的销售额以及利润总和与热门商品是基本持平的。亚马逊网站上在线销售的商品何止百万，但首页能够展示的商品数量又极其有限，给用户推荐他们可能喜欢的商品就成了一件非常重要的事情。当然，商品搜索也是一块大蛋糕，亚马逊的商品搜索早已经开始侵蚀谷歌的核心业务了。</p>
-
-
-
-
-<p>从这些例子之中，我们可以看到我们能够使用许多不同的方式来搜集兴趣偏好。有时候，这些数据可能来自人们购买的商品，以及这些商品关联的评价信息。我们可以利用一组算法从中挖掘，建立几个有意思的推荐系统。</p>
-
-
-
-
-<h2 id="推荐系统的简介">推荐系统的简介</h2>
-
-
-
-
-<p>两种最普遍的推荐系统的类型是基于内容的推荐系统和协同过滤推荐系统（CF）。协同过滤基于用户对产品的态度产生推荐，基于内容的推荐系统基于物品属性的相似性进行推荐。CF可以分为基于内存的协同过滤和基于模型的协同过滤。</p>
-
-
-
-
-<h3 id="基于内容推荐">基于内容推荐</h3>
-
-
-
-
-<p><strong>基于内容的推荐（Content-based Recommendation）</strong>，它是建立在项目的内容信息上作出推荐的，而不需要依据用户对项目的评价意见，更多地需要用机器学习的方法从关于内容的特征描述的事例中得到用户的兴趣资料。在基于内容的推荐系统中，项目或对象是通过相关的特征的属性来定义，系统基于用户评价对象的特征，学习用户的兴趣，考察用户资料与待预测项目的相匹配程度。用户的资料模型取决于所用学习方法，常用的有决策树、神经网络和基于向量的表示方法等。</p>
-
-
-
-
-<h4 id="基于内容推荐方法的优点是">基于内容推荐方法的优点是：</h4>
-
-
-
-
-<ul>
-<li>不需要其它用户的数据，没有冷开始问题和稀疏问题。</li>
-<li>能为具有特殊兴趣爱好的用户进行推荐。</li>
-<li>能推荐新的或不是很流行的项目，没有新项目问题。</li>
-<li>通过列出推荐项目的内容特征，可以解释为什么推荐那些项目。</li>
-<li>已有比较好的技术，如关于分类学习方面的技术已相当成熟。</li>
-</ul>
-
-
-
-
-<h4 id="缺点是">缺点是:</h4>
-
-
-
-
-<p>要求内容能容易抽取成有意义的特征，要求特征内容有良好的结构性，并且用户的口味必须能够用内容特征形式来表达，不能显式地得到其它用户的判断情况。</p>
-
-
-
-
-<h3 id="协同过滤推荐">协同过滤推荐</h3>
-
-
-
-
-<p><strong>协同过滤推荐（Collaborative Filtering Recommendation）</strong>，是推荐系统中应用最早和最为成功的技术之一。它一般采用最近邻技术，利用用户的历史喜好信息计算用户之间的距离，然后利用目标用户的最近邻居用户对商品评价的加权评价值来预测目标用户对特定商品的喜好程度，系统从而根据这一喜好程度来对目标用户进行推荐。协同过滤最大优点是对推荐对象没有特殊的要求，能处理非结构化的复杂对象，如音乐、电影。</p>
-
-
-
-
-<p>协同过滤是基于这样的假设：为一用户找到他真正感兴趣的内容的好方法是首先找到与此用户有相似兴趣的其他用户，然后将他们感兴趣的内容推荐给此用 户。其基本思想非常易于理解，在日常生活中，我们往往会利用好朋友的推荐来进行一些选择。协同过滤正是把这一思想运用到电子商务推荐系统中来，基于其他用 户对某一内容的评价来向目标用户进行推荐。</p>
-
-
-
-
-<p>基于协同过滤的推荐系统可以说是从用户的角度来进行相应推荐的，而且是自动的即用户获得的推荐是系统从购买模式或浏览行为等隐式获得的，不需要用户努力地找到适合自己兴趣的推荐信息，如填写一些调查表格等。</p>
-
-
-
-
-<p>和基于内容的过滤方法相比，</p>
-
-
-
-
-<h4 id="协同过滤具有如下的优点">协同过滤具有如下的优点：</h4>
-
-
-
-
-<ul>
-<li>能够过滤难以进行机器自动内容分析的信息，如艺术品，音乐等。</li>
-<li>共享其他人的经验，避免了内容分析的不完全和不精确，并且能够基于一些复杂的，难以表述的概念（如信息质量、个人品味）进行过滤。</li>
-<li>有推荐新信息的能力。可以发现内容上完全不相似的信息，用户对推荐信息的内容事先是预料不到的。这也是协同过滤和基于内容的过滤一个较大的差别，基于内容的过滤推荐很多都是用户本来就熟悉的内容，而协同过滤可以发现用户潜在的但自己尚未发现的兴趣偏好。</li>
-<li>能够有效的使用其他相似用户的反馈信息，较少用户的反馈量，加快个性化学习的速度。</li>
-</ul>
-
-
-
-
-<h4 id="缺点是-1">缺点是：</h4>
-
-
-
-
-<p>最典型的问题有， <br>
-稀疏问题（Sparsity） <br>
-可扩展问题（Scalability） <br>
-冷启动问题</p>
-
-
-
-
-<h2 id="实例应用">实例应用</h2>
-
-
-
-
-<p>我们下面通过使用MovieLens数据集（这是一个有关电影评分的经典数据集， 其中Movielens-100k和movielens-1M有用户对电影的打分，电影的title、genre、IMDB链接、用户的gender、age、occupation、zip code。movielens-10M中还有用户对电影使用的tag信息。）</p>
-
-
-
-
-<p>数据集的<a href="http://files.grouplens.org/datasets/movielens/ml-100k.zip">下载地址</a></p>
-
-
-
-
-<h3 id="数据读取">数据读取</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;user_id&#39;</span><span class="p">,</span><span class="s">&#39;item_id&#39;</span><span class="p">,</span><span class="s">&#39;rating&#39;</span><span class="p">,</span><span class="s">&#39;timestamp&#39;</span><span class="p">]</span>
-</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;/home/ef/Desktop/ml-100k/u.data&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="n">n_users</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">user_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'><span class="n">n_items</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">item_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Number of users = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_users</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; | Number of movies = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_items</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果： <br>
-     user_id  item_id  rating  timestamp <br>
-  0      196      242       3  881250949 <br>
-  1      186      302       3  891717742 <br>
-  2       22      377       1  878887116 <br>
-  3      244       51       2  880606923 <br>
-  4      166      346       1  886397596 <br>
-  Number of users = 943 | Number of movies = 1682</p>
-</blockquote>
-
-
-
-
-<h3 id="数据划分">数据划分</h3>
-
-
-
-
-<p>使用scikit-learn库来划分数据集</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">cross_validation</span> <span class="k">as</span> <span class="n">cv</span>
-</span><span class='line'><span class="n">X_train</span><span class="p">,</span><span class="n">x_test</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="基于内存的协同过滤">基于内存的协同过滤</h3>
-
-
-
-
-<p>基于内存的协同过滤方法可以分为两个部分：</p>
-
-
-
-
-<ul>
-<li>用户－产品协同过滤，即：基于用户的协同过滤推荐</li>
-<li>产品－产品协同过滤，即：基于物品的协同过滤推荐</li>
-</ul>
-
-
-
-
-<p>基于用户的协同过滤推荐，将选取一个特定的用户，基于打分的相似性发现类似于该用户的用户，并推荐那些相似用户喜欢的产品。基于物品的协同过滤推荐会选取一个产品，发现喜欢该产品的用户，并找到这些相似用户还喜欢的其它产品。</p>
-
-
-
-
-<p>基于用户的协同过滤推荐：“喜欢这东西的人也喜欢……” <br>
-基于物品的协同过滤推荐：“像你一样的人也喜欢（买个该商品的还买了）……”</p>
-
-
-
-
-<p>在这两种情况下，从整个数据集构建一个用户产品矩阵。</p>
-
-
-
-
-<h4 id="用户产品矩阵的例子">用户产品矩阵的例子：</h4>
-
-
-
-
-<p>计算相似性，并创建一个相似性矩阵。 <br>
-通常用于推荐系统中的距离矩阵是余弦相似性，其中，打分被看成n维空间中的向量，而相似性是基于这些向量之间的角度进行计算的。用户a和b的余弦相似性可以用下面的公式进行计算：</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-1">Similar_u^{cos}(U_a,U_b)=\frac{U_a*U_b}{||U_a|| * ||U_b||} = \frac {\sum x_{a,m}x_{b,m}}{\sqrt {\sum x^2_{a,m}\sum x^2_{b,m} }}</script></p>
-
-
-
-
-<p>同时，物品a和b的相似读也可以写成以上形式。</p>
-
-
-
-
-<p>创建用户产品矩阵，针对测试数据和训练数据，创建两个矩阵：</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">cross_validation</span> <span class="k">as</span> <span class="n">cv</span>
-</span><span class='line'><span class="n">X_train</span><span class="p">,</span><span class="n">x_test</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">train_data_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_users</span><span class="p">,</span><span class="n">n_items</span><span class="p">))</span>
-</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">X_train</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-</span><span class='line'>    <span class="n">train_data_matrix</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-</span><span class='line'><span class="n">test_data_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_users</span><span class="p">,</span> <span class="n">n_items</span><span class="p">))</span>
-</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">x_test</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-</span><span class='line'>    <span class="n">test_data_matrix</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">## 通过余弦相似度计算用户和物品的相似度</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
-</span><span class='line'><span class="n">user_similarity</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">train_data_matrix</span><span class="p">,</span> <span class="n">metric</span> <span class="o">=</span> <span class="s">&quot;cosine&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">item_similarity</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">train_data_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">metric</span> <span class="o">=</span> <span class="s">&quot;cosine&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h4 id="评估">评估</h4>
-
-
-
-
-<p>这里采用均方根误差(RMSE)来度量预测评分的准确性,可以使用sklearn的mean_square_error(MSE)函数，其中RMSE仅仅是MSE的平方根。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">rmse</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">prediction</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">[</span><span class="n">ground_truth</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">ground_truth</span> <span class="o">=</span> <span class="n">ground_truth</span><span class="p">[</span><span class="n">ground_truth</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;User based CF RMSE: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">user_prediction</span><span class="p">,</span> <span class="n">test_data_matrix</span><span class="p">)))</span>
-</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;Item based CF RMSe: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">item_prediction</span><span class="p">,</span> <span class="n">test_data_matrix</span><span class="p">)))</span>
-</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;User based CF RMSE: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">user_prediction</span><span class="p">,</span> <span class="n">test_data_matrix</span><span class="p">)))</span>
-</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&#39;Item based CF RMSe: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">item_prediction</span><span class="p">,</span> <span class="n">test_data_matrix</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果： <br>
-  User based CF RMSE: 3.087357412872858 <br>
-  Item based CF RMSe: 3.437038163412728</p>
-</blockquote>
-
-
-
-
-<p>但从结果来看，算法的推荐效果还算理想。</p>
-
-
-
-
-<h3 id="基于模型的协同过滤">基于模型的协同过滤</h3>
-
-
-
-
-<p>基于模型的协同过滤是基于<strong>矩阵分解(MF)的</strong>，矩阵分解广泛应用于推荐系统中，它比基于内存的CF有更好的扩展性和稀疏性。MF的目标是从已知的评分中学习用户的潜在喜好和产品的潜在属性，随后通过用户和产品的潜在特征的点积来预测未知的评分。 <br>
-这是一个典型的机器学习的问题，可以将已有的用户喜好信息作为训练样本，训练出一个预测用户喜好的模型，这样以后用户在进入系统，可以基于此模型计算推荐。这种方法的问题在于如何将用户实时或者近期的喜好信息反馈给训练好的模型，从而提高推荐的准确度。</p>
-
-
-
-
-<h4 id="svd">SVD</h4>
-
-
-
-
-<p>SVD即：<strong>奇异值分解（Singular value decomposition）</strong>奇异值分解是线性代数中一种重要的矩阵分解，在信号处理、统计学等领域有重要应用。奇异值分解在某些方面与对称矩阵或Hermite矩阵基于特征向量的对角化类似。然而这两种矩阵分解尽管有其相关性，但还是有明显的不同。对称阵特征向量分解的基础是谱分析，而奇异值分解则是谱分析理论在任意矩阵上的推广。</p>
-
-
-
-
-<p>在矩阵M的奇异值分解中</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-2">M=UΣV^T</script> </p>
-
-
-
-
-<ul>
-<li><strong>U的列(columns)</strong>组成一套对M的正交”输入”或”分析”的基向量。这些向量是MM*的特征向量。</li>
-<li><strong>V的列(columns)</strong>组成一套对M的正交”输出”的基向量。这些向量是M*M的特征向量。</li>
-<li><strong>Σ对角线上的元素</strong>是奇异值，可视为是在输入与输出间进行的标量的”膨胀控制”。这些是M*M及MM*的奇异值，并与U和V的列向量相对应。</li>
-</ul>
-
-
-
-
-<p>那么矩阵M就可以分解成U，Σ，V。 <br>
-U矩阵表示对应于隐藏特性空间中的用户的特性矩阵，而V矩阵表示对应于隐藏特性空间中的产品的特性矩阵。</p>
-
-
-
-
-<p>现在，我们可以通过U，Σ和<script type="math/tex" id="MathJax-Element-3">V^T</script>的点积进行预测了。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 计算矩阵的稀疏度</span>
-</span><span class='line'><span class="n">sparsity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_users</span><span class="o">*</span><span class="n">n_items</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;The sparsity level of MovieLen100K is &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sparsity</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;%&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sp</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">svds</span>
-</span><span class='line'><span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vt</span> <span class="o">=</span> <span class="n">svds</span><span class="p">(</span><span class="n">train_data_matrix</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
-</span><span class='line'><span class="n">s_diag_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-</span><span class='line'><span class="n">x_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">s_diag_matrix</span><span class="p">),</span><span class="n">vt</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;User-based CF MSE: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmse</span><span class="p">(</span><span class="n">x_pred</span><span class="p">,</span> <span class="n">test_data_matrix</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果： <br>
-  The sparsity level of MovieLen100K is 93.7% <br>
-  User-based CF MSE: 2.63901831155016</p>
-</blockquote>
-
-
-
-
-<p>最后，我们可以发现，采用SVD分解矩阵的基于模型的协同过滤方法在推荐的表现上更胜一筹。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong/">Python 实现推荐系统</a>
-      <time datetime="2017-09-24T10:51:37+08:00" pubdate><span class='month'>Sep</span> <span class='day'>24</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
