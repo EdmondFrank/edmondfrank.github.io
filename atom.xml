@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2017-12-08T12:54:09+08:00</updated>
+  <updated>2017-12-14T23:46:09+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,384 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[传统机器学习走向神经网络]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/"/>
+    <updated>2017-12-14T23:43:13+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="传统机器学习走向神经网络">传统机器学习走向神经网络</h1></p>
+
+<h2 id="神经网络的基本结构">神经网络的基本结构</h2>
+
+
+
+
+<p>首先我们先来看一下最基础的神经网络结构： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgm7cftunj20kf0ckaep.jpg" alt="" title=""></p>
+
+
+
+
+<p>由上图的结构可以看出，这个神经网络具有三层，其中输入层不计。而中间的橙色层则为两层隐藏层，最右的蓝色层为输出层。输入从最左边的输入层进行输入，然后经过两次隐藏层和激活函数之后进行输出，这样我们可以把这个神经网络简单地表示成一下的式子： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-82">Y_{out} = W_iX_{in}+B</script> <br>
+W为X的权重，而B为函数的偏置。 <br>
+其中，偏置值B的存在有利于打破数据对称的局面，使得神经网络可以应用在非对称的数据之上。</p>
+
+
+
+
+<h2 id="神经网络的基本算法">神经网络的基本算法</h2>
+
+
+
+
+<p>前向传导：前向传导的思想比较简单，下面的一张图足以概括它的主要思想。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp39x2ltj20oh0gydi9.jpg" alt="" title=""></p>
+
+
+
+
+<p>反向传播：反向传播的方法其实也比较简单，其主要思想是涉及求偏导，以及链式求导法则。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp6qj2wlj20mj0i441b.jpg" alt="" title=""></p>
+
+
+
+
+<p>梯度下降：梯度下降法是一个最优化算法，通常也称为最速下降法。最速下降法是求解无约束优化问题最简单和最古老的方法之一，虽然现已不具有实用性，但是许多有效算法都是以它为基础进行改进和修正而得到的。最速下降法是用负梯度方向为搜索方向的，最速下降法越接近目标值，步长越小，前进越慢。</p>
+
+
+
+
+<h2 id="朴素贝叶斯和神经网络">朴素贝叶斯和神经网络</h2>
+
+
+
+
+<p>首先朴素贝叶斯算法的原始形式可以表达成以下的形式： <br>
+<script type="math/tex" id="MathJax-Element-1467">G(x)=arg\  max\ p(y)  
+\prod\limits^n_{i=1}p(x_i|y)^{x_i}</script></p>
+
+
+
+
+<p>除此之外，该算法还有一下特点： <br>
+<script type="math/tex" id="MathJax-Element-1468">x_i只有0，1两种取值</script> <br>
+<script type="math/tex" id="MathJax-Element-1469">x_i取1意味着x_i对应了的特征“出现了”</script>  <br>
+<script type="math/tex" id="MathJax-Element-1470">x_i取0意味着x_i对应了的特征“没出现”</script></p>
+
+
+
+
+<p>这样转换成矩阵的形式时，我们可以采用独热编码亦称One-hot Encode。 <br>
+独热编码：</p>
+
+
+
+
+<p>解决了分类标签的问题，那么我们又该怎样用神经网络的线性模型形式来表达贝叶斯公式中概率相乘的情况呢？</p>
+
+
+
+
+<p>没错，就是使用对数函数。根据对数函数的性质<script type="math/tex" id="MathJax-Element-1471">log_2X+log_2Y=log_2XY</script>,我们就可以通过对数变换，将乘法转换成加法的形式，我们可以把上面的朴素贝叶斯公式改写成： <br>
+<script type="math/tex" id="MathJax-Element-1472">G(x)=arg\ max\ log(y)+\sum\limits^n_{i=1}x_ilog\ p(x_i|y)</script></p>
+
+
+
+
+<p>那么我们就可以用退化成线性模型的神经网络来实现朴素贝叶斯模型。</p>
+
+
+
+
+<h3 id="核心实现">核心实现</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 独热化处理部分</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
+</span><span class='line'><span class="n">enc</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
+</span><span class='line'><span class="n">x_train</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</span><span class='line'><span class="n">x_test</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## .....篇幅有限,此处省略其余代码</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># NaiveBayes -&gt; NN 权值转换部分</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">NB2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">NB2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;NaiveBayes&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">nb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="s">&quot;Naive Bayes&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">feature_log_prob_</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">class_log_prior_</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="决策树贝叶斯和神经网络">决策树贝叶斯和神经网络</h2>
+
+
+
+
+<p>首先，决策树的原理主要就是通过数据信息熵的变化来选择当前的最优分类点，然后从根开始一步一步扩展成树。而实质上，最后成功构建出来的决策树，其从根节点开始到每个分类叶子节点的路径对应的都是一组高维空间上的超平面组合。决策树的分类也就是用一组超平面去划分数据空间，使得最后剩下一个唯一确定的标识。</p>
+
+
+
+
+<p>知道决策树的本质之后，我们就可以用这样的方法来将决策树算法迁移到神经网络上： <br>
+* 第一个隐藏层表达决策树的中间节点所对应的超平面 <br>
+* 第二个隐藏层表达各个决策的路径 <br>
+* 第二个隐藏层和输出层之间的权值矩阵表达各个叶节点</p>
+
+
+
+
+<h3 id="核心实现-1">核心实现</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">## 因为决策树到神经网络的转换较为复杂,此处仅贴出核心代码</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">DT2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">DT2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;DTree&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;sign&quot;</span><span class="p">,</span> <span class="s">&quot;one_hot&quot;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">tree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">tree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s">&quot;Decision Tree&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">tree_structure</span> <span class="o">=</span> <span class="n">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">n_leafs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">])</span>
+</span><span class='line'>        <span class="n">n_internals</span> <span class="o">=</span> <span class="n">n_leafs</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Internals : {} ; Leafs : {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_internals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_leafs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_class</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">node_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">node_sign_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">node_id_cursor</span> <span class="o">=</span> <span class="n">leaf_id_cursor</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">max_route_length</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">feat_dim</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">):</span>
+</span><span class='line'>                    <span class="n">node_sign_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node_id_cursor</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span><span class="p">])</span>
+</span><span class='line'>                    <span class="n">w1</span><span class="p">[</span><span class="n">feat_dim</span><span class="p">,</span> <span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                    <span class="n">b</span><span class="p">[</span><span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">rs</span>
+</span><span class='line'>                    <span class="n">node_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[:</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>                    <span class="n">node_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:</span><span class="n">depth</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">valid_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span class='line'>                <span class="n">local_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:]</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_dim</span><span class="p">,</span> <span class="n">node_threshold</span><span class="p">),</span> <span class="n">node_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+</span><span class='line'>                    <span class="nb">zip</span><span class="p">(</span><span class="n">node_list</span><span class="p">,</span> <span class="n">node_sign_list</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">):</span>
+</span><span class='line'>                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span><span class="p">))</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_dim</span><span class="p">,</span> <span class="n">local_threshold</span><span class="p">),</span> <span class="n">local_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+</span><span class='line'>                            <span class="n">node_list</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">local_sign_list</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>                        <span class="p">)):</span>
+</span><span class='line'>                            <span class="k">if</span> <span class="n">node_sign</span> <span class="o">==</span> <span class="n">local_sign</span> <span class="ow">and</span> <span class="n">node_dim</span> <span class="o">==</span> <span class="n">local_dim</span><span class="p">:</span>
+</span><span class='line'>                                <span class="k">if</span> <span class="p">(</span>
+</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&lt;</span> <span class="n">local_threshold</span><span class="p">)</span> <span class="ow">or</span>
+</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&gt;</span> <span class="n">local_threshold</span><span class="p">)</span>
+</span><span class='line'>                                <span class="p">):</span>
+</span><span class='line'>                                    <span class="n">local_sign_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_sign</span><span class="p">))</span>
+</span><span class='line'>                                    <span class="k">break</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span> <span class="ow">in</span> <span class="n">valid_nodes</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">w2</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_sign</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">max_route_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_route_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">))</span>
+</span><span class='line'>                <span class="n">w3</span><span class="p">[</span><span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">leaf_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">w2</span> <span class="o">*=</span> <span class="n">max_route_length</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">]</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#................ 篇幅有限,省略其余代码</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># DTree -&gt; NN</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">tree_</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">feature_dim</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">feature</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">feature_dim</span> <span class="o">==</span> <span class="n">_tree</span><span class="o">.</span><span class="n">TREE_UNDEFINED</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">threshold</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
+</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_left</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
+</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_right</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">recurse</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="模型改进">模型改进</h2>
+
+
+
+
+<h3 id="对于朴素贝叶斯">对于朴素贝叶斯</h3>
+
+
+
+
+<p>根据上述的原理和理论，我们可以将朴素贝叶斯和决策树转换成神经网络模型，但是转换之后是否存在意义呢？</p>
+
+
+
+
+<p><strong>首先</strong>本身可以通过简单log对数转换成线性模型的朴素贝叶斯算法来说，其转换的步骤并不复杂，但却能够对朴素贝叶斯的独立假设进行一定的微调修正。</p>
+
+
+
+
+<h3 id="对于决策树">对于决策树</h3>
+
+
+
+
+<p>那么对于决策树来说，神经网络的介入可以对决策树的硬边界作一定的修正和“软化”作用。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[深度学习入门简介（二）]]></title>
@@ -7240,226 +7618,6 @@ Mac OS <span class="hljs-special">&amp;</span> MacTeX <span class="hljs-special"
 
 
 <p>最后，有关Fisher算法的介绍也就到此结束了！</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[K-近邻算法-Part2]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2/"/>
-    <updated>2017-08-23T12:19:17+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/08/23/k-jin-lin-suan-fa-part2</id>
-    <content type="html"><![CDATA[<h1>K-近邻算法-Part2</h1>
-
-<h2>使用交叉验证来调整k值</h2>
-
-<p>通常来说,一个最优的KNN模型其k参数所对应的预估错误率应该是最低的。因此，在选定模型k值的时候应该反复尝试不同的k值在预估上的效果，对比其错误率。初学者在这里为了降低模型的误差通常会将全部样本数据也作为训练集一起代入模型进行训练。虽然这种做法在训练时确实能够有效降低误差，对现有数据进行更好的拟合。但是，同时带来的后果是：我们会将数据的各种无法避免的真实误差，如测量误差，抽样误差等也训练进了我们的模型之中，使得训练出来的模型在新数据或未知数据上的预估效果特别差，这种现象也被称为<strong>过拟合（overfitting）</strong>。</p>
-
-<p>为了降低预估的错误率以及避免过拟合现象的发生，我们可以在某种意义下将<strong>原始数据(dataset)</strong>进行分组,一部分做为<strong>训练集(train set)</strong>,另一部分做为<strong>验证集(validation set or test set)</strong>，首先用训练集对分类器进行训练,再利用验证集来测试训练得到的<strong>模型(model)</strong>,以此来做为评价分类器的性能指标。这种方法也就是所谓的<strong>交叉验证（Cross Validation）</strong>。</p>
-
-<p>而在交叉验证中，<strong>K折交叉验证（k-fold cross validation）</strong>是比较常用的。其主要思想是：初始采样分割成K个子样本，一个单独的子样本被保留作为验证模型的数据，其他K-1个样本用来训练。交叉验证重复K次，每个子样本验证一次，平均K次的结果或者使用其它结合方式，最终得到一个单一估测。这个方法的优势在于，同时重复运用随机产生的子样本进行训练和验证，每次的结果验证一次，10折交叉验证是最常用的。</p>
-
-<p><img src="https://kevinzakka.github.io/assets/k_fold_cv.jpg" alt="enter image description here" /></p>
-
-<p>为了更好的理解k折交叉验证，我们继续沿用part1部分的训练数据，使用10折交叉验证的方法来调整我们的k值。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
-</span><span class='line'><span class="c"># creating odd list of K for KNN</span>
-</span><span class='line'><span class="n">myList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># subsetting just the odd ones</span>
-</span><span class='line'><span class="n">neighbors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">myList</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># empty list that will hold cv scores</span>
-</span><span class='line'><span class="n">cv_scores</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># perform 10-fold cross validation</span>
-</span><span class='line'><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">knn</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s">&#39;accuracy&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">cv_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># changing to misclassification error</span>
-</span><span class='line'><span class="n">MSE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cv_scores</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># determining best k</span>
-</span><span class='line'><span class="n">optimal_k</span> <span class="o">=</span> <span class="n">neighbors</span><span class="p">[</span><span class="n">MSE</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">MSE</span><span class="p">))]</span>
-</span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="s">&quot;The optimal number of neighbors is </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">optimal_k</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># plot misclassification error vs k</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">neighbors</span><span class="p">,</span> <span class="n">MSE</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Number of Neighbors K&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Misclassification Error&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在上面的程序中，我们在1-50的奇数中选取k值，并根据k值训练模型进行预估验证。最后根据不同k值训练出去的模型的<strong>均方误差（Mean Squared Error, MSE）</strong>作出折线图，并求出使得MSE最小的最优k值。</p>
-
-<blockquote><p>输出结果:</p>
-
-<p>The optimal number of neighbors is 7
-<img src="https://kevinzakka.github.io/assets/cv_knn.png" alt="enter image description here" /></p></blockquote>
-
-<p>由此我们可以得出：在这个模型中，10折交叉验证告诉我们最优的k值是7。</p>
-
-<h2>尝试自己实现KNN算法</h2>
-
-<p>到目前为止，我们都是调用sklearn库中的KNN来完成分类任务。那么，下面我们来尝试自己实现一个简单的KNN算法并用它来分类我们之前的数据。</p>
-
-<p>经过上一篇文章的介绍，我们可以知道KNN算法的关键是计算出新的<strong>待分类数据</strong>与现有的样本数据的<strong>“距离”</strong>，而其中较为常用的还是<strong>欧式距离（euclidean distance ）</strong>。然后提取出k个最相邻的点，并根据他们大多数点的分类属性来给待分类点进行归类。</p>
-
-<p>因此核心计算代码我们可以这样写：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-</span><span class='line'>  <span class="c"># create list for distances and targets</span>
-</span><span class='line'>  <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)):</span>
-</span><span class='line'>      <span class="c"># first we compute the euclidean distance</span>
-</span><span class='line'>      <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x_test</span> <span class="o">-</span> <span class="n">X_train</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])))</span>
-</span><span class='line'>      <span class="c"># add it to list of distances</span>
-</span><span class='line'>      <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">distance</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># sort the list</span>
-</span><span class='line'>  <span class="n">distances</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># make a list of the k neighbors&#39; targets</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-</span><span class='line'>      <span class="n">index</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># return most common target</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在上面的代码中，我们首先创建一个保存距离的数组，并在存储完计算出的待测点与各样本点的距离后对数组进行升序排列，然后取出前k个最接近待测点的样本点，返回其出现最多的分类标签。</p>
-
-<p>然后接下来让我继续完成整个KNN算法。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">kNearestNeighbor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># loop over all observations</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">)):</span>
-</span><span class='line'>      <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">k</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用我们上面得出最优的 k = 7作为参数生成模型并进行预估。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># making our predictions </span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
-</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">kNearestNeighbor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># transform the list into an array</span>
-</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
-</span><span class='line'><span class="c">#print(y_test,predictions)</span>
-</span><span class='line'><span class="c"># evaluating accuracy</span>
-</span><span class='line'><span class="c">#for i in range(predictions.size):</span>
-</span><span class='line'><span class="c">#    print(predictions.tolist()[i],list(y_test)[i])</span>
-</span><span class='line'><span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">The accuracy of our classifier is </span><span class="si">%d%%</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">accuracy</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>输出结果：
-The accuracy of our classifier is 98%</p></blockquote>
-
-<p>到此，我们基本已经完成了一个类似于sklearn库中的KNN算法了，并且还有不错的准确率。</p>
-
-<h2>小结</h2>
-
-<p>最后，KNN算法介绍性文章到这就结束了。我们来总结一下KNN算法的优点与不足。</p>
-
-<h4>优点</h4>
-
-<ul>
-<li>易于理解</li>
-<li>无需训练</li>
-<li>容易迁移至多分类情况</li>
-</ul>
-
-
-<h4>不足</h4>
-
-<ul>
-<li>计算量大，时间复杂度随数据规模增大而增大</li>
-<li>分类情况容易受高频分类影响</li>
-</ul>
 
 ]]></content>
   </entry>
