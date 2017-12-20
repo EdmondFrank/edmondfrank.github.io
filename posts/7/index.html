@@ -9,8 +9,8 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="JavaScript DOM对象学习笔记 节点属性 在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性: (1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text. 1.元素节点的nodeName与标签名相同
-2. &hellip;">
+  <meta name="description" content="Ruby Shoes：用户界面优雅的轻量之选 Shoes简介 人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括： 将Ruby绑定到Qt或者GTK这样的用户界面库
+使用基于JRuby的嵌入式DSL或者API创建Swing界面 Ruby Shoes实现GUI的方式则略显不同.Ruby &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,102 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-30T20:10:11+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
+
+<h2>Shoes简介</h2>
+
+<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
+
+<ul>
+<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
+<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
+</ul>
+
+
+<hr />
+
+<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
+
+<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
+
+<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
+
+<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
+
+<h2>示例代码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Shoes</span><span class="o">.</span><span class="n">app</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span> <span class="mi">200</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">background</span> <span class="n">lime</span><span class="o">.</span><span class="n">.blue</span>
+</span><span class='line'>  <span class="n">stack</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">para</span> <span class="s2">&quot;Welcome to the world of Shoes!&quot;</span>
+</span><span class='line'>    <span class="n">button</span> <span class="s2">&quot;Click me&quot;</span> <span class="k">do</span> <span class="n">alert</span> <span class="s2">&quot;Nice click!&quot;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">image</span> <span class="s2">&quot;http://shoesrb.com/img/shoes-icon.png&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">margin_top</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="ss">margin_left</span><span class="p">:</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>界面效果如下:</p>
+
+<p>　<img src="/images/shoes4.png"></p>
+
+<hr />
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a>
+      <time datetime="2016-06-30T20:10:11+08:00" pubdate><span class='month'>Jun</span> <span class='day'>30</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1430,96 +1526,6 @@ apache2.conf的路径:</p>
       <time datetime="2016-06-14T15:49:20+08:00" pubdate><span class='month'>Jun</span> <span class='day'>14</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-12T16:37:33+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>图片截获工具driftnet</h1>
-
-<p>driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在<a href="https://github.com/deiv/driftnet">Github</a>上下载源码编译使用.</p>
-
-<h3><strong>语法</strong>:driftnet [options] [fifter code]</h3>
-
-<h3><strong>常用选项</strong>:</h3>
-
-<ul>
-<li>-h:显示帮助信息</li>
-<li>-b:捕获到新图片时,发出蜂鸣声.</li>
-<li>-i interface:选择监听接口(默认为全部接口,<em>此选项为关键选项</em>.)</li>
-<li>-f file:读取一个指定pcap数据包中的图片</li>
-<li>-p:不让所监听的接口使用混杂模式</li>
-<li>-a:后台模式,即截取的图片自动保存至临时目录中,不显示在屏幕上.</li>
-<li>-m number:指定保存图片的最大数目</li>
-<li>-d directory:指定保存图片的路径</li>
-<li>-x prefix:指定保存图片的前缀名</li>
-<li>-s:尝试解读网络数据包中的音频流或视频流信息,现只支持MPEG格式</li>
-<li>-S:类似-s</li>
-</ul>
-
-
-<blockquote><p>使用示例:</p></blockquote>
-
-<p>Wlan0监听:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -i wlan0</span></code></pre></td></tr></table></div></figure>
-
-
-<p>读取指定pcap数据包:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -f /home/tmp/tmp.pcapng -a -d /tmp/</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>常用组合:</h3>
-
-<blockquote><p>ettercap + driftnet</p>
-
-<p>arproof + driftnet</p></blockquote>
-
-<p>(有关组合的使用以及dirftnet的其他用法,博主会在后期的博客,陆续更新,敬请期待.)</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a>
-      <time datetime="2016-06-12T16:37:33+08:00" pubdate><span class='month'>Jun</span> <span class='day'>12</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
       
       </footer>
     </article>
