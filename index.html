@@ -9,7 +9,8 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿EM算法基石-最大似然估计 前言 在统计计算中，最大期望（EM）算法是在概率模型中寻找参数最大似然估计或者最大后验估计的算法（机器学习十大算法之一），其中概率模型依赖于无法观测的隐藏变量（Latent Variable）。最大期望经常用在机器学习和计算机视觉的数据聚类（Data &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +65,51 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-01-13T16:23:37+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a>
+      <time datetime="2018-01-13T16:23:37+08:00" pubdate><span class='month'>Jan</span> <span class='day'>13</span> <span class='year'>2018</span></time>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -3016,476 +3062,6 @@ chrt.show(b_hist)</code></pre>
       </footer>
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/">Python在Spark上的机器学习(二)之数据操作</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-10-22T16:18:47+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习二之数据操作">Python在Spark上的机器学习(二)之数据操作</h1></p>
-
-<h2 id="pyspark">PySpark</h2>
-
-
-
-
-<p>PySpark 是 Spark 为 Python 开发者提供的 API。 <br>
-Spark是用Scala语言写成的，Scala把要编译的东西编译为Java虚拟机（JVM）的字节码（bytecode）。Spark的开源社区开发了一个叫PySpark的工具库。它允许使用者用Python处理RDD。这多亏了一个叫Py4J的库，它让Python可以使用JVM的对象（比如RDD）。  <br>
-Pyspark Internals这篇<a href="https://cwiki.apache.org/confluence/display/SPARK/PySpark+Internals">wiki</a>里介绍了pyspark的实现机制，大体是下面这张图就可以表示：</p>
-
-
-
-
-<p><img src="http://i.imgur.com/YlI8AqEl.png" alt="enter image description here" title=""></p>
-
-
-
-
-<h2 id="resilient-distributed-datasets">Resilient Distributed Datasets</h2>
-
-
-
-
-<p>说到Spark上的数据模式，一定不能少的就是Spark中的核心：RDD了。与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark让人着迷的地方。</p>
-
-
-
-
-<p><strong>RDD 具体是什么呢？</strong> <br>
-RDD，全称Resilient Distributed Datasets，又称弹性分布式数据集。是一个可容错的、并行的数据结构，可以让用户显示地将数据储存到磁盘和内存当中，并能控制数据的分区。</p>
-
-
-
-
-<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
-
-
-
-
-<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
-
-
-
-
-<h2 id="使用pyspark">使用Pyspark</h2>
-
-
-
-
-<p>在按照系列的上一个教程搭建好环境后，在终端中直接输入pyspark就可以运行Python与Spark的交互式的shell了。</p>
-
-
-
-
-<p>那么，下面我们就以一些简单的例子来使用pyspark。</p>
-
-
-
-
-<h3 id="创建rdd">创建RDD</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">[(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Alfred&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Skye&#39;</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Albert&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
-</span><span class='line'>     <span class="p">(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)])</span>
-</span><span class='line'><span class="n">data</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>ParallelCollectionRDD[3] at parallelize at PythonRDD.scala:475</p>
-</blockquote>
-
-
-
-
-<h3 id="rdd对象转换成python对象">RDD对象转换成Python对象</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data_heterogenous</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">&#39;Ferrari&#39;</span><span class="p">,</span> <span class="s">&#39;fast&#39;</span><span class="p">),</span> <span class="p">{</span><span class="s">&#39;Porsche&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">},</span> <span class="p">[</span><span class="s">&#39;Spain&#39;</span><span class="p">,</span><span class="s">&#39;visited&#39;</span><span class="p">,</span> <span class="mi">4504</span><span class="p">]])</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="n">data_heterogenous</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[(‘Ferrari’, ‘fast’), {‘Porsche’: 100000}, [‘Spain’, ‘visited’, 4504]]</p>
-</blockquote>
-
-
-
-
-<h3 id="读取文件及统计词频">读取文件及统计词频</h3>
-
-
-
-
-<p>首先word.txt文件内容如下：</p>
-
-
-
-
-<blockquote>
-  <p>The dynamic lifestyle <br>
-  people lead nowadays <br>
-  causes many reactions <br>
-   in our bodies and <br>
-   the one that is the <br>
-   most frequent of all <br>
-   is the headache. However so good</p>
-</blockquote>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span>
-</span><span class='line'><span class="n">lines</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;word.txt&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">counts</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[(”, 4), (‘good’, 1), (‘in’, 1), (‘is’, 2), (‘However’, 1), (‘of’, 1), (‘causes’, 1), (‘lifestyle’, 1), (‘The’, 1), (‘headache.’, 1), (‘reactions’, 1), (‘most’, 1), (‘frequent’, 1), (‘that’, 1), (‘all’, 1), (‘our’, 1), (‘dynamic’, 1), (‘nowadays’, 1), (‘so’, 1), (‘the’, 3), (‘people’, 1), (‘bodies’, 1), (‘many’, 1), (‘one’, 1), (‘and’, 1), (‘lead’, 1)] <br>
-  …</p>
-</blockquote>
-
-
-
-
-<h2 id="dataframe">DataFrame</h2>
-
-
-
-
-<p>DataFrameDataFrame是Spark推荐的统一结构化数据接口，是一个不可变的分布式数据集合，它结构与关系数据库中的表类似。</p>
-
-
-
-
-<p>类似于Python Pandas DataFrame或R DataFrame，它能够让用户轻松处理结构化数据。</p>
-
-
-
-
-<p>DataFrame还允许用户通过Spark SQL数据库或者采用一些函数式的方法查询及操作结构数据，下面我们就通过一些例子来了解和使用DataFrame。</p>
-
-
-
-
-<h3 id="创建dataframes">创建DataFrames</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">stringJSONRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">((</span><span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="s">{ &quot;id&quot;: &quot;123&quot;,</span>
-</span><span class='line'><span class="s">&quot;name&quot;: &quot;Katie&quot;,</span>
-</span><span class='line'><span class="s">&quot;age&quot;: 19,</span>
-</span><span class='line'><span class="s">&quot;eyeColor&quot;: &quot;brown&quot;</span>
-</span><span class='line'><span class="s">}&quot;&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
-</span><span class='line'><span class="sd">&quot;id&quot;: &quot;234&quot;,</span>
-</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Michael&quot;,</span>
-</span><span class='line'><span class="sd">&quot;age&quot;: 22,</span>
-</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;green&quot;</span>
-</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
-</span><span class='line'><span class="sd">&quot;id&quot;: &quot;345&quot;,</span>
-</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Simone&quot;,</span>
-</span><span class='line'><span class="sd">&quot;age&quot;: 23,</span>
-</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;blue&quot;</span>
-</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="p">)</span>
-</span><span class='line'><span class="n">swimmersJSON</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">stringJSONRDD</span><span class="p">)</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmersJSON&quot;</span><span class="p">)</span> <span class="c">#这里创建了临时表</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>+—+——–+—+——-+ <br>
-  |age|eyeColor| id|   name| <br>
-  +—+——–+—+——-+ <br>
-  | 19|   brown|123|  Katie| <br>
-  | 22|   green|234|Michael| <br>
-  | 23|    blue|345| Simone| <br>
-  +—+——–+—+——-+</p>
-</blockquote>
-
-
-
-
-<h3 id="dataframe的简单内容及类型查询">DataFrame的简单内容及类型查询</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select * from swimmersJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span> <span class="c">#显示表数据的类型</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[Row(age=19, eyeColor=’brown’, id=’123’, name=’Katie’), <br>
-   Row(age=22, eyeColor=’green’, id=’234’, name=’Michael’), <br>
-   Row(age=23, eyeColor=’blue’, id=’345’, name=’Simone’)] <br>
-   root <br>
-   |– age: long (nullable = true) <br>
-   |– eyeColor: string (nullable = true) <br>
-   |– id: string (nullable = true) <br>
-   |– name: string (nullable = true)</p>
-</blockquote>
-
-
-
-
-<h3 id="指定数据储存及处理的类型">指定数据储存及处理的类型</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Import types</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pyspark.sql.types</span> <span class="kn">import</span> <span class="o">*</span>
-</span><span class='line'><span class="c"># Generate comma delimited data</span>
-</span><span class='line'><span class="n">stringCSVRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([</span>
-</span><span class='line'><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#39;Katie&#39;</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="s">&#39;brown&#39;</span><span class="p">),</span>
-</span><span class='line'><span class="p">(</span><span class="mi">234</span><span class="p">,</span> <span class="s">&#39;Michael&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">),</span>
-</span><span class='line'><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="s">&#39;Simone&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="s">&#39;blue&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="p">])</span>
-</span><span class='line'><span class="c"># Specify schema</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;eyeColor&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
-</span><span class='line'><span class="p">])</span>
-</span><span class='line'><span class="c"># Apply the schema to the RDD and Create DataFrame</span>
-</span><span class='line'><span class="n">swimmers</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">stringCSVRDD</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-</span><span class='line'><span class="c"># Creates a temporary view using the DataFrame</span>
-</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmers&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>root <br>
-   |– id: long (nullable = true) <br>
-   |– name: string (nullable = true) <br>
-   |– age: long (nullable = true) <br>
-   |– eyeColor: string (nullable = true)</p>
-</blockquote>
-
-
-
-
-<p><strong>明明可以自动匹配储存类型，为什么我们还要手动指定类型呢？</strong> <br>
-因为，在自动匹配类型的情况下，有时会将ID，Age等我们未来将要用来计算的数据以String的方式存储，这样就不利于我们对这些数据进行加减等运算，所以手动指定储存类型还是很有必要的。</p>
-
-
-
-
-<h3 id="使用sql语句查询及操作数据">使用SQL语句查询及操作数据</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select count(1) from swimmers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select id, age from swimmers where age = 22&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
-</span><span class='line'><span class="s">&quot;select name, eyeColor from swimmers where eyeColor like &#39;b%&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>+——–+ <br>
-  |count(1)| <br>
-  +——–+ <br>
-  |       3| <br>
-  +——–+</p>
-  
-  <p>+—+—+ <br>
-  | id|age| <br>
-  +—+—+ <br>
-  |234| 22| <br>
-  +—+—+</p>
-  
-  <p>+——+——–+ <br>
-  |  name|eyeColor| <br>
-  +——+——–+ <br>
-  | Katie|   brown| <br>
-  |Simone|    blue| <br>
-  +——+——–+</p>
-</blockquote>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>在这篇文章中我们可以看出，通过Pyspark结合RDD与DataFrames让我们可以用Python用上Spark平台上的分布式优势，也能够进一步加速和优化我们平时的数据操作。通过Spark导出的抽象层的API我们无需学过过于复杂和繁多的语法就能操作RDD上的数据。这篇文章的内容主要是为了后面用在用Python在Spark进行数据建模和机器学习所铺路，但受限于文章篇幅，还有十分多的函数和API无提及。所以有兴趣的读者可以阅读下<a href="http://spark.apache.org/docs/latest/sql-programming-guide.html">Spark DataFrame的官方文档</a>深入了解一下。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/"> Python在Spark上的机器学习(二)之数据操作</a>
-      <time datetime="2017-10-22T16:18:47+08:00" pubdate><span class='month'>Oct</span> <span class='day'>22</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
-      
-      </footer>
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -3557,7 +3133,7 @@ RDD，全称Resilient Distributed Datasets，又称弹性分布式数据集。�
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2017 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2018 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>
