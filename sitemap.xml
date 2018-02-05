@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/</loc>
+<lastmod>2018-02-05T14:56:53+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2018/01/18/zhong-du-ren-yue-shen-hua/</loc>
 <lastmod>2018-01-18T19:55:04+08:00</lastmod>
 </url>
@@ -366,6 +370,9 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/tong-ji-xue-xi/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/blog/categories/shu-mei-pai/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/posts/2/</loc>

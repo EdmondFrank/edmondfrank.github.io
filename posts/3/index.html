@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="拉普拉斯变换 对于复值函数,若在复平面上的某一个区域 内收敛于,则称： 为函数的拉普拉斯变换（Laplace）变换（简称拉氏变换），记为 在科技领域，一般是对时间为自变量的函数进行拉普拉斯变换，即在t &lt; 0时，函数无意义或不需要考虑。 线性性质 设为常数， 则 时移性质 若 ，对于，有 &hellip;">
+  <meta name="description" content="如何在Python中实现决策树算法 决策树算法是一种简单的预测算法，但正是因为它模型的简单性，常作为一些高级的组合算法的基础，例如bagging，random forests ，gradient boosting 等等。再者，由于决策树的最终模型和预估行为具有较强的业务相关与可解析性， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,651 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/09/09/ru-he-zai-pythonzhong-shi-xian-jue-ce-shu-suan-fa/">如何在Python中实现决策树算法</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-09-09T15:33:50+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="如何在python中实现决策树算法">如何在Python中实现决策树算法</h1>
+
+
+
+
+<p>决策树算法是一种简单的预测算法，但正是因为它模型的简单性，常作为一些高级的组合算法的基础，例如<strong>bagging，random forests ，gradient boosting</strong> 等等。再者，由于决策树的最终模型和预估行为具有较强的业务相关与可解析性，使得它十分受从业者与领域专家的欢迎，在各行各业中也有十分多的应用。</p>
+
+
+
+
+<h4 id="决策树的优缺点">决策树的优缺点</h4>
+
+
+
+
+<p>优点：计算复杂度不高，输出结果易于理解，对中间值的缺失不敏感，可以处理不相关特征数据</p>
+
+
+
+
+<p>缺点：可能会产生过拟合问题</p>
+
+
+
+
+<h2 id="决策树的构建">决策树的构建</h2>
+
+
+
+
+<p>在构建决策树之前，我们首先要明确的第一个问题就是：在当前的数据集上哪个特征在划分数据分类时起决定性作用。而其中划分数据集的最大原则就是：<strong><em>将无序的数据变得更加有序。</em></strong></p>
+
+
+
+
+<p>在选择如何去划分数据集的时候，我们可以采用各种不同的方法。但是每种方法都有各自的优缺点。组织杂乱无章的数据的一种方法就是使用信息论度量信息。</p>
+
+
+
+
+<p>在划分数据集之前之后信息发生的变化称为<strong>信息增益</strong>，而获得信息增益最高的特征就是我们用于划分数据的最好选择。</p>
+
+
+
+
+<p>在评测哪种数据划分方式是最好的数据划分之前，我们必须学习如何计算信息增益，而为了能够计算和理解信息增益，我们又必须先了解一个概念，即：集合信息的度量方式，其被称为<strong>香农熵</strong>或简称<strong>熵</strong>。这个名字来源于信息论之父<a href="https://baike.baidu.com/item/%E5%85%8B%E5%8A%B3%E5%BE%B7%C2%B7%E8%89%BE%E5%B0%94%E4%BC%8D%E5%BE%B7%C2%B7%E9%A6%99%E5%86%9C/10588593?fr=aladdin&amp;fromid=1146248&amp;fromtitle=%E9%A6%99%E5%86%9C">克劳德×香农</a></p>
+
+
+
+
+<p>熵：被定义为信息的<strong>期望值</strong>，如果一个事件发生的概率是<script type="math/tex" id="MathJax-Element-1">p(x)</script>,则其信息熵为:</p>
+
+
+
+
+<blockquote>
+  <p><script type="math/tex" id="MathJax-Element-2">H(X)=-\sum _{i=i}^n p(x_i) \log  \left (p (x_i)\right)</script></p>
+  
+  <p>Eg:<img src="http://www.saedsayad.com/images/Entropy_3.png" alt="enter image description here" title=""></p>
+</blockquote>
+
+
+
+
+<p>其中n是分类的数目。</p>
+
+
+
+
+<p>可以这样验证一下：如果这件事发生的概率是1，其信息熵<script type="math/tex" id="MathJax-Element-3">H</script>则等于0，因为你知道他一定会发生，丝毫不会觉得惊喜;但是如果这件事的概率趋向于无穷小，比如国足夺得世界杯冠军，那么他的信息熵就会趋向于无穷大。就像你心中听完上一条信息之后，心中可能就有数十万只草泥马奔过一样。</p>
+
+
+
+
+<h4 id="使用python计算信息的熵">使用Python计算信息的熵</h4>
+
+
+
+
+<p>下面我们将以《机器学习实战》一书中给出的例子为基础进一步探讨本文所讲内容。</p>
+
+
+
+
+<blockquote>
+  <p><strong>海洋生物数据表</strong></p>
+  
+  <table>
+<thead>
+<tr>
+  <th>index</th>
+  <th>不浮出水面是否可以生存</th>
+  <th>是否有脚蹼</th>
+  <th>是否属于鱼类</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>0</td>
+  <td>是</td>
+  <td>是</td>
+  <td>是</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>是</td>
+  <td>是</td>
+  <td>是</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>是</td>
+  <td>否</td>
+  <td>否</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>否</td>
+  <td>是</td>
+  <td>否</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>否</td>
+  <td>是</td>
+  <td>否</td>
+</tr>
+</tbody></table>
+
+</blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#coding:utf-8</span>
+</span><span class='line'><span class="c"># 代码功能：计算香农熵，本代码来源于书籍《机器学习实战》</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span> <span class="c">#我们要用到对数函数，所以我们需要引入math模块中定义好的log函数（对数函数）</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">calcShannonEnt</span><span class="p">(</span><span class="n">dataSet</span><span class="p">):</span><span class="c">#传入数据集</span>
+</span><span class='line'><span class="c"># 在这里dataSet是一个链表形式的的数据集</span>
+</span><span class='line'>    <span class="n">countDataSet</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataSet</span><span class="p">)</span> <span class="c"># 我们计算出这个数据集中的数据个数，在这里我们的值是5个数据集</span>
+</span><span class='line'>    <span class="n">labelCounts</span><span class="o">=</span><span class="p">{}</span> <span class="c"># 构建字典，用键值对的关系我们表示出 我们数据集中的类别还有对应的关系</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">featVec</span> <span class="ow">in</span> <span class="n">dataSet</span><span class="p">:</span> <span class="c">#通过for循环，我们每次取出一个数据集，如featVec=[1,1,&#39;yes&#39;]</span>
+</span><span class='line'>        <span class="n">currentLabel</span><span class="o">=</span><span class="n">featVec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># 取出最后一列 也就是类别的那一类，比如说‘yes’或者是‘no’</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">currentLabel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labelCounts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">labelCounts</span><span class="p">[</span><span class="n">currentLabel</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">labelCounts</span><span class="p">[</span><span class="n">currentLabel</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">shannonEnt</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c"># 计算香农熵， 根据公式</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">labelCounts</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">prob</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">labelCounts</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">/</span><span class="n">countDataSet</span>
+</span><span class='line'>        <span class="n">shannonEnt</span> <span class="o">-=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">shannonEnt</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">createDataSet</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">dataSet</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">],</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">],</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s">&#39;no&#39;</span><span class="p">],</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&#39;no&#39;</span><span class="p">],</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&#39;no&#39;</span><span class="p">]]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;no surfacing&#39;</span><span class="p">,</span><span class="s">&#39;flippers&#39;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">dataSet</span><span class="p">,</span> <span class="n">labels</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">myDat</span><span class="p">,</span><span class="n">labels</span> <span class="o">=</span> <span class="n">createDataSet</span><span class="p">()</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">myDat</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</span><span class='line'><span class="n">calcShannonEnt</span><span class="p">(</span><span class="n">myDat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果: <br>
+  [[1, 1, ‘yes’], [1, 1, ‘yes’], [1, 0, ‘no’], [0, 1, ‘no’], [0, 1, ‘no’]] <br>
+  [‘no surfacing’, ‘flippers’] <br>
+  0.9709505944546686</p>
+</blockquote>
+
+
+
+
+<p>其中，香农熵越高，则代表混合的数据越多，这点我们可以通过在数据集中添加更多的分类来验证。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">myDat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="s">&#39;maybe&#39;</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">myDat</span><span class="p">)</span>
+</span><span class='line'><span class="n">calcShannonEnt</span><span class="p">(</span><span class="n">myDat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果: <br>
+  [[1, 1, ‘maybe’], [1, 1, ‘yes’], [1, 0, ‘no’], [0, 1, ‘no’], [0, 1, ‘no’]] <br>
+  1.3709505944546687</p>
+</blockquote>
+
+
+
+
+<h4 id="划分数据集">划分数据集</h4>
+
+
+
+
+<p>分类算法除了需要测量信息熵之外，还需要划分数据集，度量划分数据集的熵，以便判断当前是否正确地划分了数据集。</p>
+
+
+
+
+<p>那么，我们如何确定目前划分数据的方法是否就是最优的划分方法呢？答案就是：<strong>信息增益</strong>。我们仅需选择使得划分后数据集信息增益最大的特征作为分类的最佳特征即可。</p>
+
+
+
+
+<p>首先假设我们选取了第一个特征<strong>“是否需要浮出水面生存”</strong>的第一种可能<strong>“是”</strong>来划分数据集，我们得到划分之后的数据集就是：</p>
+
+
+
+
+<blockquote>
+  <p>[[1, 1, ‘maybe’], [1, 1, ‘yes’], [1, 0, ‘no’]</p>
+</blockquote>
+
+
+
+
+<p><strong>“否”</strong>的话，得到的划分集则是：</p>
+
+
+
+
+<blockquote>
+  <p>[[0, 1, ‘no’], [0, 1, ‘no’]]</p>
+</blockquote>
+
+
+
+
+<p>其他特征的划分方式也以此类推。</p>
+
+
+
+
+<p>知道如何划分数据集之后，让我们来构建我们下一步的数据划分代码。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 代码功能：划分数据集</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">splitDataSet</span><span class="p">(</span><span class="n">dataSet</span><span class="p">,</span><span class="n">axis</span><span class="p">,</span><span class="n">value</span><span class="p">):</span> <span class="c">#传入三个参数第一个参数是我们的数据集，是一个链表形式的数据集；第二个参数是我们的要依据某个特征来划分数据集</span>
+</span><span class='line'>    <span class="n">retDataSet</span> <span class="o">=</span> <span class="p">[]</span> <span class="c">#由于参数的链表dataSet我们拿到的是它的地址，也就是引用，直接在链表上操作会改变它的数值，所以我们新建一格链表来做操作</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">featVec</span> <span class="ow">in</span> <span class="n">dataSet</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">featVec</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span> <span class="c">#如果某个特征和我们指定的特征值相等</span>
+</span><span class='line'>        <span class="c">#除去这个特征然后创建一个子特征</span>
+</span><span class='line'>            <span class="n">reduceFeatVec</span> <span class="o">=</span> <span class="n">featVec</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">reduceFeatVec</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">featVec</span><span class="p">[</span><span class="n">axis</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+</span><span class='line'>            <span class="c">#将满足条件的样本并且经过切割后的样本都加入到我们新建立的样本中</span>
+</span><span class='line'>            <span class="n">retDataSet</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduceFeatVec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">retDataSet</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>下面来测试下我们的代码</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">splitDataSet</span><span class="p">(</span><span class="n">myDat</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>[Out] [[1, ‘maybe’], [1, ‘yes’], [0, ‘no’]]</p>
+</blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">splitDataSet</span><span class="p">(</span><span class="n">myDat</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>[Out]  [[1, ‘no’], [1, ‘no’]]</p>
+</blockquote>
+
+
+
+
+<p>知道怎么划分数据集之后，我们接下来要做的就是遍历整个数据集的特征值，然后循环计算熵，找出最好的分类特征了。</p>
+
+
+
+
+<h4 id="选择最好的数据划分方式">选择最好的数据划分方式</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">chooseBestFeatureToSplit</span><span class="p">(</span><span class="n">dataSet</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">numFeatures</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataSet</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>    <span class="n">baseEntropy</span> <span class="o">=</span> <span class="n">calcShannonEnt</span><span class="p">(</span><span class="n">dataSet</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">bestInfoGain</span> <span class="o">=</span><span class="mf">0.0</span>
+</span><span class='line'>    <span class="n">bestFeature</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numFeatures</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">featList</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">dataSet</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">uniqueVals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">featList</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">newEntropy</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">uniqueVals</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">subDataSet</span> <span class="o">=</span> <span class="n">splitDataSet</span><span class="p">(</span><span class="n">dataSet</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">prob</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subDataSet</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataSet</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">newEntropy</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">calcShannonEnt</span><span class="p">(</span><span class="n">subDataSet</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">infoGain</span> <span class="o">=</span> <span class="n">baseEntropy</span> <span class="o">-</span> <span class="n">newEntropy</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">infoGain</span> <span class="o">&gt;</span> <span class="n">bestInfoGain</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">bestInfoGain</span> <span class="o">=</span> <span class="n">infoGain</span>
+</span><span class='line'>            <span class="n">bestFeature</span> <span class="o">=</span> <span class="n">i</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">bestFeature</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>这里的choseBestFeatureToSplit()函数的使用是需要满足一定条件的： <br>
+1.  数据必须是一种有列表元素组成的列表，而且所有的列表元素都要具有相同的数据长度。 <br>
+2. 数据的最后一列或者每个实例的最后一个元素是当前实例的类别标签 </p>
+
+
+
+
+<p>接下来，我们来运行choseBestFeatureToSplit()函数来计算出最佳分类特征。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">chooseBestFeatureToSplit</span><span class="p">(</span><span class="n">myDat</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>[Out] 0</p>
+</blockquote>
+
+
+
+
+<p>从这里我们可以得到第0个特征是最好用于划分数据集的特征。确实，这个分类特征的选择就我们目测而言也是最好的选择。</p>
+
+
+
+
+<p>知道如何选取特征之后，下一步我们就要如何将上面的函数有机结合在一起构建出决策树。</p>
+
+
+
+
+<h4 id="处理特殊情况">处理特殊情况</h4>
+
+
+
+
+<p>工作原理： <br>
+1.  得到原始数据集 <br>
+2. 基于最好的属性值划分数据集 <br>
+3.  由于特征值不止一个，将划分后的数据传递到树分支的下一个节点，再重复2操作 <br>
+4. 程序遍历完所有划分数据集属性或每个分支下所有实例都具有相同分类后结束</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">majorityCnt</span><span class="p">(</span><span class="n">classList</span><span class="p">):</span> <span class="c"># 传入的参数是已经划分完所有特征之后剩余的数据集，</span>
+</span><span class='line'>    <span class="c">#例如[[&#39;yes&#39;],[&#39;yes&#39;],[&#39;maybe&#39;]]</span>
+</span><span class='line'>    <span class="n">classCount</span><span class="o">=</span><span class="p">{}</span> <span class="c">#创建一个字典</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">vote</span> <span class="ow">in</span> <span class="n">classList</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">vote</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">classCount</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>            <span class="n">classCount</span><span class="p">[</span><span class="n">vote</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">classCount</span><span class="p">[</span><span class="n">vote</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="c"># 根据上述的语句，以及我们的例子，我们最终可以得到的结果如下： {&#39;yes&#39;:2,&#39;maybe&#39;:1}</span>
+</span><span class='line'>        <span class="n">sortedClassCount</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classCount</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="c">#这个语句比较复杂，我们在下面详细讲解一下。</span>
+</span><span class='line'><span class="c"># 使用字典iteritems</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sortedClassCount</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>这里的majorityCnt()函数是为了处理<strong>特殊分类</strong>而存在的。我们知道如果根据特征来划分属性，每划分一次就会消耗一个特征，如果我们使用完了所有的特征但是类别还没有划分完那我们就可以采用多数表决的方法来确定叶子节点了。</p>
+
+
+
+
+<p>在上面的代码中，我们发现最后我们用排序函数对剩余的类作了降序处理，并只返回了分类个数最多的元素的那个类。这是一种折中的方法，因为对于一些已经使用完特征的数据集，我们不可能清楚地将一些类分离出来，我们就只能统计其中数量最多的那个分类，以次划分。</p>
+
+
+
+
+<h4 id="递归构建决策树">递归构建决策树</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">createTree</span><span class="p">(</span><span class="n">dataSet</span><span class="p">,</span><span class="n">labels</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">classList</span> <span class="o">=</span> <span class="p">[</span><span class="n">example</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">dataSet</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="n">classList</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">classList</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span> <span class="p">(</span><span class="n">classList</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">classList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataSet</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">majorityCnt</span><span class="p">(</span><span class="n">classList</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">bestFeat</span> <span class="o">=</span> <span class="n">chooseBestFeatureToSplit</span><span class="p">(</span><span class="n">dataSet</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">bestFeatLabel</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">bestFeat</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">myTree</span> <span class="o">=</span> <span class="p">{</span><span class="n">bestFeatLabel</span><span class="p">:{}}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">del</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">bestFeatL</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">featValues</span> <span class="o">=</span> <span class="p">[</span><span class="n">example</span><span class="p">[</span><span class="n">bestFeat</span><span class="p">]</span> <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">dataSet</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">uniqueVals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">featValues</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">uniqueVals</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">subLabels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[:]</span>
+</span><span class='line'>        <span class="n">myTree</span><span class="p">[</span><span class="n">bestFeatLabel</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">createTree</span><span class="p">(</span><span class="n">splitDataSet</span><span class="p">(</span><span class="n">dataSet</span><span class="p">,</span><span class="n">bestFeat</span><span class="p">,</span><span class="n">value</span><span class="p">),</span><span class="n">subLabels</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">myTree</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>最后，我们来运行我们的代码来构建出一棵决策树看看。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">createTree</span><span class="p">(</span><span class="n">myDat</span><span class="p">,</span><span class="n">labels</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  [‘no surfacing’, ‘flippers’] <br>
+  0 <br>
+  no surfacing <br>
+  [‘flippers’] <br>
+  0 <br>
+  flippers <br>
+  {‘no surfacing’: {0: ‘no’, 1: {‘flippers’: {0: ‘no’, 1: ‘yes’}}}}</p>
+</blockquote>
+
+
+
+
+<p>根据返回的结果，我们可以画出以下的决策树。 <br>
+<img src="https://i.loli.net/2017/09/09/59b397d98b6e3.png" alt="dt.png" title=""></p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/09/09/ru-he-zai-pythonzhong-shi-xian-jue-ce-shu-suan-fa/">如何在Python中实现决策树算法</a>
+      <time datetime="2017-09-09T15:33:50+08:00" pubdate><span class='month'>Sep</span> <span class='day'>09</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2997,448 +3642,6 @@ The accuracy of our classifier is 98%</p></blockquote>
       <time datetime="2017-07-14T13:22:09+08:00" pubdate><span class='month'>Jul</span> <span class='day'>14</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-07-03T12:18:45+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 背景：</a></li>
-<li><a href="#sec-2">2. 基本原理：</a></li>
-<li><a href="#sec-3">3. 联合概率计算</a></li>
-<li><a href="#sec-4">4. 算法实现</a></li>
-</ul>
-</div>
-</div>
-
-
-<h1>贝叶斯算法在检测群聊垃圾广告中的应用</h1>
-
-<h1>背景：<a id="sec-1" name="sec-1"></a></h1>
-
-<p>贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
-之前需要先建立历史资料库，即，先提供两组已经标注好的训练数据。
-在此附上训练数据链接：<a href="https://pan.baidu.com/s/1nuGW2Ul">https://pan.baidu.com/s/1nuGW2Ul</a></p>
-
-<h1>基本原理：<a id="sec-2" name="sec-2"></a></h1>
-
-<p>当看到一段文本时，我们先假定它是广告文本的概率为50%，其实整个识别模式就像垃圾邮件过滤
-一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
-50%：</p>
-
-<p><script type="math/tex" id="MathJax-Element-115"> P(S) = P(H) = 50% </script></p>
-
-
-<p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
-某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
-P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
-
-<p><script type="math/tex" id="MathJax-Element-116"> P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) </script></p>
-
-
-<p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
-我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
-概率分别为5%和0.05%，那么我们可以计算出P(S|W)＝ 99.0%</p>
-
-<p>因此，根据我们得出的99%的后验概率，我们可以说词语W的推断能力很强，在垃圾文本和正常文本之
-中有十分良好的推断效果。</p>
-
-<h1>联合概率计算<a id="sec-3" name="sec-3"></a></h1>
-
-<p>但是，一段文本中存在非常多的词汇，我们不能单凭一个单词就推断出这段文本的分类属性。因此，
-常规的做法是我们需要选取出整段文本中，P(S|W)最高的15个词，然后计算它们的联合概率。
-（其中可能存在的问题有：某些新词在历史数据中都不曾出现过，我们无法计算其P(S|W)的值，
-对于这样的问题需要用到贝叶斯平滑的思想进行处理，本文为了从简，我们都先假设这类词的P(S|W)
-值为0.4）</p>
-
-<p>对于联合概率的补充解释：联合概率是指在多个事件发生的情况之下，另一个发生的概率有多大。
-例如：已知，W<sub>1</sub> 和 W<sub>2</sub>为两个不同的词语，它们都出现在某段文本之中，那么这段文本为广告
-文本的概率就是W<sub>1</sub>和W<sub>2</sub>的联合概率。</p>
-
-<p>最后，根据提取的15个词，得出最终的概率计算公式</p>
-
-<p><script type="math/tex" id="MathJax-Element-118"> P ＝ P_1P_2P_3…P_{15}/(P_1P_2…P_{15}+(1-P_1)(1-P_2)…(1-P_{15})) </script></p>
-
-
-<p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
-认定为90%为垃圾文本！</p>
-
-<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pickle</span>
-</span><span class='line'><span class="c">#spam类对象</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span><span class="p">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">spamEmailBayes</span><span class="p">:</span>
-</span><span class='line'>    <span class="c">#获得停用词表</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getStopWords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">stopList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/stopwords&quot;</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">stopList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">stopList</span><span class="p">;</span>
-</span><span class='line'>    <span class="c">#获得词典</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_word_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">content</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#分词结果放入res_list</span>
-</span><span class='line'>        <span class="n">res_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res_list</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopList</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">!=</span><span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">wordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#若列表中的词已在词典中，则加1，否则添加进去</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">addToDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">wordsDict</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_File_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filePath</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">filenames</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">filenames</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getTestWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testDict</span><span class="p">,</span><span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">wordProbList</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">num</span>  <span class="ow">in</span> <span class="n">testDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#该文件中包含词个数</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#若该词不在脏词词典中，概率设为0.4</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
-</span><span class='line'>        <span class="nb">sorted</span><span class="p">(</span><span class="n">wordProbList</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="n">wordProbList</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算贝叶斯概率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calBayes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordList</span><span class="p">,</span><span class="n">spamdict</span><span class="p">,</span><span class="n">normdict</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">ps_w</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="n">ps_n</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">prob</span> <span class="ow">in</span> <span class="n">wordList</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
-</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">word</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
-</span><span class='line'>            <span class="n">ps_w</span><span class="o">*=</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">ps_n</span><span class="o">*=</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">p</span><span class="o">=</span><span class="n">ps_w</span><span class="o">/</span><span class="p">(</span><span class="n">ps_w</span><span class="o">+</span><span class="n">ps_n</span><span class="p">)</span>
-</span><span class='line'><span class="c">#         print(str(ps_w)+&quot;////&quot;+str(ps_n))</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">p</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算预测结果正确率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calAccuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testResult</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rightCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="n">errorCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">name</span> <span class="p">,</span><span class="n">catagory</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>                <span class="n">rightCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">errorCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">rightCount</span><span class="o">/</span><span class="p">(</span><span class="n">rightCount</span><span class="o">+</span><span class="n">errorCount</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">spam</span><span class="o">=</span><span class="n">spamEmailBayes</span><span class="p">()</span>
-</span><span class='line'><span class="c">#保存词频的词典</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">testDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存每封邮件中出现的词</span>
-</span><span class='line'><span class="n">wordsList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存预测结果,key为文件名，值为预测类别</span>
-</span><span class='line'><span class="n">testResult</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#分别获得正常邮件、垃圾邮件及测试文件名称列表</span>
-</span><span class='line'><span class="n">normFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/normal&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/spam&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">testFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/test2&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获取训练集中正常邮件与垃圾邮件的数量</span>
-</span><span class='line'><span class="n">normFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">normFileList</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spamFileList</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获得停用词表，用于对停用词过滤</span>
-</span><span class='line'><span class="n">stopList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getStopWords</span><span class="p">()</span>
-</span><span class='line'><span class="c">#获得正常邮件中的词频</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">normFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/normal/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#过滤掉非中文字符</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="c">#将每封邮件出现的词保存在wordsList中</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#统计每个词在所有邮件中出现的次数</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;norm.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">normDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#获得垃圾邮件中的词频</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">spamFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/spam/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;spam.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spamDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;model.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spam</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 测试邮件</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">testFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/test2/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">):</span>
-</span><span class='line'>    <span class="c">#for line in open(&quot;../data/test/&quot;+fileName,encoding=&#39;gbk&#39;):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="n">wordProbList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getTestWords</span><span class="p">(</span><span class="n">testDict</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#对每封邮件得到的15个词计算贝叶斯概率</span>
-</span><span class='line'>    <span class="n">p</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calBayes</span><span class="p">(</span><span class="n">wordProbList</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span> <span class="n">normDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="c">#计算分类准确率（测试集中文件名低于1000的为正常邮件）</span>
-</span><span class='line'><span class="n">testAccuracy</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calAccuracy</span><span class="p">(</span><span class="n">testResult</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">ic</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ic</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">testAccuracy</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a>
-      <time datetime="2017-07-03T12:18:45+08:00" pubdate><span class='month'>Jul</span> <span class='day'>03</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
       </footer>
     </article>
