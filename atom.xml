@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-02-05T15:02:52+08:00</updated>
+  <updated>2018-02-08T18:18:04+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,201 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[谈谈Google自动编程框架AutoML]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/"/>
+    <updated>2018-02-08T18:17:01+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
+
+
+
+
+<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
+
+
+
+
+<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
+
+
+
+
+<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
+
+
+
+
+<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
+
+
+
+
+<h2 id="什么是automl">什么是AutoML？</h2>
+
+
+
+
+<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
+ <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
+
+
+
+
+<ul>
+<li>预处理数据</li>
+<li>选择适当的功能</li>
+<li>选择一个适当的模型选择系列</li>
+<li>优化模型超参</li>
+<li>后处理机器学习模型</li>
+<li>严格分析所得的结果</li>
+</ul>
+
+
+
+
+<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
+
+
+
+
+<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
+
+
+
+
+<ul>
+<li>执行深层表示的架构搜索</li>
+<li>分析超参数的重要性</li>
+</ul>
+
+
+
+
+<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
+
+
+
+
+<h2 id="automl的架构">AutoML的架构</h2>
+
+
+
+
+<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
+在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
+
+
+
+
+<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
+
+
+
+
+<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
+
+
+
+
+<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
+
+
+
+
+<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
+
+
+
+
+<h2 id="automl的案例应用">AutoML的案例应用</h2>
+
+
+
+
+<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
+
+
+
+
+<ul>
+<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
+<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
+</ul>
+
+
+
+
+<h2 id="测试结果">测试结果</h2>
+
+
+
+
+<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
+有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
+
+
+
+
+<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
+
+
+
+
+<blockquote>
+  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
+  Accuracy score 0.988888888889</p>
+</blockquote>
+
+
+
+
+<p>然后是auto-sklearn框架的自生成模型：</p>
+
+
+
+
+<blockquote>
+  <p>import autosklearn.classification <br>
+  import sklearn.model_selection <br>
+  import sklearn.datasets <br>
+  import sklearn.metrics <br>
+  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
+  X_train, X_test, y_train, y_test = \ <br>
+         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
+  automl = autosklearn.classification.AutoSklearnClassifier() <br>
+  automl.fit(X_train, y_train) <br>
+  y_hat = automl.predict(X_test) <br>
+  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
+   [Out] Accuracy score 0.993333333333</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
+<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
+网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
+新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
+只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[树莓派和L298N电机驱动模块实现智能小车控制]]></title>
@@ -6468,619 +6663,6 @@ U矩阵表示对应于隐藏特性空间中的用户的特性矩阵，而V矩阵
 
 
 <p>到此，有关关联分析的apriori算法就告一段落了。后续还会有有关关联分析FP-growth算法的文章讲解。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Geek的写作方式——LaTeX 入门]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/09/14/geekde-xie-zuo-fang-shi-latex-ru-men/"/>
-    <updated>2017-09-14T21:25:58+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/09/14/geekde-xie-zuo-fang-shi-latex-ru-men</id>
-    <content type="html"><![CDATA[<h1 id="geek的写作方式latex-入门">Geek的写作方式——LaTeX 入门</h1>
-
-
-
-
-<h2 id="有关latex的简介">有关LaTex的简介</h2>
-
-
-
-
-<p>说道LaTex首先要提到<strong>TeX （文本排版系统）</strong>  <br>
-TeX是由著名的计算机科学家Donald E. Knuth（高德纳）发明的排版系统，利用TeX可以很容易地生成高质量的dvi文件，打印输出。利用dvips,dvipdfmx,pdfLaTeX等程序生成pdf，ps，文件，LaTeX2html生成html文件。它在学术界十分流行，特别是数学、物理学和计算机科学界。TeX被普遍认为是一个很好的排版工具，特别是在处理复杂的数学公式时。</p>
-
-
-
-
-<p>而LaTeX使用TeX作为它的格式化引擎。 <br>
-Leslie Lamport开发的LaTeX是当今世界上最流行和使用最为广泛的TeX宏集。它构筑在Plain TeX的基础之上，并加进了很多的功能以使得使用者可以更为方便的利用TeX的强大功能。使用LaTeX基本上不需要使用者自己设计命令和宏等，因为LaTeX已经替你做好了。因此，即使使用者并不是很了解TeX，也可以在短短的时间内生成高质量的文档。对于生成复杂的数学公式，LaTeX表现的更为出色。</p>
-
-
-
-
-<h2 id="latex的应用">LaTex的应用</h2>
-
-
-
-
-<ol>
-<li>使用 (La)TeX进行简单的中英混排；</li>
-<li>简单的文章组织结构；</li>
-<li>使用 (La)TeX 进行数学公式的排版；</li>
-<li>在 (La)TeX 的文档中插入图片/表格；</li>
-<li>最常见的带有 TeX 的单词的含义；</li>
-</ol>
-
-
-
-
-<h4 id="简单的规则">简单的规则</h4>
-
-
-
-
-<p>为了实现强大的排版能力，LaTex背后定义了一些非常严谨的语法和规则。 <br>
-（1）空格：Latex中空格不起作用。 <br>
-（2）换行：用控制命令“\”,或“ \newline”. <br>
-（3）分段：用控制命令“\par” 或空出一行。 <br>
-（4）换页：用控制命令“\newpage”或“\clearpage” <br>
-（5）特殊控制字符：#，$, %, &amp;, - ,{, }, ^, ~ <br>
-要想输出这些控制符用下列命令：</p>
-
-
-
-
-<blockquote>
-  <p>\# <span>\</span>$   \%  \&amp;  \-  \{  \}    \^{}  \~{}    其中 \blackslash 表示“ \”。</p>
-</blockquote>
-
-
-
-
-<p>在讲具体如何使用LaTex之前，先给大家推荐一下LaTex在线编辑器方便大家做测试。</p>
-
-
-
-
-<p><a href="http://gongshi.baidu.com/latex.html">kityformula：WEB mathematical formulas projects</a> ，同时项目的Github地址在「<a href="https://github.com/fex-team/kityformula">这里</a>」</p>
-
-
-
-
-<h3 id="尝试第一次中英文排版">尝试第一次中英文排版</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
-<span class="hljs-comment">%这里是导言区</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-Blahblahblah... 
-你好，世界。etc.
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p>此处的第一行 \documentclass{article} 中包含了一个控制序列（或称命令/标记）。所谓控制序列，是以反斜杠\开头，以第一个空格或非字母 的字符结束的一串文字，他们并不被输出，但是他们会影响输出文档的效果。这里的控制序列是 documentclass，它后面紧跟着的 {article} 代表这个控制序列有一个必要的参数，该参数的值为 article。这个控制序列的作用，是调用名为 “article” 的文档类。</p>
-
-
-
-
-<p>方括号[]包括的可选参数，这里表示采用UTF-8编码。</p>
-
-
-
-
-<p><strong>请注意，(La)TeX 对控制序列的大小写是敏感的。</strong></p>
-
-
-
-
-<p>此处的第二行以 % 开头。在 TeX 风格的文档中，从 “%” 开始，到该行末尾的所有字符，都会被 TeX 系统无视，只作为供人类阅读的注释。除非在 “%” 前加上反斜杠来取消这一特性。</p>
-
-
-
-
-<h3 id="组织你的文章">组织你的文章</h3>
-
-
-
-
-<h4 id="作者标题日期">作者、标题、日期</h4>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
-<span class="hljs-command">\title</span><span class="hljs-special">{</span>Cartesian closed categories and the price of eggs<span class="hljs-special">}</span>
-<span class="hljs-command">\author</span><span class="hljs-special">{</span>Jane Doe<span class="hljs-special">}</span>
-<span class="hljs-command">\date</span><span class="hljs-special">{</span>September 1994<span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-   <span class="hljs-command">\maketitle</span>
-   Hello world!
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<h4 id="章节和段落">章节和段落</h4>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>ctexart<span class="hljs-special">}</span>
-<span class="hljs-command">\title</span><span class="hljs-special">{</span>hello，world!<span class="hljs-special">}</span>
-<span class="hljs-command">\author</span><span class="hljs-special">{</span>Liam<span class="hljs-special">}</span>
-<span class="hljs-command">\date</span><span class="hljs-special">{</span><span class="hljs-command">\today</span><span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-<span class="hljs-command">\maketitle</span>
-<span class="hljs-command">\section</span><span class="hljs-special">{</span>你好，世界<span class="hljs-special">}</span>
-Welcome to 中国.
-<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello China<span class="hljs-special">}</span>
-北京是capital of China.
-<span class="hljs-command">\subsubsection</span><span class="hljs-special">{</span>Hello BeiJing<span class="hljs-special">}</span>
-<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>Tian'anmen Square<span class="hljs-special">}</span>
-is in the center of Beijing
-<span class="hljs-command">\subparagraph</span><span class="hljs-special">{</span>Chairman Mao<span class="hljs-special">}</span>
-is in the center of 天安门广场。
-<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello 广东<span class="hljs-special">}</span>
-<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>中山大学<span class="hljs-special">}</span> is one of the best university in 广东。
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p>在文档类 article/ctexart 中，定义了五个控制序列来调整行文组织结构。他们分别是</p>
-
-
-
-
-<ul>
-<li>\section{·}</li>
-<li>\subsection{·}</li>
-<li>\subsubsection{·}</li>
-<li>\paragraph{·}</li>
-<li>\subparagraph{·}</li>
-</ul>
-
-
-
-
-<h4 id="插入目录">插入目录</h4>
-
-
-
-
-<p>在上一节的文档中，找到 \maketitle，在它的下面插入控制序列 \tableofcontents</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">[</span>UTF8<span class="hljs-special">]</span><span class="hljs-special">{</span>ctexart<span class="hljs-special">}</span>
-<span class="hljs-command">\title</span><span class="hljs-special">{</span>hello，world!<span class="hljs-special">}</span>
-<span class="hljs-command">\author</span><span class="hljs-special">{</span>Liam<span class="hljs-special">}</span>
-<span class="hljs-command">\date</span><span class="hljs-special">{</span><span class="hljs-command">\today</span><span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-<span class="hljs-command">\maketitle</span>
-<span class="hljs-command">\tableofcontents</span>
-<span class="hljs-command">\section</span><span class="hljs-special">{</span>你好，世界<span class="hljs-special">}</span>
-Welcome to 中国.
-<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello China<span class="hljs-special">}</span>
-北京是capital of China.
-<span class="hljs-command">\subsubsection</span><span class="hljs-special">{</span>Hello BeiJing<span class="hljs-special">}</span>
-<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>Tian'anmen Square<span class="hljs-special">}</span>
-is in the center of Beijing
-<span class="hljs-command">\subparagraph</span><span class="hljs-special">{</span>Chairman Mao<span class="hljs-special">}</span>
-is in the center of 天安门广场。
-<span class="hljs-command">\subsection</span><span class="hljs-special">{</span>Hello 广东<span class="hljs-special">}</span>
-<span class="hljs-command">\paragraph</span><span class="hljs-special">{</span>中山大学<span class="hljs-special">}</span> is one of the best university in 广东。
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<h3 id="数学公式排版">数学公式排版</h3>
-
-
-
-
-<p>数学公式排版功能是LaTeX 最为强大的部分。</p>
-
-
-
-
-<h4 id="数学模式">数学模式</h4>
-
-
-
-
-<p>LaTeX 的数学模式有两种：<strong>行内模式 (inline)</strong> 和<strong>行间模式 (display)</strong>。前者在正文的行文中，插入数学公式；后者独立排列单独成行，并自动居中。</p>
-
-
-
-
-<p>在行文中，使用 <script type="math/tex" id="MathJax-Element-77"> ... </script> 可以插入行内公式，使用 [ … ] 可以插入行间公式，如果需要对行间公式进行编号，则可以使用 equation 环境： <br>
-<strong>eg：</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
-...
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<h4 id="上下标">上下标</h4>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
-<span class="hljs-command">\usepackage</span><span class="hljs-special">{</span>amsmath<span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-Einstein 's <span class="hljs-formula">$E=mc^2$</span>.
-
-<span class="hljs-command">\[</span> E=mc^2. <span class="hljs-command">\]</span>
-
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
-E=mc^2.
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span>
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex; mode=display" id="MathJax-Element-149">\begin{equation}
-E=mc^2 \\
-2H_2+O_2==2H_2O
-\end{equation}</script></p>
-
-
-
-
-<p>在数学模式中，需要表示上标，可以使用 ^ 来实现（下标则是 _）。它默认只作用于之后的一个字符，如果想对连续的几个字符起作用，请将这些字符用花括号 {} 括起来。</p>
-
-
-
-
-<h4 id="根式与分式">根式与分式</h4>
-
-
-
-
-<p>根式用 \sqrt{·} 来表示，分式用 \frac{·}{·} 来表示（第一个参数为分子，第二个为分母）。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\documentclass</span><span class="hljs-special">{</span>article<span class="hljs-special">}</span>
-<span class="hljs-command">\usepackage</span><span class="hljs-special">{</span>amsmath<span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span>
-<span class="hljs-command">\sqrt</span><span class="hljs-special">{</span>x<span class="hljs-special">}</span><span class="hljs-formula">$, $</span><span class="hljs-command">\frac</span><span class="hljs-special">{</span>1<span class="hljs-special">}</span><span class="hljs-special">{</span>2<span class="hljs-special">}</span><span class="hljs-formula">$.
-<span class="hljs-command">\[</span> <span class="hljs-command">\sqrt</span><span class="hljs-special">{</span>x<span class="hljs-special">}</span>, <span class="hljs-command">\]</span>
-<span class="hljs-command">\[</span> <span class="hljs-command">\frac</span><span class="hljs-special">{</span>1<span class="hljs-special">}</span><span class="hljs-special">{</span>2<span class="hljs-special">}</span>. <span class="hljs-command">\]</span>
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>document<span class="hljs-special">}</span></span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-151">\sqrt{x} \\ \frac{1}{2}</script></p>
-
-
-
-
-<h4 id="运算符号">运算符号</h4>
-
-
-
-
-<p>一些小的运算符，可以在数学模式下直接输入；另一些需要用控制序列生成。 <br>
-[ \pm\; \times \; \div\; \cdot\; \cap\; \cup\; <br>
-\geq\; \leq\; \neq\; \approx \; \equiv ]</p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-400">[ \pm\; \times \; \div\; \cdot\; \cap\; \cup\;  
-\geq\; \leq\; \neq\; \approx \; \equiv ]</script></p>
-
-
-
-
-<p>连加、连乘、极限、积分等大型运算符分别用 \sum, \prod, \lim, \int生成。他们的上下标在行内公式中被压缩，以适应行高。我们可以用 \limits 和 \nolimits 来强制显式地指定是否压缩这些上下标。 <br>
- \sum_{i=1}^n i <br>
- \prod_{i=1}^n  <br>
- \sum\limits <em>{i=1}^n i\quad \prod\limits </em>{i=1}^n  <br>
-[ \lim_{x\to0}x^2 \quad \int_a^b x^2 dx ] <br>
-[ \lim\nolimits _{x\to0}x^2\quad \int\nolimits_a^b x^2 dx ]</p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-401">\sum_{i=1}^n i</script>  <br>
-<script type="math/tex" id="MathJax-Element-402">\prod_{i=1}^n</script> <br>
-<script type="math/tex" id="MathJax-Element-403">\sum\limits _{i=1}^n i\quad \prod\limits _{i=1}^n</script> <br>
-<script type="math/tex" id="MathJax-Element-404">[ \lim_{x\to0}x^2 \quad \int_a^b x^2 dx ]</script> <br>
-<script type="math/tex" id="MathJax-Element-405">[ \lim\nolimits _{x\to0}x^2\quad \int\nolimits_a^b x^2 dx ]</script></p>
-
-
-
-
-<p>多重积分可以使用 \iint, \iiint, \iiiint, \idotsint 等命令输入。 <br>
-[ \iint\quad \iiint\quad \iiiint\quad \idotsint ]</p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-406">[ \iint\quad \iiint\quad \iiiint\quad \idotsint ]</script></p>
-
-
-
-
-<h4 id="定界符括号等">定界符（括号等）</h4>
-
-
-
-
-<p>各种括号用 (), [], {}, \langle\rangle 等命令表示； <br>
-注意花括号通常用来输入命令和环境的参数，所以在数学公式中它们前面要加 \。</p>
-
-
-
-
-<p>[ \Biggl(\biggl(\Bigl(\bigl((x)\bigr)\Bigr)\biggr)\Biggr) ]</p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-413"> \Biggl(\biggl(\Bigl(\bigl((x)\bigr)\Bigr)\biggr)\Biggr) </script></p>
-
-
-
-
-<h4 id="省略号">省略号</h4>
-
-
-
-
-<p>省略号用 \dots, \cdots, \vdots, \ddots 等命令表示。\dots 和 \cdots 的纵向位置不同，前者一般用于有下标的序列。 <br>
-[ x_1,x_2,\dots ,x_n\quad 1,2,\cdots ,n\quad <br>
-\vdots\quad \ddots ]</p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-418">  
-[ x_1,x_2,\dots ,x_n\quad 1,2,\cdots ,n\quad  
-\vdots\quad \ddots ]</script></p>
-
-
-
-
-<h4 id="矩阵">矩阵</h4>
-
-
-
-
-<p>pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix 等环境可以在矩阵两边加上各种分隔符。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\[</span> <span class="hljs-command">\begin</span><span class="hljs-special">{</span>pmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>pmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>bmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>bmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>Bmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>Bmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>vmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>vmatrix<span class="hljs-special">}</span> <span class="hljs-command">\quad</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>Vmatrix<span class="hljs-special">}</span> a<span class="hljs-special">&amp;</span>b<span class="hljs-command">\\</span>c<span class="hljs-special">&amp;</span>d <span class="hljs-command">\end</span><span class="hljs-special">{</span>Vmatrix<span class="hljs-special">}</span> <span class="hljs-command">\]</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex; mode=display" id="MathJax-Element-649">\begin{pmatrix} a&b\\c&d \end{pmatrix}</script>  <br>
-<script type="math/tex; mode=display" id="MathJax-Element-650">\begin{bmatrix} a&b\\c&d \end{bmatrix}</script>  <br>
-<script type="math/tex; mode=display" id="MathJax-Element-651">\begin{Bmatrix} a&b\\c&d \end{Bmatrix}</script>  <br>
-<script type="math/tex; mode=display" id="MathJax-Element-652">\begin{vmatrix} a&b\\c&d \end{vmatrix}</script>  <br>
-<script type="math/tex; mode=display" id="MathJax-Element-653">\begin{Vmatrix} a&b\\c&d \end{Vmatrix}</script></p>
-
-
-
-
-<p>而使用 smallmatrix 环境，可以生成行内公式的小矩阵。</p>
-
-
-
-
-<p><code>( \begin{smallmatrix} a&amp;b\\c&amp;d \end{smallmatrix} )</code> </p>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-this is a little matrix <script type="math/tex" id="MathJax-Element-654"> ( \begin{smallmatrix} a&b\\c&d \end{smallmatrix} ) </script>.</p>
-
-
-
-
-<h4 id="公式组">公式组</h4>
-
-
-
-
-<p>无需对齐的公式组可以使用 gather 环境，需要对齐的公式组可以使用 align 环境。他们都带有编号，如果不需要编号可以使用带星花的版本。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>gather<span class="hljs-special">}</span>
-a = b+c+d <span class="hljs-command">\\</span>
-x = y+z
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>gather<span class="hljs-special">}</span>
-<span class="hljs-command">\begin</span><span class="hljs-special">{</span>align<span class="hljs-special">}</span>
-a <span class="hljs-special">&amp;</span>= b+c+d <span class="hljs-command">\\</span>
-x <span class="hljs-special">&amp;</span>= y+z
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>align<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex; mode=display" id="MathJax-Element-673">\begin{gather}
-a = b+c+d \\
-x = y+z
-\end{gather}</script> <br>
-<script type="math/tex; mode=display" id="MathJax-Element-674">\begin{align}
-a &= b+c+d \\
-x &= y+z
-\end{align}</script></p>
-
-
-
-
-<h4 id="分段函数">分段函数</h4>
-
-
-
-
-<p>分段函数可以用cases次环境来实现，它必须包含在数学环境之内。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span> y=<span class="hljs-command">\begin</span><span class="hljs-special">{</span>cases<span class="hljs-special">}</span>
--x,<span class="hljs-command">\quad</span> x<span class="hljs-command">\leq</span> 0 <span class="hljs-command">\\</span>
-x,<span class="hljs-command">\quad</span> x&gt;0
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>cases<span class="hljs-special">}</span>
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>equation<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex; mode=display" id="MathJax-Element-730">\begin{equation} y=\begin{cases}
--x,\quad x\leq 0 \\
-x,\quad x>0
-\end{cases}
-\end{equation}</script></p>
-
-
-
-
-<h3 id="插入图表">插入图表</h3>
-
-
-
-
-<p>在LaTeX文档中插入图片都是通过使用一些latex图形处理宏命令来实现的, 有很多宏命令都支持在在LaTeX文档中插入eps格式的图形文件, 主要有: <br>
-（1）用includegraphics宏命令(graphicx包)  <br>
-（2）用psfig宏命令 <br>
-（3）用epsfig宏命令  <br>
-（4）用epsf宏命令 <br>
-由于插入图片较为麻烦，且不如Markdown语法方便，这里就略过了。有兴趣的朋友可以自行查询下命令的使用方法。</p>
-
-
-
-
-<h4 id="表格">表格</h4>
-
-
-
-
-<p>tabular 环境提供了最简单的表格功能。它用 \hline 命令表示横线，在列格式中用 | 表示竖线；用 &amp; 来分列，用 \\ 来换行；每列可以采用居左、居中、居右等横向对齐方式，分别用 l、c、r 来表示。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\begin</span><span class="hljs-special">{</span>tabular<span class="hljs-special">}</span><span class="hljs-special">{</span>|l|c|r|<span class="hljs-special">}</span>
- <span class="hljs-command">\hline</span>
-OS<span class="hljs-special">&amp;</span> Release<span class="hljs-special">&amp;</span> Editor<span class="hljs-command">\\</span>
- <span class="hljs-command">\hline</span>
-Windows <span class="hljs-special">&amp;</span> MikTeX <span class="hljs-special">&amp;</span> TexMakerX <span class="hljs-command">\\</span>
- <span class="hljs-command">\hline</span>
-Unix/Linux <span class="hljs-special">&amp;</span> teTeX <span class="hljs-special">&amp;</span> Kile <span class="hljs-command">\\</span>
- <span class="hljs-command">\hline</span>
-Mac OS <span class="hljs-special">&amp;</span> MacTeX <span class="hljs-special">&amp;</span> TeXShop <span class="hljs-command">\\</span>
- <span class="hljs-command">\hline</span>
-通用<span class="hljs-special">&amp;</span> TeX Live <span class="hljs-special">&amp;</span> TeXworks <span class="hljs-command">\\</span>
- <span class="hljs-command">\hline</span>
-<span class="hljs-command">\end</span><span class="hljs-special">{</span>tabular<span class="hljs-special">}</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong></p>
-
-
-
-
-<table>
-<thead>
-<tr>
-  <th align="center">OS</th>
-  <th>Release</th>
-  <th>Editor</th>
-</tr>
-</thead>
-<tbody><tr>
-  <td align="center">Windows</td>
-  <td>MikTeX</td>
-  <td>TexMakerX</td>
-</tr>
-<tr>
-  <td align="center">Unix/Linux</td>
-  <td>teTeX</td>
-  <td>Kile</td>
-</tr>
-<tr>
-  <td align="center">Mac OS</td>
-  <td>MacTeX</td>
-  <td>TeXShop</td>
-</tr>
-<tr>
-  <td align="center">通用</td>
-  <td>TeX LIve</td>
-  <td>TeXworks</td>
-</tr>
-</tbody></table>
-
-
-
-
-<h3 id="其他">其他</h3>
-
-
-
-
-<p>到目前为止，常用的(La)Tex常用的功能已经介绍的基本差不多了。 <br>
-当然，除此之外，(La)Tex还有一些版面设置，以及常用字母符号输入等功能。 <br>
-例如我们常用的希腊字母</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-tex hljs "><span class="hljs-command">\alpha</span> <span class="hljs-command">\beta</span> <span class="hljs-command">\gamma</span> <span class="hljs-command">\theta</span><span class="hljs-command">\omega</span> <span class="hljs-command">\mu</span> <span class="hljs-command">\pi</span> <span class="hljs-command">\dots</span></code></pre>
-
-
-
-
-<p><strong>示例如下：</strong> <br>
-<script type="math/tex" id="MathJax-Element-844">\alpha \beta \gamma \theta\omega \mu \pi \dots</script></p>
-
-
-
-
-<p>到此文章基本结束了，但依旧还有十分多的功能（不常用）没有在此文提及。有兴趣的朋友可以自行查询<a href="http://texdoc.net/texmf-dist/doc/latex/latex2e-help-texinfo/latex2e.pdf">LaTex相关手册</a>。</p>
 
 ]]></content>
   </entry>

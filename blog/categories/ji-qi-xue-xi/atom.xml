@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 机器学习 | EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-02-05T15:02:52+08:00</updated>
+  <updated>2018-02-08T18:18:04+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,201 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[谈谈Google自动编程框架AutoML]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/"/>
+    <updated>2018-02-08T18:17:01+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
+
+
+
+
+<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
+
+
+
+
+<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
+
+
+
+
+<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
+
+
+
+
+<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
+
+
+
+
+<h2 id="什么是automl">什么是AutoML？</h2>
+
+
+
+
+<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
+ <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
+
+
+
+
+<ul>
+<li>预处理数据</li>
+<li>选择适当的功能</li>
+<li>选择一个适当的模型选择系列</li>
+<li>优化模型超参</li>
+<li>后处理机器学习模型</li>
+<li>严格分析所得的结果</li>
+</ul>
+
+
+
+
+<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
+
+
+
+
+<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
+
+
+
+
+<ul>
+<li>执行深层表示的架构搜索</li>
+<li>分析超参数的重要性</li>
+</ul>
+
+
+
+
+<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
+
+
+
+
+<h2 id="automl的架构">AutoML的架构</h2>
+
+
+
+
+<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
+在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
+
+
+
+
+<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
+
+
+
+
+<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
+
+
+
+
+<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
+
+
+
+
+<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
+
+
+
+
+<h2 id="automl的案例应用">AutoML的案例应用</h2>
+
+
+
+
+<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
+
+
+
+
+<ul>
+<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
+<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
+</ul>
+
+
+
+
+<h2 id="测试结果">测试结果</h2>
+
+
+
+
+<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
+有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
+
+
+
+
+<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
+
+
+
+
+<blockquote>
+  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
+  Accuracy score 0.988888888889</p>
+</blockquote>
+
+
+
+
+<p>然后是auto-sklearn框架的自生成模型：</p>
+
+
+
+
+<blockquote>
+  <p>import autosklearn.classification <br>
+  import sklearn.model_selection <br>
+  import sklearn.datasets <br>
+  import sklearn.metrics <br>
+  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
+  X_train, X_test, y_train, y_test = \ <br>
+         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
+  automl = autosklearn.classification.AutoSklearnClassifier() <br>
+  automl.fit(X_train, y_train) <br>
+  y_hat = automl.predict(X_test) <br>
+  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
+   [Out] Accuracy score 0.993333333333</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
+<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
+网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
+新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
+只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[SVM支持向量机]]></title>
@@ -1166,357 +1361,6 @@ print('User-based CF MSE: ' + str(rmse(x_pred, test_data_matrix)))
 
 
 <p>最后，我们可以发现，采用SVD分解矩阵的基于模型的协同过滤方法在推荐的表现上更胜一筹。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Apriori与关联分析]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/09/19/aprioriyu-guan-lian-fen-xi/"/>
-    <updated>2017-09-19T13:33:11+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/09/19/aprioriyu-guan-lian-fen-xi</id>
-    <content type="html"><![CDATA[<h1 id="关联分析">关联分析</h1>
-
-
-
-
-<h2 id="相关概念">相关概念</h2>
-
-
-
-
-<p>作为经典的机器学习算法来说，关联分析并不算复杂。简单来说，从大规模数据集中寻找物品间的隐含关系被称作<strong>关联分析(association analysis)</strong>或者<strong>关联规则学习(association rule learning)</strong>。而其中关联分析的关键就是在众多的物品组成的<strong>项集(itemset)</strong>中找到那些经常一起出现的物品集合，也就是我们所谓的<strong>频繁项集</strong>。由于寻找物品的不同组合是一项非常耗时的任务，所需的计算代价也非常的高，这样显然用蛮力的搜索方法是不可取的。为了解决这样的问题，我们需要用到<strong>Apriori算法</strong>来解决。</p>
-
-
-
-
-<h4 id="有关关联分析的一些应用">有关关联分析的一些应用</h4>
-
-
-
-
-<ol>
-<li>购物篮分析，这是关联分析最经典的一项应用。我们耳熟能详的<a href="http://www.jianshu.com/p/a22890153f93"><em>尿布与啤酒</em></a>就是来源于此（虽然这个故事的真实性有待考据，但这并不影响它成为一个营销界的小故事）。</li>
-<li>公众热点发现</li>
-<li>新闻及流行趋势挖掘</li>
-<li>搜索引擎推荐</li>
-<li>发现毒蘑菇的相似特征（该例子取自《机器学习实战》一书）</li>
-</ol>
-
-
-
-
-<h2 id="apriori算法">Apriori算法</h2>
-
-
-
-
-<p>优点：易编码实现 <br>
-缺点：在大数据集上计算效果较慢</p>
-
-
-
-
-<p>既然关联分析是一种在大规模数据集中寻找有趣的关系的任务。这些关系可以有两种形式：一种就是我们上面所说的<strong>频繁项集(frequent itemsets)</strong>;另外一种则是<strong>关联规则(association rules)</strong>。关联规则，其暗示了两种物品之间可能存在很强的关系。</p>
-
-
-
-
-<p>那么我们该如何定义有趣的关系呢？以及，频繁项集中的频繁有怎么划定呢？虽然，许多概念都可以说明这些问题，但是最重要及最通用的莫过于其<strong>支持度</strong>和<strong>可信度</strong>。</p>
-
-
-
-
-<p><strong>支持度(support)：</strong>一个项集的支持度被定义为数据集包含该项集的记录比例。</p>
-
-
-
-
-<blockquote>
-  <p>举个例子: <br>
-<img src="https://i.loli.net/2017/09/30/59ce75c2b9080.jpg" alt="apriori.jpg" title="apriori.jpg" /><br>
-  如上图所示，因为5项记录中有4条包含了{豆奶}，所以其支持度为4/5;依此类推，{豆奶，尿布}的支持读为3/5。</p>
-</blockquote>
-
-
-
-
-<p><strong>可信度或置信度(confidence)：</strong>这个概念是针对一条{尿布} -&gt; {葡萄酒}这样的关联规则来定义的。</p>
-
-
-
-
-<blockquote>
-  <p><script type="math/tex" id="MathJax-Element-1">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
-</blockquote>
-
-
-
-
-<p>支持度和可信度是用来量化关联分析是否成功的方法。</p>
-
-
-
-
-<h4 id="apriori原理">Apriori原理</h4>
-
-
-
-
-<p>如果计算一个集合中的频繁项集的支持度，首先需要遍历全部可能的项集，比如针对一个包含了4个产品的集合，那么购买该集合产品的可能集合数目为2^4-1=15，而针对包含N项的集合，就需要遍历2^N-1。显然，这样的计算量很大。为了降低所需计算时间，就需要我们所谓的Apriori原理。</p>
-
-
-
-
-<p><strong>其基本思路：</strong>如果某个项集是频繁的，那么它的所有子集也是频繁的。该定理的逆反定理为：如果某一个项集是非频繁的，那么它的所有超集（包含该集合的集合）也是非频繁的。Apriori原理的出现，可以在得知某些项集是非频繁之后，不需要计算该集合的超集，有效地避免项集数目的指数增长，从而在合理时间内计算出频繁项集。</p>
-
-
-
-
-<h4 id="算法基本流程">算法基本流程</h4>
-
-
-
-
-<p>当集合中项的个数大于0时： <br>
-    创建一个长度为k的候选项集列表 <br>
-    检查数据以确认每个项集都是频繁的 <br>
-    保留频繁项集，并构建k+1项组成的候选集列表</p>
-
-
-
-
-<h4 id="代码实现">代码实现</h4>
-
-
-<pre><code class="python">def load_dataset():
-    "Load the sample dataset."
-    return [[1, 3, 4], [2, 3, 5], [1, 2, 3, 5], [2, 5]]
-def createC1(dataset):
-    "Create a list of candidate item sets of size one."
-    c1 = []
-    for transaction in dataset:
-        for item in transaction:
-            if not [item] in c1:
-                c1.append([item])
-    c1.sort()
-    #frozenset because it will be a ket of a dictionary.
-    return list(map(frozenset, c1))
-def scanD(dataset, candidates, min_support):
-    "Returns all candidates that meets a minimum support level"
-    sscnt = {}
-    for tid in dataset:
-        #print(tid)
-        for can in candidates:
-            if can.issubset(tid):
-                sscnt.setdefault(can, 0)
-                sscnt[can] += 1
-
-    num_items = float(len(dataset))
-    retlist = []
-    support_data = {}
-    for key in sscnt:
-        support = sscnt[key] / num_items
-        if support &gt;= min_support:
-            retlist.insert(0, key)
-        support_data[key] = support
-    return retlist, support_data
-def aprioriGen(freq_sets, k):
-    "Generate the joint transactions from candidate sets"
-    retList = []
-    lenLk = len(freq_sets)
-    for i in range(lenLk):
-        for j in range(i + 1, lenLk):
-            L1 = list(freq_sets[i])[:k - 2]
-            L2 = list(freq_sets[j])[:k - 2]
-            L1.sort()
-            L2.sort()
-            if L1 == L2:
-                retList.append(freq_sets[i] | freq_sets[j])
-    return retList
-
-
-def apriori(dataset, minsupport=0.5):
-    "Generate a list of candidate item sets"
-    C1 = createC1(dataset)
-    D = list(map(set, dataset))
-    L1, support_data = scanD(D, C1, minsupport)
-    L = [L1]
-    k = 2
-    while (len(L[k - 2]) &gt; 0):
-        Ck = aprioriGen(L[k - 2], k)
-        Lk, supK = scanD(D, Ck, minsupport)
-        support_data.update(supK)
-        L.append(Lk)
-        k += 1
-    return L, support_data
-</code></pre>
-
-<h4 id="挖掘关联规则">挖掘关联规则</h4>
-
-
-
-
-<p>上面，我们实现了用apriori算法找出了频繁项集。现在我们来尝试找出关联规则。那么什么是关联规则呢？我们可以举这样一个例子：假设我们有一个频繁项集是：{豆奶，莴苣}。那么则意味着一个人如果他已经购买了豆奶，那么他也有很大的几率会购买莴苣;但反过来却不一定成立：则如果一个人购买了莴苣，但还是不能说明他有很大几率会接着购买豆奶。</p>
-
-
-
-
-<p>既然，在上面的例子中我们已经用支持度作为一种参考单位去量化一个集合的频繁关系，在这里我们同理也可以通过另一个概念来度量关联规则。没错，它就是我们已经在上面提过的<strong>可信度</strong>。根据可信度的计算法则和定义可知：</p>
-
-
-
-
-<blockquote>
-  <p><script type="math/tex" id="MathJax-Element-2">置信度({尿布} -> {葡萄酒} )= 支持度({尿布,葡萄酒}) / 支持度({尿布})</script></p>
-</blockquote>
-
-
-
-
-<p>这也是我们上面已经提及过的问题。加上，在上面的例子之中我们已经得到了所有的频繁项集的支持度，那么为了求出各关联规则的可信度也就是剩下一个除法的问题而已。</p>
-
-
-
-
-<h4 id="如何从频繁项集中生成关联规则">如何从频繁项集中生成关联规则</h4>
-
-
-
-
-<p>一般对于一个频繁项集而言，如果我们直接生成关联规则的话，往往会有很多条。例如：我们对一个频繁项集{0，1，2，3}直接生成关联规则的话结果就如下图所示一样： <br>
-<img src="https://i.loli.net/2017/09/30/59ce75dc70dd2.png" alt="assrule.png" title="assrule.png" /><br>
-从上图我们就可以看出仅仅含4项的频繁项集就会生成出如此多的关联规则，那么如果频繁项集中含有10，20，甚至100个元素那么生成的候选关联规则的数据是相当庞大。</p>
-
-
-
-
-<p>在此，我们可以参考apriori算法中挖掘频繁项集的思路。在发现频繁项集时我们通过最低支持度的方法来忽略掉一些项集支持度的计算;同理，在这里我们将这个思想应用在关联规则的生成之上，即：如果一条规则的不满足最低可信度的要求，那么其子集自然也不能满足最低可信度的要求。对于这部分规则的可信度计算我们可以直接忽略。如上图中的阴影部分。我们假设规则{0，1，2} -&gt; 3不能满足最低可信度，那么，他的子集{1，2}-&gt;{0，3}，{0，2}-&gt;{1，3}等将不能满足最低可信度。</p>
-
-
-
-
-<h4 id="代码实现-1">代码实现</h4>
-
-
-<pre><code class="python">def generateRules(L, support_data, min_confidence=0.7):
-    """Create the association rules
-    L: list of frequent item sets
-    support_data: support data for those itemsets
-    min_confidence: minimum confidence threshold
-    """
-    rules = []
-    for i in range(1, len(L)):
-        for freqSet in L[i]:
-            H1 = [frozenset([item]) for item in freqSet]
-            print("freqSet", freqSet, 'H1', H1)
-            if (i &gt; 1):
-                rules_from_conseq(freqSet, H1, support_data, rules, min_confidence)
-            else:
-                calc_confidence(freqSet, H1, support_data, rules, min_confidence)
-    return rules
-
-
-def calc_confidence(freqSet, H, support_data, rules, min_confidence=0.7):
-    "Evaluate the rule generated"
-    pruned_H = []
-    for conseq in H:
-        conf = support_data[freqSet] / support_data[freqSet - conseq]
-        if conf &gt;= min_confidence:
-            print(freqSet - conseq, '---&gt;', conseq, 'conf:', conf)
-            rules.append((freqSet - conseq, conseq, conf))
-            pruned_H.append(conseq)
-    return pruned_H
-
-
-def rules_from_conseq(freqSet, H, support_data, rules, min_confidence=0.7):
-    "Generate a set of candidate rules"
-    m = len(H[0])
-    if (len(freqSet) &gt; (m + 1)):
-        Hmp1 = aprioriGen(H, m + 1)
-        Hmp1 = calc_confidence(freqSet, Hmp1,  support_data, rules, min_confidence)
-        if len(Hmp1) &gt; 1:
-            rules_from_conseq(freqSet, Hmp1, support_data, rules, min_confidence)
-</code></pre>
-
-<blockquote>
-  <p>运行测试</p>
-</blockquote>
-
-
-<pre><code class="python">dataset = load_dataset()
-L,support_data = apriori(dataset)
-generateRules(L,support_data)
-</code></pre>
-
-<blockquote>
-  <p>输出结果 <br>
-  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
-  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
-  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
-  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
-  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
-  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
-  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
-  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
-  Out[6]: <br>
-  [(frozenset({1}), frozenset({3}), 1.0), <br>
-   (frozenset({5}), frozenset({2}), 1.0), <br>
-   (frozenset({2}), frozenset({5}), 1.0)]</p>
-</blockquote>
-
-
-
-
-<p>从输出结果可以看出，其中{1} —&gt; {3}，{5} —&gt; {2}，{2} —&gt; {5}这三条关联规则的可信度居然达到了1.0，而且{2}，{5}还存在一个相互关联的关系。除此之外，我们还可以发现：虽然{1} —&gt; {3}这条关联的可信度达到了1.0，但是{3} —&gt; {1}却不足0.7（因为我们的最低可信度标准为0.7，没有输出显示的规则，则意味着它们的可信度低于0.7)。为了可以看见输出更多的规则，我们可以降低下最低可信度的标准，再来执行一遍代码。</p>
-
-
-<pre><code class="python">dataset = load_dataset()
-L,support_data = apriori(dataset)
-generateRules(L,support_data,0.5)
-</code></pre>
-
-<blockquote>
-  <p>输出结果 <br>
-  freqSet frozenset({3, 5}) H1 [frozenset({3}), frozenset({5})] <br>
-  frozenset({5}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
-  frozenset({3}) —&gt; frozenset({5}) conf: 0.6666666666666666 <br>
-  freqSet frozenset({1, 3}) H1 [frozenset({1}), frozenset({3})] <br>
-  frozenset({3}) —&gt; frozenset({1}) conf: 0.6666666666666666 <br>
-  frozenset({1}) —&gt; frozenset({3}) conf: 1.0 <br>
-  freqSet frozenset({2, 5}) H1 [frozenset({2}), frozenset({5})] <br>
-  frozenset({5}) —&gt; frozenset({2}) conf: 1.0 <br>
-  frozenset({2}) —&gt; frozenset({5}) conf: 1.0 <br>
-  freqSet frozenset({2, 3}) H1 [frozenset({2}), frozenset({3})] <br>
-  frozenset({3}) —&gt; frozenset({2}) conf: 0.6666666666666666 <br>
-  frozenset({2}) —&gt; frozenset({3}) conf: 0.6666666666666666 <br>
-  freqSet frozenset({2, 3, 5}) H1 [frozenset({2}), frozenset({3}), frozenset({5})] <br>
-  frozenset({5}) —&gt; frozenset({2, 3}) conf: 0.6666666666666666 <br>
-  frozenset({3}) —&gt; frozenset({2, 5}) conf: 0.6666666666666666 <br>
-  frozenset({2}) —&gt; frozenset({3, 5}) conf: 0.6666666666666666 <br>
-  Out[7]: <br>
-  [(frozenset({5}), frozenset({3}), 0.6666666666666666), <br>
-   (frozenset({3}), frozenset({5}), 0.6666666666666666), <br>
-   (frozenset({3}), frozenset({1}), 0.6666666666666666), <br>
-   (frozenset({1}), frozenset({3}), 1.0), <br>
-   (frozenset({5}), frozenset({2}), 1.0), <br>
-   (frozenset({2}), frozenset({5}), 1.0), <br>
-   (frozenset({3}), frozenset({2}), 0.6666666666666666), <br>
-   (frozenset({2}), frozenset({3}), 0.6666666666666666), <br>
-   (frozenset({5}), frozenset({2, 3}), 0.6666666666666666), <br>
-   (frozenset({3}), frozenset({2, 5}), 0.6666666666666666), <br>
-   (frozenset({2}), frozenset({3, 5}), 0.6666666666666666)]</p>
-</blockquote>
-
-
-
-
-<p>这次我们就可以在输出中看见{3} —&gt; {1}了，它的可信度为0.6666666666666666。</p>
-
-
-
-
-<p>到此，有关关联分析的apriori算法就告一段落了。后续还会有有关关联分析FP-growth算法的文章讲解。</p>
 
 ]]></content>
   </entry>
