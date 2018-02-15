@@ -9,8 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿使用树莓派进行24小时不间断直播 开始 多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。 方案一 ffmpeg + ffserver搭建流媒体服务器 首先 我们用到的工具有： 硬件方面： 树莓派主板一块
-兼容树莓派的USB摄像头一个 软件方面： ffmpeg， &hellip;">
+  <meta name="description" content="﻿元胞自动机与《生命游戏》（Game of Life） 背景 笔者最近读到一篇交通流仿真的论文里，提到了一个挺有意思的模型　－－　元胞自动机。 在好奇心的驱使之下查询了不少资料，所以今天就来跟大家来分享一下“元胞自动机”这个模型以及它和“康威《生命游戏》”的关系。 为了让话题更加有趣，我们先从《 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +64,297 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-15T08:44:11+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="元胞自动机与生命游戏game-of-life">元胞自动机与《生命游戏》（Game of Life）</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>笔者最近读到一篇交通流仿真的论文里，提到了一个挺有意思的模型　－－　<strong>元胞自动机</strong>。</p>
+
+
+
+
+<p>在好奇心的驱使之下查询了不少资料，所以今天就来跟大家来分享一下<strong>“元胞自动机”</strong>这个模型以及它和<strong>“康威《生命游戏》”</strong>的关系。</p>
+
+
+
+
+<p>为了让话题更加有趣，我们先从《生命游戏》开始谈起。</p>
+
+
+
+
+<h2 id="什么是生命游戏">什么是《生命游戏》？</h2>
+
+
+
+
+<p>生命游戏由英国数学家约翰·何顿·康威提出，它其实是一个零玩家游戏，它包括一个二维矩形世界，这个世界中的每个方格居住着一个活着的或死了的细胞。</p>
+
+
+
+
+<p>而整个《生命游戏》是贯彻着一条生命游戏定律的，即：<strong>如果一个生命，其周围的同类生命太少，会因为得不到帮助而死亡；如果太多，则会因为得不到足够的生命资源而死亡。</strong> ——英国数学家约翰·康威</p>
+
+
+
+
+<p>一个细胞在下一个时刻生死取决于相邻八个方格中活着的或死了的细胞的数量。如果相邻方格活着的细胞数量过多，这个细胞会因为资源匮乏而在下一个时刻死去；相反，如果周围活细胞过少，这个细胞会因太孤单而死去。实际中，你可以设定周围活细胞的数目怎样时才适宜该细胞的生存。如果这个数目设定过低，世界中的大部分细胞会因为找不到太多的活的邻居而死去，直到整个世界都没有生命；如果这个数目设定过高，世界中又会被生命充满而没有什么变化。</p>
+
+
+
+
+<p>实际中，这个数目一般选取2或者3；这样整个生命世界才不至于太过荒凉或拥挤，而是一种动态的平衡。</p>
+
+
+
+
+<p>这样的话，游戏的规则就是：当一个方格周围有2或3个活细胞时，方格中的活细胞在下一个时刻继续存活；即使这个时刻方格中没有活细胞，在下一个时刻也会“诞生”活细胞。在这个游戏中，还可以设定一些更加复杂的规则，例如当前方格的状况不仅由父一代决定，而且还考虑祖父一代的情况。你还可以作为这个世界的上帝，随意设定某个方格细胞的死活，以观察对世界的影响。</p>
+
+
+
+
+<p>在游戏的进行中，杂乱无序的细胞会逐渐演化出各种精致、有形的结构；这些结构往往有很好的对称性，而且每一代都在变化形状。一些形状已经锁定，不会逐代变化。</p>
+
+
+
+
+<p>有时，一些已经成形的结构会因为一些无序细胞的“入侵”而被破坏。但是形状和秩序经常能从杂乱中产生出来。</p>
+
+
+
+
+<h2 id="生命游戏和元胞自动机的关系以及什么是元胞自动机">《生命游戏》和元胞自动机的关系以及什么是元胞自动机？</h2>
+
+
+
+
+<p>生命游戏的原理就是基于元胞自动机的，或者说《生命游戏》就是元胞自动机的一个展示。</p>
+
+
+
+
+<p><strong>元胞自动机(Cellular Automata，简称CA</strong>，也有人译为细胞自动机、点格自动机、分子自动机或单元自动机)。是一时间和空间都离散的动力系统。</p>
+
+
+
+
+<p>散布在规则格网 (Lattice Grid)中的每一元胞(Cell)取有限的离散状态，遵循同样的作用规则，依据确定的局部规则作同步更新。大量元胞通过简单的相互作用而构成动态系统的演化。不同于一般的动力学模型，元胞自动机不是由严格定义的物理方程或函数确定，而是用一系列模型构造的规则构成。凡是满足这些规则的模型都可以算作是元胞自动机模型。</p>
+
+
+
+
+<p>因此，元胞自动机是一类模型的总称，或者说是一个方法框架。其特点是时间、空间、状态都离散，每个变量只取有限多个状态，且其状态改变的规则在时间和空间上都是局部的。</p>
+
+
+
+
+<p><strong>初等元胞自动机（ Elementary Cellular Automata， ECA)</strong>的基本要素如下</p>
+
+
+
+
+<ul>
+<li>空间：一维直线上等间距的点。可为某区间上的整数点的集合。</li>
+<li>状态集：S={s1,s2} 即只有两种不同的状态。这两种不同的状态可将其分别编码为0 与 1；若用图形表示，则可对应“黑”与“白” 或者其他两种不同的颜色。</li>
+<li>邻居：取邻居半径r=1，即每个元胞最多只有“左邻右舍”两个邻居。</li>
+<li>演化规则：任意设定， 最多2^8=256</li>
+</ul>
+
+
+
+
+<p><strong>元胞以相邻的8个元胞为邻居。即Moore邻居；一个元胞的生死由其在该时刻本身的生死状态和周围八个邻居的状态。</strong></p>
+
+
+
+
+<p>为了解释它，我们可以把计算机中的宇宙想象成是一堆方格子构成的封闭空间，尺寸为N的空间就有N*N个格子。而每一个格子都可以看成是一个生命体，每个生命都有生和死两种状态，如果该格子生就显示蓝色，死则显示白色。每一个格子旁边都有邻居格子存在，如果我们把3ｘ3的9个格子构成的正方形看成一个基本单位的话，那么这个正方形中心的格子的邻居就是它旁边的8个格子。</p>
+
+
+
+
+<p>每个格子的生死遵循下面的原则：</p>
+
+
+
+
+<ol>
+<li>如果一个细胞周围有3个细胞为生（一个细胞周围共有8个细胞），则该细胞为生（即该细胞若原先为死，则转为生，若原先为生，则保持不变）。</li>
+<li>如果一个细胞周围有2个细胞为生，则该细胞的生死状态保持不变；</li>
+<li>在其它情况下，该细胞为死（即该细胞若原先为生，则转为死，若原先为死，则保持不变） </li>
+</ol>
+
+
+
+
+<p>设定图像中每个像素的初始状态后依据上述的游戏规则演绎生命的变化，由于初始状态和迭代次数不同，将会得到令人叹服的优美图案。</p>
+
+
+
+
+<p>这样就把这些若干个格子（生命体）构成了一个复杂的动态世界。运用简单的3条作用规则构成的群体会涌现出很多意想不到的复杂行为，这就是复杂性科学的研究焦点。</p>
+
+
+
+
+<h2 id="元胞自动机的应用">元胞自动机的应用</h2>
+
+
+
+
+<p>在实际应用过程中，有的元胞自动机模型对其中的某些特征进行了扩展，有的在规则设计中引入随机因素，如：森林火灾模型。 又如，在交通、通讯发达的今天， 研究流行病或计算机病毒的传播问题时， 我们还可以将空间背景换成复杂网络的结点，用网络邻接点作为邻居。</p>
+
+
+
+
+<p>这样的调整显然比仍旧使用二维欧氏空间、采用欧氏距离的模型更加符合实际情况。 在大型场所人群紧急疏散问题模拟研究中，可以考虑年龄、性别等因素，即元胞不是同质的，更加有利于使模拟系统接近真实系统。</p>
+
+
+
+
+<h2 id="生命游戏实现python版">《生命游戏实现》Python版</h2>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">GameOfLife</span><span class="hljs-params">(object)</span>:</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, cells_shape)</span>:</span>
+    <span class="hljs-string">"""
+    Parameters
+    ----------
+    cells_shape : 一个元组，表示画布的大小。
+
+    Examples
+    --------
+    建立一个高20，宽30的画布
+    game = GameOfLife((20, 30))
+
+    """</span>
+
+    <span class="hljs-comment"># 矩阵的四周不参与运算</span>
+    self.cells = np.zeros(cells_shape)
+
+    real_width = cells_shape[<span class="hljs-number">0</span>] - <span class="hljs-number">2</span>
+    real_height = cells_shape[<span class="hljs-number">1</span>] - <span class="hljs-number">2</span>
+
+    self.cells[<span class="hljs-number">1</span>:-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>:-<span class="hljs-number">1</span>] = np.random.randint(<span class="hljs-number">2</span>, size=(real_width, real_height))
+    self.timer = <span class="hljs-number">0</span>
+    self.mask = np.ones(<span class="hljs-number">9</span>)
+    self.mask[<span class="hljs-number">4</span>] = <span class="hljs-number">0</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_state</span><span class="hljs-params">(self)</span>:</span>
+    <span class="hljs-string">"""更新一次状态"""</span>
+    buf = np.zeros(self.cells.shape)
+    cells = self.cells
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, cells.shape[<span class="hljs-number">0</span>] - <span class="hljs-number">1</span>):
+      <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, cells.shape[<span class="hljs-number">0</span>] - <span class="hljs-number">1</span>):
+        <span class="hljs-comment"># 计算该细胞周围的存活细胞数</span>
+        neighbor = cells[i-<span class="hljs-number">1</span>:i+<span class="hljs-number">2</span>, j-<span class="hljs-number">1</span>:j+<span class="hljs-number">2</span>].reshape((-<span class="hljs-number">1</span>, ))
+        neighbor_num = np.convolve(self.mask, neighbor, <span class="hljs-string">'valid'</span>)[<span class="hljs-number">0</span>]
+        <span class="hljs-keyword">if</span> neighbor_num == <span class="hljs-number">3</span>:
+          buf[i, j] = <span class="hljs-number">1</span>
+        <span class="hljs-keyword">elif</span> neighbor_num == <span class="hljs-number">2</span>:
+          buf[i, j] = cells[i, j]
+        <span class="hljs-keyword">else</span>:
+          buf[i, j] = <span class="hljs-number">0</span>
+    self.cells = buf
+    self.timer += <span class="hljs-number">1</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plot_state</span><span class="hljs-params">(self)</span>:</span>
+    <span class="hljs-string">"""画出当前的状态"""</span>
+    plt.title(<span class="hljs-string">'Iter :{}'</span>.format(self.timer))
+    plt.imshow(self.cells)
+    plt.show()
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_and_plot</span><span class="hljs-params">(self, n_iter)</span>:</span>
+    <span class="hljs-string">"""更新状态并画图
+    Parameters
+    ----------
+    n_iter : 更新的轮数
+    """</span>
+    plt.ion()
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(n_iter):
+      plt.title(<span class="hljs-string">'Iter :{}'</span>.format(self.timer))
+      plt.imshow(self.cells)
+      self.update_state()
+      plt.pause(<span class="hljs-number">0.2</span>)
+    plt.ioff()
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+  game = GameOfLife(cells_shape=(<span class="hljs-number">60</span>, <span class="hljs-number">60</span>))
+  game.update_and_plot(<span class="hljs-number">200</span>)</code></pre>
+
+
+
+
+<p>效果图　</p>
+
+
+
+
+<blockquote>
+  <p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtk3ezxj209908tdgf.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjw782j208u08y0sw.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjvhopj209109274d.jpg" alt="" title=""></p>
+</blockquote>
+
+
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a>
+      <time datetime="2018-02-15T08:44:11+08:00" pubdate><span class='month'>Feb</span> <span class='day'>15</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shu-xue-jian-mo/'>数学建模</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2949,493 +3239,6 @@ Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
       <time datetime="2017-12-02T17:17:32+08:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-11-27T12:45:01+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战下">Python在Spark上的机器学习之机器学习实战(下)</h1></p>
-
-<h2 id="mllib-的使用续">MLlib 的使用（续）</h2>
-
-
-
-
-<p>我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。</p>
-
-
-
-
-<h3 id="统计校验">　统计校验</h3>
-
-
-
-
-<p>在通过特征变量的相关系数选择特征时，对于一般的分类变量而言，我们无法计算它们之间的相关系数，但是我们可以通过对它们进行卡方校验来检测它们的分布之间是否存在较大的差异。</p>
-
-
-
-
-<p><strong>卡方检验</strong>：是用途非常广的一种假设检验方法，它在分类资料统计推断中的应用，包括：两个样本率或两个构成比比较的卡方检验；多个样本率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
-
-
-
-
-<p><strong>卡方检验</strong>就是统计样本的实际观测值与理论推断值之间的偏离程度，实际观测值与理论推断值之间的偏离程度就决定卡方值的大小，卡方值越大，越不符合；卡方值越小，偏差越小，越趋于符合，若两个值完全相等时，卡方值就为0，表明理论值完全符合。</p>
-
-
-
-
-<p>而在PySpark中你可以用 <strong>.chiSqTest()</strong> 方法来轻松实现卡方检验。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.linalg</span> <span class="kn">as</span> <span class="nn">ln</span>
-</span><span class='line'><span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">births_transformed</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">)</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">count</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">agg_rdd</span> <span class="o">=</span> <span class="n">agg</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
-</span><span class='line'>              <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">row_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">Matrices</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">agg_rdd</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">chiSqTest</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>我们遍历所有的分类变量并以 <strong>infant_alive_ at_report</strong>进行分类统计。下一步，我们需要将其转化成RDD，所以我们要先利用pyspark.mllib.linalg模将它们转换成一个矩阵。 <br>
-当我们成功将其转换成矩阵的形式之后，我们就可以用<strong>.chiSqTest()</strong>来校验我们的结果。</p>
-
-
-
-
-<p>最后结果显示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/16/5a0daece4fae9.png" alt="chisqtest.png" title=""></p>
-
-
-
-
-<p>从结果我们可以看出，所有分类变量对理论值的预测都是有意义的，因此，我们在构建最后的预测模型的时候都要考虑上这些分类型特征变量。</p>
-
-
-
-
-<h3 id="创建最后的待训练数据集">创建最后的待训练数据集</h3>
-
-
-
-
-<p>经过一轮的数据分析和特征变量筛选之后，最终到了我们最终的建模阶段了。首先我们将筛选出来以DataFrame数据结构模型表达的数据转换成以LabeledPoints形式表示的RDD。</p>
-
-
-
-
-<p>LabeledPoint 是 MLlib 中的一种数据结构，它包含了两个属性值：label（标识），features（特征）一般用作机器学习模型的训练。</p>
-
-
-
-
-<p>其中，label就是我们目标的分类的标识而features就是我们用于分类的特征， <br>
-通常是一个Numpy 数组，列表，psyspark.mllib.linalg.SparseVector,pyspark.mllib,linalg.DenseVector或者是scipy.sparse的形式。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">as</span> <span class="nn">ft</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.regression</span> <span class="kn">as</span> <span class="nn">reg</span>
-</span><span class='line'><span class="n">hashing</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">HashingTF</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
-</span><span class='line'><span class="n">births_hashed</span> <span class="o">=</span> <span class="n">births_transformed</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="nb">list</span><span class="p">(</span><span class="n">hashing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">toArray</span><span class="p">())</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s">&#39;BIRTH_PLACE&#39;</span>
-</span><span class='line'>          <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span>
-</span><span class='line'>      <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_to_keep</span><span class="p">)])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[[</span><span class="n">e</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">e</span>
-</span><span class='line'>          <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">row</span>
-</span><span class='line'>          <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-</span><span class='line'>      <span class="n">ln</span><span class="o">.</span><span class="n">Vectors</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="划分训练集和测试集">划分训练集和测试集</h3>
-
-
-
-
-<p>形如sklearn.model_selection.train_test_split随机划分训练集和测试集的模块一般，在PySpark中RDDs也有一个便利的<strong>.randomSplit(…)</strong>方法用于随机划分训练集和测试集。</p>
-
-
-
-
-<p>在本例中可以这样使用</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">births_train, births_test = births_hashed.randomSplit([<span class="hljs-number">0.6</span>, <span class="hljs-number">0.4</span>])</code></pre>
-
-
-
-
-<p>没错，仅仅需要上面这样一行的代码，我们就可以将我们的待训练数据按照随机60%，40%来划分好我们的训练集和测试集了。</p>
-
-
-
-
-<h3 id="开始建模">开始建模</h3>
-
-
-
-
-<p>在一切准备就绪之后，我们就可以开始通过我们上面的训练数据集来建模了。在这里我们来尝试建立两个模型：一个线性的Logistic回归模型，一个非线性的随机森林模型。然后，在初次建模的时候，我们先采用筛选出来的全部特征来建模，然后我们再通过<strong>ChiSqSelector（…）</strong>方法来归纳出最能代表全部整体的四个主成分。</p>
-
-
-
-
-<h4 id="logistic-回归模型">Logistic 回归模型</h4>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.classification</span> \
-</span><span class='line'><span class="kn">import</span> <span class="n">LogisticRegressionWithLBFGS</span>
-</span><span class='line'><span class="n">LR_Model</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
-</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">births_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">LR_results</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">births_test</span>\
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.evaluation</span> <span class="kn">as</span> <span class="nn">ev</span>
-</span><span class='line'><span class="n">LR_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>从上面的建模过程可以看出，使用PySpark训练一个模型也是非常简单的。我们只需要调用<strong>.train(…)</strong>方法，并传入之前处理好的LabeledPoints数据即可。不过需要注意的一点是我们要提前指定一个较小训练的迭代次数以免训练时间过长。</p>
-
-
-
-
-<p>同时，在上面的代码中，我们在训练完一个模型之后使用MLlib中为我们提供的评估分类和回归准确度的<strong>.BinaryClassificationMetrics（…）</strong>方法来分析我们最后预测的结果。</p>
-
-
-
-
-<p>最后，结果图示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/17/5a0dc13a5ea1a.png" alt="logistic_roc.png" title=""></p>
-
-
-
-
-<p>通过PR，ROC的结果，我们可以看出，这个模型还是可接受的。</p>
-
-
-
-
-<h3 id="选取出最具代表性的分类特征">选取出最具代表性的分类特征</h3>
-
-
-
-
-<p>通常来说，一个采取更少的特征的简单模型，往往会比一个复杂的模型，在分类问题上更具有代表性和可解释性。而在MLlib中，则可以通过<strong>.Chi-Square selector</strong>来提取出模型中最具代表性的一些分类特征变量来简化我们的模型。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selector</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">ChiSqSelector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">births_train</span><span class="p">)</span>
-</span><span class='line'><span class="n">topFeatures_train</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">births_train</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_train</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span><span class='line'><span class="n">topFeatures_test</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_test</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="随机森林模型">随机森林模型</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.tree</span> <span class="kn">import</span> <span class="n">RandomForest</span>
-</span><span class='line'><span class="n">RF_model</span> <span class="o">=</span> <span class="n">RandomForest</span> \
-</span><span class='line'><span class="o">.</span><span class="n">trainClassifier</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">topFeatures_train</span><span class="p">,</span>
-</span><span class='line'><span class="n">numClasses</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span class='line'><span class="n">categoricalFeaturesInfo</span><span class="o">=</span><span class="p">{},</span>
-</span><span class='line'><span class="n">numTrees</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-</span><span class='line'><span class="n">featureSubsetStrategy</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="n">seed</span><span class="o">=</span><span class="mi">666</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">RF_results</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">RF_model</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span>
-</span><span class='line'><span class="n">RF_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">RF_results</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">model_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>随机森林模型（Random forest 后面简称RF）在训练上总体与Logistic类似，不同的参数是RF在训练前需要指定类别总数：numClasses，树的棵数：numTrees（这两个参数的意义大家可以参照下随机森林模型的<a href="https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/1974765?fr=aladdin">百科介绍</a>）</p>
-
-
-
-
-<p><strong>注：在随机森林模型的创建中，我们采用的是上面提取出来的最具代表性的有效特征，这就意味着模型用到的特征是比之前的Logistic要少的。</strong></p>
-
-
-
-
-<p>最后，结果图示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/17/5a0dc8621d985.png" alt="rf_roc.png" title=""></p>
-
-
-
-
-<p>通过结果我们可以看出，随机森林模型，在采用比之前更少的特征下的建模的最终预测效果是由于之前的Logistic回归模型的。</p>
-
-
-
-
-<p>下面我们同样使用代表性特征来重建一次Logistic回归模型</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">LR_Model_2</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
-</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">topFeatures_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'><span class="n">LR_results_2</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model_2</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation_2</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results_2</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最终结果： <br>
-<img src="https://i.loli.net/2017/11/17/5a0dc9d2aa75c.png" alt="logistic_lbfgs.png" title=""></p>
-
-
-
-
-<p>通过结果，我们可以看出，虽然没有达到RF模型的准确度，但是与采用了全特征的Logistic回归模型处于同一水平。所以，我们在可选的情况下，通常采用更少的特征来构建更为简化和有效的模型。</p>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
-      <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       
       </footer>
     </article>
