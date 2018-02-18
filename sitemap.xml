@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2018/02/18/ru-he-mian-fei-shi-yong-gu-ge-gpuxun-lian-shen-jing-wang-luo/</loc>
+<lastmod>2018-02-18T21:21:44+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/</loc>
 <lastmod>2018-02-15T08:44:11+08:00</lastmod>
 </url>
@@ -409,6 +413,9 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/posts/8/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/posts/9/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/googled42af9789c9866d1.html</loc>
