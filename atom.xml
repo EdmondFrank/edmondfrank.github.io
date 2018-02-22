@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-02-18T21:25:23+08:00</updated>
+  <updated>2018-02-22T16:09:53+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,670 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python Keras + LSTM 进行单变量时间序列预测]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/"/>
+    <updated>2018-02-22T16:06:57+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce</id>
+    <content type="html"><![CDATA[<h1>Python Keras + LSTM 进行单变量时间序列预测</h1>
+
+<p>首先，时间序列预测问题是一个复杂的预测模型问题，它不像一般的回归预测模型。时间序列预测的输入变量是一组按时间顺序的数字序列。它既具有延续性又具有随机性，所以在建模难度上相对回归预测更大。</p>
+
+<p>但同时，正好有一种强大的神经网络适合处理这种存在依赖关系的序列问题：RNN（Recurrent neural networks）。在过去几年中，应用 RNN 在语音识别，语言建模，翻译，图片描述等问题上已经取得一定成功，并且应用领域还在扩展。</p>
+
+<h2>LSTM网络</h2>
+
+<p><strong>Long Short-Term Memory 网络</strong>亦称<strong>LSTM 网络</strong>，是一种在深度学习中应用的循环神经网络。可以学习长期依赖信息。LSTM 由Hochreiter &amp; Schmidhuber (1997)提出，并在近期被Alex Graves进行了改良和推广。在很多问题，LSTM 都取得相当巨大的成功，并得到了广泛的使用。LSTM 通过刻意的设计来避免长期依赖问题。记住长期的信息在实践中是 LSTM 的默认行为，而非需要付出很大代价才能获得的能力。</p>
+
+<h2>具体应用</h2>
+
+<p>下面以一个洗发水销售的例子，来实现LSTM。
+首先，你可以在这里<a href="https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period#!ds=22r0&amp;display=line">下载</a>到本文需要用的数据集。这是一个描述了3年内洗发水的月度销售数量的数据集。</p>
+
+<h3>数据读取</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span><span class="s">&quot;%Y-%m&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="n">series</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>数据划分</h3>
+
+<p>首先我们把数据集划分成两个部分即：训练集和测试集。
+那么我们该如何划分呢？因为我们今天研究的是时间序列分析，所以在数据集的划分上我们也应该按照时间来划分。我们可以将前两年的数据作为我们的训练集而将最后一年的数据作为测试集。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># split data into train and test</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里我们假设一个滚动预测的情景，又称<strong>前向模型验证（walk-forward model validation）</strong>。其原理很简单，举例来说就像当公司的预测期长达一年时，预测会将已过去的月份排除，而将预测期末的月份补上。好比一月份过去后，我们将其从预测中移除，同时次年的一月份就会作为收尾被添加到预测中以便预测总能保持12个月的完整性。</p>
+
+<p>这样通过使用每月新的洗发水销售量来进行下个月的预测，我们就像模拟了一个更接近于真实世界的场景。</p>
+
+<p>最后，我们将所有在测试集上的预测结果收集起来并计算出他们与真实值的均方根误差（RMSE）以此来作为评估我们模型的基准。</p>
+
+<h3>持续模型预测(Persistence Model Forecast)</h3>
+
+<p>持续性预测的基本思路就是从先前的（t-1）时间序列的结果用于预测当前时间（t）的取值。
+那么根据以上的思路，我们可以通过滚动预测的原理从训练集的历史数据中获取最后一次观察值并使用它来预测当前时间的可能取值。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="c"># split data into train and test</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span><span class='line'><span class="c"># walk-forward validation</span>
+</span><span class='line'><span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)):</span>
+</span><span class='line'>  <span class="c"># make prediction</span>
+</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="c"># observation</span>
+</span><span class='line'>  <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'><span class="c"># report performance</span>
+</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
+</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b1503007a96.png" alt="persistence_rmse.png" /></p>
+
+<p>通过持续模型的预测，我们得到了一个最基础的预测模型以及RMSE（baseline）为了提升我们预测模型的效果，下面让我们进入正题来构建LSTM模型来对数据集进行时间序列预测。</p>
+
+<h3>数据处理</h3>
+
+<p>为了能够构建一个LSTM模型对训练集进行训练，我们首先要对数据进行一下处理：</p>
+
+<ol>
+<li>将时间序列问题转化成监督学习问题</li>
+<li>平稳时间序列</li>
+<li>数据标准化</li>
+</ol>
+
+
+<h4>将时间序列转换成监督学习</h4>
+
+<p>对于一个时间序列问题，我们可以通过使用从最后一个（t-1）时刻的观测值作为输入的特征X和当前时刻（t）的观测值作为输出Y来实现转换。</p>
+
+<p>因为，需要转换的是一组时间序列数据，所以无法组合成像真正的监督学习那样有明确一对一映射的输入输出关系。尤其是在数据集的最开始或最后时，两个位置总有一个位置无法在训练集中找到对应关系。为了解决这样的问题，我们通常的做法是，在最开始时将输入特征置为0，而它对应的输出就是时间序列的第一个元素。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="c"># transform to supervised learning</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">supervised</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>输出结果：
+        0      0
+0     0.0  266.0
+1   266.0  145.9
+2   145.9  183.1
+3   183.1  119.3
+4   119.3  180.3
+5   180.3  168.5
+6   168.5  231.8
+7   231.8  224.5
+8   224.5  192.8
+9   192.8  122.9
+10  122.9  336.5
+11  336.5  185.9
+12  185.9  194.3
+13  194.3  149.5
+14  149.5  210.1
+15  210.1  273.3
+16  273.3  191.4
+17  191.4  287.0
+18  287.0  226.0
+19  226.0  303.6
+20  303.6  289.9
+21  289.9  421.6
+22  421.6  264.5
+23  264.5  342.3
+24  342.3  339.7
+25  339.7  440.4
+26  440.4  315.9
+27  315.9  439.3
+28  439.3  401.3
+29  401.3  437.4
+30  437.4  575.5
+31  575.5  407.6
+32  407.6  682.0
+33  682.0  475.3
+34  475.3  581.3
+35  581.3  646.9</p></blockquote>
+
+<h4>平稳时间序列</h4>
+
+<p>虽然不明显，但我们仍可以看出这个洗发水销售数据集在时间上呈上升趋势。因此我们说这个时间序列数据是非平稳的。那么，不平稳怎么办？</p>
+
+<p>答案就是：差分。（有关差分的介绍点击<a href="https://zh.wikipedia.org/wiki/%E5%B7%AE%E5%88%86">此处</a>）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># create a differenced series</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># invert differenced value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># transform to be stationary</span>
+</span><span class='line'><span class="n">differenced</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">differenced</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># invert transform</span>
+</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">differenced</span><span class="p">)):</span>
+</span><span class='line'>  <span class="n">value</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">differenced</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">inverted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="n">differenced</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b162fb84ac0.png" alt="diff.png" /></p>
+
+<p>经过一阶差分处理后，从图上看还是挺平稳的。</p>
+
+<h4>标准化数据</h4>
+
+<p>在数据输入前进行标准化可以非常有效的提升收敛速度和效果。尤其如果我们的激活函数是sigmoid或者tanh，其梯度最大的区间是0附近，当输入值很大或者很小的时候，sigmoid或者tanh的变化就基本平坦了（sigmoid的导数sig（1-sig）会趋于0），也就是进行梯度下降进行优化的时候，梯度会趋于0，而倒是优化速度很慢。</p>
+
+<p>如果输入不进行归一化，由于我们初始化的时候一般都是0均值的的正太分布或者小范围的均匀分布（Xavier），如果输入中存在着尺度相差很大的特征，例如（10000，0.001）这样的，很容易导致激活函数的输入w1<em>x1+w2</em>x2+b变的很大或者很小，从而引起梯度趋于0。</p>
+
+<p>而LSTM的默认激活函数就是tanh函数，它的输出范围在-1 到 1 之间，同时这是时间序列数据的首选范围。因此我们可以使用MinMaxScaler类将数据集转换到范围[-1,1]。像其他scikit用于转换数据的方法类一样，它需要以行和列的矩阵格式提供的数据。因此，在转换之前，我们必须重塑NumPy数组。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># transform scale</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaled_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaled_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">scaled_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># invert transform</span>
+</span><span class='line'><span class="n">inverted_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">)</span>
+</span><span class='line'><span class="n">inverted_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>输出结果：
+Month
+1901-01-01    266.0
+1901-02-01    145.9
+1901-03-01    183.1
+1901-04-01    119.3
+1901-05-01    180.3
+Name: Sales of shampoo over a three year period, dtype: float64
+0   -0.478585
+1   -0.905456
+2   -0.773236
+3   -1.000000
+4   -0.783188
+dtype: float64
+0    266.0
+1    145.9
+2    183.1
+3    119.3
+4    180.3
+dtype: float64</p></blockquote>
+
+<h3>构建LSTM模型</h3>
+
+<p>长短期记忆网络（LSTM）是一种递归神经网络（RNN）。
+这类网络的的优点是它能学习并记住较长序列，并不依赖预先指定的窗口滞后观察值作为输入。
+在Keras中，这被称为stateful，在定义LSTM网络层时将“stateful”语句设定为“True”。</p>
+
+<p>LSTM层要求输入矩阵格式为：[样本，时间步长，特征]</p>
+
+<p>鉴于训练数据集的形式定义为X输入和y输出，必须先将其转化为样本/时间步长/特征的形式。</p>
+
+<h4>完整代码</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">LSTM</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># date-time parsing function for loading the dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># create a differenced series</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># invert differenced value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># scale train and test data to [-1, 1]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+</span><span class='line'>  <span class="c"># fit scaler</span>
+</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># transform train</span>
+</span><span class='line'>  <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">train_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># transform test</span>
+</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># inverse scaling for a forecasted value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">new_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">inverted</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">inverted</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># fit an LSTM network to training data</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">fit_lstm</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">nb_epoch</span><span class="p">,</span> <span class="n">neurons</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">train</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">neurons</span><span class="p">,</span> <span class="n">batch_input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">stateful</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;mean_squared_error&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">&#39;adam&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_epoch</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">reset_states</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">model</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># make a one-step forecast</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">forecast_lstm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform data to be stationary</span>
+</span><span class='line'><span class="n">raw_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">diff_values</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform data to be supervised learning</span>
+</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">diff_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">supervised_values</span> <span class="o">=</span> <span class="n">supervised</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># split data into train and test-sets</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">supervised_values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">supervised_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform the scale of the data</span>
+</span><span class='line'><span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># fit the model</span>
+</span><span class='line'><span class="n">lstm_model</span> <span class="o">=</span> <span class="n">fit_lstm</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'><span class="c"># forecast the entire training dataset to build up state for forecasting</span>
+</span><span class='line'><span class="n">train_reshaped</span> <span class="o">=</span> <span class="n">train_scaled</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">lstm_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">train_reshaped</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># walk-forward validation on the test data</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)):</span>
+</span><span class='line'>  <span class="c"># make one-step forecast</span>
+</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">forecast_lstm</span><span class="p">(</span><span class="n">lstm_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># invert scaling</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">yhat</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># invert differencing</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># store forecast</span>
+</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yhat</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">expected</span> <span class="o">=</span> <span class="n">raw_values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;Month=</span><span class="si">%d</span><span class="s">, Predicted=</span><span class="si">%f</span><span class="s">, Expected=</span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">expected</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#report performance</span>
+</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:],</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Test RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
+</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:])</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b16bc803033.png" alt="lstm_pred.png" /></p>
+
+<p>最后运行结果打印出测试数据集12个月份中每个月份的预期和预测销量。示例还打印了所有预测值得均方根误差。该模型显示洗发水月度销量的均方根误差为111.925，好于持续性模型得出的对应结果136.761。</p>
+
+<p><strong>另外</strong>，神经网络的一个难题是初始条件不同，它们给出结果就不同。一种解决办法是修改Keras使用的随机数种子值以确保结果可复制。另一种办法是使用不同的实验设置控制随机初始条件。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何免费使用谷歌GPU训练神经网络]]></title>
@@ -6076,235 +6740,6 @@ rdd.foreach(println)</code></pre>
   <p><a href="https://cran.r-project.org/web/packages/e1071/index.html">e1071：</a> <br>
   <a href="https://cran.r-project.org/web/packages/e1071/index.html">https://cran.r-project.org/web/packages/e1071/index.html</a></p>
 </blockquote>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[K-means聚类简介]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/"/>
-    <updated>2017-10-06T14:28:25+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="k-means聚类简介">K-means聚类简介</h1></p>
-
-<p>前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别）而其最后分成的组数则由参数K来决定。</p>
-
-
-
-
-<h2 id="算法基本步骤">算法基本步骤</h2>
-
-
-
-
-<ol>
-<li>随机初始化K个簇心。用作标识各组数据。</li>
-<li>根据各个数据的特征/属性，将他们聚类到距离最接近的一个簇，并打上分类标识。</li>
-<li>根据加入的数据重新计算每个簇的质心（均值，Means）</li>
-<li>重复2，3步，直至最后所有数据被划分成k个簇。</li>
-</ol>
-
-
-
-
-<p>从以后的步骤我们也可以充分地看出，再聚类完毕之前数据是没有分组和标识的，而是通过聚类来查找和分析被划分在一起的数据。</p>
-
-
-
-
-<p>同时，每个簇的质心是定义组的特征的代表，我们往往可以通过一个簇的质心看出该分组的特征以及属性。从而判断出这个簇代表了一个怎么样的组。</p>
-
-
-
-
-<h2 id="应用领域">应用领域</h2>
-
-
-
-
-<ul>
-<li>网站，App的用户群体聚类</li>
-<li>信用卡诈骗监测（这个是利用了聚类算法的反原理，寻找离群值）</li>
-<li>文章自动归类</li>
-<li>图像归类</li>
-<li>人群健康状态监测（同信用卡诈骗检测同原理）</li>
-</ul>
-
-
-
-
-<p>此外，我们还可以通过监控数据点根据时间的变化而造成的组间切换现象找到状态变化的方法。</p>
-
-
-
-
-<h2 id="算法主要原理">算法主要原理</h2>
-
-
-
-
-<p>（1）在数据划分方面，我们主要依赖的思路是：<strong>欧氏距离</strong>。即，每个簇的质心定义了一种聚类，然后每个点根据其到每个簇的质心的欧几里德距离的平方的大小，将其分配到最近的簇中。我们假设<script type="math/tex" id="MathJax-Element-1">c_i</script>是簇集合C中质心i，那么我们可以将其聚类的过程表达成下列形式：</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-2">argmin_{c_i \in C} dist(c_i,x)^2</script></p>
-
-
-
-
-<p>（2）<strong>质心的更新</strong>，在这一步骤中，各个簇的质心将要被重新计算，通过加入新的数据再重新计算包括i新数据在内的的整个簇的均值以此作为新的质心。该过程可以表达为一下形式：</p>
-
-
-
-
-<p><script type="math/tex" id="MathJax-Element-3">c_i=\frac{1}{|S_i|}\sum_{x_i \in S_i }x_i</script></p>
-
-
-
-
-<p>在多次迭代之后，该算法可以保证收敛于一个结果，虽然有可能只是一个局部的最优解而已。为了使得最后结果更加稳定和可靠，我们也可以通过多次运行算法然后再在多个结果中取得一个均衡（为什么说多次计算可以得到更好的结果呢？ 因为每次随机初始化的质心都是不同的，这样使得每次的运行结果都不尽相同，为了得到一个更加稳定的结果和更好的鲁棒性，多次运行往往是一个简单但却有效的方法。）</p>
-
-
-
-
-<h2 id="有关k值的选择">有关K值的选择</h2>
-
-
-
-
-<p>在K-means聚类算法中，K值的选择往往是一个较为难以抉择的问题。最后的情况是，在你应用这个算法之前，已经知道数据应该分为多少个类别合适，或者将这种方法应用在一个半监督学习的场合，使得最后的分类结果有据可依。</p>
-
-
-
-
-<p>那么，在一般我们不太清楚分类的情况之下，我们能做的就是通过为K值制定一个范围，然后在这个范围之上，我们尝试运行我们的分类器，然后根据分类效果来评判我们的k的取值。</p>
-
-
-
-
-<p>另外一方面，聚类算法通常会不断降低各个样本点到质心之间的距离，随着k值的增加，“距离”更是一直下降。但是，当k值增大到一定程度时，虽然“距离”仍在下降，但下降的速率已经变得十分缓慢了。我们常常称这个点的k值为<strong>肘点</strong>。往往到达肘点的k值已经能够很好地将各个类别之间的差异信息给描述出来，所以我们可以在不清楚数据具体分类信息的情况下，选择肘点值来作为我们的k值。</p>
-
-
-
-
-<p><img src="https://www.datascience.com/hs-fs/hubfs/Blog/introduction-to-k-means-clustering-elbow-point-example.png?t=1507257936532&amp;width=760&amp;height=411&amp;name=introduction-to-k-means-clustering-elbow-point-example.png" alt="enter image description here" title=""></p>
-
-
-
-
-<h2 id="example">Example</h2>
-
-
-
-
-<p>在这里我们通过Python的Sklearn库来看一下K-means的应用实例</p>
-
-
-
-
-<p><a href="https://raw.githubusercontent.com/datascienceinc/learn-data-science/master/Introduction-to-K-means-Clustering/Data/data_1024.csv">Delivery Fleet Data 数据下载</a></p>
-
-
-
-
-<h3 id="数据读取">数据读取</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data_1024.csv&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">])</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote>
-  <p>输出结果 <br>
-    Driver_ID   Distance_Feature    Speeding_Feature <br>
-  0   3423311935  71.24   28.0 <br>
-  1   3423313212  52.53   25.0 <br>
-  2   3423313724  64.54   27.0 <br>
-  3   3423311373  55.69   22.0 <br>
-  4   3423310999  54.58   25.0 <br>
-  <img src="https://i.loli.net/2017/10/06/59d71bde43c28.png" alt="kmeans.png" title=""></p>
-</blockquote>
-
-
-
-
-<h3 id="算法使用">算法使用</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
-</span><span class='line'><span class="n">X_train</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">,</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">]]</span>
-</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果 <br>
-  <img src="https://i.loli.net/2017/10/06/59d720b726068.png" alt="sk-kmeans.png" title=""></p>
-</blockquote>
-
-
-
-
-<p>上面的结果展示了，K分别等于2和4时对数据的聚类的结果，由于这个算法使用还算简单，在这里我也不做赘述了。那么有关K-means的简介到这里也就结束了，谢谢大家的阅读。</p>
 
 ]]></content>
   </entry>
