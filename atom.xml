@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-02-22T16:33:34+08:00</updated>
+  <updated>2018-02-27T22:58:37+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,352 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[贝叶斯景象图]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/27/bei-xie-si-jing-xiang-tu/"/>
+    <updated>2018-02-27T22:51:43+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/27/bei-xie-si-jing-xiang-tu</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="贝叶斯景象图">贝叶斯景象图</h1></p>
+
+<h2 id="理论说明">理论说明</h2>
+
+
+
+
+<h3 id="均匀分布">均匀分布</h3>
+
+
+
+
+<p>对于一个含有Ｎ个未知元素的贝叶斯推断问题，我们隐式地为其先验分布创建了一个Ｎ维空间。先验分布上某一点的概率，都投射到某个高维的面或曲线上，其形状由先验分布决定。比如，假定有两个未知元素 <script type="math/tex" id="MathJax-Element-81">p_1、p_2</script>，其先验分布都是（０，５）上的均匀分布，那么先验分布存在于一个边长为５的正方形空间，而其概率面就是正方形上方的一个平面（由于假定了均匀分布，因此每一点概率相同）。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">IPython.core.pylabtools</span> <span class="kn">import</span> <span class="n">figsize</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">jet</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
+</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Uniform prior landscape; alternate view&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovd74ecb8j20lg083tae.jpg" alt="" title=""></p>
+
+
+
+
+<h3 id="指数分布">指数分布</h3>
+
+
+
+
+<p>再者，如果 <script type="math/tex" id="MathJax-Element-192">p_1、p_2</script>的先验分布为Exp(3)和Exp(10)，那么对应的空间便是二维平面上，各维都取正值确定的范围，而对应的概率面的形状就是一个从（0，0）点向正值方向流淌的瀑布。</p>
+
+
+
+
+<p>以下的示例图就描绘了这样的情形，其中颜色越是趋向于暗红的位置，其先验概率就越高。反过来，颜色越是趋向于深蓝的位置，其先验概率就越低。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="c">#plt.xlabel(&quot;prior on $p_1$&quot;)</span>
+</span><span class='line'><span class="c">#plt.ylabel(&quot;prior on $p_2$&quot;)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape; </span><span class="se">\n</span><span class="s">alternate view&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdfq6o3cj20mg0a577q.jpg" alt="" title=""></p>
+
+
+
+
+<p>这些二维空间的例子很简单，我们的大脑可以轻易想象得到。但实际中，先验分布所在的空间和其概率面往往具有更高的维度。</p>
+
+
+
+
+<h3 id="观测值对先验分布的影响">观测值对先验分布的影响　</h3>
+
+
+
+
+<p>在实际中，观测样本对空间不会有影响，但它会改变概率面的形状，将其在某些局部区域拉伸或挤压，以表明参数的真实性在哪里。更多的数据意味着对概率面更多的拉伸和挤压，使得最初的概率面形状变得十分奇怪。反之数据越少，那么最初的形状就保留得越好。不管如何，最后得到的概率面描述了后验分布的形状。</p>
+
+
+
+
+<p>假如我们现在想对两个参数为<script type="math/tex" id="MathJax-Element-239">\lambda</script>的泊松分布进行估计。那么我们将要分别比较用均匀分布和指数分布来对<script type="math/tex" id="MathJax-Element-240">\lambda</script>的先验分布进行假设的不同效果。</p>
+
+
+
+
+<h3 id="代码绘图演示-2">代码绘图演示</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># create the observed data</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># sample size of data we observe, trying varying this (keep it less than 100 ;)</span>
+</span><span class='line'><span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># the true parameters, but of course we do not see these values...</span>
+</span><span class='line'><span class="n">lambda_1_true</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">lambda_2_true</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#...we see the data generated, dependent on the above two values.</span>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
+</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;observed (2-dimensional,sample size = </span><span class="si">%d</span><span class="s">):&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># plotting details.</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">.</span><span class="mo">01</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'><span class="n">likelihood_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">_x</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">likelihood_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">_y</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">_y</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">likelihood_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">likelihood_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">observed</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="n">dimensional</span><span class="p">,</span><span class="n">sample</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]]</span>
+</span><span class='line'><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+</span><span class='line'><span class="c"># matplotlib heavy lifting below, beware!</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Uniform priors on $p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Exponential priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
+</span><span class='line'><span class="c"># This is the likelihood times prior, that results in the posterior.</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Exponential priors on </span><span class="se">\</span>
+</span><span class='line'><span class="s">$p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdubnzc1j20mo0m10y2.jpg" alt="" title=""></p>
+
+
+
+
+<p>四张图里的黑点代表了参数的真实取值，左下图为均匀先验得到的后验分布图。虽然观测值相同，但是两种假设下的后验分布形状是不一样的。其主要原因是因为观测点的位置在两者的假设的前提先验概率是不一样的。这样，我们可以知道，即便只有一个观测值，形成的山峰也试图要包括参数值的真实位置。当然，在真正的推断中，仅用一个观测值显然也是十分不科学的，这里仅仅为了方便阐述而已。</p>
+
+
+
+
+<p>本文参考自<a href="https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter3_MCMC/Ch3_IntroMCMC_PyMC3.ipynb">《Probabilistic-Programming-and-Bayesian-Methods-for-Hackers》</a></p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python Keras + LSTM 进行单变量时间序列预测]]></title>
@@ -6479,267 +6825,6 @@ rdd.foreach(println)</code></pre>
 
 
 <p>到此，我们在Spark上进行机器学习训练的环境，就搭建完毕了，下章我们再开始讲Spark中的数据结构与Python中的区别，以及结合Pyspark来进行数据处理。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SVM支持向量机]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/"/>
-    <updated>2017-10-11T16:38:50+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/10/11/svmzhi-chi-xiang-liang-ji</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="svmsupport-vector-machines-支持向量机">SVM(Support Vector Machines)-支持向量机</h1></p>
-
-<p>曾经很多人都认为SVM是现在的最好的分类器，即：在不加以修改的前提之下，就能够在数据上进行训练并能够对训练集之外的数据点做出很好的分类决策。</p>
-
-
-
-
-<h2 id="基于最大间隔分割数据">基于最大间隔分割数据</h2>
-
-
-
-
-<p><strong>支持向量机：</strong> <br>
-优点：泛化错误率低，计算开销不大，结果容易解释 <br>
-缺点：对参数调节和核函数的选择策略敏感，原始分类器不加修改仅适用于处理二类问题。 <br>
-<img src="http://scikit-learn.org/stable/_images/sphx_glr_plot_separating_hyperplane_0011.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p>在上图中，我们可以看出：我们可以很容易在图中画出一条直线将两组数据点分开。在这种情况下，这组数据被称为<strong>线性可分(linearly separable)</strong>数据，而将数据集分割开来的直线我们称为<strong>分隔超平面(separating hyperplane)</strong>。在上图例子中，由于数据点都在二维平面上，所有此时分隔超平面就只是一条直线而已。但是，如果所给的数据为三维的，那么此时用来分隔数据的就是一个平面。依此类推，如果给出一个N（N&gt;3）维数据集，那么则要用一个N-1维的对象来对数据进行分隔，该对象亦被称为<strong>超平面(hyperplane)</strong>。</p>
-
-
-
-
-<p>我们希望通过这样的方式来构建分类器。即如果数据点离决策边界越远，那么其最后的预测效果就越可信。那么我们继续看回上面的图片，我们可以看到有三条直线（一条实线，两条虚线）它们分别都能将数据分隔开，但是其中哪一条才是最理想的呢？通常，我们可以做过这样的方法来确定一个最佳分隔平面，即：我们先找到离分隔平面最近的点，确保它们离分隔平面的距离尽可能远。</p>
-
-
-
-
-<p>这里我们又要先引入一些新的概念： <br>
-首先是，点到分隔面的距离被称为<strong>间隔(margin)</strong> <br>
-<strong>支持向量(support vector)：</strong>就是离分割平面最近的那些点。</p>
-
-
-
-
-<p>接下来，就是最大化支持向量都分隔面的距离，并需要找到此问题的优化求解方法。</p>
-
-
-
-
-<h2 id="寻找最大间隔">寻找最大间隔</h2>
-
-
-
-
-<p><strong>Maximum Marginal（最大间隔）</strong>是SVM的一个理论基础之一。选择使得间隔最大的函数作为分隔平面是十分容易解释的。从概率的角度上而言，就是使得置信度最小的点置信度最大;从现实意义上而言，两个个体的类别差异越大，我们自然也能够更为准确地分类。</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd657a3c93.png" alt="svm.png" title=""></p>
-
-
-
-
-<p>上图就是一个对之前所提及的类别间隙的一个描述。其中中间的黑色实线为<strong>分隔边界（Classifier Boundary）</strong>是我们算法中要求解的<strong>f(x)</strong>，红色和蓝色的线(plus plane 与 minus plane)就是支持变量所在的平面，而红色，蓝色之间的间隙就是我们要最大化的分类间的间隙。</p>
-
-
-
-
-<p>首先，我们可以知道其两个支持向量的所在平面可以表达成如下形式：</p>
-
-
-
-
-<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a677ed33ca0c840aa9295405fc095c8aefa73e48" alt="enter image description here" title=""></p>
-
-
-
-
-<p>和</p>
-
-
-
-
-<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c3dbeeb7d5af27a2551ec07ce172ddbce62fc58" alt="enter image description here" title=""></p>
-
-
-
-
-<p>然后，这两个超平面的距离可以表达成：<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac553c94aec996dffa3369adcf285319178a474f" alt="enter image description here" title=""></p>
-
-
-
-
-<p>因此，为了最大化两个平面的距离，我们只要最小化<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">即可。</p>
-
-
-
-
-<p><strong>综上所述</strong>，我们可以将整个原理表示为：</p>
-
-
-
-
-<blockquote>
-  <p>Minimize<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">  <br>
-  subject to<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7181cf8e723b24ad6d85b73b9513dcaac0d31023" alt="" title=""> <br>
-  for <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/520ffef648f7b26db5bae564be860346630635fc" alt="enter image description here" title=""></p>
-</blockquote>
-
-
-
-
-<p>当支持变量确定的时候，整个分割函数也就确定了下来。除此之外，支持向量的出现还可以让向量后方的样本点不用再参与计算，大大降低了算法的计算复杂度。</p>
-
-
-
-
-<p>再者，有关距离计算的优化。<script type="math/tex" id="MathJax-Element-41">||\vec w||</script>的意思是<script type="math/tex" id="MathJax-Element-42">\vec w</script>的二范数，由之前我们得到的最大间隔<script type="math/tex" id="MathJax-Element-43">M=2/||\vec w||</script>，最大化这个式子等价于最小化<script type="math/tex" id="MathJax-Element-44">|||\vec w||</script>，另外由于<script type="math/tex" id="MathJax-Element-45">||\vec w||</script>是一个单调函数，我们可以对其进行平方，和加上系数。数学经验丰富的朋友可能一眼就看出来，这样做是为了方便求导。</p>
-
-
-
-
-<p>最后我们的式子可以写成：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726bc801.png" alt="svmalg.png" title=""></p>
-
-
-
-
-<p><strong>s.t的意思是subject to</strong>，也就是在后面这个限制条件下的意思，这个词在svm的论文里面非常容易见到。这其实是一个<strong>带约束的二次规划(quadratic programming, QP)问题</strong>，是一个<strong>凸问题</strong>，凸问题就是指的不会有局部最优解，可以想象一个漏斗，不管我们开始的时候将一个小球放在漏斗的什么位置，这个小球最终一定可以掉出漏斗，也就是得到全局最优解。s.t.后面的限制条件可以看做是一个凸多面体，我们要做的就是在这个凸多面体中找到最优解。</p>
-
-
-
-
-<h2 id="优化求解">优化求解</h2>
-
-
-
-
-<p>这个优化问题可以用<a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">拉格朗日乘子法</a>去解，使用了<a href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">KKT条件</a>的理论，这里直接作出这个式子的拉格朗日目标函数： <br>
-<img src="https://i.loli.net/2017/10/11/59ddd726bb94a.png" alt="Lagrange.png" title=""></p>
-
-
-
-
-<p>由于求解这个式子的过程需要<a href="https://en.wikipedia.org/wiki/Quadratic_programming#Lagrangian_duality">拉格朗日对偶性</a>的相关知识，以及较深入的数学背景知识，在这篇文章中暂且不谈，以后博客再另外写一篇有关具体推导的文章。</p>
-
-
-
-
-<p>在此，我先贴出在该问题在论文中的关键推导步骤：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726dd5a4.png" alt="formulation.png" title=""></p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726d9bc8.png" alt="dual.png" title=""></p>
-
-
-
-
-<p>上图就是我们需要最终优化的式子了。整篇文章到这里，我们终于得到了SVM线性可分问题的优化式子。</p>
-
-
-
-
-<h2 id="svm的使用">SVM的使用</h2>
-
-
-
-
-<p>由于支持向量机算法的实现涉及过多的数学背景，在本中暂不使用原生程序代码实现，而是选择调用Python sklearn 库现有的SVM算法进行使用的举例。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
-</span><span class='line'><span class="n">clf</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">()</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
-</span><span class='line'><span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
-</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
-</span><span class='line'><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果 <br>
-  SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, <br>
-    decision_function_shape=None, degree=3, gamma=’auto’, kernel=’rbf’, <br>
-    max_iter=-1, probability=False, random_state=None, shrinking=True, <br>
-    tol=0.001, verbose=False) <br>
-  0.986666666667</p>
-</blockquote>
-
-
-
-
-<p>本例使用的是<strong>sklearn</strong>库自带的<strong>iris</strong>数据集使用SVM算法进行训练，然后再进行回测。首先，我们可以看到在不做任意处理的前提下，SVM模型的预估效果也是相当不错的，其准确率高达98%（其结果主要因为使用的数据集优秀导致的，直接运用于工程上时不会有这么高的准确率）。</p>
-
-
-
-
-<p>当然，上面例子中的算法模型的实现方式是十分简陋的。如果真正要使用SVM进行严格地建模，测试集与训练集的划分问题，数据的归一化处理问题等。都是我们需要考虑的元素。但由于本文主要为了介绍与探讨SVM算法，其他细节问题就不一一处理，详细方法可以参考我写的其他文章。</p>
-
-
-
-
-<h2 id="svm的其他实现">SVM的其他实现</h2>
-
-
-
-
-<p>除了Python的sklearn库外，SVM在其它语言及平台也有实现。其中： <br>
-最流行的有</p>
-
-
-
-
-<blockquote>
-  <p><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM：</a><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">https://www.csie.ntu.edu.tw/~cjlin/libsvm/</a> <br>
-  这是经典的svm库支持多种语言调用</p>
-</blockquote>
-
-
-
-
-<p>再者，在R语言中也有SVM算法的实现：</p>
-
-
-
-
-<blockquote>
-  <p><a href="https://cran.r-project.org/web/packages/e1071/index.html">e1071：</a> <br>
-  <a href="https://cran.r-project.org/web/packages/e1071/index.html">https://cran.r-project.org/web/packages/e1071/index.html</a></p>
-</blockquote>
 
 ]]></content>
   </entry>

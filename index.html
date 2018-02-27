@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Python Keras + LSTM 进行单变量时间序列预测 首先，时间序列预测问题是一个复杂的预测模型问题，它不像一般的回归预测模型。时间序列预测的输入变量是一组按时间顺序的数字序列。它既具有延续性又具有随机性，所以在建模难度上相对回归预测更大。 但同时， &hellip;">
+  <meta name="description" content="﻿贝叶斯景象图 理论说明 均匀分布 对于一个含有Ｎ个未知元素的贝叶斯推断问题，我们隐式地为其先验分布创建了一个Ｎ维空间。先验分布上某一点的概率，都投射到某个高维的面或曲线上，其形状由先验分布决定。比如，假定有两个未知元素 ，其先验分布都是（０，５）上的均匀分布， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,390 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/27/bei-xie-si-jing-xiang-tu/">贝叶斯景象图</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-27T22:51:43+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="贝叶斯景象图">贝叶斯景象图</h1></p>
+
+<h2 id="理论说明">理论说明</h2>
+
+
+
+
+<h3 id="均匀分布">均匀分布</h3>
+
+
+
+
+<p>对于一个含有Ｎ个未知元素的贝叶斯推断问题，我们隐式地为其先验分布创建了一个Ｎ维空间。先验分布上某一点的概率，都投射到某个高维的面或曲线上，其形状由先验分布决定。比如，假定有两个未知元素 <script type="math/tex" id="MathJax-Element-81">p_1、p_2</script>，其先验分布都是（０，５）上的均匀分布，那么先验分布存在于一个边长为５的正方形空间，而其概率面就是正方形上方的一个平面（由于假定了均匀分布，因此每一点概率相同）。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">IPython.core.pylabtools</span> <span class="kn">import</span> <span class="n">figsize</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">jet</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
+</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Uniform prior landscape; alternate view&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovd74ecb8j20lg083tae.jpg" alt="" title=""></p>
+
+
+
+
+<h3 id="指数分布">指数分布</h3>
+
+
+
+
+<p>再者，如果 <script type="math/tex" id="MathJax-Element-192">p_1、p_2</script>的先验分布为Exp(3)和Exp(10)，那么对应的空间便是二维平面上，各维都取正值确定的范围，而对应的概率面的形状就是一个从（0，0）点向正值方向流淌的瀑布。</p>
+
+
+
+
+<p>以下的示例图就描绘了这样的情形，其中颜色越是趋向于暗红的位置，其先验概率就越高。反过来，颜色越是趋向于深蓝的位置，其先验概率就越低。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="c">#plt.xlabel(&quot;prior on $p_1$&quot;)</span>
+</span><span class='line'><span class="c">#plt.ylabel(&quot;prior on $p_2$&quot;)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape; </span><span class="se">\n</span><span class="s">alternate view&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdfq6o3cj20mg0a577q.jpg" alt="" title=""></p>
+
+
+
+
+<p>这些二维空间的例子很简单，我们的大脑可以轻易想象得到。但实际中，先验分布所在的空间和其概率面往往具有更高的维度。</p>
+
+
+
+
+<h3 id="观测值对先验分布的影响">观测值对先验分布的影响　</h3>
+
+
+
+
+<p>在实际中，观测样本对空间不会有影响，但它会改变概率面的形状，将其在某些局部区域拉伸或挤压，以表明参数的真实性在哪里。更多的数据意味着对概率面更多的拉伸和挤压，使得最初的概率面形状变得十分奇怪。反之数据越少，那么最初的形状就保留得越好。不管如何，最后得到的概率面描述了后验分布的形状。</p>
+
+
+
+
+<p>假如我们现在想对两个参数为<script type="math/tex" id="MathJax-Element-239">\lambda</script>的泊松分布进行估计。那么我们将要分别比较用均匀分布和指数分布来对<script type="math/tex" id="MathJax-Element-240">\lambda</script>的先验分布进行假设的不同效果。</p>
+
+
+
+
+<h3 id="代码绘图演示-2">代码绘图演示</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># create the observed data</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># sample size of data we observe, trying varying this (keep it less than 100 ;)</span>
+</span><span class='line'><span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># the true parameters, but of course we do not see these values...</span>
+</span><span class='line'><span class="n">lambda_1_true</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">lambda_2_true</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#...we see the data generated, dependent on the above two values.</span>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
+</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;observed (2-dimensional,sample size = </span><span class="si">%d</span><span class="s">):&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># plotting details.</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">.</span><span class="mo">01</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'><span class="n">likelihood_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">_x</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">likelihood_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">_y</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">_y</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">likelihood_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">likelihood_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">observed</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="n">dimensional</span><span class="p">,</span><span class="n">sample</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]]</span>
+</span><span class='line'><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+</span><span class='line'><span class="c"># matplotlib heavy lifting below, beware!</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Uniform priors on $p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Exponential priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
+</span><span class='line'><span class="c"># This is the likelihood times prior, that results in the posterior.</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Exponential priors on </span><span class="se">\</span>
+</span><span class='line'><span class="s">$p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdubnzc1j20mo0m10y2.jpg" alt="" title=""></p>
+
+
+
+
+<p>四张图里的黑点代表了参数的真实取值，左下图为均匀先验得到的后验分布图。虽然观测值相同，但是两种假设下的后验分布形状是不一样的。其主要原因是因为观测点的位置在两者的假设的前提先验概率是不一样的。这样，我们可以知道，即便只有一个观测值，形成的山峰也试图要包括参数值的真实位置。当然，在真正的推断中，仅用一个观测值显然也是十分不科学的，这里仅仅为了方便阐述而已。</p>
+
+
+
+
+<p>本文参考自<a href="https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter3_MCMC/Ch3_IntroMCMC_PyMC3.ipynb">《Probabilistic-Programming-and-Bayesian-Methods-for-Hackers》</a></p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/27/bei-xie-si-jing-xiang-tu/">贝叶斯景象图</a>
+      <time datetime="2018-02-27T22:51:43+08:00" pubdate><span class='month'>Feb</span> <span class='day'>27</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -3535,422 +3919,6 @@ P(H=49,T=31|\rho=\frac{2}{3})=\textrm{C}^{49}_{80}(\frac{2}{3})^{49}(1-\frac{2}{
       <time datetime="2017-12-21T01:00:04+08:00" pubdate><span class='month'>Dec</span> <span class='day'>21</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-14T23:43:13+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="传统机器学习走向神经网络">传统机器学习走向神经网络</h1></p>
-
-<h2 id="神经网络的基本结构">神经网络的基本结构</h2>
-
-
-
-
-<p>首先我们先来看一下最基础的神经网络结构： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgm7cftunj20kf0ckaep.jpg" alt="" title=""></p>
-
-
-
-
-<p>由上图的结构可以看出，这个神经网络具有三层，其中输入层不计。而中间的橙色层则为两层隐藏层，最右的蓝色层为输出层。输入从最左边的输入层进行输入，然后经过两次隐藏层和激活函数之后进行输出，这样我们可以把这个神经网络简单地表示成一下的式子： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-82">Y_{out} = W_iX_{in}+B</script> <br>
-W为X的权重，而B为函数的偏置。 <br>
-其中，偏置值B的存在有利于打破数据对称的局面，使得神经网络可以应用在非对称的数据之上。</p>
-
-
-
-
-<h2 id="神经网络的基本算法">神经网络的基本算法</h2>
-
-
-
-
-<p>前向传导：前向传导的思想比较简单，下面的一张图足以概括它的主要思想。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp39x2ltj20oh0gydi9.jpg" alt="" title=""></p>
-
-
-
-
-<p>反向传播：反向传播的方法其实也比较简单，其主要思想是涉及求偏导，以及链式求导法则。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp6qj2wlj20mj0i441b.jpg" alt="" title=""></p>
-
-
-
-
-<p>梯度下降：梯度下降法是一个最优化算法，通常也称为最速下降法。最速下降法是求解无约束优化问题最简单和最古老的方法之一，虽然现已不具有实用性，但是许多有效算法都是以它为基础进行改进和修正而得到的。最速下降法是用负梯度方向为搜索方向的，最速下降法越接近目标值，步长越小，前进越慢。</p>
-
-
-
-
-<h2 id="朴素贝叶斯和神经网络">朴素贝叶斯和神经网络</h2>
-
-
-
-
-<p>首先朴素贝叶斯算法的原始形式可以表达成以下的形式： <br>
-<script type="math/tex" id="MathJax-Element-1467">G(x)=arg\  max\ p(y)  
-\prod\limits^n_{i=1}p(x_i|y)^{x_i}</script></p>
-
-
-
-
-<p>除此之外，该算法还有一下特点： <br>
-<script type="math/tex" id="MathJax-Element-1468">x_i只有0，1两种取值</script> <br>
-<script type="math/tex" id="MathJax-Element-1469">x_i取1意味着x_i对应了的特征“出现了”</script>  <br>
-<script type="math/tex" id="MathJax-Element-1470">x_i取0意味着x_i对应了的特征“没出现”</script></p>
-
-
-
-
-<p>这样转换成矩阵的形式时，我们可以采用独热编码亦称One-hot Encode。 <br>
-独热编码：</p>
-
-
-
-
-<p>解决了分类标签的问题，那么我们又该怎样用神经网络的线性模型形式来表达贝叶斯公式中概率相乘的情况呢？</p>
-
-
-
-
-<p>没错，就是使用对数函数。根据对数函数的性质<script type="math/tex" id="MathJax-Element-1471">log_2X+log_2Y=log_2XY</script>,我们就可以通过对数变换，将乘法转换成加法的形式，我们可以把上面的朴素贝叶斯公式改写成： <br>
-<script type="math/tex" id="MathJax-Element-1472">G(x)=arg\ max\ log(y)+\sum\limits^n_{i=1}x_ilog\ p(x_i|y)</script></p>
-
-
-
-
-<p>那么我们就可以用退化成线性模型的神经网络来实现朴素贝叶斯模型。</p>
-
-
-
-
-<h3 id="核心实现">核心实现</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 独热化处理部分</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
-</span><span class='line'><span class="n">enc</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
-</span><span class='line'><span class="n">x_train</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-</span><span class='line'><span class="n">x_test</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">## .....篇幅有限,此处省略其余代码</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># NaiveBayes -&gt; NN 权值转换部分</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">NB2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">NB2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;NaiveBayes&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">nb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="s">&quot;Naive Bayes&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">feature_log_prob_</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">class_log_prior_</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2 id="决策树贝叶斯和神经网络">决策树贝叶斯和神经网络</h2>
-
-
-
-
-<p>首先，决策树的原理主要就是通过数据信息熵的变化来选择当前的最优分类点，然后从根开始一步一步扩展成树。而实质上，最后成功构建出来的决策树，其从根节点开始到每个分类叶子节点的路径对应的都是一组高维空间上的超平面组合。决策树的分类也就是用一组超平面去划分数据空间，使得最后剩下一个唯一确定的标识。</p>
-
-
-
-
-<p>知道决策树的本质之后，我们就可以用这样的方法来将决策树算法迁移到神经网络上： <br>
-* 第一个隐藏层表达决策树的中间节点所对应的超平面 <br>
-* 第二个隐藏层表达各个决策的路径 <br>
-* 第二个隐藏层和输出层之间的权值矩阵表达各个叶节点</p>
-
-
-
-
-<h3 id="核心实现-1">核心实现</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">## 因为决策树到神经网络的转换较为复杂,此处仅贴出核心代码</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">DT2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">DT2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;DTree&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;sign&quot;</span><span class="p">,</span> <span class="s">&quot;one_hot&quot;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">tree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">tree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s">&quot;Decision Tree&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">tree_structure</span> <span class="o">=</span> <span class="n">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">n_leafs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">])</span>
-</span><span class='line'>        <span class="n">n_internals</span> <span class="o">=</span> <span class="n">n_leafs</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Internals : {} ; Leafs : {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_internals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_leafs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_class</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">node_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">node_sign_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">node_id_cursor</span> <span class="o">=</span> <span class="n">leaf_id_cursor</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="n">max_route_length</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">feat_dim</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">):</span>
-</span><span class='line'>                    <span class="n">node_sign_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>                    <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node_id_cursor</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span><span class="p">])</span>
-</span><span class='line'>                    <span class="n">w1</span><span class="p">[</span><span class="n">feat_dim</span><span class="p">,</span> <span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>                    <span class="n">b</span><span class="p">[</span><span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">rs</span>
-</span><span class='line'>                    <span class="n">node_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[:</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>                    <span class="n">node_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:</span><span class="n">depth</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">valid_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span class='line'>                <span class="n">local_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:]</span>
-</span><span class='line'>                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_dim</span><span class="p">,</span> <span class="n">node_threshold</span><span class="p">),</span> <span class="n">node_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-</span><span class='line'>                    <span class="nb">zip</span><span class="p">(</span><span class="n">node_list</span><span class="p">,</span> <span class="n">node_sign_list</span><span class="p">)</span>
-</span><span class='line'>                <span class="p">):</span>
-</span><span class='line'>                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span><span class="p">))</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>                        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_dim</span><span class="p">,</span> <span class="n">local_threshold</span><span class="p">),</span> <span class="n">local_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
-</span><span class='line'>                            <span class="n">node_list</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">local_sign_list</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>                        <span class="p">)):</span>
-</span><span class='line'>                            <span class="k">if</span> <span class="n">node_sign</span> <span class="o">==</span> <span class="n">local_sign</span> <span class="ow">and</span> <span class="n">node_dim</span> <span class="o">==</span> <span class="n">local_dim</span><span class="p">:</span>
-</span><span class='line'>                                <span class="k">if</span> <span class="p">(</span>
-</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&lt;</span> <span class="n">local_threshold</span><span class="p">)</span> <span class="ow">or</span>
-</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&gt;</span> <span class="n">local_threshold</span><span class="p">)</span>
-</span><span class='line'>                                <span class="p">):</span>
-</span><span class='line'>                                    <span class="n">local_sign_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>                                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_sign</span><span class="p">))</span>
-</span><span class='line'>                                    <span class="k">break</span>
-</span><span class='line'>                <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span> <span class="ow">in</span> <span class="n">valid_nodes</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">w2</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_sign</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">max_route_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_route_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">))</span>
-</span><span class='line'>                <span class="n">w3</span><span class="p">[</span><span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">leaf_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">w2</span> <span class="o">*=</span> <span class="n">max_route_length</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#................ 篇幅有限,省略其余代码</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># DTree -&gt; NN</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">tree_</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">feature_dim</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">feature</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">feature_dim</span> <span class="o">==</span> <span class="n">_tree</span><span class="o">.</span><span class="n">TREE_UNDEFINED</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">threshold</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
-</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_left</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
-</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_right</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">recurse</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2 id="模型改进">模型改进</h2>
-
-
-
-
-<h3 id="对于朴素贝叶斯">对于朴素贝叶斯</h3>
-
-
-
-
-<p>根据上述的原理和理论，我们可以将朴素贝叶斯和决策树转换成神经网络模型，但是转换之后是否存在意义呢？</p>
-
-
-
-
-<p><strong>首先</strong>本身可以通过简单log对数转换成线性模型的朴素贝叶斯算法来说，其转换的步骤并不复杂，但却能够对朴素贝叶斯的独立假设进行一定的微调修正。</p>
-
-
-
-
-<h3 id="对于决策树">对于决策树</h3>
-
-
-
-
-<p>那么对于决策树来说，神经网络的介入可以对决策树的硬边界作一定的修正和“软化”作用。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a>
-      <time datetime="2017-12-14T23:43:13+08:00" pubdate><span class='month'>Dec</span> <span class='day'>14</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
       
       </footer>
     </article>

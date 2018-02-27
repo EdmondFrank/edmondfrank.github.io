@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2018/02/27/bei-xie-si-jing-xiang-tu/</loc>
+<lastmod>2018-02-27T22:51:43+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/</loc>
 <lastmod>2018-02-22T16:06:57+08:00</lastmod>
 </url>
