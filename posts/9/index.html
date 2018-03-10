@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="标准化configure文件的生成 作为一个Linux系统下的开发者,都会或多或少地使用make这个命令来编译自己的程序，既然要用到make命令的话，一个简易的Makefile文件是必不可少的。平时大家自己编译时，如果要使用make命令编译的话，应该都是自己手写一个简单实用的Makefile文件。 &hellip;">
+  <meta name="description" content="图片截获工具driftnet driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在Github上下载源码编译使用. 语法:driftnet [options] [fifter code] &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,96 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-12T16:37:33+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>图片截获工具driftnet</h1>
+
+<p>driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在<a href="https://github.com/deiv/driftnet">Github</a>上下载源码编译使用.</p>
+
+<h3><strong>语法</strong>:driftnet [options] [fifter code]</h3>
+
+<h3><strong>常用选项</strong>:</h3>
+
+<ul>
+<li>-h:显示帮助信息</li>
+<li>-b:捕获到新图片时,发出蜂鸣声.</li>
+<li>-i interface:选择监听接口(默认为全部接口,<em>此选项为关键选项</em>.)</li>
+<li>-f file:读取一个指定pcap数据包中的图片</li>
+<li>-p:不让所监听的接口使用混杂模式</li>
+<li>-a:后台模式,即截取的图片自动保存至临时目录中,不显示在屏幕上.</li>
+<li>-m number:指定保存图片的最大数目</li>
+<li>-d directory:指定保存图片的路径</li>
+<li>-x prefix:指定保存图片的前缀名</li>
+<li>-s:尝试解读网络数据包中的音频流或视频流信息,现只支持MPEG格式</li>
+<li>-S:类似-s</li>
+</ul>
+
+
+<blockquote><p>使用示例:</p></blockquote>
+
+<p>Wlan0监听:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -i wlan0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>读取指定pcap数据包:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -f /home/tmp/tmp.pcapng -a -d /tmp/</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>常用组合:</h3>
+
+<blockquote><p>ettercap + driftnet</p>
+
+<p>arproof + driftnet</p></blockquote>
+
+<p>(有关组合的使用以及dirftnet的其他用法,博主会在后期的博客,陆续更新,敬请期待.)</p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a>
+      <time datetime="2016-06-12T16:37:33+08:00" pubdate><span class='month'>Jun</span> <span class='day'>12</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
