@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-03-10T08:52:54+08:00</updated>
+  <updated>2018-05-30T22:19:26+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,199 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的算法天梯之路之-穷举搜索]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/"/>
+    <updated>2018-05-30T22:15:17+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo</id>
+    <content type="html"><![CDATA[<h2 id="穷举搜索的例子google方程式">穷举搜索的例子－Google方程式</h2>
+
+
+
+
+<h3 id="问题描述">　问题描述</h3>
+
+
+
+
+<p>有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换，并且替换之后能够满足等式。</p>
+
+
+
+
+<h3 id="问题分析">问题分析</h3>
+
+
+
+
+<p>从排列组合的角度来看，这道题是一道典型的排列组合问题，题目中一共出现了9个字母。</p>
+
+
+
+
+<p>如果不考虑0开头的情况下，这样的组合应该有10x9x8x7x6x5x4x3x2=3628800种组合。</p>
+
+
+
+
+<p>在这样的情况之下，计算机的穷举处理应该是毫无压力的。</p>
+
+
+
+
+<h3 id="问题求解">问题求解</h3>
+
+
+
+
+<p>首先为了能够表示这样一种可变的字符元素列表，我们需要自定义一种数据结构。首先我们知道这个自定义结构中应该包含有三个属性，分别是 字符本身，字符代表的数字以及是否为数字的最高位，因为最高位是不能为0的，所以在这里我们要区别对待。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharItem</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">leading</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_ITEM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>接着我们初始化这个列表。=</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">CHAR_ITEM</span> <span class="n">charItem</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;D&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;O&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;T&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;G&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;L&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;E&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;C&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为这是一个组合问题，那么两个字母就不能被指定为相同的数字，这样我们需要定义额外的占用标识。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharValue</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">isused</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_VALUE</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//穷举算法实现如下</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">SearchingResult</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[],</span><span class="n">CHAR_VALUE</span> <span class="n">cv</span><span class="p">[],</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">index</span><span class="p">,</span><span class="n">CharListReadyFuncPtr</span> <span class="n">callback</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">max_char_count</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">callback</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">max_number_count</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">IsValueValid</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">SearchingResult</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">callback</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>根据题目要求，W，G，D三者都不能为0，为了加快穷举速度可以对他们为0的情况进行剪枝。 <br>
+IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数可以减少约30%。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//callback代码实现</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">OnCharListReady</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">minuend</span> <span class="o">=</span> <span class="s">&quot;WWWDOT&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">subtrahend</span> <span class="o">=</span> <span class="s">&quot;GOOGLE&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">=</span> <span class="s">&quot;DOTCOM&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">minuend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">subtrahend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">diff</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="n">d</span><span class="p">){</span>
+</span><span class='line'>      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span><span class="n">s</span><span class="o">&lt;&lt;</span> <span class="s">&quot;=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>问题答案 <br>
+  777589 - 188103 = 589486 <br>
+  777589 - 188106 = 589483</p>
+</blockquote>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[隐马尔可夫模型（HMM）的原理]]></title>
@@ -6173,438 +6366,6 @@ chrt.show(b_hist)</code></pre>
 
 
 <p>正如输出结果所示，这个信用欺诈检测的数据集中的特征之间不存在过大的相关关系，基本全部都为相互独立关系。因此，在选择特征代入机器学习算法训练时，可以采用全部的变量。正也是统计分析的用处，可以帮助我们了解变量之间的线性相关关系，有利于帮住我们选取训练的特征变量。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ Python在Spark上的机器学习(二)之数据操作]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/"/>
-    <updated>2017-10-22T16:18:47+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习二之数据操作">Python在Spark上的机器学习(二)之数据操作</h1></p>
-
-<h2 id="pyspark">PySpark</h2>
-
-
-
-
-<p>PySpark 是 Spark 为 Python 开发者提供的 API。 <br>
-Spark是用Scala语言写成的，Scala把要编译的东西编译为Java虚拟机（JVM）的字节码（bytecode）。Spark的开源社区开发了一个叫PySpark的工具库。它允许使用者用Python处理RDD。这多亏了一个叫Py4J的库，它让Python可以使用JVM的对象（比如RDD）。  <br>
-Pyspark Internals这篇<a href="https://cwiki.apache.org/confluence/display/SPARK/PySpark+Internals">wiki</a>里介绍了pyspark的实现机制，大体是下面这张图就可以表示：</p>
-
-
-
-
-<p><img src="http://i.imgur.com/YlI8AqEl.png" alt="enter image description here" title=""></p>
-
-
-
-
-<h2 id="resilient-distributed-datasets">Resilient Distributed Datasets</h2>
-
-
-
-
-<p>说到Spark上的数据模式，一定不能少的就是Spark中的核心：RDD了。与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark让人着迷的地方。</p>
-
-
-
-
-<p><strong>RDD 具体是什么呢？</strong> <br>
-RDD，全称Resilient Distributed Datasets，又称弹性分布式数据集。是一个可容错的、并行的数据结构，可以让用户显示地将数据储存到磁盘和内存当中，并能控制数据的分区。</p>
-
-
-
-
-<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
-
-
-
-
-<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
-
-
-
-
-<h2 id="使用pyspark">使用Pyspark</h2>
-
-
-
-
-<p>在按照系列的上一个教程搭建好环境后，在终端中直接输入pyspark就可以运行Python与Spark的交互式的shell了。</p>
-
-
-
-
-<p>那么，下面我们就以一些简单的例子来使用pyspark。</p>
-
-
-
-
-<h3 id="创建rdd">创建RDD</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span>
-</span><span class='line'>    <span class="p">[(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Alfred&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Skye&#39;</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Albert&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
-</span><span class='line'>     <span class="p">(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)])</span>
-</span><span class='line'><span class="n">data</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>ParallelCollectionRDD[3] at parallelize at PythonRDD.scala:475</p>
-</blockquote>
-
-
-
-
-<h3 id="rdd对象转换成python对象">RDD对象转换成Python对象</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data_heterogenous</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">&#39;Ferrari&#39;</span><span class="p">,</span> <span class="s">&#39;fast&#39;</span><span class="p">),</span> <span class="p">{</span><span class="s">&#39;Porsche&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">},</span> <span class="p">[</span><span class="s">&#39;Spain&#39;</span><span class="p">,</span><span class="s">&#39;visited&#39;</span><span class="p">,</span> <span class="mi">4504</span><span class="p">]])</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="n">data_heterogenous</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[(‘Ferrari’, ‘fast’), {‘Porsche’: 100000}, [‘Spain’, ‘visited’, 4504]]</p>
-</blockquote>
-
-
-
-
-<h3 id="读取文件及统计词频">读取文件及统计词频</h3>
-
-
-
-
-<p>首先word.txt文件内容如下：</p>
-
-
-
-
-<blockquote>
-  <p>The dynamic lifestyle <br>
-  people lead nowadays <br>
-  causes many reactions <br>
-   in our bodies and <br>
-   the one that is the <br>
-   most frequent of all <br>
-   is the headache. However so good</p>
-</blockquote>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span>
-</span><span class='line'><span class="n">lines</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;word.txt&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">counts</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[(”, 4), (‘good’, 1), (‘in’, 1), (‘is’, 2), (‘However’, 1), (‘of’, 1), (‘causes’, 1), (‘lifestyle’, 1), (‘The’, 1), (‘headache.’, 1), (‘reactions’, 1), (‘most’, 1), (‘frequent’, 1), (‘that’, 1), (‘all’, 1), (‘our’, 1), (‘dynamic’, 1), (‘nowadays’, 1), (‘so’, 1), (‘the’, 3), (‘people’, 1), (‘bodies’, 1), (‘many’, 1), (‘one’, 1), (‘and’, 1), (‘lead’, 1)] <br>
-  …</p>
-</blockquote>
-
-
-
-
-<h2 id="dataframe">DataFrame</h2>
-
-
-
-
-<p>DataFrameDataFrame是Spark推荐的统一结构化数据接口，是一个不可变的分布式数据集合，它结构与关系数据库中的表类似。</p>
-
-
-
-
-<p>类似于Python Pandas DataFrame或R DataFrame，它能够让用户轻松处理结构化数据。</p>
-
-
-
-
-<p>DataFrame还允许用户通过Spark SQL数据库或者采用一些函数式的方法查询及操作结构数据，下面我们就通过一些例子来了解和使用DataFrame。</p>
-
-
-
-
-<h3 id="创建dataframes">创建DataFrames</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">stringJSONRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">((</span><span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="s">{ &quot;id&quot;: &quot;123&quot;,</span>
-</span><span class='line'><span class="s">&quot;name&quot;: &quot;Katie&quot;,</span>
-</span><span class='line'><span class="s">&quot;age&quot;: 19,</span>
-</span><span class='line'><span class="s">&quot;eyeColor&quot;: &quot;brown&quot;</span>
-</span><span class='line'><span class="s">}&quot;&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
-</span><span class='line'><span class="sd">&quot;id&quot;: &quot;234&quot;,</span>
-</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Michael&quot;,</span>
-</span><span class='line'><span class="sd">&quot;age&quot;: 22,</span>
-</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;green&quot;</span>
-</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
-</span><span class='line'><span class="sd">&quot;id&quot;: &quot;345&quot;,</span>
-</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Simone&quot;,</span>
-</span><span class='line'><span class="sd">&quot;age&quot;: 23,</span>
-</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;blue&quot;</span>
-</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="p">)</span>
-</span><span class='line'><span class="n">swimmersJSON</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">stringJSONRDD</span><span class="p">)</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmersJSON&quot;</span><span class="p">)</span> <span class="c">#这里创建了临时表</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>+—+——–+—+——-+ <br>
-  |age|eyeColor| id|   name| <br>
-  +—+——–+—+——-+ <br>
-  | 19|   brown|123|  Katie| <br>
-  | 22|   green|234|Michael| <br>
-  | 23|    blue|345| Simone| <br>
-  +—+——–+—+——-+</p>
-</blockquote>
-
-
-
-
-<h3 id="dataframe的简单内容及类型查询">DataFrame的简单内容及类型查询</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select * from swimmersJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span> <span class="c">#显示表数据的类型</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>[Row(age=19, eyeColor=’brown’, id=’123’, name=’Katie’), <br>
-   Row(age=22, eyeColor=’green’, id=’234’, name=’Michael’), <br>
-   Row(age=23, eyeColor=’blue’, id=’345’, name=’Simone’)] <br>
-   root <br>
-   |– age: long (nullable = true) <br>
-   |– eyeColor: string (nullable = true) <br>
-   |– id: string (nullable = true) <br>
-   |– name: string (nullable = true)</p>
-</blockquote>
-
-
-
-
-<h3 id="指定数据储存及处理的类型">指定数据储存及处理的类型</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Import types</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pyspark.sql.types</span> <span class="kn">import</span> <span class="o">*</span>
-</span><span class='line'><span class="c"># Generate comma delimited data</span>
-</span><span class='line'><span class="n">stringCSVRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([</span>
-</span><span class='line'><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#39;Katie&#39;</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="s">&#39;brown&#39;</span><span class="p">),</span>
-</span><span class='line'><span class="p">(</span><span class="mi">234</span><span class="p">,</span> <span class="s">&#39;Michael&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">),</span>
-</span><span class='line'><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="s">&#39;Simone&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="s">&#39;blue&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="p">])</span>
-</span><span class='line'><span class="c"># Specify schema</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
-</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;eyeColor&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
-</span><span class='line'><span class="p">])</span>
-</span><span class='line'><span class="c"># Apply the schema to the RDD and Create DataFrame</span>
-</span><span class='line'><span class="n">swimmers</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">stringCSVRDD</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-</span><span class='line'><span class="c"># Creates a temporary view using the DataFrame</span>
-</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmers&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>root <br>
-   |– id: long (nullable = true) <br>
-   |– name: string (nullable = true) <br>
-   |– age: long (nullable = true) <br>
-   |– eyeColor: string (nullable = true)</p>
-</blockquote>
-
-
-
-
-<p><strong>明明可以自动匹配储存类型，为什么我们还要手动指定类型呢？</strong> <br>
-因为，在自动匹配类型的情况下，有时会将ID，Age等我们未来将要用来计算的数据以String的方式存储，这样就不利于我们对这些数据进行加减等运算，所以手动指定储存类型还是很有必要的。</p>
-
-
-
-
-<h3 id="使用sql语句查询及操作数据">使用SQL语句查询及操作数据</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select count(1) from swimmers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select id, age from swimmers where age = 22&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
-</span><span class='line'><span class="s">&quot;select name, eyeColor from swimmers where eyeColor like &#39;b%&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>输出：</p>
-
-
-
-
-<blockquote>
-  <p>+——–+ <br>
-  |count(1)| <br>
-  +——–+ <br>
-  |       3| <br>
-  +——–+</p>
-  
-  <p>+—+—+ <br>
-  | id|age| <br>
-  +—+—+ <br>
-  |234| 22| <br>
-  +—+—+</p>
-  
-  <p>+——+——–+ <br>
-  |  name|eyeColor| <br>
-  +——+——–+ <br>
-  | Katie|   brown| <br>
-  |Simone|    blue| <br>
-  +——+——–+</p>
-</blockquote>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>在这篇文章中我们可以看出，通过Pyspark结合RDD与DataFrames让我们可以用Python用上Spark平台上的分布式优势，也能够进一步加速和优化我们平时的数据操作。通过Spark导出的抽象层的API我们无需学过过于复杂和繁多的语法就能操作RDD上的数据。这篇文章的内容主要是为了后面用在用Python在Spark进行数据建模和机器学习所铺路，但受限于文章篇幅，还有十分多的函数和API无提及。所以有兴趣的读者可以阅读下<a href="http://spark.apache.org/docs/latest/sql-programming-guide.html">Spark DataFrame的官方文档</a>深入了解一下。</p>
 
 ]]></content>
   </entry>

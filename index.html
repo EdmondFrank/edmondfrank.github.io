@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿隐马尔可夫模型（HMM）的原理 简介 隐马尔可夫模型是一个基于马尔可夫链的统计模型。 马尔可夫链因安德烈·马尔可夫（Andrey Markov，1856－1922）得名，是数学中具有马尔可夫性质的离散时间随机过程。该过程中，在给定当前知识或信息的情况下，过去（即当期以前的历史状态）对于预测将来（ &hellip;">
+  <meta name="description" content="穷举搜索的例子－Google方程式 　问题描述 有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,237 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-05-30T22:15:17+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="穷举搜索的例子google方程式">穷举搜索的例子－Google方程式</h2>
+
+
+
+
+<h3 id="问题描述">　问题描述</h3>
+
+
+
+
+<p>有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换，并且替换之后能够满足等式。</p>
+
+
+
+
+<h3 id="问题分析">问题分析</h3>
+
+
+
+
+<p>从排列组合的角度来看，这道题是一道典型的排列组合问题，题目中一共出现了9个字母。</p>
+
+
+
+
+<p>如果不考虑0开头的情况下，这样的组合应该有10x9x8x7x6x5x4x3x2=3628800种组合。</p>
+
+
+
+
+<p>在这样的情况之下，计算机的穷举处理应该是毫无压力的。</p>
+
+
+
+
+<h3 id="问题求解">问题求解</h3>
+
+
+
+
+<p>首先为了能够表示这样一种可变的字符元素列表，我们需要自定义一种数据结构。首先我们知道这个自定义结构中应该包含有三个属性，分别是 字符本身，字符代表的数字以及是否为数字的最高位，因为最高位是不能为0的，所以在这里我们要区别对待。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharItem</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">leading</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_ITEM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>接着我们初始化这个列表。=</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">CHAR_ITEM</span> <span class="n">charItem</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;D&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;O&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;T&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;G&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;L&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;E&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;C&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为这是一个组合问题，那么两个字母就不能被指定为相同的数字，这样我们需要定义额外的占用标识。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharValue</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">isused</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_VALUE</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//穷举算法实现如下</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">SearchingResult</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[],</span><span class="n">CHAR_VALUE</span> <span class="n">cv</span><span class="p">[],</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">index</span><span class="p">,</span><span class="n">CharListReadyFuncPtr</span> <span class="n">callback</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">max_char_count</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">callback</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">max_number_count</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">IsValueValid</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">SearchingResult</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">callback</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>根据题目要求，W，G，D三者都不能为0，为了加快穷举速度可以对他们为0的情况进行剪枝。 <br>
+IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数可以减少约30%。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//callback代码实现</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">OnCharListReady</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">minuend</span> <span class="o">=</span> <span class="s">&quot;WWWDOT&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">subtrahend</span> <span class="o">=</span> <span class="s">&quot;GOOGLE&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">=</span> <span class="s">&quot;DOTCOM&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">minuend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">subtrahend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">diff</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="n">d</span><span class="p">){</span>
+</span><span class='line'>      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span><span class="n">s</span><span class="o">&lt;&lt;</span> <span class="s">&quot;=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>问题答案 <br>
+  777589 - 188103 = 589486 <br>
+  777589 - 188106 = 589483</p>
+</blockquote>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a>
+      <time datetime="2018-05-30T22:15:17+08:00" pubdate><span class='month'>May</span> <span class='day'>30</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -3827,175 +4058,6 @@ sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class
       <time datetime="2018-01-18T19:55:04+08:00" pubdate><span class='month'>Jan</span> <span class='day'>18</span> <span class='year'>2018</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-01-13T16:23:37+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>数据恢复利器-Testdisk</h1>
-
-<p>今天我要给大家介绍的主角是<strong>Testdisk</strong></p>
-
-<p>首先，<strong>Testdisk</strong>是一个强大的免费的跨平台的数据恢复工具，根据它的<a href="https://www.cgsecurity.org/wiki/TestDisk">官网</a>上的简介，这款软件主要被设计用于恢复丢失的分区以及修复那些由于人为或者病毒等原因导致分区表错误而无法启动系统的问题。</p>
-
-<p>除此之外，Testdisk更多的特性大家可以参考官方列出的功能列表：</p>
-
-<blockquote><p>TestDisk can
-Fix partition table, recover deleted partition
-Recover FAT32 boot sector from its backup
-Rebuild FAT12/FAT16/FAT32 boot sector
-Fix FAT tables
-Rebuild NTFS boot sector
-Recover NTFS boot sector from its backup
-Fix MFT using MFT mirror
-Locate ext2/ext3/ext4 Backup SuperBlock
-Undelete files from FAT, exFAT, NTFS and ext2 filesystem
-Copy files from deleted FAT, exFAT, NTFS and ext2/ext3/ext4 partitions.</p></blockquote>
-
-<p>对于Testdisk的强大之处，肯定是不容质疑的，对此笔者在之前自己的系统修复过程切身体会过Testdisk的实用与强大之处（在笔者的旧硬盘全盘分区表丢失的情况之下，使用Testdisk成功恢复了大部分的分区，并能成功启动系统。看到系统还能成功开机那一刻别提多激动了！）</p>
-
-<h2>跨平台</h2>
-
-<p>Testdisk不仅强大而且还能够跨平台，跨平台，跨平台使用（重要的事情说三遍）并且还支持多种文件系统。</p>
-
-<p>简单的介绍就到这里了！！</p>
-
-<p>下面我们就用一个实际的例子来演示一下
-Testdisk的具体使用方法：</p>
-
-<p>本例子摘取自：<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">Testdisk 操作指南</a>
-PS：毕竟为了演示而认为制造一些错误也是有一定风险的，所以为了方便和安全起见笔者这里摘抄一份别人的例子啦，反正也是为了向大家安利下这个软件。</p>
-
-<p>前提条件:</p>
-
-<ul>
-<li>TestDisk 需要用管理员权限来运行。</li>
-</ul>
-
-
-<p>使用 TestDisk 的重点:</p>
-
-<ul>
-<li>用 方向键 和 上一页/下一页 按键在TestDisk 中导航。</li>
-<li>然后, 按Enter 键确认你的选择.</li>
-<li>若要返回前一页或者退出TestDisk, 按 q (Quit) 键。</li>
-<li>若要在 TestDisk 下保存修改,按 y (Yes) 或者 Enter 键来确认</li>
-<li>如果确实要把分区信息写入主引导记录（MBR），应该选择 &ldquo;Write&rdquo; 选项并按 Enter 键。</li>
-</ul>
-
-
-<h2>运行Testdisk</h2>
-
-<p>如果 TestDisk 还没有被安装, 可以从这里下载 <a href="https://www.cgsecurity.org/wiki/TestDisk_Download">TestDisk Download</a>。然后解压缩这个归档文件，包括子文件夹。</p>
-
-<h3>　一、新建日志</h3>
-
-<ul>
-<li>选择 Create 来让 Testdisk 新建一个日志文件（ log file） ，里边包含了一些技术信息和消息, 除非你要往一个日志里追加信息 log 或者 你从只读存储器里执行 TestDisk 而且必须在别的地方建立日志 log。</li>
-<li>选择 None 如果你不想让过程中的细节和消息记录到日志文件里 log file (比如当 Testdisk 是在只读位置执行的时候，这很有用).</li>
-<li>按 Enter 键以继续.
-<img src="https://www.cgsecurity.org/mw/images/Create_log.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>　二、选择磁盘</h3>
-
-<p>所有的硬盘都应该能被TestDisk检测到并且辅以正确的大小列出来：</p>
-
-<ul>
-<li>用 上/下 键 来选择丢失分区的硬盘。</li>
-<li>按 Enter 键继续。
-<img src="https://www.cgsecurity.org/mw/images/Select_disk_update.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>三、选择分区表类型</h3>
-
-<p>TestDisk 会显示分区表类型。</p>
-
-<ul>
-<li>选择正确的分区表类型 - 在 TestDisk 自动检测分区表类型之后，一般预设的那个值是正确的。</li>
-<li>按 Enter 键继续。
-<img src="https://www.cgsecurity.org/mw/images/Partition_table_type.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>四、查看当前分区状态</h3>
-
-<p>TestDisk 显示这个菜单的时候 (参见 <a href="https://www.cgsecurity.org/wiki/Running_TestDisk">TestDisk Menu Items</a>).
-+ 用预设的“analyze”（分析）选项来检查当前的分区结构并搜索丢失的分区。
-+ 分析过程中按 Enter 键继续。
-第一个分区显示了两次，它指向了一个毁坏的分区或一个无效的分区表入口。
-+ 无效的 NTFS boot 指向了一个错误的 NTFS boot 扇区, 所以这是一个损坏的文件系统。
-在扩展分区中，只有一个逻辑分区(分区标签为2)可用。 有一个逻辑分区不见了。
-+ 选 Quick Search （快速搜索）来继续。
-然后，当前的结构就会被列出来。 接下来就可以在当前的分区结构中检查丢失或错误的分区了。</p>
-
-<p><img src="https://www.cgsecurity.org/mw/images/Analyse.png" alt="enter image description here" /></p>
-
-<h3>五、快速搜索分区</h3>
-
-<p>在 Quick Search（快速搜索）的过程中, TestDisk 找到了两个分区，包括那个不见的逻辑分区（标签为 Partition 3 ）
-<img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
-+ 高亮这个分区并按 p 来列出文件 (若要返回前一页，请按 q ).
-+ 这里所有的目录和文件都正确列出来了。
-+ 按 Enter 键继续。
-+ <img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
-+</p>
-
-<h3>六、保存分区表</h3>
-
-<ul>
-<li><p>当全部分区都可用的时候 并且数据已正确列出,应该选 Write 菜单项保存分区结构. 菜单项 Extd Part gives you the opportunity to decide if the extended partition will use all available disk space or only the required (minimal) space.</p></li>
-<li><p>当一个分区,第一个,仍然找不到, 高亮菜单项 深度搜索 (没有自动进行的时候) ，按 Enter 键继续.</p></li>
-</ul>
-
-
-<p><img src="https://www.cgsecurity.org/mw/images/Search_menu.png" alt="enter image description here" />
-（经过笔者的几次实验和朋友的反馈，其实到了这一步已经能够解决80%以上的问题了！）</p>
-
-<p>所以，有关Testdisk更加深入的功能和其他详细用法大家可以前往这个<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">中文版的官方指南</a>在这里笔者就不赘述了！</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a>
-      <time datetime="2018-01-13T16:23:37+08:00" pubdate><span class='month'>Jan</span> <span class='day'>13</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
       
       </footer>
     </article>
