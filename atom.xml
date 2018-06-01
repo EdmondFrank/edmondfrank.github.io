@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-06-01T20:13:15+08:00</updated>
+  <updated>2018-06-01T20:47:40+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -56,13 +56,7 @@
 <p>面对这一障碍，SLAM技术通常通过使用GPS数据构建预先存在的环境地图来克服这一复杂的鸡与蛋问题。随着机器人或设备在环境中移动，生成的地图会被迭代地改进。而这项技术的真正挑战是准确性。随着机器人或设备在空间中移动与寻迹，测量评估必须不断进行，并且该技术必须考虑设备移动和测量方法不准确而引起的“噪音”。</p>
 
 
-
-
-<pre><code>![enter image description here](https://i.loli.net/2018/06/01/5b11319dab704.gif)
-</code></pre>
-
-
-
+<p><a href="https://i.loli.net/2018/06/01/5b11319dab704.gif">enter image description here</a></p>
 
 <p>这个gif是宾大的教授kumar做的特别有名的一个demo，是在无人机上利用二维激光雷达做的SLAM。</p>
 
