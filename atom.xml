@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-05-30T22:19:26+08:00</updated>
+  <updated>2018-06-01T20:11:16+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,125 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SLAM的复兴-无人驾驶的未来?]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/06/01/slamde-fu-xing-wu-ren-jia-shi-de-wei-lai/"/>
+    <updated>2018-06-01T20:09:15+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/06/01/slamde-fu-xing-wu-ren-jia-shi-de-wei-lai</id>
+    <content type="html"><![CDATA[<h1 id="slam的复兴-无人驾驶的未来">SLAM的复兴-无人驾驶的未来?</h1>
+
+
+
+
+<h2 id="slam的前世今生">SLAM的前世今生</h2>
+
+
+
+
+<p>SLAM，全称(simultaneous localization and mapping)，中文译做，即时定位与地图构建。是指运动物体根据传感器的信息，一边计算自身位置，一边构建环境地图的过程，解决机器人等在未知环境下运动时的定位与地图构建问题。目前，SLAM的主要应用于机器人、无人机、无人驾驶、AR、VR等领域。其用途包括传感器自身的定位，以及后续的路径规划、运动性能、场景理解。 </p>
+
+
+
+
+<p>作为一种基础技术，最早可以追溯到当初的军事潜艇定位技术。而今年来随着扫地机器人的盛行，再次令他名声大噪。加上最近的无人驾驶与机器人的寻迹的崛起以及基于三维视觉的VSLAM的出现又让它越来越显主流。</p>
+
+
+
+
+<p>目前用在SLAM上的Sensor主要分两大类，分别是激光雷达和摄像头。</p>
+
+
+
+
+<h2 id="slam到底做了些什么">SLAM到底做了些什么?</h2>
+
+
+
+
+<p>既然SLAM技术代表了即时定位与地图构建，那么可以说这就是一个机器人或设备尝试去根据他周围的环境创建地图的过程，并且还可以在该地图中实时定位自己。</p>
+
+
+
+
+<p>这不是一件容易的事，这项技术现在还处在技术研究和设计的前沿。而为了成功实施SLAM有一大障碍是不可i避免的，那就是<strong>地图</strong>和<strong>定位</strong>问题，两个问题同时引入就变成了我们常说的典型的<strong>鸡与蛋</strong>问题。为了能够成功地顺利的根据环境创建地图，我们的设备就必须先知道它的方向和位置 ;然而，这些定位信息设备也只能从预先存在的环境地图中获得。</p>
+
+
+
+
+<p>面对这一障碍，SLAM技术通常通过使用GPS数据构建预先存在的环境地图来克服这一复杂的鸡与蛋问题。随着机器人或设备在环境中移动，生成的地图会被迭代地改进。而这项技术的真正挑战是准确性。随着机器人或设备在空间中移动与寻迹，测量评估必须不断进行，并且该技术必须考虑设备移动和测量方法不准确而引起的“噪音”。</p>
+
+
+
+
+<pre><code>![enter image description here](https://i.loli.net/2018/06/01/5b11319dab704.gif)
+</code></pre>
+
+
+
+
+<p>这个gif是宾大的教授kumar做的特别有名的一个demo，是在无人机上利用二维激光雷达做的SLAM。</p>
+
+
+
+
+<h2 id="vslam又是什么">VSLAM又是什么?</h2>
+
+
+
+
+<p>VSLAM（基于视觉的定位与建图）：随着计算机视觉的迅速发展，视觉SLAM因为信息量大，适用范围广等优点受到广泛关注。</p>
+
+
+
+
+<p>（1）基于深度摄像机的Vslam，跟激光SLAM类似，通过收集到的点云数据，能直接计算障碍物距离；</p>
+
+
+
+
+<p>（2）基于单目、鱼眼相机的VSLAM方案，利用多帧图像来估计自身的位姿变化，再通过累计位姿变化来计算距离物体的距离，并进行定位与地图构建；</p>
+
+
+
+
+<p><img src="https://i.loli.net/2018/06/01/5b1131954cc50.gif" alt="enter image description here" title=""></p>
+
+
+
+
+<p>以上为百度 VSLAM demo展示。</p>
+
+
+
+
+<h2 id="vslam能够为自动驾驶带来些什么">VSLAM能够为自动驾驶带来些什么?</h2>
+
+
+
+
+<p>结合自动驾驶的场景，可以推出VSLAM的应用点主要是:</p>
+
+
+
+
+<ul>
+<li>gps缺失场景下的长时间定位，如室内，楼房中。</li>
+<li>补偿行驶过程中gps信号不稳定造成的定位跳跃，如山洞，高楼群，野外山区等。</li>
+</ul>
+
+
+
+
+<p>VSLAM的精度及鲁棒性越高，适用的场景越宽广。如果VSLAM能在任何场景无限长定位保持高精度，那其他定位技术就可以下岗了，虽然按目前看来这个可能性很小，因此需要尝试结合IMU，编码器等设备融合。至于最终的技术形态，目前还没有定论。</p>
+
+
+
+
+<p>在无人驾驶汽车上，目前比较显著的瓶颈还在计算方面，数据收发，障碍物感知，融合定位，路径规划，每个模块都需要占据相当的计算资源。而无论视觉还是激光SLAM本身就是对计算力消耗极大的一个模块，如果加上高频率的IMU进行融合优化，则计算力更加捉襟见肘。因此是否值得为视觉SLAM分配原本就那么有限的计算资源，如何识别场景对SLAM模块进行激活都是需要仔细衡量的。</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我的算法天梯之路之-穷举搜索]]></title>
@@ -6111,261 +6230,6 @@ chrt.show(b_hist)</code></pre>
   <p>输出: <br>
   <img src="https://ooo.0o0.ooo/2017/10/27/59f2fbe5e1f34.png" alt="bokeh_hist.png" title=""></p>
 </blockquote>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Python在Spark上的机器学习(三)之统计分析]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/"/>
-    <updated>2017-10-27T18:39:42+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习三之统计分析">Python在Spark上的机器学习(三)之统计分析</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p>通常来说，一个完整使用机器学习建模解决问题的过程包含一下步骤：</p>
-
-
-
-
-<ul>
-<li>数据获取</li>
-<li>数据预处理</li>
-<li>数据统计分析</li>
-<li>算法建模</li>
-<li>训练</li>
-<li>预测/分类</li>
-</ul>
-
-
-
-
-<p>这就意味着，在我们进行一般的数学建模或者挑选机器学习训练算法之前，应该先对数据进行清洗以及简单的统计分析，以便了解数据中显著的特征或者规律（虽然现在的机器学习方法，很多情况下根本不需要了解数据的意义，仅仅是通过堆叠特征就能获得一个可行的结果，但这显然离一个优秀的结果还是有一段距离的）。为了得到更加鲁棒的模型，以及了解数据背后的含义，我们这篇文章就来讲讲如何在PySpark上进行简单的统计分析。</p>
-
-
-
-
-<h3 id="概念介绍">概念介绍</h3>
-
-
-
-
-<p><strong>描述性统计分析</strong> <br>
-这是一个统计学的概念，描述性统计是以揭示数据分布特性的方式汇总并表达定量数据的方法。主要包括数据的频数分析、数据的集中趋势分析、数据离散程度分析、数据的分布、以及一些基本的统计图形。特征括并表示定量数据，揭示数据分布的特征。 <br>
-描述性统计是一类统计方法的汇总，作用是提供了一种概括和表征数据的有效且相对简便的方法。通常用图示法来表述，易于看懂，能发现质量特性值（总体）的分布状况、趋势走向的一些规律，便于采取措施。用于汇总和表征数据，通常是对数据进一步定量分析的基础，或是对推断性统计方法的有效补充。</p>
-
-
-
-
-<h3 id="数据读取">数据读取</h3>
-
-
-
-
-<p>本文使用的是一个信用欺诈检测的一个数据集，具体下载地址：<a href="http://tomdrabas.com/data/LearningPySpark/ccFraud.csv.gz">这里</a></p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">PySpark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
-</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;data/ccFraud.csv&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span><span class="n">row</span><span class="o">!=</span><span class="n">header</span><span class="p">)</span>\
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:[</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)])</span>
-</span><span class='line'><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>    <span class="o">*</span><span class="p">[</span>
-</span><span class='line'>        <span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">(),</span><span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-</span><span class='line'><span class="n">fraud_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">fraud</span><span class="p">,</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
-</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
-</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果 <br>
-  root <br>
-   |– custID: integer (nullable = true) <br>
-   |– gender: integer (nullable = true) <br>
-   |– state: integer (nullable = true) <br>
-   |– cardholder: integer (nullable = true) <br>
-   |– balance: integer (nullable = true) <br>
-   |– numTrans: integer (nullable = true) <br>
-   |– numIntlTrans: integer (nullable = true) <br>
-   |– creditLine: integer (nullable = true) <br>
-   |– fraudRisk: integer (nullable = true) <br>
-  Out: <br>
-  Row(custID=1, gender=1, state=35, cardholder=1, balance=3000, numTrans=4, numIntlTrans=14, creditLine=2, fraudRisk=0)</p>
-</blockquote>
-
-
-
-
-<p>在上面的代码中，我们读入了我们的数据集，以及创建了一个DataFrame，下面我们再进行一些简单的分析操作。</p>
-
-
-
-
-<h3 id="简单统计分析">简单统计分析</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;gender&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c">#按照性别分类汇总</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">numerical</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;balance&#39;</span><span class="p">,</span> <span class="s">&#39;numTrans&#39;</span><span class="p">,</span> <span class="s">&#39;numIntlTrans&#39;</span><span class="p">]</span>
-</span><span class='line'><span class="n">desc</span> <span class="o">=</span> <span class="n">fraud_df</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
-</span><span class='line'><span class="c">##对balance，numTrans，numIntTrans进行描述性分析</span>
-</span><span class='line'><span class="n">desc</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 计算balance值分布的偏度</span>
-</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s">&#39;balance&#39;</span><span class="p">:</span> <span class="s">&#39;skewness&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果 <br>
-  +——+——-+ <br>
-  |gender|  count| <br>
-  +——+——-+ <br>
-  |     1|6178231| <br>
-  |     2|3821769| <br>
-  +——+——-+ <br>
-  +——-+—————–+——————+—————–+ <br>
-  |summary|          balance|          numTrans|     numIntlTrans| <br>
-  +——-+—————–+——————+—————–+ <br>
-  |  count|         10000000|          10000000|         10000000| <br>
-  |   mean|     4109.9199193|        28.9351871|        4.0471899| <br>
-  | stddev|3996.847309737258|26.553781024523122|8.602970115863904| <br>
-  |    min|                0|                 0|                0| <br>
-  |    max|            41485|               100|               60| <br>
-  +——-+—————–+——————+—————–+ <br>
-  +——————+ <br>
-  | skewness(balance)| <br>
-  +——————+ <br>
-  |1.1818315552993839| <br>
-  +——————+</p>
-</blockquote>
-
-
-
-
-<p>上面我们使用了一些常用的统计分析函数，以及简单地了解了一下PySpark 聚合函数agg()的使用。通常地，常用的聚合函数还有avg() , count(), countDistinct() , max() 等。</p>
-
-
-
-
-<h3 id="相关分析">相关分析</h3>
-
-
-
-
-<p><strong>相关分析</strong>（correlation analysis），相关分析是研究现象之间是否存在某种依存关系，并对具体有依存关系的现象探讨其相关方向以及相关程度，是研究随机变量之间的相关关系的一种统计方法。通常两个变量之间存在的相关关系有：正相关、完全正相关、负相关、完全负相关、无相关。</p>
-
-
-
-
-<p><strong>相关系数</strong>是最早由统计学家卡尔·皮尔逊设计的统计指标，是研究变量之间线性相关程度的量，一般用字母 r 表示。由于研究对象的不同，相关系数有多种定义方式，较为常用的是皮尔逊相关系数。简单来说，相关系数是衡量两个变量间相关关系的指标。</p>
-
-
-
-
-<p>在PySpark中计算两个变量之间的相关系数是非常简单的，往往只需要一条代码：</p>
-
-
-
-
-<blockquote>
-  <p>fraud_df.corr(‘balance’, ‘numTrans’)#计算balance和numTrans的相关系数</p>
-</blockquote>
-
-
-
-
-<p>输出</p>
-
-
-
-
-<blockquote>
-  <p>Out：0.0004452314017265385</p>
-</blockquote>
-
-
-
-
-<p>我们还可以通过下面的方法来创建一个相关矩阵。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">n_numerical</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
-</span><span class='line'><span class="n">corr</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fraud_df</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numerical</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">numerical</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
-</span><span class='line'>    <span class="n">corr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果; <br>
-  [[1.0, 0.0004452314017265387, 0.0002713991339817875], [None, 1.0, -0.00028057128198165555], [None, None, 1.0]]</p>
-</blockquote>
-
-
-
-
-<p>正如输出结果所示，这个信用欺诈检测的数据集中的特征之间不存在过大的相关关系，基本全部都为相互独立关系。因此，在选择特征代入机器学习算法训练时，可以采用全部的变量。正也是统计分析的用处，可以帮助我们了解变量之间的线性相关关系，有利于帮住我们选取训练的特征变量。</p>
 
 ]]></content>
   </entry>
