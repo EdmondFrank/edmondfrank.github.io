@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2018-06-01T20:50:06+08:00</updated>
+  <updated>2019-01-04T13:44:45+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,247 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[文本建模算法入门-1]]></title>
+    <link href="https://edmondfrank.github.io/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/"/>
+    <updated>2019-01-04T13:43:27+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="文本建模算法入门一">文本建模算法入门（一）</h1></p>
+
+<h3 id="0x1-文本建模">0x1 文本建模</h3>
+
+
+
+
+<p>文本并不像其他数值型的数据一样可以比较轻易的通过运算、函数、方程、矩阵等来表达他们之间的相互关系。</p>
+
+
+
+
+<p>在处理一篇文本的时候，假设每一个文本储存为一篇文档，那么从人的视角来看，这可以说是一段有序的词序列<script type="math/tex; mode=display" id="MathJax-Element-1">Document=(w_1,w_2,...,w_n)</script> <br>
+统计学家将这些序列的生成，生动地描绘成了一个“上帝的游戏”，即人类产生的所有语料的文本都可以看作是：一个伟大的上帝在天堂中掷骰子形成的。我们所看到的文本其实就是这个游戏掷了若干次后产生的序列。</p>
+
+
+
+
+<p>那么，在这个游戏中，我们<strong>最需要关注的两个核心问题</strong>就出现了：</p>
+
+
+
+
+<ol>
+<li>上帝有怎样的骰子？</li>
+<li>上帝是怎么掷的骰子？</li>
+</ol>
+
+
+
+
+<p>对应这两个问题，各大学家持着不同的观点，于是便有了以下三种模型：</p>
+
+
+
+
+<ol>
+<li>Unigram Model</li>
+<li>Topic Model(PLSA)</li>
+<li>LDA</li>
+</ol>
+
+
+
+
+<h4 id="0x11-unigram-model">0x11 Unigram Model</h4>
+
+
+
+
+<p>Unigram Model是非常简单直接的，它假设</p>
+
+
+
+
+<ol>
+<li>上帝只有一个V面的骰子，每一个面对应一个词，同时每个面的概率不一样。（这里可以通过“老千骰子”来理解下，有些面因为被做过了“手脚”，所以抛到的几率就大了，那如果没个面都这样，那么每个面抛到的几率也就不一样了）</li>
+<li>每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyudrkxl14j2086052dg2.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>那现在我们把上帝这个唯一的骰子各个面的概率记为<script type="math/tex" id="MathJax-Element-2">\vec{p}=\{p_1,p_2,...,p_v\}</script>，然后我们把掷这个V面骰子的实验记作<script type="math/tex" id="MathJax-Element-3">w \sim Mult(w|\vec{p}) </script></p>
+
+
+
+
+<p>那么对应一篇文档d，该文档生成的概率就是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-4">p(\vec{w})=p(w_1,w_2,...,w_n)=p(w_1)p(w_2)...p(w_n)</script></p>
+
+
+
+
+<p>而文档和文档之间我们认为是独立的，所以如果语料中有多篇文档<script type="math/tex" id="MathJax-Element-5">W=(\vec{w_1},\vec{w_2},...,\vec{w_m})</script>，则该语料生成的概率就是<script type="math/tex; mode=display" id="MathJax-Element-6">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})</script></p>
+
+
+
+
+<p>在Unigram Model中，我们又假设了文档之间是独立可交换的。即，词与词之间的顺序对文档表示并不造成影响，一篇文档相当于一个袋子，里面装着一些词。这样的模型也称为<strong>词袋模型（Bag-of-words）。</strong></p>
+
+
+
+
+<p>那么，如果语料中的总词频是N，在N个词中，如果我们关注每一个词<script type="math/tex" id="MathJax-Element-7">w_i</script>的发生次数<script type="math/tex" id="MathJax-Element-8">n_i</script>，则<script type="math/tex" id="MathJax-Element-9">\vec{n}=(n_1,n_2,...,n_V)</script>正好是一个多项分布 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-10">p(\vec{n})=Mult(\vec{n}|\vec{p},N)</script> <br>
+此时，语料的概率是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-11">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})=\prod_{k=1}^Vp_k^{n_k}</script></p>
+
+
+
+
+<h4 id="0x110-贝叶斯unigram-model假设">0x110 贝叶斯Unigram Model假设</h4>
+
+
+
+
+<p>在贝叶斯统计学派看来，上帝拥有唯一一个固定的骰子是不合理的。于是他们觉得以上模型的骰子<script type="math/tex" id="MathJax-Element-12">\vec{p}</script>不应该唯一固定，而应该也是一个随机变量。</p>
+
+
+
+
+<p>那这样我们就可以将整个掷骰子的游戏过程更新成以下形式：</p>
+
+
+
+
+<ol>
+<li>上帝有一个装着无穷多骰子的罐子，里面有各种骰子，每个骰子有V个面。每一个面对应一个词</li>
+<li>上帝从罐子抽出一个骰子，然后用这个骰子不断的抛，每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyufvboyshj20a106cjs7.jpg" alt="enter image description here" title=""></li>
+</ol>
+
+
+
+
+<p>在以上的假设之下，由于我们事先并不知道上帝用了哪个骰子<script type="math/tex" id="MathJax-Element-13">\vec{p}</script>，所以每个骰子都是有可能被使用的，只是使用的概率由先验分布<script type="math/tex" id="MathJax-Element-14">p(\vec{p})</script>决定，对每一个具体的骰子<script type="math/tex" id="MathJax-Element-15">\vec{p}</script>，由该骰子产生数据的概率是<script type="math/tex" id="MathJax-Element-16">p(W|\vec{p})</script>，所以最终数据产生的概率就是对每个骰子上产生的数据概率进行积分累加求和 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-17">P(W)=\int p(W|\vec{p})p(\vec{p})d\vec{p}</script> <br>
+在贝叶斯分析的框架之下，此处的先验分布概率其实就是一个多项分布的概率，其中一个比较好的选择即<strong>多项分布对应的共轭分布：Dirichlet分布</strong></p>
+
+
+
+
+<h4 id="0x12-plsa-topic-model">0x12 PLSA Topic Model</h4>
+
+
+
+
+<p>再来回顾Unigram Model我们发现：这个模型的假设过于简单，和人类真实的书写有着较大的差距</p>
+
+
+
+
+<p>从人类视角看，我们在日常构思文章中，我们往往要先确定自己文章的主旨，包含了哪些主题，然后再围绕着这些主题展开阐述。</p>
+
+
+
+
+<p>例如，一篇关于现代教育的文章，它可能就包含了这些主题：教育方法、多媒体技术、互联网等。篇幅上可能以教育方法为主，而其他为辅。然后，在不同的主题里面就包含了许多主题领域内常见的关键词。例如，谈到互联网时，我们会提及Web、Tcp等。</p>
+
+
+
+
+<p>这样一种直观的想法就在<strong>PLSA模型中进行了明确的体现</strong>，如果我们再利用这个想法更新“掷骰子”的游戏就有以下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两种类型骰子，一类是doc-topic骰子，骰子共k个面代表了k个主题；一类是topic-word骰子，骰子V个面，每面对应主题内的一个词</li>
+<li>生成文章的时候，首先要先创造一个特定的doc-topic骰子，使得骰子内的主题围绕文章要阐述的主题</li>
+<li>投掷doc-topic骰子，得到一个主题z</li>
+<li>根据得到的主题z，找到对应的topic-word骰子，投掷它得到一个词</li>
+<li>不断重复3，4步，直至文章生成完成</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyugrx9ybdj20a50810tj.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在上面的游戏规则中，文档与文档之间顺序无关，同一个文档内的词的顺序也是无关的。所以还是一个bag-of-words模型。</p>
+
+
+
+
+<p>那么，在第m篇文档Dm中每个词的生成概率为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-18">p(w|D_m)=\sum^K_{z=1}p(w|z)p(z|D_m)=\sum^K_{z=1}\phi_{zw_i}\theta_{dz}</script> <br>
+<script type="math/tex" id="MathJax-Element-19">\phi_{zw_i}</script>:对应游戏中K个topic-word骰子中第z个骰子对应的词列表</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-20">\theta_{dz}</script>:文档对应的第z个主题，即对应的doc-topic</p>
+
+
+
+
+<p>所以整篇文档的生成概率就为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-21">p(w|D_m)=\prod^n_{i=1}\sum^K_{z=1}p(w_i|z)p(z|D_m)</script></p>
+
+
+
+
+<h4 id="0x13-ldalatent-dirichlet-allocation">0x13 LDA(Latent Dirichlet Allocation)</h4>
+
+
+
+
+<p>就像Unigram Model 加入贝叶斯框架那样，doc-topic和topic-word都是模型的参数，即随机变量。于是类似对Unigram Model的改造对以上两个骰子模型加入先验分布。然后由于<script type="math/tex" id="MathJax-Element-22">\vec{\theta}</script>，<script type="math/tex" id="MathJax-Element-23">\vec{\phi}</script>都对应着多项分布，因此先验分布依旧选择Drichlet分布。于是得到的这个新模型就是<strong>LDA(Latent Dirichlet Allocation)模型</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyuhfhrza5j20cx09bwgm.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在LDA模型中，上帝的游戏规则就又被更新成如下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两个罐子，第一个装着都哦doc-topic骰子，第二个装着topic-word骰子</li>
+<li>上帝随机的从第二个罐子中独立抽出K个topic-doc骰子，编号1-K</li>
+<li>每次生成新文档时，从第一个罐子随机抽一个doc-topic骰子</li>
+<li>投掷得到的doc-topic骰子。得到一个主题编号z</li>
+<li>在K个主题骰子里面选择编号为z的骰子，投掷骰子，得到一个词</li>
+<li>重复4，5步，直至文档生成完成</li>
+</ol>
+
+
+
+
+<h3 id="0x2-后记">0x2 后记</h3>
+
+
+
+
+<p>至此，入门篇（一）的内容就写到这了。由于是第一篇，文章中避过了许多较为复杂的数学证明和计算，尤其是关于LDA模型的。这样是为了，先建立对文本建模思路和过程的直观认识，而不是一上来就深究细节。</p>
+
+
+
+
+<p>加上笔者目前也是在学习阶段，后面的细节再慢慢地一一补充，大家共同进步 !! <br>
+                        \(^_^)/</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[SLAM的复兴-无人驾驶的未来?]]></title>
@@ -5946,284 +6187,6 @@ Spark的不同存储级别，旨在满足内存使用和CPU效率权衡上的不
 </ul>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Python在Spark上的机器学习(四)之可视化工具的介绍与PySpark的结合使用示例]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/11/04/pythonzai-sparkshang-de-ji-qi-xue-xi-si-zhi-ke-shi-hua-gong-ju-de-jie-shao-yu-pysparkde-jie-he-shi-yong-shi-li/"/>
-    <updated>2017-11-04T23:20:17+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/11/04/pythonzai-sparkshang-de-ji-qi-xue-xi-si-zhi-ke-shi-hua-gong-ju-de-jie-shao-yu-pysparkde-jie-he-shi-yong-shi-li</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习四之可视化工具的介绍与pyspark的结合使用示例">Python在Spark上的机器学习(四)之可视化工具的介绍与PySpark的结合使用示例</h1></p>
-
-<h2 id="前言">前言</h2>
-
-
-
-
-<p>在Python和Java的生态圈中，有许多可用的可视化库，但是在这篇文章中，我们主要来介绍一下matplotlib 和 Bokeh的使用。</p>
-
-
-
-
-<p>首先，这两个库都是<a href="https://www.anaconda.com/">Anaconda</a>预装的。如果你是通过Anaconda来搭建的Python的科学计算环境的话，直接就可以通过import导入来使用这两个库了。</p>
-
-
-
-
-<p>但是如果还没安装和配置好环境的朋友，可以自行参考<a href="http://matplotlib.org/index.html">Matplotlib</a>和<a href="https://bokeh.pydata.org/en/latest/">Bokeh</a>的官方站点的教程来下载配置环境。</p>
-
-
-
-
-<blockquote>
-  <p>注：这一类对各系统平台支持良好的库，一般安装流程也就无非两条pip命令，如： <br>
-  python -mpip install -U pip <br>
-  python -mpip install -U matplotlib <br>
-  pip install bokeh <br>
-  或 <br>
-  conda install bokeh <br>
-  所以各位读者也没有必要担心配置麻烦。</p>
-</blockquote>
-
-
-
-
-<h2 id="有关matplotlib和bokeh的介绍">有关matplotlib和bokeh的介绍</h2>
-
-
-
-
-<h3 id="matplotlib">Matplotlib</h3>
-
-
-
-
-<p><strong>Matplotlib</strong>是一个Python 2D绘图库，可以跨平台生成各种通用格式和适用于交互式环境的高质量图表。 Matplotlib可直接用于Python脚本，IPython shell，Jupyter以及Web应用程序服务器之中。 <br>
-<strong>Matplotlib</strong>简化了许多繁琐的绘图操作，使得原本简单的图表在绘制上更加简单，而复杂的图表绘制也更容易上手。只需几行代码即可生成许多好看的图表。如，直方图、功率谱、条形图、错误图，散点图等。</p>
-
-
-
-
-<p>官方绘图预览：</p>
-
-
-
-
-<p><img src="http://matplotlib.org/_images/sphx_glr_simple_plot_0011.png" alt="enter image description here" title=""> <br>
-<img src="http://matplotlib.org/_images/sphx_glr_histogram_features_0011.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p><img src="http://matplotlib.org/_images/sphx_glr_barchart_demo_0011.png" alt="enter image description here" title=""> <br>
-<img src="http://matplotlib.org/_images/sphx_glr_pie_features_0011.png" alt="enter image description here" title=""></p>
-
-
-
-
-<h3 id="bokeh">Bokeh</h3>
-
-
-
-
-<p><strong>Bokeh</strong> (Bokeh.js) 是一个 Python 交互式可视化库，支持现代化 Web 浏览器，提供非常完美的展示功能。Bokeh 的目标是使用 D3.js 样式提供优雅，简洁新颖的图形化风格，同时提供大型数据集的高性能交互功能。Boken 可以快速的创建交互式的绘图，仪表盘和数据应用。</p>
-
-
-
-
-<p>鉴于Bokeh强调的更多是一种交互式的绘图体验，在这里我就不貼静态图了，不过下面我会附上一些官方demo的例子，让大家感受下Bokeh的强大之处。</p>
-
-
-
-
-<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/stocks.html">趋势走向图</a></p>
-
-
-
-
-<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/iris.html">散点图</a></p>
-
-
-
-
-<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/texas.html">地域分布图</a></p>
-
-
-
-
-<p><a href="https://bokeh.pydata.org/en/latest/docs/gallery/boxplot.html">箱型图</a></p>
-
-
-
-
-<h2 id="结合pyspark进行可视化分析">结合PySpark进行可视化分析</h2>
-
-
-
-
-<h3 id="模块加载">模块加载</h3>
-
-
-
-
-<p>以下实验均在Jupyter环境下进行 <br>
-<strong>matplotlib</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">%matplotlib inline
-<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
-plt.style.use(<span class="hljs-string">'ggplot'</span>)</code></pre>
-
-
-
-
-<p><strong>bokeh</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs "><span class="hljs-keyword">import</span> bokeh.charts <span class="hljs-keyword">as</span> chrt
-<span class="hljs-keyword">from</span> bokeh.io <span class="hljs-keyword">import</span> output_notebook
-output_notebook()</code></pre>
-
-
-
-
-<h3 id="频率分布分析">频率分布分析</h3>
-
-
-
-
-<p>频率分布图是最为简单有效的观察数据的分布情况的方法之一。</p>
-
-
-
-
-<h4 id="读取数据">读取数据</h4>
-
-
-
-
-<p>本文用到的数据文件依旧是上文所提及的信用欺诈检测的数据集，具体下载地址：<a href="http://tomdrabas.com/data/LearningPySpark/ccFraud.csv.gz">这里</a></p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
-</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;/home/ef/Desktop/learningPySpark-master/ccFraud.csv&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">fraud</span> \
-</span><span class='line'><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span> <span class="o">!=</span> <span class="n">header</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)])</span>
-</span><span class='line'><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="o">*</span><span class="p">[</span>
-</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-</span><span class='line'><span class="n">fraud_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">fraud</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-</span><span class='line'><span class="n">hists</span> <span class="o">=</span> <span class="n">fraud_df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;balance&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rdd</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span>
-</span><span class='line'><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出： <br>
-  root <br>
-   |– custID: integer (nullable = true) <br>
-   |– gender: integer (nullable = true) <br>
-   |– state: integer (nullable = true) <br>
-   |– cardholder: integer (nullable = true) <br>
-   |– balance: integer (nullable = true) <br>
-   |– numTrans: integer (nullable = true) <br>
-   |– numIntlTrans: integer (nullable = true) <br>
-   |– creditLine: integer (nullable = true) <br>
-   |– fraudRisk: integer (nullable = true)</p>
-</blockquote>
-
-
-
-
-<h4 id="绘制频率分布直方图">绘制频率分布直方图</h4>
-
-
-
-
-<p><strong>matplotlib</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">data = {
-<span class="hljs-string">'bins'</span>: hists[<span class="hljs-number">0</span>][:-<span class="hljs-number">1</span>],
-<span class="hljs-string">'freq'</span>: hists[<span class="hljs-number">1</span>]
-}
-plt.bar(data[<span class="hljs-string">'bins'</span>], data[<span class="hljs-string">'freq'</span>], width=<span class="hljs-number">2000</span>)
-plt.title(<span class="hljs-string">'Histogram of \'balance\''</span>)
-plt.show()</code></pre>
-
-
-
-
-<blockquote>
-  <p>输出: <br>
-  <img src="https://ooo.0o0.ooo/2017/10/27/59f2fbe5dc612.png" alt="mat_hist.png" title=""></p>
-</blockquote>
-
-
-
-
-<p><strong>bokeh</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">data = {
-<span class="hljs-string">'bins'</span>: hists[<span class="hljs-number">0</span>][:-<span class="hljs-number">1</span>],
-<span class="hljs-string">'freq'</span>: hists[<span class="hljs-number">1</span>]
-}
-b_hist = chrt.Bar(
-data,
-values=<span class="hljs-string">'freq'</span>, label=<span class="hljs-string">'bins'</span>,
-title=<span class="hljs-string">'Histogram of \'balance\''</span>)
-chrt.show(b_hist)</code></pre>
-
-
-
-
-<blockquote>
-  <p>输出: <br>
-  <img src="https://ooo.0o0.ooo/2017/10/27/59f2fbe5e1f34.png" alt="bokeh_hist.png" title=""></p>
-</blockquote>
 
 ]]></content>
   </entry>

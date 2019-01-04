@@ -9,8 +9,25 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Linux进程内存管理 1.程序的结构与进程结构 $ size test text data bss dec hex filename 181617 432 18844 200893 310bd ./book 一个可执行程序包括三个部分 代码段:存放指令,操作以及只读的常量
-数据段: &hellip;">
+  <meta name="description" content="gdb的简单使用 1.单步执行和跟踪函数调用 测试源码 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19 #include &lt;stdio.h&gt; int add_range(int low,int high) { int i,sum; for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +82,438 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">Gdb的简单使用</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-08-11T14:26:20+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>gdb的简单使用</h2>
+
+<h3>1.单步执行和跟踪函数调用</h3>
+
+<p><strong>测试源码</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">add_range</span><span class="p">(</span><span class="kt">int</span> <span class="n">low</span><span class="p">,</span><span class="kt">int</span> <span class="n">high</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">sum</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">low</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">high</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;sum = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">sum</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">result</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;result[0]=%d </span><span class="se">\n</span><span class="s"> result[1]=%d </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在编译并运行以上代码后,我们会发现最后的输出结果并非如我们预料一样.
+无论是result[0]或result[1]基本都是错误的结果,然而代码中的逻辑却没有任何的问题.
+在这里心细的朋友可能已经发现问题的所在了.
+但既然是练习gdb的使用,那么我们就加上 -g 选项,再重新编译一次代码以便生成的可执行文件可以用gdb进行调试.</p>
+
+<blockquote><p>$ gcc -g main.c -o main
+$ gdb main</p></blockquote>
+
+<p><strong>注:-g选项的作用是在可执行文件中加入源代码的信息,比如可执行文件中第几条机器指令对应源代码的第几行,但并不是把整个源文件嵌入到可执行文件中,所以在调试时必须保证gdb能找到源文件</strong></p>
+
+<p><strong>除此之外</strong>,gdb提供一个类似shell的命令行环境,上面的 (gdb) 就是提示符,在这个提示符下输
+入help可以查看命令的类别.</p>
+
+<p><strong>help命令</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">help</span>
+</span><span class='line'><span class="n">List</span> <span class="n">of</span> <span class="n">classes</span> <span class="n">of</span> <span class="nl">commands</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">aliases</span> <span class="o">--</span> <span class="n">Aliases</span> <span class="n">of</span> <span class="n">other</span> <span class="n">commands</span>
+</span><span class='line'><span class="n">breakpoints</span> <span class="o">--</span> <span class="n">Making</span> <span class="n">program</span> <span class="n">stop</span> <span class="n">at</span> <span class="n">certain</span> <span class="n">points</span>
+</span><span class='line'><span class="n">data</span> <span class="o">--</span> <span class="n">Examining</span> <span class="n">data</span>
+</span><span class='line'><span class="n">files</span> <span class="o">--</span> <span class="n">Specifying</span> <span class="n">and</span> <span class="n">examining</span> <span class="n">files</span>
+</span><span class='line'><span class="n">internals</span> <span class="o">--</span> <span class="n">Maintenance</span> <span class="n">commands</span>
+</span><span class='line'><span class="n">obscure</span> <span class="o">--</span> <span class="n">Obscure</span> <span class="n">features</span>
+</span><span class='line'><span class="n">running</span> <span class="o">--</span> <span class="n">Running</span> <span class="n">the</span> <span class="n">program</span>
+</span><span class='line'><span class="n">stack</span> <span class="o">--</span> <span class="n">Examining</span> <span class="n">the</span> <span class="n">stack</span>
+</span><span class='line'><span class="n">status</span> <span class="o">--</span> <span class="n">Status</span> <span class="n">inquiries</span>
+</span><span class='line'><span class="n">support</span> <span class="o">--</span> <span class="n">Support</span> <span class="n">facilities</span>
+</span><span class='line'><span class="n">tracepoints</span> <span class="o">--</span> <span class="n">Tracing</span> <span class="n">of</span> <span class="n">program</span> <span class="n">execution</span> <span class="n">without</span> <span class="n">stopping</span> <span class="n">the</span> <span class="n">program</span>
+</span><span class='line'><span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="o">--</span> <span class="n">User</span><span class="o">-</span><span class="n">defined</span> <span class="n">commands</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help&quot;</span> <span class="n">followed</span> <span class="n">by</span> <span class="n">a</span> <span class="n">class</span> <span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="n">list</span> <span class="n">of</span> <span class="n">commands</span> <span class="n">in</span> <span class="n">that</span> <span class="n">class</span><span class="p">.</span>
+</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help all&quot;</span> <span class="k">for</span> <span class="n">the</span> <span class="n">list</span> <span class="n">of</span> <span class="n">all</span> <span class="n">commands</span><span class="p">.</span>
+</span><span class='line'><span class="n">Type</span> <span class="s">&quot;help&quot;</span> <span class="n">followed</span> <span class="n">by</span> <span class="n">command</span> <span class="n">name</span> <span class="k">for</span> <span class="n">full</span> <span class="n">documentation</span><span class="p">.</span>
+</span><span class='line'><span class="n">Type</span> <span class="s">&quot;apropos word&quot;</span> <span class="n">to</span> <span class="n">search</span> <span class="k">for</span> <span class="n">commands</span> <span class="n">related</span> <span class="n">to</span> <span class="s">&quot;word&quot;</span><span class="p">.</span>
+</span><span class='line'><span class="n">Command</span> <span class="n">name</span> <span class="n">abbreviations</span> <span class="n">are</span> <span class="n">allowed</span> <span class="k">if</span> <span class="n">unambiguous</span><span class="p">.</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>list命令</strong>
+list命令用于列出代码或指定函数,列出的代码行的起始位置为上一次列出的代码的结尾,
+第一次使用时,默认从第一行开始.每次默认列出十行代码.list命令也可简写成l.
+要是要列出指定函数的代码,直接在list后面加函数名即可.</p>
+
+<blockquote><p>eg: list add_range</p></blockquote>
+
+<p>且可以通过 show listsize  和 show listsize NUM(NUM为整数)来查询和修改每次最大列出代码行数.</p>
+
+<p><strong>在什么都不输入的情况下敲击回车,gdb默认会执行上一条命令</strong></p>
+
+<p><strong>quit命令</strong>
+退出gdb环境</p>
+
+<p><strong>start命令</strong>
+开始执行程序,start命令默认停在main函数变量定义后的第一条语句,并等待下一次命令.</p>
+
+<p><strong>next命令(简写n)</strong>
+单步步过</p>
+
+<p><strong>step命令(简写s)</strong>
+单步步入</p>
+
+<p><strong>backtrace命令(简写bt)</strong>
+查看函数调用栈帧</p>
+
+<p><strong>info命令(简写i)</strong>
+查询相关信息</p>
+
+<blockquote><p>eg:查询add_range函数局部变量的值,i locals</p></blockquote>
+
+<p><strong>print命令(简写p)</strong>
+打印指定变量值</p>
+
+<p><strong>finish命令</strong>
+执行到返回</p>
+
+<p>介绍完以上几个简单的命令之后再返回到测试代码的调试之中.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">start</span>
+</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="mh">0x80484c7</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">13.</span>
+</span><span class='line'><span class="n">Starting</span> <span class="nl">program</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ef</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">gdbtest2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">13</span>
+</span><span class='line'><span class="mi">13</span>    <span class="p">{</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">n</span>
+</span><span class='line'><span class="mi">15</span>        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">add_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">s</span>
+</span><span class='line'><span class="n">add_range</span> <span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest2</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">5</span>
+</span><span class='line'><span class="mi">5</span>     <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">low</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">high</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">bt</span>
+</span><span class='line'><span class="cp">#0  add_range (low=1, high=10) at ./gdbtest2.c:5</span>
+</span><span class='line'><span class="cp">#1  0x080484de in main () at ./gdbtest2.c:15</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">i</span> <span class="n">locals</span>
+</span><span class='line'><span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1208074951</span>
+</span><span class='line'><span class="n">sum</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1208114904</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在以上最后两行输出我们可以明白,程序之所以没有输出我们预期的结果,
+其根本原因就是因为局部变量i和sum没有进行初始化.虽然变量i会在for循环之前进行重新赋值,
+但作为累积变量的sum由于初始值不是0,导致最后的累加结果错误.</p>
+
+<p>找出错误的所在后,我们即可以退出gdb,修改源码再重新进行调试;或者直接通过gdb的命令</p>
+
+<blockquote><p>set var sum = 0</p></blockquote>
+
+<p>修改局部变量sum的值,然后再寻找下一处Bug.</p>
+
+<h3>2.断点的使用</h3>
+
+<p><strong>测试代码</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'> <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">input</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">input</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;input=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译以上代码并运行</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="err">$</span> <span class="n">gcc</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">o</span> <span class="n">main</span>
+</span><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">main</span>
+</span><span class='line'><span class="mi">123</span>
+</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123</span>
+</span><span class='line'><span class="mi">234</span>
+</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123234</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们发现程序第一次运行是对的,但第二次却又出乎了我们意料.
+于是我们也把这个程序也放入gdb中调试.</p>
+
+<p><strong>display命令</strong>
+display命令可以使得每次停下来的时候都显示执行变量的值,亦称变量跟踪.</p>
+
+<p><strong>undisplay命令</strong>
+取消之前设置的变量跟踪</p>
+
+<p><strong>break命令(简称b)</strong>
+在指定位置设定断点,参数可以是指定行也可以是某个函数</p>
+
+<p><strong>i breakpoints</strong>
+输出目前已有断点的信息</p>
+
+<p><strong>enable breakpoints NUM(NUM为断点号)</strong>
+启用指定断点(NUM为空时,默认为全部断点)</p>
+
+<p><strong>disable breakpoints NUM(NUM为断点号)</strong>
+禁用指定断点(NUM为空时,默认为全部断点)</p>
+
+<p><strong>delete breakpoints NUM(NUM为断点号)</strong>
+删除指定断点(NUM为空时,默认为全部断点)</p>
+
+<p><strong>continue命令(简称c)</strong>
+继续执行,注意,continue命令是连续运行而非单步执行.</p>
+
+<p>介绍完命令后我们又再次回到调试中,首先我们执行完start命令后,使用</p>
+
+<blockquote><p>b 9</p></blockquote>
+
+<p>在sum的赋值处下一个断点,并用命令</p>
+
+<blockquote><p>display sum</p></blockquote>
+
+<p>来时刻监视变量sum的变化<br/>
+这时我们发现在我们输入完"123"后,再次想输入"456"时,gdb显示
+&ldquo;sum = 123&rdquo; ,这样我们便发现错误所在,即我们并没有在新的循环中清空sum的先值</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">start</span>
+</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span> <span class="n">at</span> <span class="mh">0x804848c</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">3.</span>
+</span><span class='line'><span class="n">Starting</span> <span class="nl">program</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ef</span><span class="o">/</span><span class="n">c</span><span class="o">/</span><span class="n">gdbtest3</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Temporary</span> <span class="n">breakpoint</span> <span class="mi">1</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">3</span>
+</span><span class='line'><span class="mi">3</span> <span class="p">{</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">list</span>
+</span><span class='line'><span class="mi">1</span> <span class="err">#</span><span class="n">include</span> <span class="o">&lt;</span><span class="n">stdio</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">2</span> <span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="mi">3</span> <span class="p">{</span>
+</span><span class='line'><span class="mi">4</span> <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="mi">5</span> <span class="kt">char</span> <span class="n">input</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+</span><span class='line'><span class="mi">6</span> <span class="nf">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="mi">7</span> <span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">input</span><span class="p">);</span>
+</span><span class='line'><span class="mi">8</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="mi">10</span>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;input=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">b</span> <span class="mi">9</span>
+</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span> <span class="n">at</span> <span class="mh">0x80484c2</span><span class="o">:</span> <span class="n">file</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">line</span> <span class="mf">9.</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">display</span> <span class="n">sum</span>
+</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">134514011</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
+</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
+</span><span class='line'><span class="mi">123</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
+</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
+</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
+</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
+</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
+</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">12</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span class="n">c</span>
+</span><span class='line'><span class="n">Continuing</span><span class="p">.</span>
+</span><span class='line'><span class="n">input</span><span class="o">=</span><span class="mi">123</span>
+</span><span class='line'><span class="mi">456</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Breakpoint</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="p">()</span> <span class="n">at</span> <span class="p">.</span><span class="o">/</span><span class="n">gdbtest3</span><span class="p">.</span><span class="nl">c</span><span class="p">:</span><span class="mi">9</span>
+</span><span class='line'><span class="mi">9</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="n">input</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="mi">1</span><span class="o">:</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">123</span>
+</span><span class='line'><span class="p">(</span><span class="n">gdb</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">gdb的简单使用</a>
+      <time datetime="2016-08-11T14:26:20+08:00" pubdate><span class='month'>Aug</span> <span class='day'>11</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -5440,406 +5889,6 @@ or</p>
       </footer>
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/">百度前端技术学院-任务1</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-07-12T18:35:22+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>百度前端技术学院-任务一</h1>
-
-<p><strong><a href="http://ife.baidu.com/task/detail?taskId=1">任务一：零基础HTML编码</a></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Language&quot;</span> <span class="na">content=</span><span class="s">&quot;zh-ch&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;</span>任务一<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/meta&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h1&gt;</span>网站一级标题<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接一<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接二<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接三<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                  <span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>链接四<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>文章作者 发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                 <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="nt">&gt;</span>这里有个链接链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="na">target=</span><span class="s">&quot;_blank&quot;</span><span class="nt">&gt;</span>这里有个链接新窗口链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>另外一篇文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>文章作者 文章发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;p&gt;</span>这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;br/&gt;</span>换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，换行了<span class="nt">&lt;br/&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;a</span> <span class="na">href =</span><span class="err"> </span><span class="s">&quot;http://ife.baidu.com&quot;</span><span class="nt">&gt;</span>这里有个链接链接到http://ife.baidu.com<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>                  这是一个很长很长的段落，<span class="nt">&lt;strong&gt;&lt;b&gt;</span>这里有个粗体字<span class="nt">&lt;/b&gt;&lt;/strong&gt;</span>这是一个很长很长的段落，
-</span><span class='line'>                  这是一个很长很长的段落，这是一个很长很长的段落。<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表1<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表2<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;li&gt;</span>项目列表3<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                  <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>图片<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span> 好看的图片<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;fish.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>最后一篇文章一级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;h2&gt;</span>文章二级标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;p&gt;</span>文章作者 文章发布时间<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;ol&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名1<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名2<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;li&gt;</span>排名3<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>                      <span class="nt">&lt;/ol&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;p&gt;</span>下面是一个表格,给表格加了一个border=&quot;1&quot;,好让你看出来是一个表格<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span> <span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表头<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>表内容单元格<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://edmondfrank.github.io&quot;</span><span class="nt">&gt;</span>操作<span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td&gt;</span>总计<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;td</span> <span class="na">colspan=</span><span class="s">&quot;2&quot;</span><span class="nt">&gt;</span>1000<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h2&gt;</span>这以后是一个侧栏，这是侧栏标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;h2&gt;</span>侧栏注册窗口标题<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;form&gt;</span>
-</span><span class='line'>            请输入邮箱地址:
-</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>邮箱地址请按要求格式输入<span class="nt">&lt;/div&gt;&lt;br&gt;</span>
-</span><span class='line'>            请输入密码:
-</span><span class='line'>           <span class="c">&lt;!-- &lt;input type=&quot;text&quot; name=&quot;password&quot;&gt; --&gt;</span>
-</span><span class='line'>             <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>            请再次输入密码:
-</span><span class='line'>           <span class="c">&lt;!-- &lt;input type=&quot;text&quot; name=&quot;password&quot;&gt;&lt;br&gt; --&gt;</span>
-</span><span class='line'>             <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">value=</span><span class="s">&quot;这是一个文本输入框&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;;this.style.color=&#39;#000&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue;this.style.color=&#39;#999&#39;}&quot;</span> <span class="na">style=</span><span class="s">&quot;color:#999&quot;</span><span class="nt">/&gt;&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>密码请为6-16位英文数字<span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;br/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>              性别:
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;radio&quot;</span> <span class="na">name=</span><span class="s">&quot;Male&quot;</span> <span class="na">value=</span><span class="s">&quot;male&quot;</span> <span class="na">checked</span><span class="nt">&gt;</span> 男
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;radio&quot;</span> <span class="na">name=</span><span class="s">&quot;Female&quot;</span> <span class="na">value=</span><span class="s">&quot;female&quot;</span><span class="nt">&gt;</span> 女
-</span><span class='line'>
-</span><span class='line'>              城市：
-</span><span class='line'>              <span class="nt">&lt;select&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;北京&quot;</span><span class="nt">&gt;</span>北京<span class="nt">&lt;/option&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">&quot;广东&quot;</span><span class="nt">&gt;</span>广东<span class="nt">&lt;/option&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;/select&gt;</span>
-</span><span class='line'>
-</span><span class='line'>              爱好：
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;运动&quot;</span> <span class="na">value=</span><span class="s">&quot;运动&quot;</span><span class="nt">&gt;</span>运动
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;艺术&quot;</span> <span class="na">value=</span><span class="s">&quot;艺术&quot;</span><span class="nt">&gt;</span>艺术
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;科学&quot;</span> <span class="na">value=</span><span class="s">&quot;科学&quot;</span><span class="nt">&gt;</span>科学
-</span><span class='line'>
-</span><span class='line'>              个人描述:<span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;个人描述&quot;</span> <span class="na">onclick=</span><span class="s">&quot;if(value==defaultValue){value=&#39;&#39;}&quot;</span> <span class="na">onBlur=</span><span class="s">&quot;if(!value){value=defaultValue}&quot;</span><span class="nt">&gt;</span>这是一个文本框，输入个人信息 <span class="nt">&lt;/textarea&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;确认提交&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/form&gt;</span>
-</span><span class='line'>       <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;footer&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;br/&gt;&lt;div&gt;</span>版权所有@ <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/footer&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/">百度前端技术学院-任务1</a>
-      <time datetime="2016-07-12T18:35:22+08:00" pubdate><span class='month'>Jul</span> <span class='day'>12</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
-      
-      </footer>
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/8">&larr; Older</a>
@@ -5913,7 +5962,7 @@ or</p>
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2018 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>
