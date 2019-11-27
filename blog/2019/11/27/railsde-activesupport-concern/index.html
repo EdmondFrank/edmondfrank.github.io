@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Railsçš„ActiveSupport::Concern - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="1）简单内部类 1
+2
+3
+4
+5
+6
+7
+8
+module ActiveSupport::Concern ..... class MultipleIncludedBlocks &lt; StandardError #:nodoc: def initialize super &quot; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2019/11/27/railsde-activesupport-concern/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Railsçš„ActiveSupport::Concern</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-11-27T18:47:49+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h3>1）简单内部类</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">MultipleIncludedBlocks</span> <span class="o">&lt;</span> <span class="no">StandardError</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>      <span class="k">super</span> <span class="s2">&quot;Cannot define multiple &#39;included&#39; blocks for a Concern&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ActiveSupport::Concern简单定义了一个内部的错误类型，
+这个自定义错误类型主要用于提醒我们在扩展了ActiveSupport::Concern的模块中</p>
+
+<p>只能够显式调用模块方法ActiveSupport::Concern::included一次，</p>
+
+<p>第二次调用的话就会抛出这个自定义的错误类型。</p>
+
+<h3>2）设置“胎记”</h3>
+
+<p>我们前面说过扩展了ActiveSupport::Concern的模块我把它简称为依赖模块，那我们怎么知道一个模块是不是依赖模块呢？答案就在这个类方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">extended</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_set</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">,</span> <span class="o">[]</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>写过Ruby的应该都知道，这个是当一个模块被扩展(extend)之后就会被调用的一个回调方法，</p>
+
+<p>并以扩展它的模块做为参数(base)传入该回调方法。</p>
+
+<p>当一个模块扩展了ActiveSupport::Concern之后就会在模块内部设置一个实例变量</p>
+
+<p>@_dependencies并设置为空数组，我们姑且把它看做是ActiveSupport::Concern的“胎记”，</p>
+
+<p>后面我们会利用这个“胎记”所包含的依赖项，优雅地增强我们的终端模块。</p>
+
+<h3>3) 收集并扩展相关方法</h3>
+
+<p>在分析后面的方法之前我们先来简单看一下的原理。</p>
+
+<p>我们都知道在Ruby里面如何定义一个类，并且定义相关的类方法，和实例方法</p>
+
+<p>（我们只需要用class关键字就能够很容易做到这一点），但不知道大家是否了解还有这样一种方式？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">instance_block</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am instance method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_method_in_instance_block</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am class method in instance block&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">class_block</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am class method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">instance_block</span><span class="p">)</span>
+</span><span class='line'><span class="no">ClassModule</span> <span class="o">=</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="no">ClassModule</span><span class="o">.</span><span class="n">module_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_block</span><span class="p">)</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">ClassModule</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_method</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_method_in_instance_block</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">instance_method</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果</p>
+
+<blockquote><p>I am class method
+I am class method in instance block
+I am instance method</p></blockquote>
+
+<p>运行结果有点意思，下面简单来分析一下:
+我们以代码块的方式收集了类方法class_method，class_method_in_instance_block，</p>
+
+<p>以及实例方法instance_method。然后我们创建一个空的类Example，</p>
+
+<p>用Class#class_eval方法来打开类，在类的上下文环境下运行块instance_block，</p>
+
+<p>其实这就相当于我们在类上下文中运行相应的语句，这样就能够得到Example#instance_method,</p>
+
+<p>Example::class_method_in_instance_block这两个方法了。
+另外，我们从已有的知识中了解到，可以通过Class#extend扩展模块的方式来获得类方法。</p>
+
+<p>为此我们可以把class_block这个代码块包裹在模块ClassModule中，</p>
+
+<p>最后我们只需要扩展(extend)这个模块就可以得到相应的类方法Example#class_method了。</p>
+
+<p>ActiveSupport::Concern其实就是这种黑科技，</p>
+
+<p>这里我简单把接下来的过程分为两部分</p>
+
+<p>1）收集方法。</p>
+
+<p>2）对收集的方法进行功能扩展</p>
+
+<ol type="a">
+<li>方法收集
+来看看依赖模块如何收集方法的？</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">included</span><span class="p">(</span><span class="n">base</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>      <span class="k">raise</span> <span class="no">MultipleIncludedBlocks</span> <span class="k">if</span> <span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_included_block</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="vi">@_included_block</span> <span class="o">=</span> <span class="n">block</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先我们来看ActiveSupport::Concern#included，</p>
+
+<p>当ActiveSupport::Concern被扩展之后这个included方法就会变成相应模块的类方法了。</p>
+
+<p>咦，这不是一个模块被包含之后才会被调用的回调函数吗？没错，为了不影响它原来的功能rails团队采用了个巧妙的做法，</p>
+
+<p>当我们在扩展了ActiveSupport::Concern的模块的上下文中显式调用included方法，</p>
+
+<p>并且不带任何参数而只传入代码块的情况下，便会在模块内部设置一个@_included_block实例变量来接收这个代码块，</p>
+
+<p>换句话说这个实例变量就是我们将来需要在终端模块上下文运行的代码块。</p>
+
+<p>而在其他情况下则通过super关键字来调用原始版本的included方法。</p>
+
+<p>这样既增强了included方法又不影响原始方法的使用。</p>
+
+<p>另外我们也注意到了，在一个模块里面included方法只能被显式调用一次，</p>
+
+<p>否则会抛出MultipleIncludedBlocks这个自定义的错误，这便是前面定义的内部类的应用场景。</p>
+
+<p>OK，收集完需要在模块上下文运行的代码，我们接下来要收集类方法了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_methods</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_methods_module_definition</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">mod</span> <span class="o">=</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span> <span class="p">?</span>
+</span><span class='line'>      <span class="nb">const_get</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>      <span class="nb">const_set</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">,</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mod</span><span class="o">.</span><span class="n">module_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_methods_module_definition</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实这个东西跟前面的included方法原理差不多，也是通过代码块来收集方法，只是有一点点不同，</p>
+
+<p>我们需要把这个收集到的代码块包裹到一个模块中，以后再扩展这个模块。</p>
+
+<p>首先通过const_defined?来判断常量ClassMethods是否存在，</p>
+
+<p>该方法的第二个参数false表示只从当前模块查找该常量，而不会从祖先链中去查找。</p>
+
+<p>如果没有则以ClassMethods为名定义一个模块，</p>
+
+<p>然后以Module#module_eval方法打开该模块并在模块的上下文运行我们所接收的代码块class_methods_module_definition。</p>
+
+<p>这样模块ClassMethods就会包含对应的方法了。</p>
+
+<p>在以后的日子里我们只需要扩展ClassMethods，该模块里面的方法就能成为目标模块的类方法了。</p>
+
+<ol type="a">
+<li>功能增强
+收集完相关功能之后可以来看如何增强我们的终端模块了。在分析代码之前，</li>
+</ol>
+
+
+<p>先来认识一下append_features，我们需要知道的是它会在模块被包含的时候调用，并且它会在included回调方法之前被调用。</p>
+
+<p>接下来我们看看扩展功能的源代码，它应该是ActiveSupport::Concern里面最复杂的方法了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">append_features</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">base</span> <span class="o">&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="vi">@_dependencies</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">dep</span><span class="o">|</span> <span class="n">base</span><span class="o">.</span><span class="n">include</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">const_get</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span> <span class="k">if</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="vi">@_included_block</span><span class="p">)</span> <span class="k">if</span> <span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_included_block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在我们可以看到之前设置“胎记”起作用了，设置了“胎记”的依赖模块也可以被其他的依赖模块所包含，</p>
+
+<p>但他们并不会进行相应的功能扩展，他们会做的只是在“胎记”列表@_dependencies里面添加对应的依赖选项。</p>
+
+<p>然后返回false。这也是我们第一个条件分支的逻辑。
+当我们的依赖模块终于被终端模块（不含“胎记”的模块）包含的时候我们程序便可以走else分支的逻辑。</p>
+
+<p>如果该依赖模块已经在终端模块的祖先链中的话则表明这个模块已经在终端模块增强过了，我们就没必要做重复工作，直接返回false。</p>
+
+<p>否则的话继续执行后面的代码，接下来这个语句有点意思
+@_dependencies.each { |dep| base.include(dep) }</p>
+
+<p>我们会以终端模块的身份去包含当前依赖模块的@_dependencies列表里面的所有模块，</p>
+
+<p>这个时候我们@_dependencies的模块又会进入各自相应的append_features方法，并且都会走else分支，</p>
+
+<p>然后查看各自@_dependencies接下来又会以终端模块的身份再去包含列表里的那些模块，</p>
+
+<p>以此类推。这递归的过程就像是链式反应，这样就能保证不管各个依赖模块之间的依赖关系如何，</p>
+
+<p>我们的终端模块都不用太过在意了，反正最后都会被我们终端模块给包含掉。</p>
+
+<p>接下来调用super关键字来调用原始的append_features方法，保证了原始的功能。</p>
+
+<p>毕竟我们这里做的是对原始功能加强，而并不是要复写掉原始功能。</p>
+
+<p>最后我们在每一个依赖模块内部都会执行大家所熟悉的语句
+base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)
+base.class_eval(&amp;@<em>included_block) if instance_variable_defined?(:@</em>included_block)</p>
+
+<p>最最最后，咱们的终端模块就会具备我们预先定义好的类方法，实例方法。</p>
+
+<p>并且可以直接运行一些预先定义好需要在模块上下文运行的类方法了。</p>
+
+<h3>优雅的Ruby</h3>
+
+<p>源码分析暂时告一段落，为了让我们对ActiveSupport::Concern印象更加深刻一些。最后我用一个简单的例子来展示一下这个库的优雅之处</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_support&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number1</span>
+</span><span class='line'>      <span class="s2">&quot;number1 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active1</span>
+</span><span class='line'>      <span class="s2">&quot;active1 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">A</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number2</span>
+</span><span class='line'>      <span class="s2">&quot;number2 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active2</span>
+</span><span class='line'>      <span class="s2">&quot;active2 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">C</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">B</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number3</span>
+</span><span class='line'>      <span class="s2">&quot;number3 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number2</span>
+</span><span class='line'>      <span class="s2">&quot;number2 in C&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active3</span>
+</span><span class='line'>      <span class="s2">&quot;active3 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active2</span>
+</span><span class='line'>      <span class="s2">&quot;active2 in C&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Example</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">C</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">A</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">B</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">C</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active3</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active2</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active1</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number3</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number2</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后的打印结果是</p>
+
+<blockquote><p>&ldquo;[]&rdquo; &ldquo;[A]&rdquo; &ldquo;[B]&rdquo;
+active3 class method
+active2 in C
+active1 class method
+number3 method
+number2 in C
+number1 method</p></blockquote>
+
+<p>利用ActiveSupport::Concern我们可以用少量的代码，优雅地定义我们的扩展模块，并在需要的时候进行功能增强。</p>
+
+<p>在该例子中我通过打印“胎记”可以知道依赖模块之间的依赖关系，</p>
+
+<p>而且他们之间的依赖关系终端模块根本不会在意，它只需要包含一个依赖模块，</p>
+
+<p>便可以得到有依赖关系其他依赖模块中所定义的功能了。</p>
+
+<p>另外，我在模块C中做了些手脚，复写了它所依赖的模块B中所收集的方法，</p>
+
+<p>是为了展示我们所收集方法在各个有依赖关系模块中的优先级关系。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-11-27T18:47:49+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2019/11/27/railsde-activesupport-concern/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2019/11/27/railsde-activesupport-concern/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/" title="Previous Post: 文本建模算法入门-1">&laquo; 文本建模算法入门-1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

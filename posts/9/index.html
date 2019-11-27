@@ -9,7 +9,10 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="梦修日记-卸载电脑浏览器 2016-6-18 记一次失败的清醒梦经历 中午吃完饭后,休息了近乎一个小时然后准备上床睡觉.不知道是本来疲惫还是天气热的原因,进入浅度睡眠状态的过程十分轻易.在床上,做了几天深呼吸,然后想象全身放松,然后就感觉全身的力气好像被蒸发掉了一样,整个人就迷迷糊糊的, &hellip;">
+  <meta name="description" content="Ubuntu下Web服务器Apache的安装及配置 一.安装 1. 终端下安装Apache: 1
+$ sudo apt-get install apache2 回车后等待安装完成即可. 2. 源码编译安装 1.前往 Apache官方网站 下载并解压源码包. 1
+2
+$ tar zxvf httpd &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +67,146 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-19T16:34:50+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Ubuntu下Web服务器Apache的安装及配置</h1>
+
+<h2>一.安装</h2>
+
+<h3>1. 终端下安装Apache:</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo apt-get install apache2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>回车后等待安装完成即可.</p>
+
+<h3>2. 源码编译安装</h3>
+
+<blockquote><p>1.前往 <a href="http://httpd.apache.org">Apache官方网站</a> 下载并解压源码包.</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ tar zxvf httpd-2.4.20.tar.gz
+</span><span class='line'>$ cd httpd-2.4.20</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>2.配置安装路径</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./configure --prefix=/usr/local/apache</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>3.编译并安装</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ make
+</span><span class='line'>$ make install</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>4.启动服务器</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/local/apache/bin
+</span><span class='line'>$ ./apachectrl start</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>二.配置</h2>
+
+<p>(1)默认页面的路径
+Apache安装完成后,默认的网站根目录是"/var/www/html"</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /var/www/html
+</span><span class='line'>=&gt; index.html //该文件即为apache的默认页面</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)Apache配置文件的路径
+apache2.conf的路径:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>000-default.conf的路径:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2/sites-available</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)修改网站根目录
+有关网页根目录的设置以上讲述的两个配置文件的设置有关</p>
+
+<p>1)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/apache2.conf
+</span><span class='line'>--&gt;找到"&lt;Directory /var/www/&gt;"的位置--&gt;更改"/var/www/"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/sites-available/000-default.conf
+</span><span class='line'>--&gt;找到"DocumentRoot /var/www/html"的位置--&gt;更改"/var/www/html"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>三.重启Apache使设置生效</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重启完毕后,往修改后的新目录添加你的自定义index.html主页文件,再在浏览器的地址栏键入127.0.0.1就可以查看apache服务器的运行效果了.</p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a>
+      <time datetime="2016-06-19T16:34:50+08:00" pubdate><span class='month'>Jun</span> <span class='day'>19</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>

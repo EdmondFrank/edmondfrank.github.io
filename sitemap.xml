@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2019/11/27/railsde-activesupport-concern/</loc>
+<lastmod>2019-11-27T18:47:49+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/</loc>
 <lastmod>2019-01-04T13:43:27+08:00</lastmod>
 </url>
@@ -419,6 +423,9 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/ke-ji-zi-xun/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/blog/categories/ruby/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/posts/2/</loc>
