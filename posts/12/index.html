@@ -1,0 +1,1261 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="JavaScript学习笔记2 一.流程控制 一般选择-if 结构 1
+2
+3
+4
+5
+6
+7
+if(表达式1){
+执行1
+} else if(表达式2) {
+执行2
+} else {
+执行3
+} 多重选择-switch 结构 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/posts/12/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-26T14:52:05+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript学习笔记2</h1>
+
+<h2>一.流程控制</h2>
+
+<h3>一般选择-if 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">3</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多重选择-switch 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">switch</span><span class="p">(</span><span class="err">表达式</span><span class="p">){</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">1</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">2</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="nx">n</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="nx">n</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">default</span><span class="o">:</span>
+</span><span class='line'>  <span class="p">...;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:switch所依赖的参数必须赋初始值,值与每个case值匹配,满足执行改case后的所以语句,并用break语句来阻止运行下一个case.)</strong></p>
+
+<h3>循环语句-for</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">for</span><span class="p">(</span><span class="err">初始化变量</span><span class="p">;</span><span class="err">循环条件</span><span class="p">;</span><span class="err">循环迭代</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>循环语句-while</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">while</span><span class="p">(</span><span class="err">判断条件</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(break语句可用在循环语句中,跳出循环.
+与其类似的有continue语句,用于跳过本次循环,而整个循环体继续执行.)</strong></p>
+
+<h2>二.函数(function)</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">fun</span><span class="p">(){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">fun</span><span class="p">();</span><span class="c1">//调用函数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">fun2</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span><span class="nx">arg2</span><span class="p">){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参数及返回值的函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>函数的this</h3>
+
+<p>函数体中的this表示当前的方法属于谁.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>[object global]9</p></blockquote>
+
+<h3>函数的call</h3>
+
+<p>函数的call方法可以改变函数的this的指向.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>11</p></blockquote>
+
+<p><strong>(输出结果表明:this也是一个数字,所以叫号作为运算符而非连接符处理.)</strong></p>
+
+<h3>函数的apply</h3>
+
+<p>函数的apply方法也可以改变函数的this的指向,但不同的是,apply是将原参数作为一个数组进行传递.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ar</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">22</span><span class="p">];</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">arr</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>2</p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a>
+      <time datetime="2016-06-26T14:52:05+08:00" pubdate><span class='month'>Jun</span> <span class='day'>26</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-24T21:41:53+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript学习笔记1</h1>
+
+<h2>一.第一个程序:Hello World的输出</h2>
+
+<ul>
+<li><p>控制台下的输出:</p>
+
+<blockquote><p>console.log(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+<li><p>消息框模式输出:</p>
+
+<blockquote><p>alert(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+</ul>
+
+
+<p>　<img src="/images/alert.png"></p>
+
+<h2>二.变量</h2>
+
+<ul>
+<li>必须以字母、下划线或美元符号开头，后面可以跟字母、下划线、美元符号和数字.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">_myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">$myvar</span><span class="p">;</span> <span class="c1">//以上均为正确的变量名</span>
+</span><span class='line'><span class="mi">1</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//错误,不能用数字开头</span>
+</span><span class='line'><span class="o">%</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//开头不能用(_,$)以外的特殊字符</span>
+</span><span class='line'><span class="kd">var</span><span class="p">;</span> <span class="c1">//错误,不能使用保留字和关键字</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>变量的声明</h3>
+
+<blockquote><p>var 变量名;</p></blockquote>
+
+<p>eg: var mynum = 1;</p>
+
+<p>同时声明多个变量时使用",&ldquo;分割即可.</p>
+
+<p>eg: var myvar,myvar2,myvar3;</p>
+
+<p><strong>(注:在JavaScript中,未赋值的变量,会自动被使用"undefined"值来初始化)</strong></p>
+
+<h2>三.数据类型</h2>
+
+<p>JavaScript中有5种基本数据类型,分别是:
+1. 字符串
+2. 数字
+3. 布尔值
+4. 数组
+5. 对象</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">mychar1</span> <span class="o">=</span> <span class="s2">&quot;双引号包起来的字符串&quot;</span><span class="p">;</span> <span class="c1">// 这是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mychar2</span> <span class="o">=</span> <span class="s1">&#39;单引号包起来的字符串&#39;</span><span class="p">;</span> <span class="c1">// 这也是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="c1">// 这是数字6</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum3</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e5</span><span class="p">;</span> <span class="c1">// 这是使用科学（指数）计数法来书写的12300000</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum4</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e</span><span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="c1">// 这是0.00123</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mybool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// 这是布尔值</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span> <span class="c1">// 这是数组</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myobject</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">};</span> <span class="c1">// 这是对象</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>四.表达式及运算符</h2>
+
+<p>与Ruby和Python类似.
+<strong>(注:完整语句后面记得加上";&ldquo;)</strong></p>
+
+<h2>五.数组</h2>
+
+<p>数组变量的声明:</p>
+
+<blockquote><p>var arr = [&lsquo;a&rsquo;,&lsquo;b&rsquo;,&lsquo;c&rsquo;];</p></blockquote>
+
+<p><strong>(注:任意一种类型的数据,都可以放进数组里,且数组支持嵌套)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">a</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="kd">function</span><span class="p">(){</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">//对象</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">//数组</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">//函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>length属性:返回数组成员的数量</li>
+</ul>
+
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:length 属性是可写的。如果人为设置一个小于当前成员个数的值，该数组的成员会自动减少到 length 设置的长度.即,随意改写length值会造成数据丢失问题.)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 3</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">;</span>    <span class="c1">// =&gt; [&quot;a&quot;, &quot;b&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//快速清空数组</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>增加新元素</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="nx">myarr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myarr</span><span class="p">);</span> <span class="c1">// =&gt;[1,2,3,4]</span>
+</span><span class='line'><span class="c1">//此处特性与Ruby数组相似.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>六.对象</h2>
+
+<p>JavaScript的对象，是指带有属性和方法的数据类型，一般由若干个“键值对”（key-value）构成</p>
+
+<ul>
+<li>键名
+键名加不加引号都可以，前面的代码也可以写成这样：
+
+<blockquote><p>var o = {
+  &ldquo;p&rdquo;: &ldquo;Hello&rdquo;
+};</p></blockquote></li>
+</ul>
+
+
+<p><strong>(注:键名如果不符合标识名的条件，也不是正整数，则必须加上引号)</strong></p>
+
+<h3>生成方法</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj3</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>对象引用</h3>
+
+<p>如果不同的变量名指向同一个对象，那么它们都是这个对象的引用，也就是说指向同一个内存地址。修改其中一个变量的属性，会影响到其他所有变量(此处与C类似)</p>
+
+<h3>内置对象</h3>
+
+<p>JavaScript常见的内置对象(built-in object)有: String, Number, Boolean,Date Object</p>
+
+<p>有关更多JavaScript内置对象相关属性及方法可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">JavaScript|MDN</a></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a>
+      <time datetime="2016-06-24T21:41:53+08:00" pubdate><span class='month'>Jun</span> <span class='day'>24</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-23T18:04:40+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Go语言var/init/main的执行顺序</h1>
+
+<p>执行顺序(降序):</p>
+
+<ol>
+<li>var</li>
+<li>init</li>
+<li>main</li>
+</ol>
+
+
+<p>大家也可以亲自动手把下面的代码复制到<a href="https://play.golang.org/">Go Playground</a>上执行看看!</p>
+
+<h4>示例代码</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">someVar</span> <span class="p">=</span> <span class="nx">defaultVar</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.init was called&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.main was called&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">defaultVar</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;main.var was initialized&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>输出结果如下:</h4>
+
+<blockquote><p>main.var was initialized</p>
+
+<p>main.init was called</p>
+
+<p>main.main was called</p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a>
+      <time datetime="2016-06-23T18:04:40+08:00" pubdate><span class='month'>Jun</span> <span class='day'>23</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/wen-ti-ji/'>问题集</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/20/httpscanpa-chong-sao-miao-xiao-gong-ju/">Httpscan爬虫扫描小工具</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-20T16:30:07+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>httpscan 爬虫扫描小工具</h1>
+
+<p>httpscan是一个扫描指定网段的Web主机的小工具。<strong>和端口扫描器不一样，httpscan是以爬虫的方式进行Web主机发现，因此相对来说不容易被防火墙拦截。</strong>
+httpscan会返回IP http状态码 Web容器版本 以及网站标题。</p>
+
+<hr />
+
+<p>　<img src="/images/httpscan.png"></p>
+
+<hr />
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Usage：./httpscan IP/CIDR –t threads
+</span><span class='line'>Example:./httpscan.py 10.20.30.0/24 –t 10</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://github.com/zer0h/httpscan">Github地址</a></p>
+
+<h2>代码预览:</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c">#coding:utf-8</span>
+</span><span class='line'><span class="c"># Author: Zeroh</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">Queue</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">optparse</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">IPy</span> <span class="kn">import</span> <span class="n">IP</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">printLock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c">#lock Screen print</span>
+</span><span class='line'><span class="n">TimeOut</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c">#request timeout</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#User-Agent</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;User-Agent&#39;</span> <span class="p">:</span> <span class="s">&#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36&#39;</span><span class="p">,</span><span class="s">&#39;Connection&#39;</span><span class="p">:</span><span class="s">&#39;close&#39;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">scan</span><span class="p">():</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cidr</span><span class="p">,</span><span class="n">threads_num</span><span class="p">):</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">threads_num</span> <span class="o">=</span> <span class="n">threads_num</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cidr</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">cidr</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#build ip queue</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cidr</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">ip</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">with</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">():</span>
+</span><span class='line'>      <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IPs</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span><span class="n">timeout</span><span class="o">=</span><span class="n">TimeOut</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">status</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;&lt;title&gt;(.*)&lt;/title&gt;&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="c">#get the title</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\r</span><span class="s">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]</span>
+</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;None&quot;</span>
+</span><span class='line'>          <span class="n">banner</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>          <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">banner</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Server&#39;</span><span class="p">][:</span><span class="mi">20</span><span class="p">]</span> <span class="c">#get the server banner</span>
+</span><span class='line'>          <span class="k">except</span><span class="p">:</span><span class="k">pass</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+</span><span class='line'>          <span class="k">print</span> <span class="s">&quot;|</span><span class="si">%-16s</span><span class="s">|</span><span class="si">%-6s</span><span class="s">|</span><span class="si">%-20s</span><span class="s">|</span><span class="si">%-30s</span><span class="s">|&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ip</span><span class="p">,</span><span class="n">status</span><span class="p">,</span><span class="n">banner</span><span class="p">,</span><span class="n">title</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c">#Save log</span>
+</span><span class='line'>          <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;./log/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cidr</span><span class="o">.</span><span class="n">strNormal</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;.log&quot;</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">finally</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">printLock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c">#Multi thread</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threads_num</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="s">&quot;Usage: %prog [options] target&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&quot;-t&quot;</span><span class="p">,</span> <span class="s">&quot;--thread&quot;</span><span class="p">,</span> <span class="n">dest</span> <span class="o">=</span> <span class="s">&quot;threads_num&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">default</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="s">&quot;int&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">help</span> <span class="o">=</span> <span class="s">&quot;[optional]number of  theads,default=10&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;|     IP         |Status|       Server       |            Title             |&quot;</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&quot;+----------------+------+--------------------+------------------------------+&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">s</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">cidr</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">threads_num</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">threads_num</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/20/httpscanpa-chong-sao-miao-xiao-gong-ju/">httpscan爬虫扫描小工具</a>
+      <time datetime="2016-06-20T16:30:07+08:00" pubdate><span class='month'>Jun</span> <span class='day'>20</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-19T16:34:50+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Ubuntu下Web服务器Apache的安装及配置</h1>
+
+<h2>一.安装</h2>
+
+<h3>1. 终端下安装Apache:</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo apt-get install apache2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>回车后等待安装完成即可.</p>
+
+<h3>2. 源码编译安装</h3>
+
+<blockquote><p>1.前往 <a href="http://httpd.apache.org">Apache官方网站</a> 下载并解压源码包.</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ tar zxvf httpd-2.4.20.tar.gz
+</span><span class='line'>$ cd httpd-2.4.20</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>2.配置安装路径</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./configure --prefix=/usr/local/apache</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>3.编译并安装</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ make
+</span><span class='line'>$ make install</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>4.启动服务器</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/local/apache/bin
+</span><span class='line'>$ ./apachectrl start</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>二.配置</h2>
+
+<p>(1)默认页面的路径
+Apache安装完成后,默认的网站根目录是"/var/www/html"</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /var/www/html
+</span><span class='line'>=&gt; index.html //该文件即为apache的默认页面</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(2)Apache配置文件的路径
+apache2.conf的路径:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>000-default.conf的路径:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2/sites-available</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)修改网站根目录
+有关网页根目录的设置以上讲述的两个配置文件的设置有关</p>
+
+<p>1)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/apache2.conf
+</span><span class='line'>--&gt;找到"&lt;Directory /var/www/&gt;"的位置--&gt;更改"/var/www/"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/sites-available/000-default.conf
+</span><span class='line'>--&gt;找到"DocumentRoot /var/www/html"的位置--&gt;更改"/var/www/html"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>三.重启Apache使设置生效</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重启完毕后,往修改后的新目录添加你的自定义index.html主页文件,再在浏览器的地址栏键入127.0.0.1就可以查看apache服务器的运行效果了.</p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a>
+      <time datetime="2016-06-19T16:34:50+08:00" pubdate><span class='month'>Jun</span> <span class='day'>19</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-18T14:58:51+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>梦修日记-卸载电脑浏览器</h1>
+
+<blockquote><p>2016-6-18 记一次失败的清醒梦经历</p></blockquote>
+
+<hr />
+
+<p>中午吃完饭后,休息了近乎一个小时然后准备上床睡觉.不知道是本来疲惫还是天气热的原因,进入浅度睡眠状态的过程十分轻易.在床上,做了几天深呼吸,然后想象全身放松,然后就感觉全身的力气好像被蒸发掉了一样,整个人就迷迷糊糊的,处于似睡非睡的边缘状态了.</p>
+
+<p>再持续个几分钟(个人感觉而已,事实上我也不知道过了多久了),脑海开始浮现画面,梦中的我出现在了一个久未逢面好友的家中,我们面对着一台笔记本电脑.虽然不知道是否是我忘记了起因,还是原本剧情的进展就是如此的突然.我大脑突然就接收到了要帮助好友一起卸载面前的笔记本的IE浏览器的讯息,就像是在游戏中突然接受NPC委派的神秘任务一样愕然.</p>
+
+<p>我顺应着梦中的指示一路任由剧情发展,接着,在梦中的好友,接过了电脑的操作权,打开360准备卸载ie浏览器.然后一个以红色色系为主且窗口布局十分传统的UI窗口出现在我面前.(虽然我已经转入linux阵营有一大段时间了,但我记得在我用Windows那段时间里,除了国庆假日之外鲜有使用红色主题,更何况即使在XP依旧更新时代360也抛弃了传统的窗口布局,如此强行的梦中设定,我能信?)</p>
+
+<p>&hellip;&hellip;!!,我信了!剧情继续发展,好友开始卸载ie浏览器.按下一键卸载按钮后,弹出了一个进度提示框.</p>
+
+<p>显示:</p>
+
+<blockquote><p>正在卸载Internet Explorer &hellip;</p>
+
+<p>==>=============== 剩余10.xx MB</p></blockquote>
+
+<p> &hellip; =Σ( ° △ °|||)!</p>
+
+<p>(IE浏览器连个安装包都30M+了,整个应用居然才统计出10来M,我能信?)</p>
+
+<p>&hellip;&hellip;!!! (-_-) 我又信了!</p>
+
+<p>就这样任由的梦境的发展,最后一阵狂风袭来,袭击了虚掩着的门,在砰的一声关门声下,我从梦中惊醒.</p>
+
+<h2>总结:虽然这次的自己在梦中意识清晰,然后在面对着错漏百出的梦境,我却没有去怀疑.难怪别人总说清明梦的关键并非是逻辑强大,意识清晰而在于警觉性.若没有在梦中遇到不合理的现象就疑梦验梦的警觉,其余都是徒然.梦修尚未成功,Edmond仍在努力!!!</h2>
+
+<h4>o(<em>￣▽￣</em>)ゞ</h4>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a>
+      <time datetime="2016-06-18T14:58:51+08:00" pubdate><span class='month'>Jun</span> <span class='day'>18</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-16T22:23:37+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Electron - 用JavaScript来构建跨平台的桌面应用</h1>
+
+<p>　　  Electron 框架的前身是 Atom Shell，可以让你写使用 JavaScript，HTML 和 CSS 构建跨平台的桌面应用程序。它是基于io.js 和 Chromium 开源项目，并用于在 Atom 编辑器中。Electron 是开源的，由 GitHub 维护，有一个活跃的社区。最重要的是，Electron 应用服务构建和运行在 Mac，Windows 和 Linux。</p>
+
+<h2>　　　　</h2>
+
+<p>　　
+　　<img src="/images/Electron.png"></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a>
+      <time datetime="2016-06-16T22:23:37+08:00" pubdate><span class='month'>Jun</span> <span class='day'>16</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
+      
+      </footer>
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/posts/13">&larr; Older</a>
+    
+    <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/11">Newer &rarr;</a>
+    
+  </div><!-- /div.pagination -->
+</div><!-- /div.blog-index -->
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

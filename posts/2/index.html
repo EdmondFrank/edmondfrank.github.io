@@ -9,8 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿使用树莓派进行24小时不间断直播 开始 多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。 方案一 ffmpeg + ffserver搭建流媒体服务器 首先 我们用到的工具有： 硬件方面： 树莓派主板一块
-兼容树莓派的USB摄像头一个 软件方面： ffmpeg， &hellip;">
+  <meta name="description" content="Python Keras + LSTM 进行单变量时间序列预测 首先，时间序列预测问题是一个复杂的预测模型问题，它不像一般的回归预测模型。时间序列预测的输入变量是一组按时间顺序的数字序列。它既具有延续性又具有随机性，所以在建模难度上相对回归预测更大。 但同时， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +64,1382 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/">Python Keras + LSTM 进行单变量时间序列预测</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-22T16:06:57+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Python Keras + LSTM 进行单变量时间序列预测</h1>
+
+<p>首先，时间序列预测问题是一个复杂的预测模型问题，它不像一般的回归预测模型。时间序列预测的输入变量是一组按时间顺序的数字序列。它既具有延续性又具有随机性，所以在建模难度上相对回归预测更大。</p>
+
+<p>但同时，正好有一种强大的神经网络适合处理这种存在依赖关系的序列问题：RNN（Recurrent neural networks）。在过去几年中，应用 RNN 在语音识别，语言建模，翻译，图片描述等问题上已经取得一定成功，并且应用领域还在扩展。</p>
+
+<h2>LSTM网络</h2>
+
+<p><strong>Long Short-Term Memory 网络</strong>亦称<strong>LSTM 网络</strong>，是一种在深度学习中应用的循环神经网络。可以学习长期依赖信息。LSTM 由Hochreiter &amp; Schmidhuber (1997)提出，并在近期被Alex Graves进行了改良和推广。在很多问题，LSTM 都取得相当巨大的成功，并得到了广泛的使用。LSTM 通过刻意的设计来避免长期依赖问题。记住长期的信息在实践中是 LSTM 的默认行为，而非需要付出很大代价才能获得的能力。</p>
+
+<h2>具体应用</h2>
+
+<p>下面以一个洗发水销售的例子，来实现LSTM。
+首先，你可以在这里<a href="https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period#!ds=22r0&amp;display=line">下载</a>到本文需要用的数据集。这是一个描述了3年内洗发水的月度销售数量的数据集。</p>
+
+<h3>数据读取</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span><span class="s">&quot;%Y-%m&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="n">series</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>数据划分</h3>
+
+<p>首先我们把数据集划分成两个部分即：训练集和测试集。
+那么我们该如何划分呢？因为我们今天研究的是时间序列分析，所以在数据集的划分上我们也应该按照时间来划分。我们可以将前两年的数据作为我们的训练集而将最后一年的数据作为测试集。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># split data into train and test</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里我们假设一个滚动预测的情景，又称<strong>前向模型验证（walk-forward model validation）</strong>。其原理很简单，举例来说就像当公司的预测期长达一年时，预测会将已过去的月份排除，而将预测期末的月份补上。好比一月份过去后，我们将其从预测中移除，同时次年的一月份就会作为收尾被添加到预测中以便预测总能保持12个月的完整性。</p>
+
+<p>这样通过使用每月新的洗发水销售量来进行下个月的预测，我们就像模拟了一个更接近于真实世界的场景。</p>
+
+<p>最后，我们将所有在测试集上的预测结果收集起来并计算出他们与真实值的均方根误差（RMSE）以此来作为评估我们模型的基准。</p>
+
+<h3>持续模型预测(Persistence Model Forecast)</h3>
+
+<p>持续性预测的基本思路就是从先前的（t-1）时间序列的结果用于预测当前时间（t）的取值。
+那么根据以上的思路，我们可以通过滚动预测的原理从训练集的历史数据中获取最后一次观察值并使用它来预测当前时间的可能取值。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="c"># split data into train and test</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span><span class='line'><span class="c"># walk-forward validation</span>
+</span><span class='line'><span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)):</span>
+</span><span class='line'>  <span class="c"># make prediction</span>
+</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="c"># observation</span>
+</span><span class='line'>  <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'><span class="c"># report performance</span>
+</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
+</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b1503007a96.png" alt="persistence_rmse.png" /></p>
+
+<p>通过持续模型的预测，我们得到了一个最基础的预测模型以及RMSE（baseline）为了提升我们预测模型的效果，下面让我们进入正题来构建LSTM模型来对数据集进行时间序列预测。</p>
+
+<h3>数据处理</h3>
+
+<p>为了能够构建一个LSTM模型对训练集进行训练，我们首先要对数据进行一下处理：</p>
+
+<ol>
+<li>将时间序列问题转化成监督学习问题</li>
+<li>平稳时间序列</li>
+<li>数据标准化</li>
+</ol>
+
+
+<h4>将时间序列转换成监督学习</h4>
+
+<p>对于一个时间序列问题，我们可以通过使用从最后一个（t-1）时刻的观测值作为输入的特征X和当前时刻（t）的观测值作为输出Y来实现转换。</p>
+
+<p>因为，需要转换的是一组时间序列数据，所以无法组合成像真正的监督学习那样有明确一对一映射的输入输出关系。尤其是在数据集的最开始或最后时，两个位置总有一个位置无法在训练集中找到对应关系。为了解决这样的问题，我们通常的做法是，在最开始时将输入特征置为0，而它对应的输出就是时间序列的第一个元素。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="c"># transform to supervised learning</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">supervised</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>输出结果：
+        0      0
+0     0.0  266.0
+1   266.0  145.9
+2   145.9  183.1
+3   183.1  119.3
+4   119.3  180.3
+5   180.3  168.5
+6   168.5  231.8
+7   231.8  224.5
+8   224.5  192.8
+9   192.8  122.9
+10  122.9  336.5
+11  336.5  185.9
+12  185.9  194.3
+13  194.3  149.5
+14  149.5  210.1
+15  210.1  273.3
+16  273.3  191.4
+17  191.4  287.0
+18  287.0  226.0
+19  226.0  303.6
+20  303.6  289.9
+21  289.9  421.6
+22  421.6  264.5
+23  264.5  342.3
+24  342.3  339.7
+25  339.7  440.4
+26  440.4  315.9
+27  315.9  439.3
+28  439.3  401.3
+29  401.3  437.4
+30  437.4  575.5
+31  575.5  407.6
+32  407.6  682.0
+33  682.0  475.3
+34  475.3  581.3
+35  581.3  646.9</p></blockquote>
+
+<h4>平稳时间序列</h4>
+
+<p>虽然不明显，但我们仍可以看出这个洗发水销售数据集在时间上呈上升趋势。因此我们说这个时间序列数据是非平稳的。那么，不平稳怎么办？</p>
+
+<p>答案就是：差分。（有关差分的介绍点击<a href="https://zh.wikipedia.org/wiki/%E5%B7%AE%E5%88%86">此处</a>）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># create a differenced series</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># invert differenced value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># transform to be stationary</span>
+</span><span class='line'><span class="n">differenced</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">differenced</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># invert transform</span>
+</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">differenced</span><span class="p">)):</span>
+</span><span class='line'>  <span class="n">value</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">differenced</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">inverted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="n">differenced</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b162fb84ac0.png" alt="diff.png" /></p>
+
+<p>经过一阶差分处理后，从图上看还是挺平稳的。</p>
+
+<h4>标准化数据</h4>
+
+<p>在数据输入前进行标准化可以非常有效的提升收敛速度和效果。尤其如果我们的激活函数是sigmoid或者tanh，其梯度最大的区间是0附近，当输入值很大或者很小的时候，sigmoid或者tanh的变化就基本平坦了（sigmoid的导数sig（1-sig）会趋于0），也就是进行梯度下降进行优化的时候，梯度会趋于0，而倒是优化速度很慢。</p>
+
+<p>如果输入不进行归一化，由于我们初始化的时候一般都是0均值的的正太分布或者小范围的均匀分布（Xavier），如果输入中存在着尺度相差很大的特征，例如（10000，0.001）这样的，很容易导致激活函数的输入w1<em>x1+w2</em>x2+b变的很大或者很小，从而引起梯度趋于0。</p>
+
+<p>而LSTM的默认激活函数就是tanh函数，它的输出范围在-1 到 1 之间，同时这是时间序列数据的首选范围。因此我们可以使用MinMaxScaler类将数据集转换到范围[-1,1]。像其他scikit用于转换数据的方法类一样，它需要以行和列的矩阵格式提供的数据。因此，在转换之前，我们必须重塑NumPy数组。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># transform scale</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaled_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span><span class='line'><span class="n">scaled_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">scaled_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span><span class='line'><span class="c"># invert transform</span>
+</span><span class='line'><span class="n">inverted_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">)</span>
+</span><span class='line'><span class="n">inverted_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>输出结果：
+Month
+1901-01-01    266.0
+1901-02-01    145.9
+1901-03-01    183.1
+1901-04-01    119.3
+1901-05-01    180.3
+Name: Sales of shampoo over a three year period, dtype: float64
+0   -0.478585
+1   -0.905456
+2   -0.773236
+3   -1.000000
+4   -0.783188
+dtype: float64
+0    266.0
+1    145.9
+2    183.1
+3    119.3
+4    180.3
+dtype: float64</p></blockquote>
+
+<h3>构建LSTM模型</h3>
+
+<p>长短期记忆网络（LSTM）是一种递归神经网络（RNN）。
+这类网络的的优点是它能学习并记住较长序列，并不依赖预先指定的窗口滞后观察值作为输入。
+在Keras中，这被称为stateful，在定义LSTM网络层时将“stateful”语句设定为“True”。</p>
+
+<p>LSTM层要求输入矩阵格式为：[样本，时间步长，特征]</p>
+
+<p>鉴于训练数据集的形式定义为X输入和y输出，必须先将其转化为样本/时间步长/特征的形式。</p>
+
+<h4>完整代码</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">LSTM</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># date-time parsing function for loading the dataset</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># create a differenced series</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># invert differenced value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># scale train and test data to [-1, 1]</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+</span><span class='line'>  <span class="c"># fit scaler</span>
+</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># transform train</span>
+</span><span class='line'>  <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">train_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># transform test</span>
+</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># inverse scaling for a forecasted value</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">new_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">inverted</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">inverted</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># fit an LSTM network to training data</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">fit_lstm</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">nb_epoch</span><span class="p">,</span> <span class="n">neurons</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">train</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">neurons</span><span class="p">,</span> <span class="n">batch_input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">stateful</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;mean_squared_error&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">&#39;adam&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_epoch</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">reset_states</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">model</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># make a one-step forecast</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">forecast_lstm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># load dataset</span>
+</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform data to be stationary</span>
+</span><span class='line'><span class="n">raw_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'><span class="n">diff_values</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform data to be supervised learning</span>
+</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">diff_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">supervised_values</span> <span class="o">=</span> <span class="n">supervised</span><span class="o">.</span><span class="n">values</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># split data into train and test-sets</span>
+</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">supervised_values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">supervised_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># transform the scale of the data</span>
+</span><span class='line'><span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># fit the model</span>
+</span><span class='line'><span class="n">lstm_model</span> <span class="o">=</span> <span class="n">fit_lstm</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'><span class="c"># forecast the entire training dataset to build up state for forecasting</span>
+</span><span class='line'><span class="n">train_reshaped</span> <span class="o">=</span> <span class="n">train_scaled</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">lstm_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">train_reshaped</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># walk-forward validation on the test data</span>
+</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)):</span>
+</span><span class='line'>  <span class="c"># make one-step forecast</span>
+</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">forecast_lstm</span><span class="p">(</span><span class="n">lstm_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># invert scaling</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">yhat</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># invert differencing</span>
+</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># store forecast</span>
+</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yhat</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">expected</span> <span class="o">=</span> <span class="n">raw_values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;Month=</span><span class="si">%d</span><span class="s">, Predicted=</span><span class="si">%f</span><span class="s">, Expected=</span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">expected</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#report performance</span>
+</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:],</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Test RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
+</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:])</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://i.loli.net/2017/09/07/59b16bc803033.png" alt="lstm_pred.png" /></p>
+
+<p>最后运行结果打印出测试数据集12个月份中每个月份的预期和预测销量。示例还打印了所有预测值得均方根误差。该模型显示洗发水月度销量的均方根误差为111.925，好于持续性模型得出的对应结果136.761。</p>
+
+<p><strong>另外</strong>，神经网络的一个难题是初始条件不同，它们给出结果就不同。一种解决办法是修改Keras使用的随机数种子值以确保结果可复制。另一种办法是使用不同的实验设置控制随机初始条件。</p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/">Python Keras + LSTM 进行单变量时间序列预测</a>
+      <time datetime="2018-02-22T16:06:57+08:00" pubdate><span class='month'>Feb</span> <span class='day'>22</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/18/ru-he-mian-fei-shi-yong-gu-ge-gpuxun-lian-shen-jing-wang-luo/">如何免费使用谷歌GPU训练神经网络</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-18T21:21:44+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="完全云端运行免费使用谷歌gpu训练神经网络">完全云端运行：免费使用谷歌GPU训练神经网络</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>对，你没有听错，高大上的ＧＰＵ，现在不花钱也能用上了。这是Google的一项免费云端机器学习服务，全名Colaboratory。</p>
+
+
+
+
+<p><strong>Colaboratory</strong> 是一个 Google 研究项目，旨在帮助传播机器学习培训和研究成果。它是一个 Jupyter 笔记本环境，不需要进行任何设置就可以使用，并且完全在云端运行。Colaboratory 笔记本存储在 Google 云端硬盘中，并且可以共享，就如同您使用 Google 文档或表格一样。Colaboratory 可免费使用，而且最重要的还提供免费的英伟达Tesla K80 GPU。还有这等好事？事不宜迟，本文马上介绍如何使用 Google CoLaboratory 训练神经网络。</p>
+
+
+
+
+<h2 id="准备工作">准备工作</h2>
+
+
+
+
+<p><strong>在Google Drive上创建文件夹</strong></p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokw4gt73cj20au0cdmxt.jpg" alt="" title=""></p>
+
+
+
+
+<p>Colab用的数据都存储在Google Drive云端硬盘上，所以，我们需要先指定要在Google Drive上用的文件夹。</p>
+
+
+
+
+<p>比如说，可以在Google Drive上创建一个“app”文件夹，或者其他什么名字，也可以选择Colab笔记本默认的文件夹。</p>
+
+
+
+
+<h2 id="新建colab笔记本">新建Colab笔记本</h2>
+
+
+
+
+<p>在刚刚创建的app文件夹里点击右键，选择<strong>“更多”</strong>，然后从菜单里选择<strong>“Colaboratory”</strong>，这样就新建出了一个Colab笔记本。</p>
+
+
+
+
+<p>若是更多选项中没有<strong>“Colaboratory”</strong>选项，可以点击<strong>“关联更多应用”</strong>选项，然后在打开的页面中，搜索<strong>“Colaboratory”</strong>，然后再点<strong>关联应用</strong>，再次点击右键就可以在<strong>“更多”</strong>选项中看到<strong>“Colaboratory”</strong>选项了。</p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokw7hbuf6j20je0hpwfn.jpg" alt="" title=""></p>
+
+
+
+
+<h2 id="设置免费gpu">设置免费GPU</h2>
+
+
+
+
+<p>新建Colaboratory成功后，在笔记本里点Edit&gt;Notebook settings（编辑&gt;笔记本设置），或者Runtime&gt;Change runtime type（运行时&gt;改变运行时类型），然后在Hardware accelerator（硬件加速器）一栏选择GPU。</p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokwett0eij209b091jrn.jpg" alt="" title=""></p>
+
+
+
+
+<p>然后，Google Colab就可以用了。</p>
+
+
+
+
+<h2 id="关联google-drive">关联Google Drive</h2>
+
+
+
+
+<p>为了能让Colaboratory使用到你的Google Drive的文件，我们需要先运行下面这些代码，来安装必要的库、执行授权。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> install <span class="hljs-attribute">-y</span> <span class="hljs-attribute">-qq</span> software<span class="hljs-attribute">-properties</span><span class="hljs-attribute">-common</span> python<span class="hljs-attribute">-software</span><span class="hljs-attribute">-properties</span> module<span class="hljs-attribute">-init</span><span class="hljs-attribute">-tools</span>
+<span class="hljs-subst">!</span>add<span class="hljs-attribute">-apt</span><span class="hljs-attribute">-repository</span> <span class="hljs-attribute">-y</span> ppa:alessandro<span class="hljs-attribute">-strada</span>/ppa <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">&gt;</span> /dev/<span class="hljs-built_in">null</span>
+<span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> update <span class="hljs-attribute">-qq</span> <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">&gt;</span> /dev/<span class="hljs-built_in">null</span>
+<span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-y</span> install <span class="hljs-attribute">-qq</span> google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> fuse
+from google<span class="hljs-built_in">.</span>colab <span class="hljs-keyword">import</span> auth
+auth<span class="hljs-built_in">.</span>authenticate_user()
+from oauth2client<span class="hljs-built_in">.</span>client <span class="hljs-keyword">import</span> GoogleCredentials
+creds <span class="hljs-subst">=</span> GoogleCredentials<span class="hljs-built_in">.</span>get_application_default()
+<span class="hljs-keyword">import</span> getpass
+<span class="hljs-subst">!</span>google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> <span class="hljs-attribute">-headless</span> <span class="hljs-attribute">-id</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_id} <span class="hljs-attribute">-secret</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_secret} <span class="hljs-subst">&lt;</span> /dev/<span class="hljs-built_in">null</span> <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">|</span> grep URL
+vcode <span class="hljs-subst">=</span> getpass<span class="hljs-built_in">.</span>getpass()
+<span class="hljs-subst">!</span>echo {vcode} <span class="hljs-subst">|</span> google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> <span class="hljs-attribute">-headless</span> <span class="hljs-attribute">-id</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_id} <span class="hljs-attribute">-secret</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_secret}
+</code></pre>
+
+
+
+
+<p>运行的时候应该会看到下图所示的结果： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokwi71w3uj20jv07q41s.jpg" alt="" title=""></p>
+
+
+
+
+<p>看见那个链接之后，点击它，复制验证码并粘贴到文本框里。（这里其实是调用了Google Drive的SDK来访问你的Google Drive，而这个验证码就相当于access_key了）</p>
+
+
+
+
+<p>授权完成后，就可以挂载Google Drive了：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso"><span class="hljs-subst">!</span>mkdir <span class="hljs-attribute">-p</span> drive
+<span class="hljs-subst">!</span>google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> drive</code></pre>
+
+
+
+
+<h2 id="测试gpu">测试GPU</h2>
+
+
+
+
+<p>这时，我们在本地电脑上创建一个.py文件来测试一下，挂载是否成功以及GPU是否在工作吧。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"import tensorflow as tf\nprint(tf.test.gpu_device_name())"</span> &gt; test.py</code></pre>
+
+
+
+
+<p>然后将test.py上传到我们开始时创建的app的文件夹里。</p>
+
+
+
+
+<p>然后在Colaboratory笔记本中运行一下代码：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs diff"><span class="hljs-change">!python3 drive/app/test.py</span></code></pre>
+
+
+
+
+<p>不出意外的话，就会输出类似以下的结果：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs applescript">/usr/<span class="hljs-keyword">local</span>/lib/python3<span class="hljs-number">.6</span>/dist-packages/h5py/__init__.py:<span class="hljs-number">36</span>: FutureWarning: Conversion <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">second</span> argument <span class="hljs-keyword">of</span> issubdtype <span class="hljs-keyword">from</span> `float` <span class="hljs-keyword">to</span> `np.floating` <span class="hljs-keyword">is</span> deprecated. In future, <span class="hljs-keyword">it</span> will be treated <span class="hljs-keyword">as</span> `np.float64 == np.dtype(float).type`.
+  <span class="hljs-keyword">from</span> ._conv import register_converters <span class="hljs-keyword">as</span> _register_converters
+<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.172726</span>: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:<span class="hljs-number">898</span>] successful NUMA node <span class="hljs-command">read</span> <span class="hljs-keyword">from</span> SysFS had negative value (-<span class="hljs-number">1</span>), <span class="hljs-keyword">but</span> there must be <span class="hljs-keyword">at</span> least one NUMA node, so <span class="hljs-keyword">returning</span> NUMA node zero
+<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.172988</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">1208</span>] Found device <span class="hljs-number">0</span> <span class="hljs-keyword">with</span> properties: 
+<span class="hljs-property">name</span>: Tesla K80 major: <span class="hljs-number">3</span> minor: <span class="hljs-number">7</span> memoryClockRate(GHz): <span class="hljs-number">0.8235</span>
+pciBusID: <span class="hljs-number">0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">04.0</span>
+totalMemory: <span class="hljs-number">11.17</span>GiB freeMemory: <span class="hljs-number">503.62</span>MiB
+<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.173016</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">1308</span>] Adding visible gpu devices: <span class="hljs-number">0</span>
+<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.457665</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">989</span>] Creating TensorFlow device (/device:GPU:<span class="hljs-number">0</span> <span class="hljs-keyword">with</span> <span class="hljs-number">243</span> MB memory) -&gt; physical GPU (device: <span class="hljs-number">0</span>, <span class="hljs-property">name</span>: Tesla K80, pci bus <span class="hljs-property">id</span>: <span class="hljs-number">0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">04.0</span>, compute capability: <span class="hljs-number">3.7</span>)
+/device:GPU:<span class="hljs-number">0</span></code></pre>
+
+
+
+
+<p>到这里的话，那么恭喜你，你的GPU环境基本可以用了，只要把你的项目文件夹上传到你的app文件夹下，搭建好深度学习的库环境，就可以通过类似上面的操作进行神经网络训练了。</p>
+
+
+
+
+<h2 id="tips">Tips</h2>
+
+
+
+
+<h3 id="如何安装库">如何安装库？</h3>
+
+
+
+
+<p>安装Keras：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>pip install <span class="hljs-attribute">-q</span> keras
+<span class="hljs-keyword">import</span> keras</code></pre>
+
+
+
+
+<p>安装PyTorch：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">!pip install -q http://download<span class="hljs-preprocessor">.pytorch</span><span class="hljs-preprocessor">.org</span>/whl/cu75/torch-<span class="hljs-number">0.2</span><span class="hljs-number">.0</span><span class="hljs-preprocessor">.post</span>3-cp27-cp27mu-manylinux1_x86_64<span class="hljs-preprocessor">.whl</span> torchvision
+import torch</code></pre>
+
+
+
+
+<p>安装OpenCV：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> libsm6 libxext6 <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> <span class="hljs-attribute">-U</span> opencv<span class="hljs-attribute">-python</span>
+<span class="hljs-keyword">import</span> cv2</code></pre>
+
+
+
+
+<p>安装XGBoost：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>pip install <span class="hljs-attribute">-q</span> xgboost<span class="hljs-subst">==</span><span class="hljs-number">0.4</span>a30
+<span class="hljs-keyword">import</span> xgboost</code></pre>
+
+
+
+
+<p>安装GraphViz：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> graphviz <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> pydot
+<span class="hljs-keyword">import</span> pydot</code></pre>
+
+
+
+
+<p>安装7zip Reader：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> libarchive<span class="hljs-attribute">-dev</span> <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> <span class="hljs-attribute">-U</span> libarchive
+<span class="hljs-keyword">import</span> libarchive</code></pre>
+
+
+
+
+<p>安装其他库：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs cmake">用!pip <span class="hljs-keyword">install</span>或者!apt-get <span class="hljs-keyword">install</span>命令。</code></pre>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/18/ru-he-mian-fei-shi-yong-gu-ge-gpuxun-lian-shen-jing-wang-luo/">如何免费使用谷歌GPU训练神经网络</a>
+      <time datetime="2018-02-18T21:21:44+08:00" pubdate><span class='month'>Feb</span> <span class='day'>18</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-15T08:44:11+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="元胞自动机与生命游戏game-of-life">元胞自动机与《生命游戏》（Game of Life）</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>笔者最近读到一篇交通流仿真的论文里，提到了一个挺有意思的模型　－－　<strong>元胞自动机</strong>。</p>
+
+
+
+
+<p>在好奇心的驱使之下查询了不少资料，所以今天就来跟大家来分享一下<strong>“元胞自动机”</strong>这个模型以及它和<strong>“康威《生命游戏》”</strong>的关系。</p>
+
+
+
+
+<p>为了让话题更加有趣，我们先从《生命游戏》开始谈起。</p>
+
+
+
+
+<h2 id="什么是生命游戏">什么是《生命游戏》？</h2>
+
+
+
+
+<p>生命游戏由英国数学家约翰·何顿·康威提出，它其实是一个零玩家游戏，它包括一个二维矩形世界，这个世界中的每个方格居住着一个活着的或死了的细胞。</p>
+
+
+
+
+<p>而整个《生命游戏》是贯彻着一条生命游戏定律的，即：<strong>如果一个生命，其周围的同类生命太少，会因为得不到帮助而死亡；如果太多，则会因为得不到足够的生命资源而死亡。</strong> ——英国数学家约翰·康威</p>
+
+
+
+
+<p>一个细胞在下一个时刻生死取决于相邻八个方格中活着的或死了的细胞的数量。如果相邻方格活着的细胞数量过多，这个细胞会因为资源匮乏而在下一个时刻死去；相反，如果周围活细胞过少，这个细胞会因太孤单而死去。实际中，你可以设定周围活细胞的数目怎样时才适宜该细胞的生存。如果这个数目设定过低，世界中的大部分细胞会因为找不到太多的活的邻居而死去，直到整个世界都没有生命；如果这个数目设定过高，世界中又会被生命充满而没有什么变化。</p>
+
+
+
+
+<p>实际中，这个数目一般选取2或者3；这样整个生命世界才不至于太过荒凉或拥挤，而是一种动态的平衡。</p>
+
+
+
+
+<p>这样的话，游戏的规则就是：当一个方格周围有2或3个活细胞时，方格中的活细胞在下一个时刻继续存活；即使这个时刻方格中没有活细胞，在下一个时刻也会“诞生”活细胞。在这个游戏中，还可以设定一些更加复杂的规则，例如当前方格的状况不仅由父一代决定，而且还考虑祖父一代的情况。你还可以作为这个世界的上帝，随意设定某个方格细胞的死活，以观察对世界的影响。</p>
+
+
+
+
+<p>在游戏的进行中，杂乱无序的细胞会逐渐演化出各种精致、有形的结构；这些结构往往有很好的对称性，而且每一代都在变化形状。一些形状已经锁定，不会逐代变化。</p>
+
+
+
+
+<p>有时，一些已经成形的结构会因为一些无序细胞的“入侵”而被破坏。但是形状和秩序经常能从杂乱中产生出来。</p>
+
+
+
+
+<h2 id="生命游戏和元胞自动机的关系以及什么是元胞自动机">《生命游戏》和元胞自动机的关系以及什么是元胞自动机？</h2>
+
+
+
+
+<p>生命游戏的原理就是基于元胞自动机的，或者说《生命游戏》就是元胞自动机的一个展示。</p>
+
+
+
+
+<p><strong>元胞自动机(Cellular Automata，简称CA</strong>，也有人译为细胞自动机、点格自动机、分子自动机或单元自动机)。是一时间和空间都离散的动力系统。</p>
+
+
+
+
+<p>散布在规则格网 (Lattice Grid)中的每一元胞(Cell)取有限的离散状态，遵循同样的作用规则，依据确定的局部规则作同步更新。大量元胞通过简单的相互作用而构成动态系统的演化。不同于一般的动力学模型，元胞自动机不是由严格定义的物理方程或函数确定，而是用一系列模型构造的规则构成。凡是满足这些规则的模型都可以算作是元胞自动机模型。</p>
+
+
+
+
+<p>因此，元胞自动机是一类模型的总称，或者说是一个方法框架。其特点是时间、空间、状态都离散，每个变量只取有限多个状态，且其状态改变的规则在时间和空间上都是局部的。</p>
+
+
+
+
+<p><strong>初等元胞自动机（ Elementary Cellular Automata， ECA)</strong>的基本要素如下</p>
+
+
+
+
+<ul>
+<li>空间：一维直线上等间距的点。可为某区间上的整数点的集合。</li>
+<li>状态集：S={s1,s2} 即只有两种不同的状态。这两种不同的状态可将其分别编码为0 与 1；若用图形表示，则可对应“黑”与“白” 或者其他两种不同的颜色。</li>
+<li>邻居：取邻居半径r=1，即每个元胞最多只有“左邻右舍”两个邻居。</li>
+<li>演化规则：任意设定， 最多2^8=256</li>
+</ul>
+
+
+
+
+<p><strong>元胞以相邻的8个元胞为邻居。即Moore邻居；一个元胞的生死由其在该时刻本身的生死状态和周围八个邻居的状态。</strong></p>
+
+
+
+
+<p>为了解释它，我们可以把计算机中的宇宙想象成是一堆方格子构成的封闭空间，尺寸为N的空间就有N*N个格子。而每一个格子都可以看成是一个生命体，每个生命都有生和死两种状态，如果该格子生就显示蓝色，死则显示白色。每一个格子旁边都有邻居格子存在，如果我们把3ｘ3的9个格子构成的正方形看成一个基本单位的话，那么这个正方形中心的格子的邻居就是它旁边的8个格子。</p>
+
+
+
+
+<p>每个格子的生死遵循下面的原则：</p>
+
+
+
+
+<ol>
+<li>如果一个细胞周围有3个细胞为生（一个细胞周围共有8个细胞），则该细胞为生（即该细胞若原先为死，则转为生，若原先为生，则保持不变）。</li>
+<li>如果一个细胞周围有2个细胞为生，则该细胞的生死状态保持不变；</li>
+<li>在其它情况下，该细胞为死（即该细胞若原先为生，则转为死，若原先为死，则保持不变） </li>
+</ol>
+
+
+
+
+<p>设定图像中每个像素的初始状态后依据上述的游戏规则演绎生命的变化，由于初始状态和迭代次数不同，将会得到令人叹服的优美图案。</p>
+
+
+
+
+<p>这样就把这些若干个格子（生命体）构成了一个复杂的动态世界。运用简单的3条作用规则构成的群体会涌现出很多意想不到的复杂行为，这就是复杂性科学的研究焦点。</p>
+
+
+
+
+<h2 id="元胞自动机的应用">元胞自动机的应用</h2>
+
+
+
+
+<p>在实际应用过程中，有的元胞自动机模型对其中的某些特征进行了扩展，有的在规则设计中引入随机因素，如：森林火灾模型。 又如，在交通、通讯发达的今天， 研究流行病或计算机病毒的传播问题时， 我们还可以将空间背景换成复杂网络的结点，用网络邻接点作为邻居。</p>
+
+
+
+
+<p>这样的调整显然比仍旧使用二维欧氏空间、采用欧氏距离的模型更加符合实际情况。 在大型场所人群紧急疏散问题模拟研究中，可以考虑年龄、性别等因素，即元胞不是同质的，更加有利于使模拟系统接近真实系统。</p>
+
+
+
+
+<h2 id="生命游戏实现python版">《生命游戏实现》Python版</h2>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">GameOfLife</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells_shape</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    Parameters</span>
+</span><span class='line'><span class="sd">    ----------</span>
+</span><span class='line'><span class="sd">    cells_shape : 一个元组，表示画布的大小。</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">    Examples</span>
+</span><span class='line'><span class="sd">    --------</span>
+</span><span class='line'><span class="sd">    建立一个高20，宽30的画布</span>
+</span><span class='line'><span class="sd">    game = GameOfLife((20, 30))</span>
+</span><span class='line'><span class="sd">    </span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># 矩阵的四周不参与运算</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">cells_shape</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">real_width</span> <span class="o">=</span> <span class="n">cells_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="n">real_height</span> <span class="o">=</span> <span class="n">cells_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">real_width</span><span class="p">,</span> <span class="n">real_height</span><span class="p">))</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;更新一次状态&quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>        <span class="c"># 计算该细胞周围的存活细胞数</span>
+</span><span class='line'>        <span class="n">neighbor</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">))</span>
+</span><span class='line'>        <span class="n">neighbor_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="s">&#39;valid&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">neighbor_num</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="n">neighbor_num</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">buf</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">plot_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;画出当前的状态&quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Iter :{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update_and_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;更新状态并画图</span>
+</span><span class='line'><span class="sd">    Parameters</span>
+</span><span class='line'><span class="sd">    ----------</span>
+</span><span class='line'><span class="sd">    n_iter : 更新的轮数</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Iter :{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">))</span>
+</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span>
+</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">game</span> <span class="o">=</span> <span class="n">GameOfLife</span><span class="p">(</span><span class="n">cells_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+</span><span class='line'>  <span class="n">game</span><span class="o">.</span><span class="n">update_and_plot</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果图　</p>
+
+
+
+
+<blockquote>
+  <p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtk3ezxj209908tdgf.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjw782j208u08y0sw.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjvhopj209109274d.jpg" alt="" title=""></p>
+</blockquote>
+
+
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a>
+      <time datetime="2018-02-15T08:44:11+08:00" pubdate><span class='month'>Feb</span> <span class='day'>15</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shu-xue-jian-mo/'>数学建模</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1763,1679 +3138,6 @@ sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class
       <time datetime="2018-01-18T19:55:04+08:00" pubdate><span class='month'>Jan</span> <span class='day'>18</span> <span class='year'>2018</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-01-13T16:23:37+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>数据恢复利器-Testdisk</h1>
-
-<p>今天我要给大家介绍的主角是<strong>Testdisk</strong></p>
-
-<p>首先，<strong>Testdisk</strong>是一个强大的免费的跨平台的数据恢复工具，根据它的<a href="https://www.cgsecurity.org/wiki/TestDisk">官网</a>上的简介，这款软件主要被设计用于恢复丢失的分区以及修复那些由于人为或者病毒等原因导致分区表错误而无法启动系统的问题。</p>
-
-<p>除此之外，Testdisk更多的特性大家可以参考官方列出的功能列表：</p>
-
-<blockquote><p>TestDisk can
-Fix partition table, recover deleted partition
-Recover FAT32 boot sector from its backup
-Rebuild FAT12/FAT16/FAT32 boot sector
-Fix FAT tables
-Rebuild NTFS boot sector
-Recover NTFS boot sector from its backup
-Fix MFT using MFT mirror
-Locate ext2/ext3/ext4 Backup SuperBlock
-Undelete files from FAT, exFAT, NTFS and ext2 filesystem
-Copy files from deleted FAT, exFAT, NTFS and ext2/ext3/ext4 partitions.</p></blockquote>
-
-<p>对于Testdisk的强大之处，肯定是不容质疑的，对此笔者在之前自己的系统修复过程切身体会过Testdisk的实用与强大之处（在笔者的旧硬盘全盘分区表丢失的情况之下，使用Testdisk成功恢复了大部分的分区，并能成功启动系统。看到系统还能成功开机那一刻别提多激动了！）</p>
-
-<h2>跨平台</h2>
-
-<p>Testdisk不仅强大而且还能够跨平台，跨平台，跨平台使用（重要的事情说三遍）并且还支持多种文件系统。</p>
-
-<p>简单的介绍就到这里了！！</p>
-
-<p>下面我们就用一个实际的例子来演示一下
-Testdisk的具体使用方法：</p>
-
-<p>本例子摘取自：<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">Testdisk 操作指南</a>
-PS：毕竟为了演示而认为制造一些错误也是有一定风险的，所以为了方便和安全起见笔者这里摘抄一份别人的例子啦，反正也是为了向大家安利下这个软件。</p>
-
-<p>前提条件:</p>
-
-<ul>
-<li>TestDisk 需要用管理员权限来运行。</li>
-</ul>
-
-
-<p>使用 TestDisk 的重点:</p>
-
-<ul>
-<li>用 方向键 和 上一页/下一页 按键在TestDisk 中导航。</li>
-<li>然后, 按Enter 键确认你的选择.</li>
-<li>若要返回前一页或者退出TestDisk, 按 q (Quit) 键。</li>
-<li>若要在 TestDisk 下保存修改,按 y (Yes) 或者 Enter 键来确认</li>
-<li>如果确实要把分区信息写入主引导记录（MBR），应该选择 &ldquo;Write&rdquo; 选项并按 Enter 键。</li>
-</ul>
-
-
-<h2>运行Testdisk</h2>
-
-<p>如果 TestDisk 还没有被安装, 可以从这里下载 <a href="https://www.cgsecurity.org/wiki/TestDisk_Download">TestDisk Download</a>。然后解压缩这个归档文件，包括子文件夹。</p>
-
-<h3>　一、新建日志</h3>
-
-<ul>
-<li>选择 Create 来让 Testdisk 新建一个日志文件（ log file） ，里边包含了一些技术信息和消息, 除非你要往一个日志里追加信息 log 或者 你从只读存储器里执行 TestDisk 而且必须在别的地方建立日志 log。</li>
-<li>选择 None 如果你不想让过程中的细节和消息记录到日志文件里 log file (比如当 Testdisk 是在只读位置执行的时候，这很有用).</li>
-<li>按 Enter 键以继续.
-<img src="https://www.cgsecurity.org/mw/images/Create_log.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>　二、选择磁盘</h3>
-
-<p>所有的硬盘都应该能被TestDisk检测到并且辅以正确的大小列出来：</p>
-
-<ul>
-<li>用 上/下 键 来选择丢失分区的硬盘。</li>
-<li>按 Enter 键继续。
-<img src="https://www.cgsecurity.org/mw/images/Select_disk_update.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>三、选择分区表类型</h3>
-
-<p>TestDisk 会显示分区表类型。</p>
-
-<ul>
-<li>选择正确的分区表类型 - 在 TestDisk 自动检测分区表类型之后，一般预设的那个值是正确的。</li>
-<li>按 Enter 键继续。
-<img src="https://www.cgsecurity.org/mw/images/Partition_table_type.png" alt="enter image description here" /></li>
-</ul>
-
-
-<h3>四、查看当前分区状态</h3>
-
-<p>TestDisk 显示这个菜单的时候 (参见 <a href="https://www.cgsecurity.org/wiki/Running_TestDisk">TestDisk Menu Items</a>).
-+ 用预设的“analyze”（分析）选项来检查当前的分区结构并搜索丢失的分区。
-+ 分析过程中按 Enter 键继续。
-第一个分区显示了两次，它指向了一个毁坏的分区或一个无效的分区表入口。
-+ 无效的 NTFS boot 指向了一个错误的 NTFS boot 扇区, 所以这是一个损坏的文件系统。
-在扩展分区中，只有一个逻辑分区(分区标签为2)可用。 有一个逻辑分区不见了。
-+ 选 Quick Search （快速搜索）来继续。
-然后，当前的结构就会被列出来。 接下来就可以在当前的分区结构中检查丢失或错误的分区了。</p>
-
-<p><img src="https://www.cgsecurity.org/mw/images/Analyse.png" alt="enter image description here" /></p>
-
-<h3>五、快速搜索分区</h3>
-
-<p>在 Quick Search（快速搜索）的过程中, TestDisk 找到了两个分区，包括那个不见的逻辑分区（标签为 Partition 3 ）
-<img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
-+ 高亮这个分区并按 p 来列出文件 (若要返回前一页，请按 q ).
-+ 这里所有的目录和文件都正确列出来了。
-+ 按 Enter 键继续。
-+ <img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
-+</p>
-
-<h3>六、保存分区表</h3>
-
-<ul>
-<li><p>当全部分区都可用的时候 并且数据已正确列出,应该选 Write 菜单项保存分区结构. 菜单项 Extd Part gives you the opportunity to decide if the extended partition will use all available disk space or only the required (minimal) space.</p></li>
-<li><p>当一个分区,第一个,仍然找不到, 高亮菜单项 深度搜索 (没有自动进行的时候) ，按 Enter 键继续.</p></li>
-</ul>
-
-
-<p><img src="https://www.cgsecurity.org/mw/images/Search_menu.png" alt="enter image description here" />
-（经过笔者的几次实验和朋友的反馈，其实到了这一步已经能够解决80%以上的问题了！）</p>
-
-<p>所以，有关Testdisk更加深入的功能和其他详细用法大家可以前往这个<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">中文版的官方指南</a>在这里笔者就不赘述了！</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a>
-      <time datetime="2018-01-13T16:23:37+08:00" pubdate><span class='month'>Jan</span> <span class='day'>13</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/21/zui-da-si-ran-gu-ji/">最大似然估计</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-21T01:00:04+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="em算法基石-最大似然估计">EM算法基石-最大似然估计</h1></p>
-
-<h2 id="前言">前言</h2>
-
-
-
-
-<p>在统计计算中，<strong>最大期望（EM）算法是在概率模型中寻找参数最大似然估计或者最大后验估计的算法（机器学习十大算法之一）</strong>，其中概率模型依赖于无法观测的隐藏变量（Latent Variable）。最大期望经常用在机器学习和计算机视觉的数据聚类（Data Clustering）领域。而本文要讲的就是最大期望算法的基石-<strong>最大似然估计</strong>。</p>
-
-
-
-
-<h2 id="最大似然估计maximum-likelihoodml">最大似然估计（Maximum Likelihood，ML）</h2>
-
-
-
-
-<h3 id="概述">概述</h3>
-
-
-
-
-<p><strong>最大似然估计</strong>也称极大似然法，是一种统计方法，它用来求一个样本集的相关概率密度函数的参数。这个方法最早是遗传学家以及统计学家罗纳德·费雪爵士在1912年至1922年间开始使用的。</p>
-
-
-
-
-<p><strong>最大似然法</strong>明确地使用概率模型，其目标是寻找能够以较高概率产生观察数据的系统发生树。最大似然法是一类完全基于统计的系统发生树重建方法的代表。</p>
-
-
-
-
-<h3 id="简单举例">简单举例</h3>
-
-
-
-
-<p>设有外形完全相同的两个箱子,甲箱有99个白球1个黑球,乙箱有1个白球99个黑球.今随机地抽取一箱,然后再从这箱中任取一球,结果发现是白球.问这个箱子是甲箱还是乙箱?</p>
-
-
-
-
-<p>仅仅从取出的球是白球这一点是无法从逻辑上严格加以判定该箱究竟是甲箱还是乙箱的。但是如果现在一定要我们做出选择，那么我们只能这样来考虑：从箱中取出的球是白球这一点来看，甲箱和乙箱哪个看上去更像是真正从中取球的箱子？</p>
-
-
-
-
-<p>我们可以这样来分析，如果该箱是甲箱,则取得白球的概率为0.99；如果该箱是乙箱,则取得白球的概率0.01．因此，用“该箱是甲箱”来解释所取的球是白球这一事件更有说服力一些，从而我们判定甲箱比乙箱更像一些。最后我们做出推断,这球是从甲箱取出的。</p>
-
-
-
-
-<h3 id="离散分布离散有限参数空间">离散分布，离散有限参数空间</h3>
-
-
-
-
-<p>看完上面那个简单的例子，下面再来考虑一个抛硬币的例子。假设这个硬币正面跟反面轻重不同。我们把这个硬币抛80次，并把正面的次数记下来，正面记为H，反面记为T），并把抛出一个正面的概率记为p，抛出一个反面的概率记为1 − p。假设我们抛出了49个正面，31 个反面，即49次H，31次T。假设这个硬币是我们从一个装了三个硬币的盒子里头取出的。这三个硬币抛出正面的概率分别为p = 1 / 3, p = 1 / 2, p = 2 / 3. 这些硬币没有标记，所以我们无法知道哪个是哪个。使用最大似然估计，通过这些试验数据，我们可以计算出哪个硬币的可能性最大。这个可能性函数取以下三个值中的一个：</p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-98">P(H=49,T=31|\rho=\frac{1}{3})=\textrm{C}^{49}_{80}(\frac{1}{3})^{49}(1-\frac{1}{3})^{31} \approx 0.000 \\
-P(H=49,T=31|\rho=\frac{1}{2})=\textrm{C}^{49}_{80}(\frac{1}{2})^{49}(1-\frac{1}{2})^{31} \approx 0.012 \\
-P(H=49,T=31|\rho=\frac{2}{3})=\textrm{C}^{49}_{80}(\frac{2}{3})^{49}(1-\frac{2}{3})^{31} \approx 0.054 </script></p>
-
-
-
-
-<p>我们可以看到当<script type="math/tex" id="MathJax-Element-99">\widehat{p}=2/3</script>时，可能性函数取得最大值。这就是p的最大似然估计。</p>
-
-
-
-
-<h3 id="离散分布连续参数空间升级版">离散分布，连续参数空间（升级版）</h3>
-
-
-
-
-<p>现在假设上面的例子中的盒子中有无数个硬币，对于<script type="math/tex" id="MathJax-Element-439">0\leq p \leq 1</script>中的任何一个p， 都有一个抛出正面概率为p的硬币对应，我们再来求其可能性函数的最大值： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-440">f_D(H=49,T=31|\rho)=\textrm{C}^{49}_{80}\rho^{49}(1-\rho^{31})</script> <br>
-两边同时取p微分 <br>
-<script type="math/tex; mode=display" id="MathJax-Element-441">0=\rho^{48}(1-\rho)[49(1-\rho)-31\rho]</script> <br>
-求得其解分别为： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-442">\rho=0,\rho=1和\rho=\frac{49}{80}</script> <br>
-使可能性最大的解显然是p = 49 / 80（因为p = 0 和p = 1 这两个解会使可能性为零）。因此我们说最大似然估计值为<script type="math/tex" id="MathJax-Element-443">\widehat{p}=49/80</script>.</p>
-
-
-
-
-<p>这个结果很容易一般化。只需要用一个字母t代替49用以表达伯努利试验中的被观察数据（即样本）的成功次数，用另一个字母n代表伯努利试验的次数即可。使用完全同样的方法即可以得到最大似然估计值: <br>
-<script type="math/tex; mode=display" id="MathJax-Element-444">\widehat{p}=\frac{t}{n}</script></p>
-
-
-
-
-<h3 id="最大似然估计的一般求解步骤">最大似然估计的一般求解步骤</h3>
-
-
-
-
-<ol>
-<li>写出似然函数 <br>
-　　<script type="math/tex; mode=display" id="MathJax-Element-519">L\theta=\prod_{i=1}^n p(x_i;\theta)(总体X为离散型时)\\  L\theta=\prod_{i=1}^n f(x_i;\theta)(总体X为连续型时)</script> <br>
-　　</li>
-<li><p>对似然函数两边取对数有 <br>
-<script type="math/tex; mode=display" id="MathJax-Element-520">lnL\theta=\sum_{i=1}^n lnp(x_i;\theta)
-\\ lnL\theta=\sum_{i=1}^n lnf(x_i;\theta)</script></p></li>
-<li><p>对lnL\theta求导数并令之为0： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-521">\frac{dlnL\theta}{d\theta}=0</script></p></li>
-</ol>
-
-
-
-
-<p>此方程为对数似然方程。解对数似然方程所得，即为未知参数 的最大似然估计值。</p>
-
-
-
-
-<h4 id="举个栗子连续分布连续参数空间终级版">举个栗子：连续分布，连续参数空间（终级版）</h4>
-
-
-
-
-<p>设总体 <script type="math/tex" id="MathJax-Element-805">X~N(μ，σ^2),μ，σ^2(正太分布)</script>为未知参数，<script type="math/tex" id="MathJax-Element-806">X1,X2...,Xn</script>是来自总体X的样本，<script type="math/tex" id="MathJax-Element-807">X1,X2...,Xn</script>是对应的样本值，求<script type="math/tex" id="MathJax-Element-808">μ与σ^2</script>的最大似然估计值。</p>
-
-
-
-
-<p><strong>解:</strong> X的概率密度为 <br>
-<script type="math/tex; mode=display" id="MathJax-Element-809">f(x|μ，σ2)=\frac{1}{\sqrt{2\pi\sigma}}e^-\frac{(x_i-\mu)^2}{2\sigma^2} (-\infty<x<+\infty),</script> <br>
-　　 <br>
-<strong>可得似然函数</strong>如下： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-810">L(μ，σ2)=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{(x_i-\mu)^2}{2{\sigma}^2}}</script></p>
-
-
-
-
-<p><strong>取对数</strong>，得</p>
-
-
-
-
-<p>　　<script type="math/tex; mode=display" id="MathJax-Element-811">lnL(μ，σ2)=-\frac{n}{2}ln(2\pi)-\frac{n}{2}ln(\sigma^2)-\frac{1}{2{\delta}^2}\sum_{i=1}^n{(x_i-\mu)}^2</script></p>
-
-
-
-
-<p><strong>令</strong></p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-821">\begin{cases}\frac{\partial}{\partial\mu}ln L(\mu,\sigma)=0,\\\frac{\partial}{\partial\sigma^2}\ln L(\mu,\sigma)=0,\end{cases}</script></p>
-
-
-
-
-<p><strong>可得</strong></p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-828">\begin{cases}\frac{1}{\sigma^2}(\sum_{i=1}^2x_i-n\mu)=0,\\-\frac{n}{2\sigma^2}+\frac{1}{2(\sigma^2)^2}\sum_{i=1}^n(x_i-\mu)^2=0.\end{cases}</script></p>
-
-
-
-
-<p><strong>解得</strong></p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-843">\begin{cases}\widehat{\mu}=\frac{1}{n}\sum_{i=1}^n x_i=\overline{x}, \\\widehat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n(x_i-\overline{x})^2.\end{cases}</script></p>
-
-
-
-
-<p>故<script type="math/tex" id="MathJax-Element-844">μ和δ2</script>的<strong>最大似然估计量</strong>分别为 <br>
-<script type="math/tex; mode=display" id="MathJax-Element-845">\widehat{\mu}=\overline{X}，\widehat{\delta^2}=\frac{1}{n}\sum_{i=1}^n(X_i-\overline{X})^2</script></p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/21/zui-da-si-ran-gu-ji/">最大似然估计</a>
-      <time datetime="2017-12-21T01:00:04+08:00" pubdate><span class='month'>Dec</span> <span class='day'>21</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-14T23:43:13+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="传统机器学习走向神经网络">传统机器学习走向神经网络</h1></p>
-
-<h2 id="神经网络的基本结构">神经网络的基本结构</h2>
-
-
-
-
-<p>首先我们先来看一下最基础的神经网络结构： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgm7cftunj20kf0ckaep.jpg" alt="" title=""></p>
-
-
-
-
-<p>由上图的结构可以看出，这个神经网络具有三层，其中输入层不计。而中间的橙色层则为两层隐藏层，最右的蓝色层为输出层。输入从最左边的输入层进行输入，然后经过两次隐藏层和激活函数之后进行输出，这样我们可以把这个神经网络简单地表示成一下的式子： <br>
-<script type="math/tex; mode=display" id="MathJax-Element-82">Y_{out} = W_iX_{in}+B</script> <br>
-W为X的权重，而B为函数的偏置。 <br>
-其中，偏置值B的存在有利于打破数据对称的局面，使得神经网络可以应用在非对称的数据之上。</p>
-
-
-
-
-<h2 id="神经网络的基本算法">神经网络的基本算法</h2>
-
-
-
-
-<p>前向传导：前向传导的思想比较简单，下面的一张图足以概括它的主要思想。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp39x2ltj20oh0gydi9.jpg" alt="" title=""></p>
-
-
-
-
-<p>反向传播：反向传播的方法其实也比较简单，其主要思想是涉及求偏导，以及链式求导法则。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp6qj2wlj20mj0i441b.jpg" alt="" title=""></p>
-
-
-
-
-<p>梯度下降：梯度下降法是一个最优化算法，通常也称为最速下降法。最速下降法是求解无约束优化问题最简单和最古老的方法之一，虽然现已不具有实用性，但是许多有效算法都是以它为基础进行改进和修正而得到的。最速下降法是用负梯度方向为搜索方向的，最速下降法越接近目标值，步长越小，前进越慢。</p>
-
-
-
-
-<h2 id="朴素贝叶斯和神经网络">朴素贝叶斯和神经网络</h2>
-
-
-
-
-<p>首先朴素贝叶斯算法的原始形式可以表达成以下的形式： <br>
-<script type="math/tex" id="MathJax-Element-1467">G(x)=arg\  max\ p(y)  
-\prod\limits^n_{i=1}p(x_i|y)^{x_i}</script></p>
-
-
-
-
-<p>除此之外，该算法还有一下特点： <br>
-<script type="math/tex" id="MathJax-Element-1468">x_i只有0，1两种取值</script> <br>
-<script type="math/tex" id="MathJax-Element-1469">x_i取1意味着x_i对应了的特征“出现了”</script>  <br>
-<script type="math/tex" id="MathJax-Element-1470">x_i取0意味着x_i对应了的特征“没出现”</script></p>
-
-
-
-
-<p>这样转换成矩阵的形式时，我们可以采用独热编码亦称One-hot Encode。 <br>
-独热编码：</p>
-
-
-
-
-<p>解决了分类标签的问题，那么我们又该怎样用神经网络的线性模型形式来表达贝叶斯公式中概率相乘的情况呢？</p>
-
-
-
-
-<p>没错，就是使用对数函数。根据对数函数的性质<script type="math/tex" id="MathJax-Element-1471">log_2X+log_2Y=log_2XY</script>,我们就可以通过对数变换，将乘法转换成加法的形式，我们可以把上面的朴素贝叶斯公式改写成： <br>
-<script type="math/tex" id="MathJax-Element-1472">G(x)=arg\ max\ log(y)+\sum\limits^n_{i=1}x_ilog\ p(x_i|y)</script></p>
-
-
-
-
-<p>那么我们就可以用退化成线性模型的神经网络来实现朴素贝叶斯模型。</p>
-
-
-
-
-<h3 id="核心实现">核心实现</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 独热化处理部分</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
-</span><span class='line'><span class="n">enc</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
-</span><span class='line'><span class="n">x_train</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-</span><span class='line'><span class="n">x_test</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">## .....篇幅有限,此处省略其余代码</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># NaiveBayes -&gt; NN 权值转换部分</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">NB2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">NB2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;NaiveBayes&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">nb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="s">&quot;Naive Bayes&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">feature_log_prob_</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">class_log_prior_</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2 id="决策树贝叶斯和神经网络">决策树贝叶斯和神经网络</h2>
-
-
-
-
-<p>首先，决策树的原理主要就是通过数据信息熵的变化来选择当前的最优分类点，然后从根开始一步一步扩展成树。而实质上，最后成功构建出来的决策树，其从根节点开始到每个分类叶子节点的路径对应的都是一组高维空间上的超平面组合。决策树的分类也就是用一组超平面去划分数据空间，使得最后剩下一个唯一确定的标识。</p>
-
-
-
-
-<p>知道决策树的本质之后，我们就可以用这样的方法来将决策树算法迁移到神经网络上： <br>
-* 第一个隐藏层表达决策树的中间节点所对应的超平面 <br>
-* 第二个隐藏层表达各个决策的路径 <br>
-* 第二个隐藏层和输出层之间的权值矩阵表达各个叶节点</p>
-
-
-
-
-<h3 id="核心实现-1">核心实现</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">## 因为决策树到神经网络的转换较为复杂,此处仅贴出核心代码</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">DT2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">DT2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;DTree&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;sign&quot;</span><span class="p">,</span> <span class="s">&quot;one_hot&quot;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">tree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">tree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s">&quot;Decision Tree&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">tree_structure</span> <span class="o">=</span> <span class="n">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">n_leafs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">])</span>
-</span><span class='line'>        <span class="n">n_internals</span> <span class="o">=</span> <span class="n">n_leafs</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Internals : {} ; Leafs : {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_internals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">w3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_leafs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_class</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">node_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">node_sign_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="n">node_id_cursor</span> <span class="o">=</span> <span class="n">leaf_id_cursor</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="n">max_route_length</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">feat_dim</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">):</span>
-</span><span class='line'>                    <span class="n">node_sign_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>                    <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node_id_cursor</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span><span class="p">])</span>
-</span><span class='line'>                    <span class="n">w1</span><span class="p">[</span><span class="n">feat_dim</span><span class="p">,</span> <span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>                    <span class="n">b</span><span class="p">[</span><span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">rs</span>
-</span><span class='line'>                    <span class="n">node_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[:</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>                    <span class="n">node_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:</span><span class="n">depth</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">valid_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span class='line'>                <span class="n">local_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:]</span>
-</span><span class='line'>                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_dim</span><span class="p">,</span> <span class="n">node_threshold</span><span class="p">),</span> <span class="n">node_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-</span><span class='line'>                    <span class="nb">zip</span><span class="p">(</span><span class="n">node_list</span><span class="p">,</span> <span class="n">node_sign_list</span><span class="p">)</span>
-</span><span class='line'>                <span class="p">):</span>
-</span><span class='line'>                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span><span class="p">))</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>                        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_dim</span><span class="p">,</span> <span class="n">local_threshold</span><span class="p">),</span> <span class="n">local_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
-</span><span class='line'>                            <span class="n">node_list</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">local_sign_list</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>                        <span class="p">)):</span>
-</span><span class='line'>                            <span class="k">if</span> <span class="n">node_sign</span> <span class="o">==</span> <span class="n">local_sign</span> <span class="ow">and</span> <span class="n">node_dim</span> <span class="o">==</span> <span class="n">local_dim</span><span class="p">:</span>
-</span><span class='line'>                                <span class="k">if</span> <span class="p">(</span>
-</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&lt;</span> <span class="n">local_threshold</span><span class="p">)</span> <span class="ow">or</span>
-</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&gt;</span> <span class="n">local_threshold</span><span class="p">)</span>
-</span><span class='line'>                                <span class="p">):</span>
-</span><span class='line'>                                    <span class="n">local_sign_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>                                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_sign</span><span class="p">))</span>
-</span><span class='line'>                                    <span class="k">break</span>
-</span><span class='line'>                <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span> <span class="ow">in</span> <span class="n">valid_nodes</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">w2</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_sign</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">max_route_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_route_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">))</span>
-</span><span class='line'>                <span class="n">w3</span><span class="p">[</span><span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">leaf_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">w2</span> <span class="o">*=</span> <span class="n">max_route_length</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#................ 篇幅有限,省略其余代码</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># DTree -&gt; NN</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">tree_</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">feature_dim</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">feature</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">feature_dim</span> <span class="o">==</span> <span class="n">_tree</span><span class="o">.</span><span class="n">TREE_UNDEFINED</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">threshold</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
-</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_left</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
-</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_right</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">recurse</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2 id="模型改进">模型改进</h2>
-
-
-
-
-<h3 id="对于朴素贝叶斯">对于朴素贝叶斯</h3>
-
-
-
-
-<p>根据上述的原理和理论，我们可以将朴素贝叶斯和决策树转换成神经网络模型，但是转换之后是否存在意义呢？</p>
-
-
-
-
-<p><strong>首先</strong>本身可以通过简单log对数转换成线性模型的朴素贝叶斯算法来说，其转换的步骤并不复杂，但却能够对朴素贝叶斯的独立假设进行一定的微调修正。</p>
-
-
-
-
-<h3 id="对于决策树">对于决策树</h3>
-
-
-
-
-<p>那么对于决策树来说，神经网络的介入可以对决策树的硬边界作一定的修正和“软化”作用。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a>
-      <time datetime="2017-12-14T23:43:13+08:00" pubdate><span class='month'>Dec</span> <span class='day'>14</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/">深度学习入门简介（二）</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-08T12:52:08+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介二">深度学习入门简介（二）</h1></p>
-
-<h2 id="深度学习的三部曲">深度学习的三部曲</h2>
-
-
-
-
-<h3 id="训练前的准备">训练前的准备</h3>
-
-
-
-
-<p>1）训练数据 <br>
-在训练一个深度学习的模型之前，我们首先需要准备的就是训练数据，若是图片的话其中就包括：图片的内容以及他的标签。 <br>
-<strong>注：学习的分类目标也是包括在训练数据里面的</strong></p>
-
-
-
-
-<p>2）学习目标 <br>
-学习的目标往往就是一个二分类或者多分类问题。而对于最后的效果，我们需要达到当我们输入一个待预测或分类的值时，正确的结果应该对应那个最大概率的输出项。</p>
-
-
-
-
-<p>3）损失函数 <br>
-简单来说，深度学习的分类和回归的本质就是，找到一个使得在所有样本项上取得的误差值最小的函数。而预测值与真实值的误差我们可以通过他们之间的距离计算得出。</p>
-
-
-
-
-<h3 id="最小化误差">最小化误差</h3>
-
-
-
-
-<p>为了达到一个分类或预测准确的效果，我们就要找到一个网络中的对应的超参数<script type="math/tex" id="MathJax-Element-471">\theta</script>使得网络的预测与真实值的误差是最小的。其中一个简单而粗暴的方法就是：枚举法。但是这样做的效率显然非常的低效。为了能够更加优化地找到或者说是接近使得网络取得最小误差的超参数<script type="math/tex" id="MathJax-Element-472">\theta</script>我们可以采用<strong>梯度下降法</strong>，其根据预设的学习率不断更新权重的梯度来接近局部最优解。</p>
-
-
-
-
-<p>其具体过程图如下所示： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm92vbwnztj20ps0em0ub.jpg" alt="" title=""></p>
-
-
-
-
-<p><strong>梯度下降的缺点：</strong> <br>
-由于梯度下降每次计算时都是随机选取一个开始点，再根据学习率来慢慢减小全局误差。这样一来，学习率的设定就十分重要了，过大的学习率容易越过最低点，而过小的学习率又使得误差降低的速度过慢，且过小的学习率也会造成学习过程中陷入局部最低点后无法跳出。但实际上由于精度误差的问题梯度下降永远无法到达真正意义上的全局最低点，即无法取得全局最有解。但在多次的迭代运算后一般可以达到一个可接受的损失误差的局部最优解。</p>
-
-
-
-
-<p>具体图示如下： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm937sjcc5j20q40hcdn6.jpg" alt="" title=""></p>
-
-
-
-
-<h3 id="反向传播">反向传播</h3>
-
-
-
-
-<p><strong>反向传播算法</strong>：这是一种高效的计算权值梯度的方式。</p>
-
-
-
-
-<p>有关算法的详细介绍可以参考：</p>
-
-
-
-
-<p><a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses/MLDS_2015_2/Lecture/DNN%20backprop.ecm.mp4/index.html">http://speech.ee.ntu.edu.tw/~tlkagk/courses/MLDS_2015_2/Lecture/DNN%20backprop.ecm.mp4/index.html</a></p>
-
-
-
-
-<p>通常我们在使用流行框架来构建神经网络时，不用亲自考虑如何去计算和处理梯度值，框架的作者在实现框架时已经做好了相关处理。</p>
-
-
-
-
-<h3 id="神经网络的理论">神经网络的理论</h3>
-
-
-
-
-<p>根据 <a href="http://neuralnetworksanddeeplearning.com/chap4.html">A visual proof that neural nets can compute any function</a> 文章的描述任何的连续函数 f 都可以用一个隐藏层内有足够多的神经元的神经网络来近似。</p>
-
-
-
-
-<p><strong>既然这样，为什么今天流行的是深度网络而不是广度网络呢？</strong></p>
-
-
-
-
-<p>根据 <a href="https://www.microsoft.com/en-us/research/publication/conversational-speech-transcription-using-context-dependent-deep-neural-networks/">Seide, Frank, Gang Li, and Dong Yu. “Conversational Speech Transcription <br>
-Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
-</a> 论文的研究，广度和深度网络对降低全局误差时的参数如下表所示：</p>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm98wlbz8yj20np0g2gmz.jpg" alt="fat-vs-deep" title=""></p>
-
-
-
-
-<p>根据上图的研究结果，我们可以发现使用多层的神经元能够更加容易近似一些函数，这其实就跟我们的电子电路中的逻辑电路类似，即便在电子电路中两层的逻辑门电路就可以实现任意的逻辑操作，但是使用多层的逻辑门电路可以更容易的构建一些逻辑操作。</p>
-
-
-
-
-<h3 id="模块化">模块化</h3>
-
-
-
-
-<p>深度学习中还有一个特点就是<strong>模块化</strong>，在一层层的网络层的堆叠中，每一层都会作为一个模块来学习数据。简单来说，深度学习的过程其实就是一个自动提取特征的过程。对于传统的机器学习而言，数据科学家通过特征工程，提取出数据的特征，再利用特征对数据进行建模以此达到分类预测的效果。深度学习通过各个神经元的加权组合以及反向传播的权值调整，使得整个网络的每一层都渐渐趋向稳定，且其稳定值能够在那个维度上进行部分数据的划分，简单来说就是一个区域性的能够对数据有所区分的特性。那随着各个神经层的共同作用使得深度学习在分类预测应用上效果显著。</p>
-
-
-
-
-<p>最后，深度学习在图像分类的本质大概可以用以下这张图片概括： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm99ftf2vwj20ow0dsn0p.jpg" alt="" title=""></p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/">深度学习入门简介（二）</a>
-      <time datetime="2017-12-08T12:52:08+08:00" pubdate><span class='month'>Dec</span> <span class='day'>08</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
-
-
-
-
-<h2 id="概念">概念</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
-
-
-
-
-<h2 id="原理">原理</h2>
-
-
-
-
-<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
-
-
-
-
-<p>（以上内容摘取自百度百科）</p>
-
-
-
-
-<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
-
-
-
-
-<h2 id="结构">结构</h2>
-
-
-
-
-<h3 id="神经元">神经元</h3>
-
-
-
-
-<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
-
-
-
-
-<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
-
-
-
-
-<p>他的主要执行过程：</p>
-
-
-
-
-<blockquote>
-  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
-</blockquote>
-
-
-
-
-<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
-
-
-
-
-<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
-
-
-
-
-<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
-
-
-
-
-<h3 id="连接方式">连接方式</h3>
-
-
-
-
-<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
-
-
-
-
-<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
-
-
-
-
-<h2 id="全连接前馈网络">全连接前馈网络</h2>
-
-
-
-
-<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
-
-
-
-
-<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
-
-
-
-
-<h2 id="输出层">输出层</h2>
-
-
-
-
-<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
-<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
-
-
-
-
-<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
-
-
-
-
-<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a>
-      <time datetime="2017-12-02T17:17:32+08:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-11-27T12:45:01+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战下">Python在Spark上的机器学习之机器学习实战(下)</h1></p>
-
-<h2 id="mllib-的使用续">MLlib 的使用（续）</h2>
-
-
-
-
-<p>我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。</p>
-
-
-
-
-<h3 id="统计校验">　统计校验</h3>
-
-
-
-
-<p>在通过特征变量的相关系数选择特征时，对于一般的分类变量而言，我们无法计算它们之间的相关系数，但是我们可以通过对它们进行卡方校验来检测它们的分布之间是否存在较大的差异。</p>
-
-
-
-
-<p><strong>卡方检验</strong>：是用途非常广的一种假设检验方法，它在分类资料统计推断中的应用，包括：两个样本率或两个构成比比较的卡方检验；多个样本率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
-
-
-
-
-<p><strong>卡方检验</strong>就是统计样本的实际观测值与理论推断值之间的偏离程度，实际观测值与理论推断值之间的偏离程度就决定卡方值的大小，卡方值越大，越不符合；卡方值越小，偏差越小，越趋于符合，若两个值完全相等时，卡方值就为0，表明理论值完全符合。</p>
-
-
-
-
-<p>而在PySpark中你可以用 <strong>.chiSqTest()</strong> 方法来轻松实现卡方检验。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.linalg</span> <span class="kn">as</span> <span class="nn">ln</span>
-</span><span class='line'><span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">births_transformed</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">)</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">count</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">agg_rdd</span> <span class="o">=</span> <span class="n">agg</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
-</span><span class='line'>              <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">row_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">Matrices</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">agg_rdd</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">chiSqTest</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>我们遍历所有的分类变量并以 <strong>infant_alive_ at_report</strong>进行分类统计。下一步，我们需要将其转化成RDD，所以我们要先利用pyspark.mllib.linalg模将它们转换成一个矩阵。 <br>
-当我们成功将其转换成矩阵的形式之后，我们就可以用<strong>.chiSqTest()</strong>来校验我们的结果。</p>
-
-
-
-
-<p>最后结果显示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/16/5a0daece4fae9.png" alt="chisqtest.png" title=""></p>
-
-
-
-
-<p>从结果我们可以看出，所有分类变量对理论值的预测都是有意义的，因此，我们在构建最后的预测模型的时候都要考虑上这些分类型特征变量。</p>
-
-
-
-
-<h3 id="创建最后的待训练数据集">创建最后的待训练数据集</h3>
-
-
-
-
-<p>经过一轮的数据分析和特征变量筛选之后，最终到了我们最终的建模阶段了。首先我们将筛选出来以DataFrame数据结构模型表达的数据转换成以LabeledPoints形式表示的RDD。</p>
-
-
-
-
-<p>LabeledPoint 是 MLlib 中的一种数据结构，它包含了两个属性值：label（标识），features（特征）一般用作机器学习模型的训练。</p>
-
-
-
-
-<p>其中，label就是我们目标的分类的标识而features就是我们用于分类的特征， <br>
-通常是一个Numpy 数组，列表，psyspark.mllib.linalg.SparseVector,pyspark.mllib,linalg.DenseVector或者是scipy.sparse的形式。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">as</span> <span class="nn">ft</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.regression</span> <span class="kn">as</span> <span class="nn">reg</span>
-</span><span class='line'><span class="n">hashing</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">HashingTF</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
-</span><span class='line'><span class="n">births_hashed</span> <span class="o">=</span> <span class="n">births_transformed</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="nb">list</span><span class="p">(</span><span class="n">hashing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">toArray</span><span class="p">())</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s">&#39;BIRTH_PLACE&#39;</span>
-</span><span class='line'>          <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span>
-</span><span class='line'>      <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_to_keep</span><span class="p">)])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[[</span><span class="n">e</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">e</span>
-</span><span class='line'>          <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">row</span>
-</span><span class='line'>          <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-</span><span class='line'>      <span class="n">ln</span><span class="o">.</span><span class="n">Vectors</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="划分训练集和测试集">划分训练集和测试集</h3>
-
-
-
-
-<p>形如sklearn.model_selection.train_test_split随机划分训练集和测试集的模块一般，在PySpark中RDDs也有一个便利的<strong>.randomSplit(…)</strong>方法用于随机划分训练集和测试集。</p>
-
-
-
-
-<p>在本例中可以这样使用</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">births_train, births_test = births_hashed.randomSplit([<span class="hljs-number">0.6</span>, <span class="hljs-number">0.4</span>])</code></pre>
-
-
-
-
-<p>没错，仅仅需要上面这样一行的代码，我们就可以将我们的待训练数据按照随机60%，40%来划分好我们的训练集和测试集了。</p>
-
-
-
-
-<h3 id="开始建模">开始建模</h3>
-
-
-
-
-<p>在一切准备就绪之后，我们就可以开始通过我们上面的训练数据集来建模了。在这里我们来尝试建立两个模型：一个线性的Logistic回归模型，一个非线性的随机森林模型。然后，在初次建模的时候，我们先采用筛选出来的全部特征来建模，然后我们再通过<strong>ChiSqSelector（…）</strong>方法来归纳出最能代表全部整体的四个主成分。</p>
-
-
-
-
-<h4 id="logistic-回归模型">Logistic 回归模型</h4>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.classification</span> \
-</span><span class='line'><span class="kn">import</span> <span class="n">LogisticRegressionWithLBFGS</span>
-</span><span class='line'><span class="n">LR_Model</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
-</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">births_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">LR_results</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">births_test</span>\
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.evaluation</span> <span class="kn">as</span> <span class="nn">ev</span>
-</span><span class='line'><span class="n">LR_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>从上面的建模过程可以看出，使用PySpark训练一个模型也是非常简单的。我们只需要调用<strong>.train(…)</strong>方法，并传入之前处理好的LabeledPoints数据即可。不过需要注意的一点是我们要提前指定一个较小训练的迭代次数以免训练时间过长。</p>
-
-
-
-
-<p>同时，在上面的代码中，我们在训练完一个模型之后使用MLlib中为我们提供的评估分类和回归准确度的<strong>.BinaryClassificationMetrics（…）</strong>方法来分析我们最后预测的结果。</p>
-
-
-
-
-<p>最后，结果图示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/17/5a0dc13a5ea1a.png" alt="logistic_roc.png" title=""></p>
-
-
-
-
-<p>通过PR，ROC的结果，我们可以看出，这个模型还是可接受的。</p>
-
-
-
-
-<h3 id="选取出最具代表性的分类特征">选取出最具代表性的分类特征</h3>
-
-
-
-
-<p>通常来说，一个采取更少的特征的简单模型，往往会比一个复杂的模型，在分类问题上更具有代表性和可解释性。而在MLlib中，则可以通过<strong>.Chi-Square selector</strong>来提取出模型中最具代表性的一些分类特征变量来简化我们的模型。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selector</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">ChiSqSelector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">births_train</span><span class="p">)</span>
-</span><span class='line'><span class="n">topFeatures_train</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">births_train</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_train</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'>  <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span><span class='line'><span class="n">topFeatures_test</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'>  <span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_test</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="随机森林模型">随机森林模型</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.tree</span> <span class="kn">import</span> <span class="n">RandomForest</span>
-</span><span class='line'><span class="n">RF_model</span> <span class="o">=</span> <span class="n">RandomForest</span> \
-</span><span class='line'><span class="o">.</span><span class="n">trainClassifier</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">topFeatures_train</span><span class="p">,</span>
-</span><span class='line'><span class="n">numClasses</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span class='line'><span class="n">categoricalFeaturesInfo</span><span class="o">=</span><span class="p">{},</span>
-</span><span class='line'><span class="n">numTrees</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-</span><span class='line'><span class="n">featureSubsetStrategy</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="n">seed</span><span class="o">=</span><span class="mi">666</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">RF_results</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">RF_model</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span>
-</span><span class='line'><span class="n">RF_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">RF_results</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">model_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>随机森林模型（Random forest 后面简称RF）在训练上总体与Logistic类似，不同的参数是RF在训练前需要指定类别总数：numClasses，树的棵数：numTrees（这两个参数的意义大家可以参照下随机森林模型的<a href="https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/1974765?fr=aladdin">百科介绍</a>）</p>
-
-
-
-
-<p><strong>注：在随机森林模型的创建中，我们采用的是上面提取出来的最具代表性的有效特征，这就意味着模型用到的特征是比之前的Logistic要少的。</strong></p>
-
-
-
-
-<p>最后，结果图示如下：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/11/17/5a0dc8621d985.png" alt="rf_roc.png" title=""></p>
-
-
-
-
-<p>通过结果我们可以看出，随机森林模型，在采用比之前更少的特征下的建模的最终预测效果是由于之前的Logistic回归模型的。</p>
-
-
-
-
-<p>下面我们同样使用代表性特征来重建一次Logistic回归模型</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">LR_Model_2</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
-</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">topFeatures_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'><span class="n">LR_results_2</span> <span class="o">=</span> <span class="p">(</span>
-</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
-</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model_2</span> \
-</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
-</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation_2</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results_2</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
-</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
-</span><span class='line'><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最终结果： <br>
-<img src="https://i.loli.net/2017/11/17/5a0dc9d2aa75c.png" alt="logistic_lbfgs.png" title=""></p>
-
-
-
-
-<p>通过结果，我们可以看出，虽然没有达到RF模型的准确度，但是与采用了全特征的Logistic回归模型处于同一水平。所以，我们在可选的情况下，通常采用更少的特征来构建更为简化和有效的模型。</p>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
-      <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       
       </footer>
     </article>
