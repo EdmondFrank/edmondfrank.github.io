@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2019-11-27T18:55:21+08:00</updated>
+  <updated>2019-11-29T18:19:52+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Magit inside Emacs]]></title>
+    <link href="https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs/"/>
+    <updated>2019-11-29T12:50:31+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs</id>
+    <content type="html"><![CDATA[<h3>基本介绍</h3>
+
+<p><a href="https://magit.vc/">Magit</a> 是 Emacs 下对git的封装，利用Magit可以让你在Emacs中即可完成对git仓库的管理（Emacs果然是一个伪装成编辑器的操作系统）</p>
+
+<p>其次，Magit本不是Emacs的内置插件，使用时需要自己安装；具体的安装方法在Magit的官网上已经有<a href="https://magit.vc/manual/magit/Installing-from-Melpa.html#Installing-from-Melpa">相关教程</a>了，这里我就不再赘述了</p>
+
+<h3>日常使用</h3>
+
+<p>下面主要是列举一些日常开发和git管理中比较常使用的一些功能：</p>
+
+<ol>
+<li><p>M-x:magit-status(C-x g)
+<img src="https://i.loli.net/2019/11/29/45276NGocmKRHdQ.png" alt="magit-status.png" />
+该命令就类似于git status（查看项目的当前状态）；但是，在Magit中显示的状态信息会比git status更加丰富
+其中包括：HEAD、Tag、未追踪文件、Stash列表、未staged文件、未push文件、最近commit等信息
+然后，在相应的条目上回车还可以进行看到更加详细的内容，包括对应文件的修改、具体的commit信息等等</p></li>
+<li><p>(?) Magit Help
+<img src="https://i.loli.net/2019/11/29/CZwBqeMlRDr24oI.png" alt="magit-help.png" />
+在magit status buffer中键入？可以提示Magit的功能列表以及其相对应的key bindings，新手通过这样一个帮助列表，就可以找到对应的git功能一一操作试试，一段时间后就可以熟悉整个magit的操作了</p></li>
+<li><p>（s/S）Stage/Stage all
+Stage命令就类似于git add操作，在你修改了相关的git管理下的文件后，若是还未运行git add时，该文件处于Unstaged的状态
+处于Unstaged状态的文件在git commit的时候其变更内容就不会提交；而运行git add [filename] 之后文件就变成Stage状态了，
+此时如果再执行git commit，对应的文件变更内容则提交到本地，然后文件状态变更未Unpushed</p></li>
+<li><p>(u/U) Unstage/Unstage all
+Unstage命令就是Stage命令的反向操作，其对应git reset HEAD [filename]，在Magit中Stage/Unstage不仅能够作用于单个文件、所有的changes，还能作用于某个文件的部分区域上；在magit展开文件的diff时，你还发现在文件差异中用@@符号区分的差异区域，在对应的区域内键入Stage/Unstage命令即可仅仅存在该区域中的变更，然后在commit提交时，也可以单单提交这一部分变更</p></li>
+</ol>
+
+
+<p><img src="https://i.loli.net/2019/11/29/J9Zq7wpPkUKn2ts.png" alt="diff.png" /></p>
+
+<ol>
+<li>&copy; Commit
+在magit-status-buffer中键入c键即为最常用的git commit指令，当然后除了最普通的Commit（cc）操作外
+Magit还支持许多commit的扩展命令</li>
+</ol>
+
+
+<table>
+<thead>
+<tr>
+<th> key bindings </th>
+<th> command </th>
+<th> description                                                      </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> cc           </td>
+<td> Commit  </td>
+<td> 最普通的 git commit                                           </td>
+</tr>
+<tr>
+<td> ce           </td>
+<td> Extend  </td>
+<td> 当前Staged的文件合并到上一次提交中 git commit –amend –no-edit </td>
+</tr>
+<tr>
+<td> ca           </td>
+<td> Amend   </td>
+<td> 只修改上次提交的日志   git commit –amend                        </td>
+</tr>
+</tbody>
+</table>
+
+
+<ol>
+<li>(F) Pull
+Pull命令对应git pull在git管理中用于拉取远程仓库代码，常用的组合命令有以下：</li>
+</ol>
+
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;"> key bindings </th>
+<th style="text-align:center;"> description                          </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;"> Fu           </td>
+<td style="text-align:center;"> pull from upstream                   </td>
+</tr>
+<tr>
+<td style="text-align:center;"> Fp           </td>
+<td style="text-align:center;"> pull from pushremote                 </td>
+</tr>
+<tr>
+<td style="text-align:center;"> Fe           </td>
+<td style="text-align:center;"> pull from elsewhere 会引导你从哪pull   </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>对于Fu 和 Fp来说，upstream是pushremote的上级，这样的场景对应fork分支开发的工作流；
+比如User A 有个仓库 Project，User B fork了Project，这样对于User B来说
+UserA/Project就是upstream，而pushremote是UserB/Project
+另外，在Magit中只有设置了pushremote分支，这样magit status buffer才会显示有哪些变更没有push和pull</p>
+
+<ol>
+<li><p>(P) Push
+对应git push 命令
+| key bindings | command                | description                |
+|:&mdash;&mdash;&mdash;&mdash;-|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| pu           | push to upstream       | 最普通的git push           |
+| pe           | push to elsewhere      | 会引导你push到哪个远程分支 |
+| po           | push another branch to | 会引导你push到哪个分支     |
+| pT           | push a tag             | push 一个tag标签           |
+| pt           | push all tag           | push 所有tag标签           |
+除此之外，上面的key bindings组合还可以添加对应的扩展参数，比如强制push，即p-Fu</p></li>
+<li><p>(l) Log查看日志
+对应git log，查看git日志记录
+| key bindings | description                  |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| ll           | 查看当前分支的日志           |
+| lo           | log other 查看其他分支的日志 |
+在具体的commit上使用 l 键还可以根据给出的命令组合进一步查看commit提交的详情信息</p></li>
+<li><p>(a/A) cherry picking
+对应git cherry-pick，选择某一次的commit在当前分支重新commit一次，适用于合并代码但又不想merge整个PR和分支的场景</p></li>
+<li><p>(z)Stash
+对应git Stash，将临时的未commit的变更内容暂存起来
+常用命令有：
+| key bindings | command       | description |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|
+| zz           | git stash     | 暂存        |
+| zp           | git stash pop | 恢复        |
+除此之外，还有一个有意思的用法是，当你希望单单想stash变更文件列表中的一个文件时，可以先将目标文件Stage在index索引区，然后适用 zi 组合暂存index区域，这样就可以实现单一文件的stash功能</p></li>
+<li><p>(k) Discard/Delete
+对应git中的checkout之类的命令，用作于放弃更改和删除相关的操作，例如，放弃一个Unstage文件的更改、删除一个Stash、删除一个@@区域差异等等</p></li>
+<li><p>(x) Resetting
+类似git reset命令，放弃最近的n次提交，这n次的提交内容变成staged状态，之后可以进行合并提交或者丢弃
+只需要在日志日光标定位到想要丢弃的log,即可回滚到这一次的提交状态</p></li>
+<li><p>(m) Merge
+对应git中合并分支的操作，常用的组合命令为 mm ，之后会提示选择与哪个分支进行merge</p></li>
+<li><p>&reg; Rebase
+对应git中的变基操作
+| key bindings | description                        |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| ru           | rebase on upstream                 |
+| rp           | rebase on pushremote               |
+| re           | 会提示你以哪个分支为基点进行rebase     |</p></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Railsçš„ActiveSupport::Concern]]></title>
@@ -5934,488 +6086,6 @@ Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
 
 
 <p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Python在Spark上的机器学习之机器学习实战(上)]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/"/>
-    <updated>2017-11-17T09:16:10+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="python在spark上的机器学习之机器学习实战上">Python在Spark上的机器学习之机器学习实战(上)</h1></p>
-
-<h2 id="mllib-的使用">MLlib 的使用</h2>
-
-
-
-
-<p>在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。</p>
-
-
-
-
-<p><strong>MLlib</strong>：即Machine Learning Library，MLlib 是Spark对常用的机器学习算法的实现库，同时包括相关的测试和数据生成器。MLlib 目前支持四种常见的机器学习问题：二元分类，回归，聚类以及协同过滤，同时也包括一个底层的梯度下降优化基础算法。</p>
-
-
-
-
-<h3 id="载入和转化数据">载入和转化数据</h3>
-
-
-
-
-<p>首先，我们在建立一个DataFrame之前，我们先针对性的指定下DataFrame中数据类型，方便我们数据后期的分析与计算。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
-</span><span class='line'><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_YEAR&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_MONTH&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_RACE_6CODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MONTH_PRECARE_RECODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_BREASTFED&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">())</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">([</span>
-</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">labels</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>下一步，我们通过 <strong>.read.csv()</strong> 方法来载入数据，这个方法除了能够载入原数据之外还可以载入GZipped压缩后的csv数据。其实header参数设为 True 代表数据文件的第一行是数据的元信息（即为列表的说明字段）。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">births = spark.read.csv(<span class="hljs-string">'births_train.csv.gz'</span>,
-header=<span class="hljs-keyword">True</span>,
-schema=schema)</code></pre>
-
-
-
-
-<p>由于在我们的数据集中有大量的分类变量都是字符串，所以我们首先要想办法将这一类变量转换成数字的形式。</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs ruleslanguage"><span class="hljs-array"># </span>转换<span class="hljs-string">'INFANT_ALIVE_AT_REPORT'</span>
-recode_dictionary = {
-    <span class="hljs-string">'YNU'</span>: {
-        <span class="hljs-string">'Y'</span>: <span class="hljs-number">1</span>,
-        <span class="hljs-string">'N'</span>: <span class="hljs-number">0</span>,
-        <span class="hljs-string">'U'</span>: <span class="hljs-number">0</span>
-            }
-}</code></pre>
-
-
-
-
-<p>在这里总的来说，我们的目的就是一个二分类问题，即预测婴儿的存活情况，也就是“存活 1 ”或“死亡 0 ”。因为，要做到一种未雨绸缪的效果，我们要先去除所有与婴儿有关的特征信息，仅仅是通过婴儿父母的基本信息以及婴儿的出生地来预测一下婴儿出生后存活的概率。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selected_features</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">births_trimmed</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>在这个数据集中，大量的变量特征值都是Yes/No/Unknown值，我们将Yes编码成1，另外的其他值编码成0。</p>
-
-
-
-
-<p>而在代表怀孕妈妈的吸烟数量的这个特征值的编码上，我们采用这样的规则。0：代表妈妈在怀孕期间没有抽过烟；而1-97：代表妈妈在怀孕期间真实的抽烟次数，而98：则代表孕期抽烟次数高达98次及以上；但99：意味着妈妈的孕期抽烟情况未知。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="kn">as</span> <span class="nn">func</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">recode</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">recode_dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">correct_cig</span><span class="p">(</span><span class="n">feat</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">func</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">99</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>\
-</span><span class='line'>      <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">rec_integer</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">udf</span><span class="p">(</span><span class="n">recode</span><span class="p">,</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">())</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>由于Spark的机制问题，我们无法直接将DataFrame来用recode函数进行处理，所以我们首先要先它转换成Spark能够理解的UDF。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_trimmed</span> \
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">))</span>
-</span><span class='line'><span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">dataType</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">births_trimmed</span><span class="o">.</span><span class="n">schema</span><span class="p">]</span>
-</span><span class='line'><span class="n">YNU_cols</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-</span><span class='line'><span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">():</span>
-</span><span class='line'><span class="n">dis</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
-</span><span class='line'><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
-</span><span class='line'><span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="k">if</span> <span class="s">&#39;Y&#39;</span> <span class="ow">in</span> <span class="n">dis</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">YNU_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>最后，为了一次性转换所有的 YNU_cols 数据，我们用以下的方法：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">exprs_YNU = [
-    rec_integer(x,
-    func.lit(<span class="hljs-string">'YNU'</span>)).alias(x)
-    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">in</span> YNU_cols
-    <span class="hljs-keyword">else</span> x
-    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> births_transformed.columns
-]
-births_transformed = births_transformed.select(exprs_YNU)</code></pre>
-
-
-
-
-<p>让我们来检查一下转换的结果吧：</p>
-
-
-
-
-<blockquote>
-  <p>births_transformed.select(YNU_cols[-5:]).show(5)</p>
-</blockquote>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cda7add15.png" alt="translate_res.png" title=""></p>
-
-
-
-
-<h3 id="数据预分析">数据预分析</h3>
-
-
-
-
-<p>为了建立一个良好的统计模型，我们首先需要了解清楚数据的组成分布以及背后的含义。</p>
-
-
-
-
-<p>下面我们可以通过Spark提供的一些函数来对数据进行描述性分析。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.stat</span> <span class="kn">as</span> <span class="nn">st</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="n">numeric_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">numeric_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">)</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
-</span><span class='line'><span class="n">mllib_stats</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">colStats</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">variance</span><span class="p">()):</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}: </span><span class="se">\t</span><span class="s">{1:.2f} </span><span class="se">\t</span><span class="s"> {2:.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cf95819ec.png" alt="statics.png" title=""></p>
-
-
-
-
-<p>根据输出的统计结果我们可以看出：在婴儿父母的年龄对比上，妈妈是明显比爸爸年轻的。妈妈的平均年龄在28岁左右，而爸爸的平均年龄确是44岁。</p>
-
-
-
-
-<p>对于大部分的分类变量，我们也可以一一的来统计下他们的各个数值出现的频数：</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">columns</span>
-</span><span class='line'><span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_cols</span><span class="p">]</span>
-</span><span class='line'><span class="n">categorical_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">)</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">categorical_rdd</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">groupBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">(),</span>
-</span><span class='line'><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-</span><span class='line'><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d1109a62e.png" alt="frequence.png" title=""></p>
-
-
-
-
-<p>根据这次的结果，我们又可以看出大部分的婴儿都是在医院出现的（医院的出生地代号BIRTH_PLACE=1）</p>
-
-
-
-
-<h3 id="相关系数">相关系数</h3>
-
-
-
-
-<p>相关性的分析有利于我们发现特征变量中的多重共线性的情况，而多重共线性则是影响我们模型的鲁棒性的关键因素之一。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">corrs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">corrs</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">correlated</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">corrs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">correlated</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">correlated</span><span class="p">:</span>
-</span><span class='line'>          <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}-to-{1}: {2:.2f}&#39;</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>上面的代码会替我们计算特征变量之间的相关系数矩阵，并输出相关系数高于0.5的特征。</p>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d3831bd0f.png" alt="cor_matrix.png" title=""></p>
-
-
-
-
-<p>根据上图输出的结果，我们又可以看出 CIG_XXX 系列的特征都有些非常高的相关性，所以在这个系列的特征之中保留一个即可。 在这里我只保留 <strong>CIG_1_TRI</strong>这个特征。同理在WEIGHT系列中我只保留<strong>MOTHER_PRE_WEIGHT</strong>这个特征。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">features_to_keep</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">features_</span>
-</span><span class='line'><span class="n">to_keep</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="小结">小结</h3>
-
-
-
-
-<p>在这一篇实战的文章中，我讲解了：</p>
-
-
-
-
-<ul>
-<li>数据的载入和转换</li>
-<li>数据的描述性分析</li>
-<li>数据相关性分析</li>
-</ul>
-
-
-
-
-<p>限于时间和篇幅，我打算将有关分类变量的统计检验分析，以及最后的特征选取和建模放在下一篇文章之中，欢迎大家继续阅读我的下一篇文件。</p>
 
 ]]></content>
   </entry>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs/</loc>
+<lastmod>2019-11-29T12:50:31+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2019/11/27/railsde-activesupport-concern/</loc>
 <lastmod>2019-11-27T18:47:49+08:00</lastmod>
 </url>
@@ -426,6 +430,9 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/ruby/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/blog/categories/emacs/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/posts/2/</loc>

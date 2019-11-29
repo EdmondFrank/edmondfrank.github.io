@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Magit inside Emacs - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="基本介绍 Magit 是 Emacs 下对git的封装，利用Magit可以让你在Emacs中即可完成对git仓库的管理（Emacs果然是一个伪装成编辑器的操作系统） 其次，Magit本不是Emacs的内置插件，使用时需要自己安装；具体的安装方法在Magit的官网上已经有相关教程了， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Magit Inside Emacs</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-11-29T12:50:31+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h3>基本介绍</h3>
+
+<p><a href="https://magit.vc/">Magit</a> 是 Emacs 下对git的封装，利用Magit可以让你在Emacs中即可完成对git仓库的管理（Emacs果然是一个伪装成编辑器的操作系统）</p>
+
+<p>其次，Magit本不是Emacs的内置插件，使用时需要自己安装；具体的安装方法在Magit的官网上已经有<a href="https://magit.vc/manual/magit/Installing-from-Melpa.html#Installing-from-Melpa">相关教程</a>了，这里我就不再赘述了</p>
+
+<h3>日常使用</h3>
+
+<p>下面主要是列举一些日常开发和git管理中比较常使用的一些功能：</p>
+
+<ol>
+<li><p>M-x:magit-status(C-x g)
+<img src="https://i.loli.net/2019/11/29/45276NGocmKRHdQ.png" alt="magit-status.png" />
+该命令就类似于git status（查看项目的当前状态）；但是，在Magit中显示的状态信息会比git status更加丰富
+其中包括：HEAD、Tag、未追踪文件、Stash列表、未staged文件、未push文件、最近commit等信息
+然后，在相应的条目上回车还可以进行看到更加详细的内容，包括对应文件的修改、具体的commit信息等等</p></li>
+<li><p>(?) Magit Help
+<img src="https://i.loli.net/2019/11/29/CZwBqeMlRDr24oI.png" alt="magit-help.png" />
+在magit status buffer中键入？可以提示Magit的功能列表以及其相对应的key bindings，新手通过这样一个帮助列表，就可以找到对应的git功能一一操作试试，一段时间后就可以熟悉整个magit的操作了</p></li>
+<li><p>（s/S）Stage/Stage all
+Stage命令就类似于git add操作，在你修改了相关的git管理下的文件后，若是还未运行git add时，该文件处于Unstaged的状态
+处于Unstaged状态的文件在git commit的时候其变更内容就不会提交；而运行git add [filename] 之后文件就变成Stage状态了，
+此时如果再执行git commit，对应的文件变更内容则提交到本地，然后文件状态变更未Unpushed</p></li>
+<li><p>(u/U) Unstage/Unstage all
+Unstage命令就是Stage命令的反向操作，其对应git reset HEAD [filename]，在Magit中Stage/Unstage不仅能够作用于单个文件、所有的changes，还能作用于某个文件的部分区域上；在magit展开文件的diff时，你还发现在文件差异中用@@符号区分的差异区域，在对应的区域内键入Stage/Unstage命令即可仅仅存在该区域中的变更，然后在commit提交时，也可以单单提交这一部分变更</p></li>
+</ol>
+
+
+<p><img src="https://i.loli.net/2019/11/29/J9Zq7wpPkUKn2ts.png" alt="diff.png" /></p>
+
+<ol>
+<li>&copy; Commit
+在magit-status-buffer中键入c键即为最常用的git commit指令，当然后除了最普通的Commit（cc）操作外
+Magit还支持许多commit的扩展命令</li>
+</ol>
+
+
+<table>
+<thead>
+<tr>
+<th> key bindings </th>
+<th> command </th>
+<th> description                                                      </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> cc           </td>
+<td> Commit  </td>
+<td> 最普通的 git commit                                           </td>
+</tr>
+<tr>
+<td> ce           </td>
+<td> Extend  </td>
+<td> 当前Staged的文件合并到上一次提交中 git commit –amend –no-edit </td>
+</tr>
+<tr>
+<td> ca           </td>
+<td> Amend   </td>
+<td> 只修改上次提交的日志   git commit –amend                        </td>
+</tr>
+</tbody>
+</table>
+
+
+<ol>
+<li>(F) Pull
+Pull命令对应git pull在git管理中用于拉取远程仓库代码，常用的组合命令有以下：</li>
+</ol>
+
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;"> key bindings </th>
+<th style="text-align:center;"> description                          </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;"> Fu           </td>
+<td style="text-align:center;"> pull from upstream                   </td>
+</tr>
+<tr>
+<td style="text-align:center;"> Fp           </td>
+<td style="text-align:center;"> pull from pushremote                 </td>
+</tr>
+<tr>
+<td style="text-align:center;"> Fe           </td>
+<td style="text-align:center;"> pull from elsewhere 会引导你从哪pull   </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>对于Fu 和 Fp来说，upstream是pushremote的上级，这样的场景对应fork分支开发的工作流；
+比如User A 有个仓库 Project，User B fork了Project，这样对于User B来说
+UserA/Project就是upstream，而pushremote是UserB/Project
+另外，在Magit中只有设置了pushremote分支，这样magit status buffer才会显示有哪些变更没有push和pull</p>
+
+<ol>
+<li><p>(P) Push
+对应git push 命令
+| key bindings | command                | description                |
+|:&mdash;&mdash;&mdash;&mdash;-|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| pu           | push to upstream       | 最普通的git push           |
+| pe           | push to elsewhere      | 会引导你push到哪个远程分支 |
+| po           | push another branch to | 会引导你push到哪个分支     |
+| pT           | push a tag             | push 一个tag标签           |
+| pt           | push all tag           | push 所有tag标签           |
+除此之外，上面的key bindings组合还可以添加对应的扩展参数，比如强制push，即p-Fu</p></li>
+<li><p>(l) Log查看日志
+对应git log，查看git日志记录
+| key bindings | description                  |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| ll           | 查看当前分支的日志           |
+| lo           | log other 查看其他分支的日志 |
+在具体的commit上使用 l 键还可以根据给出的命令组合进一步查看commit提交的详情信息</p></li>
+<li><p>(a/A) cherry picking
+对应git cherry-pick，选择某一次的commit在当前分支重新commit一次，适用于合并代码但又不想merge整个PR和分支的场景</p></li>
+<li><p>(z)Stash
+对应git Stash，将临时的未commit的变更内容暂存起来
+常用命令有：
+| key bindings | command       | description |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|
+| zz           | git stash     | 暂存        |
+| zp           | git stash pop | 恢复        |
+除此之外，还有一个有意思的用法是，当你希望单单想stash变更文件列表中的一个文件时，可以先将目标文件Stage在index索引区，然后适用 zi 组合暂存index区域，这样就可以实现单一文件的stash功能</p></li>
+<li><p>(k) Discard/Delete
+对应git中的checkout之类的命令，用作于放弃更改和删除相关的操作，例如，放弃一个Unstage文件的更改、删除一个Stash、删除一个@@区域差异等等</p></li>
+<li><p>(x) Resetting
+类似git reset命令，放弃最近的n次提交，这n次的提交内容变成staged状态，之后可以进行合并提交或者丢弃
+只需要在日志日光标定位到想要丢弃的log,即可回滚到这一次的提交状态</p></li>
+<li><p>(m) Merge
+对应git中合并分支的操作，常用的组合命令为 mm ，之后会提示选择与哪个分支进行merge</p></li>
+<li><p>&reg; Rebase
+对应git中的变基操作
+| key bindings | description                        |
+|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
+| ru           | rebase on upstream                 |
+| rp           | rebase on pushremote               |
+| re           | 会提示你以哪个分支为基点进行rebase     |</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-11-29T12:50:31+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/emacs/'>emacs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2019/11/29/magit-inside-emacs/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/11/27/railsde-activesupport-concern/" title="Previous Post: Railsçš„ActiveSupport::Concern">&laquo; Railsçš„ActiveSupport::Concern</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -9,7 +9,8 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿谈谈Google自动编程框架AutoML 背景 首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。 据最新的报道：Google AutoML 系统自主编写机器学习代码， &hellip;">
+  <meta name="description" content="﻿使用树莓派进行24小时不间断直播 开始 多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。 方案一 ffmpeg + ffserver搭建流媒体服务器 首先 我们用到的工具有： 硬件方面： 树莓派主板一块
+兼容树莓派的USB摄像头一个 软件方面： ffmpeg， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +65,453 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-12T22:14:22+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="使用树莓派进行24小时不间断直播">使用树莓派进行24小时不间断直播</h1></p>
+
+<h2 id="开始">开始</h2>
+
+
+
+
+<p>多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。</p>
+
+
+
+
+<h2 id="方案一-ffmpeg-ffserver搭建流媒体服务器">方案一 ffmpeg + ffserver搭建流媒体服务器</h2>
+
+
+
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+
+
+
+<p><strong>硬件方面：</strong></p>
+
+
+
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+
+
+
+<p><strong>软件方面：</strong></p>
+
+
+
+
+<ul>
+<li>ffmpeg，负责媒体文件的转码工作，把你服务器上的源媒体文件转成要发出去的流媒体文件。</li>
+<li>ffserver，负责响应客户端的流媒体请求，把流媒体数据发送给客户端，相当与一个小型的服务端。</li>
+</ul>
+
+
+
+
+<p>具体的工作方式就如下图所示： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzrw4b72j20iu0buq52.jpg" alt="" title=""></p>
+
+
+
+
+<p>多个输入源被“喂”到广播服务器，这些多媒体内容就会分发到多个客户端。上图的目的是显示地表明你的流系统能够被分成多个块部署到网络上，允许你广播不同的在线内容，而不需要改变流媒体系统的结构。</p>
+
+
+
+
+<h3 id="配置">配置</h3>
+
+
+
+
+<p>无论是树莓派官方摄像头模块还是其他兼容的USB摄像头，连接好摄像头之后，运行命令去启用摄像头：</p>
+
+
+
+
+<blockquote>
+  <p>sudo raspi-config</p>
+</blockquote>
+
+
+
+
+<p><strong>ffserver.conf</strong>，ffserver启动时的配置文件，在这个文件中主要是对网络协议，缓存文件feed1.ffm（见下述）和要发送的流媒体文件的格式参数做具体的设定。</p>
+
+
+
+
+<p><strong>feed1.ffm</strong>，可以看成是一个流媒体数据的缓存文件，ffmpeg把转码好的数据发送给ffserver，如果没有客户端连接请求，ffserver把数据缓存到该文件中。</p>
+
+
+
+
+<p><strong>下面就是一个ffserver.conf的一个例子</strong>：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">Port <span class="hljs-number">8090</span>                      <span class="hljs-preprocessor"># Port to bind the server to</span>
+BindAddress <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>
+MaxHTTPConnections <span class="hljs-number">2000</span>
+MaxClients <span class="hljs-number">1000</span>
+MaxBandwidth <span class="hljs-number">10000</span>             <span class="hljs-preprocessor"># Maximum bandwidth per client</span>
+                               <span class="hljs-preprocessor"># set this high enough to exceed stream bitrate</span>
+CustomLog -
+NoDaemon                       <span class="hljs-preprocessor"># Remove this if you want FFserver to daemonize after start</span>
+
+&lt;Feed feed1<span class="hljs-preprocessor">.ffm</span>&gt;               <span class="hljs-preprocessor"># This is the input feed where FFmpeg will send</span>
+   File ./feed1<span class="hljs-preprocessor">.ffm</span>            <span class="hljs-preprocessor"># video stream.</span>
+   FileMaxSize <span class="hljs-number">64</span>M              <span class="hljs-preprocessor"># Maximum file size for buffering video</span>
+   ACL allow <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>         <span class="hljs-preprocessor"># Allowed IPs</span>
+&lt;/Feed&gt;
+
+&lt;Stream test<span class="hljs-preprocessor">.webm</span>&gt;              <span class="hljs-preprocessor"># Output stream URL definition</span>
+   Feed feed1<span class="hljs-preprocessor">.ffm</span>              <span class="hljs-preprocessor"># Feed from which to receive video</span>
+   Format webm
+
+   <span class="hljs-preprocessor"># Audio settings</span>
+   AudioCodec vorbis
+   AudioBitRate <span class="hljs-number">64</span>             <span class="hljs-preprocessor"># Audio bitrate</span>
+
+   <span class="hljs-preprocessor"># Video settings</span>
+   VideoCodec libvpx
+   VideoSize <span class="hljs-number">720</span>x576           <span class="hljs-preprocessor"># Video resolution</span>
+   VideoFrameRate <span class="hljs-number">25</span>           <span class="hljs-preprocessor"># Video FPS</span>
+   AVOptionVideo flags +global_header  <span class="hljs-preprocessor"># Parameters passed to encoder</span>
+                                       <span class="hljs-preprocessor"># (same as ffmpeg command-line parameters)</span>
+   AVOptionVideo cpu-used <span class="hljs-number">0</span>
+   AVOptionVideo qmin <span class="hljs-number">10</span>
+   AVOptionVideo qmax <span class="hljs-number">42</span>
+   AVOptionVideo quality good
+   AVOptionAudio flags +global_header
+   PreRoll <span class="hljs-number">15</span>
+   StartSendOnKey
+   VideoBitRate <span class="hljs-number">400</span>            <span class="hljs-preprocessor"># Video bitrate</span>
+&lt;/Stream&gt;
+
+&lt;Stream status<span class="hljs-preprocessor">.html</span>&gt;            <span class="hljs-preprocessor"># Server status URL</span>
+   Format status
+   <span class="hljs-preprocessor"># Only allow local people to get the status</span>
+   ACL allow localhost
+   ACL allow <span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> <span class="hljs-number">192.168</span><span class="hljs-number">.255</span><span class="hljs-number">.255</span>
+&lt;/Stream&gt;
+
+&lt;Redirect index<span class="hljs-preprocessor">.html</span>&gt;    <span class="hljs-preprocessor"># Just an URL redirect for index</span>
+   <span class="hljs-preprocessor"># Redirect index.html to the appropriate site</span>
+   URL http://www<span class="hljs-preprocessor">.ffmpeg</span><span class="hljs-preprocessor">.org</span>/
+&lt;/Redirect&gt;</code></pre>
+
+
+
+
+<p>ffserver启动时默认查看 /etc/ffserver.conf 配置文件，你可以通过-f选项控制查阅的配置文件。</p>
+
+
+
+
+<blockquote>
+  <p>ffserver -f ffserver.conf</p>
+</blockquote>
+
+
+
+
+<p>运行结果如下所示的话，那么ffserver就算是启动成功了。</p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzzq0svjj20xm08jgmv.jpg" alt="" title=""></p>
+
+
+
+
+<p>打开<a href="http://localhost:8090/status.html">http://localhost:8090/status.html</a>可以看到当前server中各个流的状态。</p>
+
+
+
+
+<h3 id="接入视频流">接入视频流</h3>
+
+
+
+
+<p>ffserver启动之后，就可以向 <br>
+<a href="http://localhost:8090/feed1.ffm">http://localhost:8090/feed1.ffm</a>接入视频流。</p>
+
+
+
+
+<p><strong>注意</strong>，这里不需要指定编码格式，FFserver会重新编码。</p>
+
+
+
+
+<p>视频流的来源可以是文件、摄像头或者录制屏幕。</p>
+
+
+
+
+<h3 id="接入视频文件">接入视频文件</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">ffmpeg -i testvideo<span class="hljs-preprocessor">.mp</span>4 http://localhost:<span class="hljs-number">8090</span>/feed1<span class="hljs-preprocessor">.ffm</span></code></pre>
+
+
+
+
+<h3 id="接入录制屏幕">接入录制屏幕</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> x11grab <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x512 <span class="hljs-attribute">-i</span> :<span class="hljs-number">0.0</span> <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span>
+</code></pre>
+
+
+
+
+<p>这里有两个-f，第一个指的是视频流，第二个指的是音频流。视频流是抓取屏幕形成视频，-r设置帧率为25帧/s，-s设置抓取图像大小为640x512，-i设置录制视频的初始坐标。音频流设置为alsa(Advanced Linux Sound Architecture)，从Linux系统中获取音频。这其中这样ffmpeg可以录制屏幕feed到feed1.ffm中。</p>
+
+
+
+
+<h3 id="接入摄像头直播">接入摄像头直播</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> video4linux2 <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x480 <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-i</span> /dev/video0 <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span></code></pre>
+
+
+
+
+<h2 id="方案二-avconv-和-gstreamer-用于采集摄像头捕获的视频流并推送到-rtmp-服务">方案二 avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</h2>
+
+
+
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+
+
+
+<p><strong>硬件方面：</strong></p>
+
+
+
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+
+
+
+<p><strong>软件方面：</strong></p>
+
+
+
+
+<ul>
+<li>avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</li>
+<li>NGINX 和 RTMP 模块，用于接收视频流，同时提供视频发布功能</li>
+</ul>
+
+
+
+
+<h3 id="安装配置">安装＆配置</h3>
+
+
+
+
+<p>因为这里我们要用到nginx的rtmp模块作为服务端，而系统自带的apt安装的nginx是没有这个模块的，所以我们需要先安装后移除nginx然后再手动编译（安装是为了下载好相关依赖）。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">sudo</span> apt-get update
+<span class="hljs-comment">#安装 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y install nginx
+<span class="hljs-comment">#移除 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y remove nginx
+<span class="hljs-built_in">sudo</span> apt-get clean
+<span class="hljs-comment">#清空 nginx 的配置文件</span>
+<span class="hljs-built_in">sudo</span> rm -rf /etc/nginx/*
+<span class="hljs-comment">#安装编译用的模块</span>
+<span class="hljs-built_in">sudo</span> apt-get install -y curl build-essential libpcre3 libpcre3-dev libpcre++-dev zlib1g-dev libcurl4-openssl-dev libssl-dev
+<span class="hljs-comment">#创建存放网页的目录给 nginx 使用</span>
+<span class="hljs-built_in">sudo</span> mkdir -p /var/www
+<span class="hljs-comment">#创建编译用的目录</span>
+mkdir -p ~/nginx_src
+<span class="hljs-built_in">cd</span> ~/nginx_src
+<span class="hljs-comment">#下载 nginx 源码包</span>
+wget http://nginx.org/download/nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+<span class="hljs-comment">#下载 nginx-rtmp-module 源码包</span>
+wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
+tar -zxvf nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+unzip master.zip
+<span class="hljs-built_in">cd</span> nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>
+<span class="hljs-comment">#设定编译参数</span>
+./configure --prefix=/var/www --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_ssl_module --without-http_proxy_module --add-module=/home/pi/nginx_src/nginx-rtmp-module-master
+<span class="hljs-comment">#开始编译安装</span>
+make
+<span class="hljs-built_in">sudo</span> make install</code></pre>
+
+
+
+
+<h3 id="配置-nginx">配置 nginx</h3>
+
+
+
+
+<blockquote>
+  <p>sudo gedit /etc/nginx/nginx.conf</p>
+</blockquote>
+
+
+
+
+<p>在末尾添加</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs applescript">rtmp {
+    server {
+        listen <span class="hljs-number">1935</span>;
+        chunk_size <span class="hljs-number">4096</span>;
+        <span class="hljs-type">application</span> live {
+            live <span class="hljs-function_start"><span class="hljs-keyword">on</span></span>;
+            <span class="hljs-type">record</span> off;
+        }
+    }
+}</code></pre>
+
+
+
+
+<p>重启 nginx 服务。</p>
+
+
+
+
+<blockquote>
+  <p>sudo service nginx start</p>
+</blockquote>
+
+
+
+
+<h3 id="安装-avconv-和-gstreamer">安装 avconv 和 GStreamer</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs cs">sudo apt-<span class="hljs-keyword">get</span> update
+sudo apt-<span class="hljs-keyword">get</span> install libav-tools
+<span class="hljs-preprocessor">#安装 GStreamer</span>
+sudo apt-<span class="hljs-keyword">get</span> install gstreamer1<span class="hljs-number">.0</span>-tools
+<span class="hljs-preprocessor">#安装 GStreamer 扩展组件</span>
+sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span>-dbg libgstreamer1<span class="hljs-number">.0</span>-dev liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span> liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span>-dbg liborc-<span class="hljs-number">0.4</span>-dev liborc-<span class="hljs-number">0.4</span>-doc gir1<span class="hljs-number">.2</span>-gst-plugins-<span class="hljs-keyword">base</span>-<span class="hljs-number">1.0</span> gir1<span class="hljs-number">.2</span>-gstreamer-<span class="hljs-number">1.0</span> gstreamer1<span class="hljs-number">.0</span>-alsa gstreamer1<span class="hljs-number">.0</span>-doc gstreamer1<span class="hljs-number">.0</span>-omx gstreamer1<span class="hljs-number">.0</span>-plugins-bad gstreamer1<span class="hljs-number">.0</span>-plugins-bad-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-bad-doc gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span> gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-apps gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-doc gstreamer1<span class="hljs-number">.0</span>-plugins-good gstreamer1<span class="hljs-number">.0</span>-plugins-good-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-good-doc gstreamer1<span class="hljs-number">.0</span>-plugins-ugly gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-doc gstreamer1<span class="hljs-number">.0</span>-pulseaudio gstreamer1<span class="hljs-number">.0</span>-tools gstreamer1<span class="hljs-number">.0</span>-x libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-dev libgstreamer-plugins-base1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-base1<span class="hljs-number">.0</span>-dev
+</code></pre>
+
+
+
+
+<h3 id="采集与呈现视频流">采集与呈现视频流</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs erlang-repl"><span class="hljs-function_or_atom">gst</span>-<span class="hljs-function_or_atom">launch</span>-<span class="hljs-number">1.0</span> -<span class="hljs-function_or_atom">v</span> <span class="hljs-function_or_atom">v4l2src</span> <span class="hljs-function_or_atom">device</span>=/<span class="hljs-function_or_atom">dev</span>/<span class="hljs-function_or_atom">video0</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-string">'video/x-raw, width=1024, height=768, framerate=30/1'</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">queue</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">videoconvert</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">omxh264enc</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">h264parse</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">flvmux</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">rtmpsink</span> <span class="hljs-function_or_atom">location</span>=<span class="hljs-string">'rtmp://树莓派的IP地址/live live=1'</span> &amp;</code></pre>
+
+
+
+
+<p>采用以上命令就可以在后台采集ＵＳＢ摄像头拍摄的直播内容并推送到ｒｔｍｐ服务端上了。</p>
+
+
+
+
+<p><strong>呈现直播视频画面</strong>：</p>
+
+
+
+
+<p>1、使用 RTMP 播放器播放视频流 <br>
+例如 VLC 等播放器（桌面版和手机版均有）支持 RTMP 视频流播放，填入 rtmp://树莓派的IP地址/live 即可播放。不过这个软件有数十秒的缓冲延迟，需要设定缓冲时间来缩短延迟。</p>
+
+
+
+
+<p>２、推送至斗鱼直播平台观看 <br>
+你可能注意到了 GStreamer 这个命令中有 location 这个参数。这个参数是设定采集到的视频流推向哪里，通过设定这个参数可以将视频流推向任何支持 RTMP 协议的服务器。</p>
+
+
+
+
+<p>斗鱼平台同样采用了 RTMP 协议传输直播视频，首先获取斗鱼的 RTMP 推流地址。开启了直播室之后可以获得推流码。注意，斗鱼的推流码是有时限的，取到推流码需要尽快使用以免过期。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a>
+      <time datetime="2018-02-12T22:14:22+08:00" pubdate><span class='month'>Feb</span> <span class='day'>12</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2986,526 +3434,6 @@ Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
       
       - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
       <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/">Python在Spark上的机器学习之机器学习实战(上)</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-11-17T09:16:10+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战上">Python在Spark上的机器学习之机器学习实战(上)</h1></p>
-
-<h2 id="mllib-的使用">MLlib 的使用</h2>
-
-
-
-
-<p>在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。</p>
-
-
-
-
-<p><strong>MLlib</strong>：即Machine Learning Library，MLlib 是Spark对常用的机器学习算法的实现库，同时包括相关的测试和数据生成器。MLlib 目前支持四种常见的机器学习问题：二元分类，回归，聚类以及协同过滤，同时也包括一个底层的梯度下降优化基础算法。</p>
-
-
-
-
-<h3 id="载入和转化数据">载入和转化数据</h3>
-
-
-
-
-<p>首先，我们在建立一个DataFrame之前，我们先针对性的指定下DataFrame中数据类型，方便我们数据后期的分析与计算。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
-</span><span class='line'><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_YEAR&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_MONTH&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_RACE_6CODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MOTHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;FATHER_EDUCATION&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;MONTH_PRECARE_RECODE&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">()),</span>
-</span><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="p">(</span><span class="s">&#39;INFANT_BREASTFED&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">())</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">([</span>
-</span><span class='line'><span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">labels</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>下一步，我们通过 <strong>.read.csv()</strong> 方法来载入数据，这个方法除了能够载入原数据之外还可以载入GZipped压缩后的csv数据。其实header参数设为 True 代表数据文件的第一行是数据的元信息（即为列表的说明字段）。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">births = spark.read.csv(<span class="hljs-string">'births_train.csv.gz'</span>,
-header=<span class="hljs-keyword">True</span>,
-schema=schema)</code></pre>
-
-
-
-
-<p>由于在我们的数据集中有大量的分类变量都是字符串，所以我们首先要想办法将这一类变量转换成数字的形式。</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs ruleslanguage"><span class="hljs-array"># </span>转换<span class="hljs-string">'INFANT_ALIVE_AT_REPORT'</span>
-recode_dictionary = {
-    <span class="hljs-string">'YNU'</span>: {
-        <span class="hljs-string">'Y'</span>: <span class="hljs-number">1</span>,
-        <span class="hljs-string">'N'</span>: <span class="hljs-number">0</span>,
-        <span class="hljs-string">'U'</span>: <span class="hljs-number">0</span>
-            }
-}</code></pre>
-
-
-
-
-<p>在这里总的来说，我们的目的就是一个二分类问题，即预测婴儿的存活情况，也就是“存活 1 ”或“死亡 0 ”。因为，要做到一种未雨绸缪的效果，我们要先去除所有与婴儿有关的特征信息，仅仅是通过婴儿父母的基本信息以及婴儿的出生地来预测一下婴儿出生后存活的概率。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selected_features</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">births_trimmed</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>在这个数据集中，大量的变量特征值都是Yes/No/Unknown值，我们将Yes编码成1，另外的其他值编码成0。</p>
-
-
-
-
-<p>而在代表怀孕妈妈的吸烟数量的这个特征值的编码上，我们采用这样的规则。0：代表妈妈在怀孕期间没有抽过烟；而1-97：代表妈妈在怀孕期间真实的抽烟次数，而98：则代表孕期抽烟次数高达98次及以上；但99：意味着妈妈的孕期抽烟情况未知。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="kn">as</span> <span class="nn">func</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">recode</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">recode_dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">correct_cig</span><span class="p">(</span><span class="n">feat</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">func</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">when</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">99</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">func</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">feat</span><span class="p">))</span>\
-</span><span class='line'>      <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">rec_integer</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">udf</span><span class="p">(</span><span class="n">recode</span><span class="p">,</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">())</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>由于Spark的机制问题，我们无法直接将DataFrame来用recode函数进行处理，所以我们首先要先它转换成Spark能够理解的UDF。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_trimmed</span> \
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">))</span>\
-</span><span class='line'><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span> <span class="n">correct_cig</span><span class="p">(</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">))</span>
-</span><span class='line'><span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">dataType</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">births_trimmed</span><span class="o">.</span><span class="n">schema</span><span class="p">]</span>
-</span><span class='line'><span class="n">YNU_cols</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-</span><span class='line'><span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="n">StringType</span><span class="p">():</span>
-</span><span class='line'><span class="n">dis</span> <span class="o">=</span> <span class="n">births</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
-</span><span class='line'><span class="o">.</span><span class="n">distinct</span><span class="p">()</span> \
-</span><span class='line'><span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</span><span class='line'><span class="k">if</span> <span class="s">&#39;Y&#39;</span> <span class="ow">in</span> <span class="n">dis</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">YNU_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>最后，为了一次性转换所有的 YNU_cols 数据，我们用以下的方法：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-python hljs ">exprs_YNU = [
-    rec_integer(x,
-    func.lit(<span class="hljs-string">'YNU'</span>)).alias(x)
-    <span class="hljs-keyword">if</span> x <span class="hljs-keyword">in</span> YNU_cols
-    <span class="hljs-keyword">else</span> x
-    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> births_transformed.columns
-]
-births_transformed = births_transformed.select(exprs_YNU)</code></pre>
-
-
-
-
-<p>让我们来检查一下转换的结果吧：</p>
-
-
-
-
-<blockquote>
-  <p>births_transformed.select(YNU_cols[-5:]).show(5)</p>
-</blockquote>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cda7add15.png" alt="translate_res.png" title=""></p>
-
-
-
-
-<h3 id="数据预分析">数据预分析</h3>
-
-
-
-
-<p>为了建立一个良好的统计模型，我们首先需要了解清楚数据的组成分布以及背后的含义。</p>
-
-
-
-
-<p>下面我们可以通过Spark提供的一些函数来对数据进行描述性分析。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.stat</span> <span class="kn">as</span> <span class="nn">st</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="n">numeric_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_BEFORE&#39;</span><span class="p">,</span><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_2_TRI&#39;</span><span class="p">,</span><span class="s">&#39;CIG_3_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_DELIVERY_WEIGHT&#39;</span><span class="p">,</span><span class="s">&#39;MOTHER_WEIGHT_GAIN&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">numeric_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">)</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
-</span><span class='line'><span class="n">mllib_stats</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">colStats</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">,</span>
-</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
-</span><span class='line'>  <span class="n">mllib_stats</span><span class="o">.</span><span class="n">variance</span><span class="p">()):</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}: </span><span class="se">\t</span><span class="s">{1:.2f} </span><span class="se">\t</span><span class="s"> {2:.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9cf95819ec.png" alt="statics.png" title=""></p>
-
-
-
-
-<p>根据输出的统计结果我们可以看出：在婴儿父母的年龄对比上，妈妈是明显比爸爸年轻的。妈妈的平均年龄在28岁左右，而爸爸的平均年龄确是44岁。</p>
-
-
-
-
-<p>对于大部分的分类变量，我们也可以一一的来统计下他们的各个数值出现的频数：</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">columns</span>
-</span><span class='line'><span class="k">if</span> <span class="n">e</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_cols</span><span class="p">]</span>
-</span><span class='line'><span class="n">categorical_rdd</span> <span class="o">=</span> <span class="n">births_transformed</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">)</span>\
-</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
-</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_cols</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">categorical_rdd</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">groupBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> \
-</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">(),</span>
-</span><span class='line'><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">el</span><span class="p">:</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-</span><span class='line'><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d1109a62e.png" alt="frequence.png" title=""></p>
-
-
-
-
-<p>根据这次的结果，我们又可以看出大部分的婴儿都是在医院出现的（医院的出生地代号BIRTH_PLACE=1）</p>
-
-
-
-
-<h3 id="相关系数">相关系数</h3>
-
-
-
-
-<p>相关性的分析有利于我们发现特征变量中的多重共线性的情况，而多重共线性则是影响我们模型的鲁棒性的关键因素之一。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">corrs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numeric_rdd</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">corrs</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">correlated</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">corrs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">correlated</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">correlated</span><span class="p">:</span>
-</span><span class='line'>          <span class="k">print</span><span class="p">(</span><span class="s">&#39;{0}-to-{1}: {2:.2f}&#39;</span> \
-</span><span class='line'>          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">numeric_cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>上面的代码会替我们计算特征变量之间的相关系数矩阵，并输出相关系数高于0.5的特征。</p>
-
-
-
-
-<p><img src="https://ooo.0o0.ooo/2017/11/01/59f9d3831bd0f.png" alt="cor_matrix.png" title=""></p>
-
-
-
-
-<p>根据上图输出的结果，我们又可以看出 CIG_XXX 系列的特征都有些非常高的相关性，所以在这个系列的特征之中保留一个即可。 在这里我只保留 <strong>CIG_1_TRI</strong>这个特征。同理在WEIGHT系列中我只保留<strong>MOTHER_PRE_WEIGHT</strong>这个特征。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">features_to_keep</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;BIRTH_PLACE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_AGE_YEARS&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;FATHER_COMBINED_AGE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;CIG_1_TRI&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_HEIGHT_IN&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;MOTHER_PRE_WEIGHT&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;DIABETES_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_PRE&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;HYP_TENS_GEST&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="s">&#39;PREV_BIRTH_PRETERM&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="n">births_transformed</span> <span class="o">=</span> <span class="n">births_transformed</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">features_</span>
-</span><span class='line'><span class="n">to_keep</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3 id="小结">小结</h3>
-
-
-
-
-<p>在这一篇实战的文章中，我讲解了：</p>
-
-
-
-
-<ul>
-<li>数据的载入和转换</li>
-<li>数据的描述性分析</li>
-<li>数据相关性分析</li>
-</ul>
-
-
-
-
-<p>限于时间和篇幅，我打算将有关分类变量的统计检验分析，以及最后的特征选取和建模放在下一篇文章之中，欢迎大家继续阅读我的下一篇文件。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/11/17/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-shang/">Python在Spark上的机器学习之机器学习实战(上)</a>
-      <time datetime="2017-11-17T09:16:10+08:00" pubdate><span class='month'>Nov</span> <span class='day'>17</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       
