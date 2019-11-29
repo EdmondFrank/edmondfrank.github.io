@@ -147,17 +147,17 @@ Magit还支持许多commit的扩展命令</p>
 <tr>
 <td> cc           </td>
 <td> Commit  </td>
-<td> 最普通的 git commit                                           </td>
+<td> 最普通的 git commit                                              </td>
 </tr>
 <tr>
 <td> ce           </td>
 <td> Extend  </td>
-<td> 当前Staged的文件合并到上一次提交中 git commit –amend –no-edit </td>
+<td> 当前Staged的文件合并到上一次提交中 git commit –amend –no-edit      </td>
 </tr>
 <tr>
 <td> ca           </td>
 <td> Amend   </td>
-<td> 只修改上次提交的日志   git commit –amend                        </td>
+<td> 只修改上次提交的日志   git commit –amend                           </td>
 </tr>
 </tbody>
 </table>
@@ -198,24 +198,73 @@ UserA/Project就是upstream，而pushremote是UserB/Project
 
 <h4>7. (P) Push</h4>
 
-<p>对应git push 命令
-| key bindings | command                | description                |
-|:&mdash;&mdash;&mdash;&mdash;-|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;|:&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
-| pu           | push to upstream       | 最普通的git push           |
-| pe           | push to elsewhere      | 会引导你push到哪个远程分支 |
-| po           | push another branch to | 会引导你push到哪个分支     |
-| pT           | push a tag             | push 一个tag标签           |
-| pt           | push all tag           | push 所有tag标签           |
-除此之外，上面的key bindings组合还可以添加对应的扩展参数，比如强制push，即p-Fu</p>
+<p>对应git push 命令</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;"> key bindings </th>
+<th style="text-align:left;"> command                </th>
+<th style="text-align:left;"> description                </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> pu           </td>
+<td style="text-align:left;"> push to upstream       </td>
+<td style="text-align:left;"> 最普通的git push            </td>
+</tr>
+<tr>
+<td style="text-align:left;"> pe           </td>
+<td style="text-align:left;"> push to elsewhere      </td>
+<td style="text-align:left;"> 会引导你push到哪个远程分支    </td>
+</tr>
+<tr>
+<td style="text-align:left;"> po           </td>
+<td style="text-align:left;"> push another branch to </td>
+<td style="text-align:left;"> 会引导你push到哪个分支       </td>
+</tr>
+<tr>
+<td style="text-align:left;"> pT           </td>
+<td style="text-align:left;"> push a tag             </td>
+<td style="text-align:left;"> push 一个tag标签            </td>
+</tr>
+<tr>
+<td style="text-align:left;"> pt           </td>
+<td style="text-align:left;"> push all tag           </td>
+<td style="text-align:left;"> push 所有tag标签            </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>除此之外，上面的key bindings组合还可以添加对应的扩展参数，比如强制push，即p-Fu</p>
 
 <h4>8. (l) Log查看日志</h4>
 
-<p>对应git log，查看git日志记录
-| key bindings | description                  |
-|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
-| ll           | 查看当前分支的日志           |
-| lo           | log other 查看其他分支的日志 |
-在具体的commit上使用 l 键还可以根据给出的命令组合进一步查看commit提交的详情信息</p>
+<p>对应git log，查看git日志记录</p>
+
+<table>
+<thead>
+<tr>
+<th> key bindings </th>
+<th> description                  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> ll           </td>
+<td> 查看当前分支的日志             </td>
+</tr>
+<tr>
+<td> lo           </td>
+<td> log other 查看其他分支的日志   </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>在具体的commit上使用 l 键还可以根据给出的命令组合进一步查看commit提交的详情信息</p>
 
 <h4>9. (a/A) cherry picking</h4>
 
@@ -224,12 +273,32 @@ UserA/Project就是upstream，而pushremote是UserB/Project
 <h4>10. (z)Stash</h4>
 
 <p>对应git Stash，将临时的未commit的变更内容暂存起来
-常用命令有：
-| key bindings | command       | description |
-|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;|&mdash;&mdash;&mdash;&mdash;-|
-| zz           | git stash     | 暂存        |
-| zp           | git stash pop | 恢复        |
-除此之外，还有一个有意思的用法是，当你希望单单想stash变更文件列表中的一个文件时，可以先将目标文件Stage在index索引区，然后适用 zi 组合暂存index区域，这样就可以实现单一文件的stash功能</p>
+常用命令有：</p>
+
+<table>
+<thead>
+<tr>
+<th> key bindings </th>
+<th> command       </th>
+<th> description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> zz           </td>
+<td> git stash     </td>
+<td> 暂存        </td>
+</tr>
+<tr>
+<td> zp           </td>
+<td> git stash pop </td>
+<td> 恢复        </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>除此之外，还有一个有意思的用法是，当你希望单单想stash变更文件列表中的一个文件时，可以先将目标文件Stage在index索引区，然后适用 zi 组合暂存index区域，这样就可以实现单一文件的stash功能</p>
 
 <h4>11. (k) Discard/Delete</h4>
 
@@ -246,12 +315,31 @@ UserA/Project就是upstream，而pushremote是UserB/Project
 
 <h4>14. &reg; Rebase</h4>
 
-<p>对应git中的变基操作
-| key bindings | description                        |
-|&mdash;&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;|
-| ru           | rebase on upstream                 |
-| rp           | rebase on pushremote               |
-| re           | 会提示你以哪个分支为基点进行rebase     |</p>
+<p>对应git中的变基操作</p>
+
+<table>
+<thead>
+<tr>
+<th> key bindings </th>
+<th> description                        </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> ru           </td>
+<td> rebase on upstream                 </td>
+</tr>
+<tr>
+<td> rp           </td>
+<td> rebase on pushremote               </td>
+</tr>
+<tr>
+<td> re           </td>
+<td> 会提示你以哪个分支为基点进行rebase     </td>
+</tr>
+</tbody>
+</table>
+
 </div>
   
   
