@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>我的算法天梯之路之-穷举搜索 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="穷举搜索的例子－Google方程式 　问题描述 有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">我的算法天梯之路之-穷举搜索</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-05-30T22:15:17+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h2 id="穷举搜索的例子google方程式">穷举搜索的例子－Google方程式</h2>
+
+
+
+
+<h3 id="问题描述">　问题描述</h3>
+
+
+
+
+<p>有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换，并且替换之后能够满足等式。</p>
+
+
+
+
+<h3 id="问题分析">问题分析</h3>
+
+
+
+
+<p>从排列组合的角度来看，这道题是一道典型的排列组合问题，题目中一共出现了9个字母。</p>
+
+
+
+
+<p>如果不考虑0开头的情况下，这样的组合应该有10x9x8x7x6x5x4x3x2=3628800种组合。</p>
+
+
+
+
+<p>在这样的情况之下，计算机的穷举处理应该是毫无压力的。</p>
+
+
+
+
+<h3 id="问题求解">问题求解</h3>
+
+
+
+
+<p>首先为了能够表示这样一种可变的字符元素列表，我们需要自定义一种数据结构。首先我们知道这个自定义结构中应该包含有三个属性，分别是 字符本身，字符代表的数字以及是否为数字的最高位，因为最高位是不能为0的，所以在这里我们要区别对待。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharItem</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">leading</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_ITEM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>接着我们初始化这个列表。=</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">CHAR_ITEM</span> <span class="n">charItem</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;D&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;O&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;T&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;G&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;L&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;E&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;C&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为这是一个组合问题，那么两个字母就不能被指定为相同的数字，这样我们需要定义额外的占用标识。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharValue</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">isused</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_VALUE</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//穷举算法实现如下</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">SearchingResult</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[],</span><span class="n">CHAR_VALUE</span> <span class="n">cv</span><span class="p">[],</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">index</span><span class="p">,</span><span class="n">CharListReadyFuncPtr</span> <span class="n">callback</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">max_char_count</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">callback</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">max_number_count</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">IsValueValid</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">SearchingResult</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">callback</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>根据题目要求，W，G，D三者都不能为0，为了加快穷举速度可以对他们为0的情况进行剪枝。 <br>
+IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数可以减少约30%。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//callback代码实现</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">OnCharListReady</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">minuend</span> <span class="o">=</span> <span class="s">&quot;WWWDOT&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">subtrahend</span> <span class="o">=</span> <span class="s">&quot;GOOGLE&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">=</span> <span class="s">&quot;DOTCOM&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">minuend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">subtrahend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">diff</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="n">d</span><span class="p">){</span>
+</span><span class='line'>      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span><span class="n">s</span><span class="o">&lt;&lt;</span> <span class="s">&quot;=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>问题答案 <br>
+  777589 - 188103 = 589486 <br>
+  777589 - 188106 = 589483</p>
+</blockquote>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-05-30T22:15:17+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/03/10/yin-ma-er-ke-fu-mo-xing-(hmm)de-yuan-li/" title="Previous Post: 隐马尔可夫模型（HMM）的原理">&laquo; 隐马尔可夫模型（HMM）的原理</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/06/01/slamde-fu-xing-wu-ren-jia-shi-de-wei-lai/" title="Next Post: SLAM的复兴-无人驾驶的未来?">SLAM的复兴-无人驾驶的未来? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

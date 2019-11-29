@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>有关统计学的一些笔记 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="有关推断统计学 样本与总体 在统计中，一个总体包括事件的全部，而一个样本是总体的一小部分（子集）
+。 推断统计学 推断统计学（Inferential statistics） 是使用样本归纳总体的一种统计方法。推断统计非常有用，因为他允许我们基于有限的信息（样本）对总体得出结论。 假设检验 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">有关统计学的一些笔记</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-07-14T13:22:09+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1>有关推断统计学</h1>
+
+<h2>样本与总体</h2>
+
+<p>在统计中，一个<strong>总体</strong>包括事件的全部，而一个<strong>样本</strong>是总体的一小部分（子集）
+。</p>
+
+<h2>推断统计学</h2>
+
+<p><strong>推断统计学（Inferential statistics）</strong> 是使用样本归纳总体的一种统计方法。推断统计非常有用，因为他允许我们基于有限的信息（样本）对总体得出结论。</p>
+
+<h2>假设检验</h2>
+
+<p>当我们使用样本对总体进行推断时，这个过程为假设检验（Hypothesis testing）。在假设检验中，通常要陈述两个假设：<strong>原假设（null hypothesis）</strong> 和<strong>对立假设（alternative hypothesis）</strong>。原假设通常陈述处理没有效果，而对立假设陈述处理有效果。</p>
+
+<h2>单边检验和双边检验</h2>
+
+<p>在评估处理要看是否对任一方向有影响（了解得分是更高还是更低）时使用双边检验，而在母的仅仅是调查单一方向（仅仅是更高还是更低）时使用单边检验。</p>
+
+<h2>第一类错误和第二类错误</h2>
+
+<p>在假设检验中，使用样本对总体进行推断。因为样本是总体的不完整“图像”，所以在假设检验过程中，就可能有错误。有两类错误发生：第一类错误，第二类错误。如果在原假设是真实的情况下拒绝了原假设，就发生了第一类错误。如果在原假设是错误的情况下没有拒绝原假设，就发生了第二类错误。</p>
+
+<h2>功效</h2>
+
+<p><strong>功效（power）</strong>等于原假设错误的拒绝原假设的概率（如果原假设是错误的，他也是被拒绝的，就是做了一个正确的决策）。功效的取值范围在0~1之间，数值越大，功效越大。</p>
+
+<h2>抽样误差</h2>
+
+<p>一般来说，样本越小，样本与总体的差异就越大。样本与总体的差异就是<strong>抽样误差（sampling error）</strong></p>
+
+<h2>p-值</h2>
+
+<p>如果从总体中抽取的样本通常都是不相同的，那么我们应该如何确定样本之间存在有意义的差异，还是由于抽样误差所导致的结果。p-值表明在原假设为真时获得特定结果的的概率。在假设检验中，检验的p-值是和预先确定的数值进行比较的，且基于比较的结果，对原假设进行决策。在社会和行为科学中，常用0.05位水平，来评价p-值。</p>
+
+<blockquote><p>评价p-值过程如下：
+1. 如果p-值小于或等于0.05（α），拒绝原假设（假定策略之间存在差异）
+2. 如果p-值大于0.05（α），不能拒绝原假设（没有假定策略之间有差异）</p></blockquote>
+
+<h2>效应量</h2>
+
+<p><strong>效应量（effect sizes）</strong>一般用来描述策略组之间的差异程度，表明我们研究结果的大小。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-07-14T13:22:09+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/" title="Previous Post: 贝叶斯算法在检测群聊垃圾广告中的应用">&laquo; 贝叶斯算法在检测群聊垃圾广告中的应用</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/" title="Next Post: Python科学计算库NumPy的使用">Python科学计算库NumPy的使用 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>K-近邻算法-Part1 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="K-近邻算法-Part1 概述 K-近邻算法，即K-近邻分类算法，简称KNN其通过采用测量不同的特征值之间的距离方法进行分类。 有关K-近邻算法的问题 优点：精度高，对异常值不敏感，无数据输入假定 缺点：计算复杂度较高，空间复杂度较高 适用数据范围：数值型和标称型 工作原理 存在一个样本数据集合， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">K-近邻算法-Part1</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-08-14T23:48:56+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1 id="k-近邻算法-part1">K-近邻算法-Part1</h1>
+
+
+
+
+<h2 id="概述">概述</h2>
+
+
+
+
+<p>K-近邻算法，即K-近邻分类算法，简称KNN其通过采用测量不同的特征值之间的距离方法进行分类。</p>
+
+
+
+
+<h3 id="有关k-近邻算法的问题">有关K-近邻算法的问题</h3>
+
+
+
+
+<p>优点：精度高，对异常值不敏感，无数据输入假定</p>
+
+
+
+
+<p>缺点：计算复杂度较高，空间复杂度较高</p>
+
+
+
+
+<p>适用数据范围：数值型和标称型</p>
+
+
+
+
+<h3 id="工作原理">工作原理</h3>
+
+
+
+
+<p>存在一个样本数据集合，即训练样本集，并且训练样本中的每一个数据都存在标签，我们可以清楚地知道每一个数据条目其与对应分类的所属关系。</p>
+
+
+
+
+<p>然后在接受没有标记的新数据输入时，将新数据的特征提取出来将其一一与训练样本集中数据对应的特征进行比较，然后算法提取样本集中特征最相似的（即所谓的最近邻）的分类标签来作为新数据的标签。</p>
+
+
+
+
+<p>其中为了避免偶尔性和离群值造成的误差因此有了以样本数据集中前k个最相似的数据作为判别的参考的标准这种做法。<strong>通常k是不大于20的整数而且一般选取奇数作为k值</strong>（奇数可以在投票分类时避免出现等票的情况），最终的分类结果由k个样本的分类标签投票形成，出现最多的分类标签作为新数据的分类。</p>
+
+
+
+
+<h3 id="一般算法流程">一般算法流程</h3>
+
+
+
+
+<ol>
+<li>收集数据</li>
+<li>准备数据：对数据进行清洗和结构化处理，使得数据可以进行距离计算</li>
+<li>分析数据：提取相关特征</li>
+<li>训练分类：knn算法并不需要训练</li>
+<li>测试算法：计算错误率</li>
+<li>使用算法：将新数据输入进行对应结构化之后，运行算法进行判定分类情况，并对后续的分类结果进行进一步处理应用</li>
+</ol>
+
+
+
+
+<h2 id="用knn-制作简单的分类器">用KNN 制作简单的分类器</h2>
+
+
+
+
+<p>使用数据：<a href="https://archive.ics.uci.edu/ml/datasets/Iris">UCI的鸢尾花数据集</a> <br>
+点击进入目标链接后: </p>
+
+
+
+
+<blockquote>
+  <p>按照 Download Data Folder &gt; iris.data 路径来下载指定数据集</p>
+</blockquote>
+
+
+
+
+<h4 id="准备数据">准备数据</h4>
+
+
+
+
+<p>在这里我们使用Python 的 Pandas 包以没有标题栏的csv文件的形式读入数据</p>
+
+
+
+
+<p><strong>关键函数：read_csv</strong></p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading libraries</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># define column names</span>
+</span><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;sepal_length&#39;</span><span class="p">,</span> <span class="s">&#39;sepal_width&#39;</span><span class="p">,</span> <span class="s">&#39;petal_length&#39;</span><span class="p">,</span> <span class="s">&#39;petal_width&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># loading training data</span>
+</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;iris.data.txt&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><strong>输出</strong>：</p>
+
+
+
+
+<table>
+<thead>
+<tr>
+  <th>index</th>
+  <th>sepal_length</th>
+  <th>sepal_width</th>
+  <th>petal_length</th>
+  <th>petal_width</th>
+  <th>class</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>0</td>
+  <td>5.1</td>
+  <td>3.5</td>
+  <td>1.4</td>
+  <td>0.2</td>
+  <td>Iris-setosa</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td>4.9</td>
+  <td>3.0</td>
+  <td>1.4</td>
+  <td>0.2</td>
+  <td>Iris-setosa</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>4.7</td>
+  <td>3.2</td>
+  <td>1.3</td>
+  <td>0.2</td>
+  <td>Iris-setosa</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>4.6</td>
+  <td>3.1</td>
+  <td>1.5</td>
+  <td>0.2</td>
+  <td>Iris-setosa</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>5.0</td>
+  <td>3.6</td>
+  <td>1.4</td>
+  <td>0.2</td>
+  <td>Iris-setosa</td>
+</tr>
+</tbody></table>
+
+
+
+
+<h4 id="构建算法">构建算法</h4>
+
+
+
+
+<p><strong>距离函数</strong></p>
+
+
+
+
+<p>我a们在上面的例子中把一个很重要的概念隐藏了起来，在选择一个数量k还只是小问题，更重要的是距离的计算方法。毕竟，当我们说“最近的k个点”时，这个“近”是怎么衡量的？</p>
+
+
+
+
+<p>在数学中，一个空间上距离的严格定义如下： <br>
+设 M 为一个空间，M上的一个距离函数是一个函数<script type="math/tex" id="MathJax-Element-383">d:M\times M \rightarrow R</script>，满足：</p>
+
+
+
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-384">d(x,y)≥0  ∀x,y∈M</script></li>
+<li><script type="math/tex" id="MathJax-Element-385">d(x,y)=0⟺x=y</script></li>
+<li><script type="math/tex" id="MathJax-Element-386">d(x,y)=d(y,x) ∀x,y∈M</script></li>
+<li><script type="math/tex" id="MathJax-Element-387">d(x,z)≤d(x,y)+d(y,z) ∀x,y,z∈M</script></li>
+</ul>
+
+
+
+
+<p>两个点 x,y 之间的距离就是<script type="math/tex" id="MathJax-Element-388">d(x,y)</script>。</p>
+
+
+
+
+<p>我们一般最常用的距离函数是欧氏距离，也称作<script type="math/tex" id="MathJax-Element-389">L_2</script>距离。</p>
+
+
+
+
+<p>如果 <br>
+<script type="math/tex" id="MathJax-Element-390">x=(x1,x2,…,xn)</script> 和 <script type="math/tex" id="MathJax-Element-391">y=(y1,y2,…,yn)</script>是 n 维欧式空间 Rn 上的两个点，那它们之间的<script type="math/tex" id="MathJax-Element-392">L_2</script>距离是</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-393">d_2(X,Y)=\sqrt{\sum _{i=1}^n \left(X_i-Y_i\right){}^2}</script></p>
+
+
+
+
+<p>由于Python 的scikit-learn包已经实现了KNN算法，因此我们在这里可以直接调用。</p>
+
+
+
+
+<p>在<a href="http://scikit-learn.org/stable/index.html">scikit-learn</a>中，需要以matrix的形式和目标向量的形式来导入和训练数据。</p>
+
+
+
+
+<p>因此在使用scikit-learn之前需要做额外的数据结构处理，同时还应该把原数据划分成训练数据和测试数据这样更加有利于我们下面的算法正确率评估。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading libraries</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># create design matrix X and target vector y</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>   <span class="c"># end index is exclusive</span>
+</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">])</span>   <span class="c"># another way of indexing a pandas df</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># split into train and test</span>
+</span><span class='line'><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>最后，我们根据划分好的数据集来构建真正的分类器，并用构建出来的分类器来进行数据拟合以及评估他的正确率。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># loading library</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+</span><span class='line'><span class="c"># instantiate learning model (k = 3)</span>
+</span><span class='line'><span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># fitting the model</span>
+</span><span class='line'><span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># predict the response</span>
+</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># evaluate accuracy</span>
+</span><span class='line'><span class="c"># print(y_test,pred)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><strong>输出</strong></p>
+
+
+
+
+<blockquote>
+  <p>0.98</p>
+</blockquote>
+
+
+
+
+<p>由此可见，在适用的场合之下，KNN分类器的准确率也是可以达到一个较为理想的水平的。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-08-14T23:48:56+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/08/14/k-jin-lin-suan-fa-part1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/06/ji-qi-xue-xi-gai-shu-ke-pu-xiang/" title="Previous Post: 机器学习概述-科普向">&laquo; 机器学习概述-科普向</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/08/23/k-jin-lin-suan-fa-part2/" title="Next Post: K-近邻算法-Part2">K-近邻算法-Part2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

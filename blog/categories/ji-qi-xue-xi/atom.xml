@@ -1,0 +1,1368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 机器学习 | EdmondFrank's 时光足迹]]></title>
+  <link href="https://edmondfrank.github.io/blog/categories/ji-qi-xue-xi/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2019-11-29T18:26:24+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[谈谈Google自动编程框架AutoML]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/"/>
+    <updated>2018-02-08T18:17:01+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
+
+
+
+
+<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
+
+
+
+
+<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
+
+
+
+
+<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
+
+
+
+
+<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
+
+
+
+
+<h2 id="什么是automl">什么是AutoML？</h2>
+
+
+
+
+<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
+ <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
+
+
+
+
+<ul>
+<li>预处理数据</li>
+<li>选择适当的功能</li>
+<li>选择一个适当的模型选择系列</li>
+<li>优化模型超参</li>
+<li>后处理机器学习模型</li>
+<li>严格分析所得的结果</li>
+</ul>
+
+
+
+
+<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
+
+
+
+
+<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
+
+
+
+
+<ul>
+<li>执行深层表示的架构搜索</li>
+<li>分析超参数的重要性</li>
+</ul>
+
+
+
+
+<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
+
+
+
+
+<h2 id="automl的架构">AutoML的架构</h2>
+
+
+
+
+<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
+在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
+
+
+
+
+<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
+
+
+
+
+<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
+
+
+
+
+<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
+
+
+
+
+<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
+
+
+
+
+<h2 id="automl的案例应用">AutoML的案例应用</h2>
+
+
+
+
+<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
+
+
+
+
+<ul>
+<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
+<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
+</ul>
+
+
+
+
+<h2 id="测试结果">测试结果</h2>
+
+
+
+
+<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
+有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
+
+
+
+
+<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
+
+
+
+
+<blockquote>
+  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
+  Accuracy score 0.988888888889</p>
+</blockquote>
+
+
+
+
+<p>然后是auto-sklearn框架的自生成模型：</p>
+
+
+
+
+<blockquote>
+  <p>import autosklearn.classification <br>
+  import sklearn.model_selection <br>
+  import sklearn.datasets <br>
+  import sklearn.metrics <br>
+  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
+  X_train, X_test, y_train, y_test = \ <br>
+         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
+  automl = autosklearn.classification.AutoSklearnClassifier() <br>
+  automl.fit(X_train, y_train) <br>
+  y_hat = automl.predict(X_test) <br>
+  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
+   [Out] Accuracy score 0.993333333333</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
+<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
+网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
+新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
+只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[SVM支持向量机]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/"/>
+    <updated>2017-10-11T16:38:50+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/10/11/svmzhi-chi-xiang-liang-ji</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="svmsupport-vector-machines-支持向量机">SVM(Support Vector Machines)-支持向量机</h1></p>
+
+<p>曾经很多人都认为SVM是现在的最好的分类器，即：在不加以修改的前提之下，就能够在数据上进行训练并能够对训练集之外的数据点做出很好的分类决策。</p>
+
+
+
+
+<h2 id="基于最大间隔分割数据">基于最大间隔分割数据</h2>
+
+
+
+
+<p><strong>支持向量机：</strong> <br>
+优点：泛化错误率低，计算开销不大，结果容易解释 <br>
+缺点：对参数调节和核函数的选择策略敏感，原始分类器不加修改仅适用于处理二类问题。 <br>
+<img src="http://scikit-learn.org/stable/_images/sphx_glr_plot_separating_hyperplane_0011.png" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在上图中，我们可以看出：我们可以很容易在图中画出一条直线将两组数据点分开。在这种情况下，这组数据被称为<strong>线性可分(linearly separable)</strong>数据，而将数据集分割开来的直线我们称为<strong>分隔超平面(separating hyperplane)</strong>。在上图例子中，由于数据点都在二维平面上，所有此时分隔超平面就只是一条直线而已。但是，如果所给的数据为三维的，那么此时用来分隔数据的就是一个平面。依此类推，如果给出一个N（N&gt;3）维数据集，那么则要用一个N-1维的对象来对数据进行分隔，该对象亦被称为<strong>超平面(hyperplane)</strong>。</p>
+
+
+
+
+<p>我们希望通过这样的方式来构建分类器。即如果数据点离决策边界越远，那么其最后的预测效果就越可信。那么我们继续看回上面的图片，我们可以看到有三条直线（一条实线，两条虚线）它们分别都能将数据分隔开，但是其中哪一条才是最理想的呢？通常，我们可以做过这样的方法来确定一个最佳分隔平面，即：我们先找到离分隔平面最近的点，确保它们离分隔平面的距离尽可能远。</p>
+
+
+
+
+<p>这里我们又要先引入一些新的概念： <br>
+首先是，点到分隔面的距离被称为<strong>间隔(margin)</strong> <br>
+<strong>支持向量(support vector)：</strong>就是离分割平面最近的那些点。</p>
+
+
+
+
+<p>接下来，就是最大化支持向量都分隔面的距离，并需要找到此问题的优化求解方法。</p>
+
+
+
+
+<h2 id="寻找最大间隔">寻找最大间隔</h2>
+
+
+
+
+<p><strong>Maximum Marginal（最大间隔）</strong>是SVM的一个理论基础之一。选择使得间隔最大的函数作为分隔平面是十分容易解释的。从概率的角度上而言，就是使得置信度最小的点置信度最大;从现实意义上而言，两个个体的类别差异越大，我们自然也能够更为准确地分类。</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd657a3c93.png" alt="svm.png" title=""></p>
+
+
+
+
+<p>上图就是一个对之前所提及的类别间隙的一个描述。其中中间的黑色实线为<strong>分隔边界（Classifier Boundary）</strong>是我们算法中要求解的<strong>f(x)</strong>，红色和蓝色的线(plus plane 与 minus plane)就是支持变量所在的平面，而红色，蓝色之间的间隙就是我们要最大化的分类间的间隙。</p>
+
+
+
+
+<p>首先，我们可以知道其两个支持向量的所在平面可以表达成如下形式：</p>
+
+
+
+
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a677ed33ca0c840aa9295405fc095c8aefa73e48" alt="enter image description here" title=""></p>
+
+
+
+
+<p>和</p>
+
+
+
+
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c3dbeeb7d5af27a2551ec07ce172ddbce62fc58" alt="enter image description here" title=""></p>
+
+
+
+
+<p>然后，这两个超平面的距离可以表达成：<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac553c94aec996dffa3369adcf285319178a474f" alt="enter image description here" title=""></p>
+
+
+
+
+<p>因此，为了最大化两个平面的距离，我们只要最小化<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">即可。</p>
+
+
+
+
+<p><strong>综上所述</strong>，我们可以将整个原理表示为：</p>
+
+
+
+
+<blockquote>
+  <p>Minimize<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">  <br>
+  subject to<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7181cf8e723b24ad6d85b73b9513dcaac0d31023" alt="" title=""> <br>
+  for <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/520ffef648f7b26db5bae564be860346630635fc" alt="enter image description here" title=""></p>
+</blockquote>
+
+
+
+
+<p>当支持变量确定的时候，整个分割函数也就确定了下来。除此之外，支持向量的出现还可以让向量后方的样本点不用再参与计算，大大降低了算法的计算复杂度。</p>
+
+
+
+
+<p>再者，有关距离计算的优化。<script type="math/tex" id="MathJax-Element-41">||\vec w||</script>的意思是<script type="math/tex" id="MathJax-Element-42">\vec w</script>的二范数，由之前我们得到的最大间隔<script type="math/tex" id="MathJax-Element-43">M=2/||\vec w||</script>，最大化这个式子等价于最小化<script type="math/tex" id="MathJax-Element-44">|||\vec w||</script>，另外由于<script type="math/tex" id="MathJax-Element-45">||\vec w||</script>是一个单调函数，我们可以对其进行平方，和加上系数。数学经验丰富的朋友可能一眼就看出来，这样做是为了方便求导。</p>
+
+
+
+
+<p>最后我们的式子可以写成：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726bc801.png" alt="svmalg.png" title=""></p>
+
+
+
+
+<p><strong>s.t的意思是subject to</strong>，也就是在后面这个限制条件下的意思，这个词在svm的论文里面非常容易见到。这其实是一个<strong>带约束的二次规划(quadratic programming, QP)问题</strong>，是一个<strong>凸问题</strong>，凸问题就是指的不会有局部最优解，可以想象一个漏斗，不管我们开始的时候将一个小球放在漏斗的什么位置，这个小球最终一定可以掉出漏斗，也就是得到全局最优解。s.t.后面的限制条件可以看做是一个凸多面体，我们要做的就是在这个凸多面体中找到最优解。</p>
+
+
+
+
+<h2 id="优化求解">优化求解</h2>
+
+
+
+
+<p>这个优化问题可以用<a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">拉格朗日乘子法</a>去解，使用了<a href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">KKT条件</a>的理论，这里直接作出这个式子的拉格朗日目标函数： <br>
+<img src="https://i.loli.net/2017/10/11/59ddd726bb94a.png" alt="Lagrange.png" title=""></p>
+
+
+
+
+<p>由于求解这个式子的过程需要<a href="https://en.wikipedia.org/wiki/Quadratic_programming#Lagrangian_duality">拉格朗日对偶性</a>的相关知识，以及较深入的数学背景知识，在这篇文章中暂且不谈，以后博客再另外写一篇有关具体推导的文章。</p>
+
+
+
+
+<p>在此，我先贴出在该问题在论文中的关键推导步骤：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726dd5a4.png" alt="formulation.png" title=""></p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726d9bc8.png" alt="dual.png" title=""></p>
+
+
+
+
+<p>上图就是我们需要最终优化的式子了。整篇文章到这里，我们终于得到了SVM线性可分问题的优化式子。</p>
+
+
+
+
+<h2 id="svm的使用">SVM的使用</h2>
+
+
+
+
+<p>由于支持向量机算法的实现涉及过多的数学背景，在本中暂不使用原生程序代码实现，而是选择调用Python sklearn 库现有的SVM算法进行使用的举例。</p>
+
+
+<pre><code class="python">from sklearn import svm
+from sklearn import datasets
+from sklearn import metrics
+clf = svm.SVC()
+print(clf)
+iris = datasets.load_iris()
+X, y = iris.data, iris.target
+clf.fit(X, y)
+pred = clf.predict(X)
+print(metrics.accuracy_score(y,pred))
+</code></pre>
+
+<blockquote>
+  <p>输出结果 <br>
+  SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, <br>
+    decision_function_shape=None, degree=3, gamma=’auto’, kernel=’rbf’, <br>
+    max_iter=-1, probability=False, random_state=None, shrinking=True, <br>
+    tol=0.001, verbose=False) <br>
+  0.986666666667</p>
+</blockquote>
+
+
+
+
+<p>本例使用的是<strong>sklearn</strong>库自带的<strong>iris</strong>数据集使用SVM算法进行训练，然后再进行回测。首先，我们可以看到在不做任意处理的前提下，SVM模型的预估效果也是相当不错的，其准确率高达98%（其结果主要因为使用的数据集优秀导致的，直接运用于工程上时不会有这么高的准确率）。</p>
+
+
+
+
+<p>当然，上面例子中的算法模型的实现方式是十分简陋的。如果真正要使用SVM进行严格地建模，测试集与训练集的划分问题，数据的归一化处理问题等。都是我们需要考虑的元素。但由于本文主要为了介绍与探讨SVM算法，其他细节问题就不一一处理，详细方法可以参考我写的其他文章。</p>
+
+
+
+
+<h2 id="svm的其他实现">SVM的其他实现</h2>
+
+
+
+
+<p>除了Python的sklearn库外，SVM在其它语言及平台也有实现。其中： <br>
+最流行的有</p>
+
+
+
+
+<blockquote>
+  <p><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM：</a><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">https://www.csie.ntu.edu.tw/~cjlin/libsvm/</a> <br>
+  这是经典的svm库支持多种语言调用</p>
+</blockquote>
+
+
+
+
+<p>再者，在R语言中也有SVM算法的实现：</p>
+
+
+
+
+<blockquote>
+  <p><a href="https://cran.r-project.org/web/packages/e1071/index.html">e1071：</a> <br>
+  <a href="https://cran.r-project.org/web/packages/e1071/index.html">https://cran.r-project.org/web/packages/e1071/index.html</a></p>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[K-means聚类简介]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/"/>
+    <updated>2017-10-06T14:28:25+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="k-means聚类简介">K-means聚类简介</h1></p>
+
+<p>前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别）而其最后分成的组数则由参数K来决定。</p>
+
+
+
+
+<h2 id="算法基本步骤">算法基本步骤</h2>
+
+
+
+
+<ol>
+<li>随机初始化K个簇心。用作标识各组数据。</li>
+<li>根据各个数据的特征/属性，将他们聚类到距离最接近的一个簇，并打上分类标识。</li>
+<li>根据加入的数据重新计算每个簇的质心（均值，Means）</li>
+<li>重复2，3步，直至最后所有数据被划分成k个簇。</li>
+</ol>
+
+
+
+
+<p>从以后的步骤我们也可以充分地看出，再聚类完毕之前数据是没有分组和标识的，而是通过聚类来查找和分析被划分在一起的数据。</p>
+
+
+
+
+<p>同时，每个簇的质心是定义组的特征的代表，我们往往可以通过一个簇的质心看出该分组的特征以及属性。从而判断出这个簇代表了一个怎么样的组。</p>
+
+
+
+
+<h2 id="应用领域">应用领域</h2>
+
+
+
+
+<ul>
+<li>网站，App的用户群体聚类</li>
+<li>信用卡诈骗监测（这个是利用了聚类算法的反原理，寻找离群值）</li>
+<li>文章自动归类</li>
+<li>图像归类</li>
+<li>人群健康状态监测（同信用卡诈骗检测同原理）</li>
+</ul>
+
+
+
+
+<p>此外，我们还可以通过监控数据点根据时间的变化而造成的组间切换现象找到状态变化的方法。</p>
+
+
+
+
+<h2 id="算法主要原理">算法主要原理</h2>
+
+
+
+
+<p>（1）在数据划分方面，我们主要依赖的思路是：<strong>欧氏距离</strong>。即，每个簇的质心定义了一种聚类，然后每个点根据其到每个簇的质心的欧几里德距离的平方的大小，将其分配到最近的簇中。我们假设<script type="math/tex" id="MathJax-Element-1">c_i</script>是簇集合C中质心i，那么我们可以将其聚类的过程表达成下列形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-2">argmin_{c_i \in C} dist(c_i,x)^2</script></p>
+
+
+
+
+<p>（2）<strong>质心的更新</strong>，在这一步骤中，各个簇的质心将要被重新计算，通过加入新的数据再重新计算包括i新数据在内的的整个簇的均值以此作为新的质心。该过程可以表达为一下形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-3">c_i=\frac{1}{|S_i|}\sum_{x_i \in S_i }x_i</script></p>
+
+
+
+
+<p>在多次迭代之后，该算法可以保证收敛于一个结果，虽然有可能只是一个局部的最优解而已。为了使得最后结果更加稳定和可靠，我们也可以通过多次运行算法然后再在多个结果中取得一个均衡（为什么说多次计算可以得到更好的结果呢？ 因为每次随机初始化的质心都是不同的，这样使得每次的运行结果都不尽相同，为了得到一个更加稳定的结果和更好的鲁棒性，多次运行往往是一个简单但却有效的方法。）</p>
+
+
+
+
+<h2 id="有关k值的选择">有关K值的选择</h2>
+
+
+
+
+<p>在K-means聚类算法中，K值的选择往往是一个较为难以抉择的问题。最后的情况是，在你应用这个算法之前，已经知道数据应该分为多少个类别合适，或者将这种方法应用在一个半监督学习的场合，使得最后的分类结果有据可依。</p>
+
+
+
+
+<p>那么，在一般我们不太清楚分类的情况之下，我们能做的就是通过为K值制定一个范围，然后在这个范围之上，我们尝试运行我们的分类器，然后根据分类效果来评判我们的k的取值。</p>
+
+
+
+
+<p>另外一方面，聚类算法通常会不断降低各个样本点到质心之间的距离，随着k值的增加，“距离”更是一直下降。但是，当k值增大到一定程度时，虽然“距离”仍在下降，但下降的速率已经变得十分缓慢了。我们常常称这个点的k值为<strong>肘点</strong>。往往到达肘点的k值已经能够很好地将各个类别之间的差异信息给描述出来，所以我们可以在不清楚数据具体分类信息的情况下，选择肘点值来作为我们的k值。</p>
+
+
+
+
+<p><img src="https://www.datascience.com/hs-fs/hubfs/Blog/introduction-to-k-means-clustering-elbow-point-example.png?t=1507257936532&amp;width=760&amp;height=411&amp;name=introduction-to-k-means-clustering-elbow-point-example.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h2 id="example">Example</h2>
+
+
+
+
+<p>在这里我们通过Python的Sklearn库来看一下K-means的应用实例</p>
+
+
+
+
+<p><a href="https://raw.githubusercontent.com/datascienceinc/learn-data-science/master/Introduction-to-K-means-Clustering/Data/data_1024.csv">Delivery Fleet Data 数据下载</a></p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+<pre><code class="python">import pandas as pd
+import matplotlib.pyplot as plt
+df = pd.read_csv("data_1024.csv",sep='\t')
+plt.scatter(df['Distance_Feature'],df['Speeding_Feature'])
+plt.xlabel("Distance_Feature")
+plt.ylabel("Speeding_Feature")
+plt.title("Delivery Fleet Data")
+plt.show()
+df.head()
+</code></pre>
+
+<blockquote>
+  <p>输出结果 <br>
+    Driver_ID   Distance_Feature    Speeding_Feature <br>
+  0   3423311935  71.24   28.0 <br>
+  1   3423313212  52.53   25.0 <br>
+  2   3423313724  64.54   27.0 <br>
+  3   3423311373  55.69   22.0 <br>
+  4   3423310999  54.58   25.0 <br>
+  <img src="https://i.loli.net/2017/10/06/59d71bde43c28.png" alt="kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<h3 id="算法使用">算法使用</h3>
+
+
+<pre><code class="python">import numpy as np
+from sklearn.cluster import KMeans
+X_train = df[['Distance_Feature','Speeding_Feature']]
+kmeas = KMeans(n_clusters=2).fit(X_train)
+
+color = [str(item/255.) for item in kmeas.labels_]
+plt.scatter(df['Distance_Feature'],df['Speeding_Feature'],c=color)
+plt.xlabel("Distance_Feature")
+plt.ylabel("Speeding_Feature")
+plt.title("Delivery Fleet Data")
+plt.show()
+kmeas = KMeans(n_clusters=4).fit(X_train)
+
+color = [str(item/255.) for item in kmeas.labels_]
+plt.scatter(df['Distance_Feature'],df['Speeding_Feature'],c=color)
+plt.xlabel("Distance_Feature")
+plt.ylabel("Speeding_Feature")
+plt.title("Delivery Fleet Data")
+plt.show()
+</code></pre>
+
+<blockquote>
+  <p>输出结果 <br>
+  <img src="https://i.loli.net/2017/10/06/59d720b726068.png" alt="sk-kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<p>上面的结果展示了，K分别等于2和4时对数据的聚类的结果，由于这个算法使用还算简单，在这里我也不做赘述了。那么有关K-means的简介到这里也就结束了，谢谢大家的阅读。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[机器学习之梯度下降]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/"/>
+    <updated>2017-09-30T20:19:04+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang</id>
+    <content type="html"><![CDATA[<h1 id="机器学习之梯度下降">机器学习之梯度下降</h1>
+
+
+
+
+<h2 id="梯度下降gradient-descent">梯度下降(gradient descent)</h2>
+
+
+
+
+<p>是线性回归的一种(Linear Regression)，在<a href="https://www.bilibili.com/video/av9912938/?from=search&amp;seid=3888228796805461518">Andrew Ng的machine learning</a>前期课程中有着详细的讲解，首先给出一个关于课程中经典的例子:预测房屋的价格。</p>
+
+
+
+
+<table>
+<thead>
+<tr>
+  <th>面积(feet2)</th>
+  <th>房间个数</th>
+  <th>价格（1000$）</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>2104</td>
+  <td>3</td>
+  <td>400</td>
+</tr>
+<tr>
+  <td>1600</td>
+  <td>3</td>
+  <td>330</td>
+</tr>
+<tr>
+  <td>2400</td>
+  <td>3</td>
+  <td>369</td>
+</tr>
+<tr>
+  <td>1416</td>
+  <td>2</td>
+  <td>232</td>
+</tr>
+<tr>
+  <td>3000</td>
+  <td>4</td>
+  <td>540</td>
+</tr>
+</tbody></table>
+
+
+
+
+<p>在上面的表格中，房间的个数以及房屋的面积都是输入变量而，价格就是我们要预测输出的值。其中，面积和房屋个数分别表示一个特征，我们在这将他们一起用X来表示。价格用Y来表示。同时表格的每一行表示成一个样本，具体表示为：<script type="math/tex" id="MathJax-Element-1">f: X_1=[24104,3] \to Y_1=400</script>。</p>
+
+
+
+
+<p>那么我们具体的任务就可以概括成给定一个训练集合，学习出一个函数<script type="math/tex" id="MathJax-Element-2">f</script>，使得<script type="math/tex" id="MathJax-Element-3">f(x)</script>能够符合结果Y，或者说能够使得<script type="math/tex" id="MathJax-Element-4">f(x)</script>与Y的之间的误差最小。</p>
+
+
+
+
+<p>我们可以用以下的式子来表达上述的关系：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-5">f(x) = \theta_1 x_1 + \theta_2 x_2 + \beta</script></p>
+
+
+
+
+<p>其中，<script type="math/tex" id="MathJax-Element-6">\theta 表示X映射成Y的权重，而x表示为各组特征。</script> <br>
+我们再分别用<script type="math/tex" id="MathJax-Element-7">x^{j},y^{j}来表示第J个样本</script>。这样我们就可以写出代价函数：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-8">J(\theta) = \frac {1}{2}\sum ^m_{i=0}(f_\theta(x^{i})-y^{(i)})^2</script></p>
+
+
+
+
+<p>然后我们要使得计算的结果无限接近真实值y的话，我们就要令得我们的代价函数（俗称的误差）最小化。要使得<script type="math/tex" id="MathJax-Element-9">J(\theta)</script>最小，即对<script type="math/tex" id="MathJax-Element-10">J(\theta)</script>进行求导操作，并使得其结果为0。</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-11">\theta_j = \theta_j - \frac{\partial J(\theta)}{\partial \theta_j}</script></p>
+
+
+
+
+<p>当只有单个特征时，上式中的j表示系数（权重）的编号，右边的值赋给左边的变量后完成一次迭代过程。</p>
+
+
+
+
+<p>而多个特征时，其迭代过程如下： <br>
+<img src="https://i.loli.net/2017/09/23/59c5f7bb6ccee.png" alt="gd.png" title=""></p>
+
+
+
+
+<p>上式就是<strong>批梯度下降算法(batch gradient descent)</strong>，当上式收敛时则退出迭代，何为收敛，即前后两次迭代的值不再发生变化了。一般情况下，会设置一个具体的参数，当前后两次迭代差值小于该参数时候结束迭代。注意以下几点：</p>
+
+
+
+
+<p>(1) <strong>a 即学习率（learning rate</strong>），决定的下降步伐，如果太小，则找到函数最小值的速度就很慢，如果太大，则可能会出现无法逼近最小值的现象；</p>
+
+
+
+
+<p>(2) 初始点不同，获得的最小值也不同，因此梯度下降求得的只是局部最小值；</p>
+
+
+
+
+<p>(3) 越接近最小值时，下降速度越慢；</p>
+
+
+
+
+<p>(4) 计算批梯度下降算法时候，计算每一个θ值都需要遍历计算所有样本，当数据量的时候这是比较费时的计算。</p>
+
+
+
+
+<p>批梯度下降算法的步骤可以归纳为以下几步：</p>
+
+
+
+
+<p>(1)先确定向下一步的步伐大小，我们称为Learning rate ；</p>
+
+
+
+
+<p>(2)任意给定一个初始值：θ向量，一般为0向量</p>
+
+
+
+
+<p>(3)确定一个向下的方向，并向下走预先规定的步伐，并更新θ向量</p>
+
+
+
+
+<p>(4)当下降的高度小于某个定义的值，则停止下降；</p>
+
+
+
+
+<h2 id="随机梯度下降算法">随机梯度下降算法</h2>
+
+
+
+
+<p>因为每次计算梯度都需要遍历所有的样本点。这是因为梯度是J(θ)的导数，而J(θ)是需要考虑所有样本的误差和 ，这个方法问题就是，扩展性问题，当样本点很大的时候，基本就没法算了。</p>
+
+
+
+
+<p>所以接下来又提出了<strong>随机梯度下降算法(stochastic gradient descent )</strong>。随机梯度下降算法，每次迭代只是考虑让该样本点的J(θ)趋向最小，而不管其他的样本点，这样算法会很快，但是收敛的过程会比较曲折，整体效果上，大多数时候它只能接近局部最优解，而无法真正达到局部最优解。所以适合用于较大训练集的例子。</p>
+
+
+
+
+<p>其具体流程用公式表达如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/23/59c5f947573e4.png" alt="sgd.png" title=""></p>
+
+
+
+
+<h2 id="代码实现">代码实现</h2>
+
+
+
+
+<h3 id="批梯度下降算法">批梯度下降算法</h3>
+
+
+<pre><code class="python">
+#Training data set
+#each element in x represents (x0,x1,x2)
+x = [(1,0.,3) , (1,1.,3) ,(1,2.,3), (1,3.,2) , (1,4.,4)]
+#y[i] is the output of y = theta0 * x[0] + theta1 * x[1] +theta2 * x[2]
+y = [95.364,97.217205,75.195834,60.105519,49.342380]
+
+
+epsilon = 0.000001
+#learning rate
+alpha = 0.001
+diff = [0,0]
+error1 = 0
+error0 =0
+m = len(x)
+
+#init the parameters to zero
+theta0 = 0
+theta1 = 0
+theta2 = 0
+sum0 = 0
+sum1 = 0
+sum2 = 0
+while True:
+
+    #calculate the parameters
+    for i in range(m):
+        #begin batch gradient descent
+        diff[0] = y[i]-( theta0 + theta1 * x[i][1] + theta2 * x[i][2] )
+        sum0 = sum0 + alpha * diff[0]* x[i][0]
+        sum1 = sum1 + alpha * diff[0]* x[i][1]
+        sum2 = sum2 + alpha * diff[0]* x[i][2]
+        #end  batch gradient descent
+    theta0 = sum0;
+    theta1 = sum1;
+    theta2 = sum2;
+    #calculate the cost function
+    error1 = 0
+    for lp in range(len(x)):
+        error1 += ( y[i]-( theta0 + theta1 * x[i][1] + theta2 * x[i][2] ) )**2/2
+
+    if abs(error1-error0) &lt; epsilon:
+        break
+    else:
+        error0 = error1
+
+    print(' theta0 : %f, theta1 : %f, theta2 : %f, error1 : %f'%(theta0,theta1,theta2,error1))
+
+print ('Done: theta0 : %f, theta1 : %f, theta2 : %f'%(theta0,theta1,theta2))
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+   theta0 : 0.377225, theta1 : 0.625295, theta2 : 1.120912, error1 : 4405.869965 <br>
+   theta0 : 0.729497, theta1 : 1.193311, theta2 : 2.164098, error1 : 3094.652486 <br>
+   theta0 : 1.058680, theta1 : 1.708424, theta2 : 3.135362, error1 : 2089.261446 <br>
+   theta0 : 1.366497, theta1 : 2.174683, theta2 : 4.040070, error1 : 1335.974025 <br>
+   theta0 : 1.654541, theta1 : 2.595831, theta2 : 4.883186, error1 : 789.589683 <br>
+   theta0 : 1.924288, theta1 : 2.975327, theta2 : 5.669299, error1 : 412.137681 <br>
+   theta0 : 2.177098, theta1 : 3.316371, theta2 : 6.402654, error1 : 171.776368 <br>
+   theta0 : 2.414234, theta1 : 3.621921, theta2 : 7.087177, error1 : 41.856096 <br>
+   theta0 : 2.636861, theta1 : 3.894714, theta2 : 7.726499, error1 : 0.121739 <br>
+   theta0 : 2.846057, theta1 : 4.137277, theta2 : 8.323976, error1 : 28.034282 <br>
+   theta0 : 3.042819, theta1 : 4.351950, theta2 : 8.882714, error1 : 110.193963 <br>
+   …… <br>
+    theta0 : 98.101057, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473679 <br>
+   theta0 : 98.101058, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473678 <br>
+   theta0 : 98.101058, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473677 <br>
+   theta0 : 98.101059, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473676 <br>
+   theta0 : 98.101059, theta1 : -13.028753, theta2 : 1.133773, error1 : 3.473675 <br>
+   theta0 : 98.101060, theta1 : -13.028753, theta2 : 1.133772, error1 : 3.473674 <br>
+   theta0 : 98.101061, theta1 : -13.028753, theta2 : 1.133772, error1 : 3.473673 <br>
+  Done: theta0 : 98.101061, theta1 : -13.028753, theta2 : 1.133772</p>
+</blockquote>
+
+
+
+
+<p>由上面的输出结果可以知道，梯度下降算法会在迭代一定次数后收敛于一个较少的损失值（即error）然而这并不是最优解而只是一个局部最小值（因为我们也可以从结果看到 theta0 : 2.636861, theta1 : 3.894714, theta2 : 7.726499, error1 : 0.121739，这项数据的最终error反而优于我们的最终解）。</p>
+
+
+
+
+<h3 id="随机梯度下降算法-1">随机梯度下降算法</h3>
+
+
+<pre><code class="python">#Training data set
+#each element in x represents (x0,x1,x2)
+x = [(1,0.,3) , (1,1.,3) ,(1,2.,3), (1,3.,2) , (1,4.,4)]
+#y[i] is the output of y = theta0 * x[0] + theta1 * x[1] +theta2 * x[2]
+y = [95.364,97.217205,75.195834,60.105519,49.342380]
+
+
+epsilon = 0.0001
+#learning rate
+alpha = 0.01
+diff = [0,0]
+error1 = 0
+error0 =0
+m = len(x)
+
+
+#init the parameters to zero
+theta0 = 0
+theta1 = 0
+theta2 = 0
+
+while True:
+
+    #calculate the parameters
+    for i in range(m):
+
+        diff[0] = y[i]-( theta0 + theta1 * x[i][1] + theta2 * x[i][2] )
+
+        theta0 = theta0 + alpha * diff[0]* x[i][0]
+        theta1 = theta1 + alpha * diff[0]* x[i][1]
+        theta2 = theta2 + alpha * diff[0]* x[i][2]
+
+    #calculate the cost function
+    error1 = 0
+    for lp in range(len(x)):
+        error1 += ( y[i]-( theta0 + theta1 * x[i][1] + theta2 * x[i][2] ) )**2/2
+
+    if abs(error1-error0) &lt; epsilon:
+        break
+    else:
+        error0 = error1
+
+    print (' theta0 : %f, theta1 : %f, theta2 : %f, error1 : %f'%(theta0,theta1,theta2,error1))
+
+print ('Done: theta0 : %f, theta1 : %f, theta2 : %f'%(theta0,theta1,theta2))
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+   theta0 : 2.782632, theta1 : 3.207850, theta2 : 7.998823, error1 : 7.508687 <br>
+   theta0 : 4.254302, theta1 : 3.809652, theta2 : 11.972218, error1 : 813.550287 <br>
+   theta0 : 5.154766, theta1 : 3.351648, theta2 : 14.188535, error1 : 1686.507256 <br>
+   theta0 : 5.800348, theta1 : 2.489862, theta2 : 15.617995, error1 : 2086.492788 <br>
+   theta0 : 6.326710, theta1 : 1.500854, theta2 : 16.676947, error1 : 2204.562407 <br>
+   theta0 : 6.792409, theta1 : 0.499552, theta2 : 17.545335, error1 : 2194.779569 <br>
+   theta0 : 7.223066, theta1 : -0.467855, theta2 : 18.302105, error1 : 2134.182794 <br>
+   theta0 : 7.630213, theta1 : -1.384304, theta2 : 18.982980, error1 : 2056.719790 <br>
+   …… <br>
+    theta0 : 97.986505, theta1 : -13.221170, theta2 : 1.257223, error1 : 1.553680 <br>
+   theta0 : 97.986620, theta1 : -13.221169, theta2 : 1.257186, error1 : 1.553579 <br>
+   theta0 : 97.986735, theta1 : -13.221167, theta2 : 1.257150, error1 : 1.553479 <br>
+   theta0 : 97.986849, theta1 : -13.221166, theta2 : 1.257113, error1 : 1.553379 <br>
+   theta0 : 97.986963, theta1 : -13.221165, theta2 : 1.257077, error1 : 1.553278 <br>
+  Done: theta0 : 97.987078, theta1 : -13.221163, theta2 : 1.257041</p>
+</blockquote>
+
+
+
+
+<p>通过上述批梯度下降和随机梯度下降算法代码的对比，不难发现两者的区别： <br>
+随机梯度下降算法在迭代的时候，每迭代一个新的样本，就会更新一次所有的theta参数。 <br>
+因此当样本数量很大时候，批梯度得做完所有样本的计算才能更新一次theta，从而花费的时间远大于随机梯度下降。但是随机梯度下降过早的结束了迭代，使得它获取的值只是接近局部最优解，而并非像批梯度下降算法那样就是局部最优解。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Python 实现推荐系统]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong/"/>
+    <updated>2017-09-24T10:51:37+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/09/24/python-shi-xian-tui-jian-xi-tong</id>
+    <content type="html"><![CDATA[<h1 id="python-实现推荐系统">Python 实现推荐系统</h1>
+
+
+
+
+<h2 id="引言">引言</h2>
+
+
+
+
+<p>最早的推荐系统应该是亚马逊为了提升长尾货物的用户抵达率而发明的。已经有数据证明，长尾商品的销售额以及利润总和与热门商品是基本持平的。亚马逊网站上在线销售的商品何止百万，但首页能够展示的商品数量又极其有限，给用户推荐他们可能喜欢的商品就成了一件非常重要的事情。当然，商品搜索也是一块大蛋糕，亚马逊的商品搜索早已经开始侵蚀谷歌的核心业务了。</p>
+
+
+
+
+<p>从这些例子之中，我们可以看到我们能够使用许多不同的方式来搜集兴趣偏好。有时候，这些数据可能来自人们购买的商品，以及这些商品关联的评价信息。我们可以利用一组算法从中挖掘，建立几个有意思的推荐系统。</p>
+
+
+
+
+<h2 id="推荐系统的简介">推荐系统的简介</h2>
+
+
+
+
+<p>两种最普遍的推荐系统的类型是基于内容的推荐系统和协同过滤推荐系统（CF）。协同过滤基于用户对产品的态度产生推荐，基于内容的推荐系统基于物品属性的相似性进行推荐。CF可以分为基于内存的协同过滤和基于模型的协同过滤。</p>
+
+
+
+
+<h3 id="基于内容推荐">基于内容推荐</h3>
+
+
+
+
+<p><strong>基于内容的推荐（Content-based Recommendation）</strong>，它是建立在项目的内容信息上作出推荐的，而不需要依据用户对项目的评价意见，更多地需要用机器学习的方法从关于内容的特征描述的事例中得到用户的兴趣资料。在基于内容的推荐系统中，项目或对象是通过相关的特征的属性来定义，系统基于用户评价对象的特征，学习用户的兴趣，考察用户资料与待预测项目的相匹配程度。用户的资料模型取决于所用学习方法，常用的有决策树、神经网络和基于向量的表示方法等。</p>
+
+
+
+
+<h4 id="基于内容推荐方法的优点是">基于内容推荐方法的优点是：</h4>
+
+
+
+
+<ul>
+<li>不需要其它用户的数据，没有冷开始问题和稀疏问题。</li>
+<li>能为具有特殊兴趣爱好的用户进行推荐。</li>
+<li>能推荐新的或不是很流行的项目，没有新项目问题。</li>
+<li>通过列出推荐项目的内容特征，可以解释为什么推荐那些项目。</li>
+<li>已有比较好的技术，如关于分类学习方面的技术已相当成熟。</li>
+</ul>
+
+
+
+
+<h4 id="缺点是">缺点是:</h4>
+
+
+
+
+<p>要求内容能容易抽取成有意义的特征，要求特征内容有良好的结构性，并且用户的口味必须能够用内容特征形式来表达，不能显式地得到其它用户的判断情况。</p>
+
+
+
+
+<h3 id="协同过滤推荐">协同过滤推荐</h3>
+
+
+
+
+<p><strong>协同过滤推荐（Collaborative Filtering Recommendation）</strong>，是推荐系统中应用最早和最为成功的技术之一。它一般采用最近邻技术，利用用户的历史喜好信息计算用户之间的距离，然后利用目标用户的最近邻居用户对商品评价的加权评价值来预测目标用户对特定商品的喜好程度，系统从而根据这一喜好程度来对目标用户进行推荐。协同过滤最大优点是对推荐对象没有特殊的要求，能处理非结构化的复杂对象，如音乐、电影。</p>
+
+
+
+
+<p>协同过滤是基于这样的假设：为一用户找到他真正感兴趣的内容的好方法是首先找到与此用户有相似兴趣的其他用户，然后将他们感兴趣的内容推荐给此用 户。其基本思想非常易于理解，在日常生活中，我们往往会利用好朋友的推荐来进行一些选择。协同过滤正是把这一思想运用到电子商务推荐系统中来，基于其他用 户对某一内容的评价来向目标用户进行推荐。</p>
+
+
+
+
+<p>基于协同过滤的推荐系统可以说是从用户的角度来进行相应推荐的，而且是自动的即用户获得的推荐是系统从购买模式或浏览行为等隐式获得的，不需要用户努力地找到适合自己兴趣的推荐信息，如填写一些调查表格等。</p>
+
+
+
+
+<p>和基于内容的过滤方法相比，</p>
+
+
+
+
+<h4 id="协同过滤具有如下的优点">协同过滤具有如下的优点：</h4>
+
+
+
+
+<ul>
+<li>能够过滤难以进行机器自动内容分析的信息，如艺术品，音乐等。</li>
+<li>共享其他人的经验，避免了内容分析的不完全和不精确，并且能够基于一些复杂的，难以表述的概念（如信息质量、个人品味）进行过滤。</li>
+<li>有推荐新信息的能力。可以发现内容上完全不相似的信息，用户对推荐信息的内容事先是预料不到的。这也是协同过滤和基于内容的过滤一个较大的差别，基于内容的过滤推荐很多都是用户本来就熟悉的内容，而协同过滤可以发现用户潜在的但自己尚未发现的兴趣偏好。</li>
+<li>能够有效的使用其他相似用户的反馈信息，较少用户的反馈量，加快个性化学习的速度。</li>
+</ul>
+
+
+
+
+<h4 id="缺点是-1">缺点是：</h4>
+
+
+
+
+<p>最典型的问题有， <br>
+稀疏问题（Sparsity） <br>
+可扩展问题（Scalability） <br>
+冷启动问题</p>
+
+
+
+
+<h2 id="实例应用">实例应用</h2>
+
+
+
+
+<p>我们下面通过使用MovieLens数据集（这是一个有关电影评分的经典数据集， 其中Movielens-100k和movielens-1M有用户对电影的打分，电影的title、genre、IMDB链接、用户的gender、age、occupation、zip code。movielens-10M中还有用户对电影使用的tag信息。）</p>
+
+
+
+
+<p>数据集的<a href="http://files.grouplens.org/datasets/movielens/ml-100k.zip">下载地址</a></p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+<pre><code class="python">import numpy as np
+import pandas as pd
+header = ['user_id','item_id','rating','timestamp']
+df = pd.read_csv('/home/ef/Desktop/ml-100k/u.data',
+                sep='\t',names=header)
+print(df.head())
+n_users = df.user_id.unique().shape[0]
+n_items = df.item_id.unique().shape[0]
+print('Number of users = ' + str(n_users) + ' | Number of movies = ' + str(n_items))
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+     user_id  item_id  rating  timestamp <br>
+  0      196      242       3  881250949 <br>
+  1      186      302       3  891717742 <br>
+  2       22      377       1  878887116 <br>
+  3      244       51       2  880606923 <br>
+  4      166      346       1  886397596 <br>
+  Number of users = 943 | Number of movies = 1682</p>
+</blockquote>
+
+
+
+
+<h3 id="数据划分">数据划分</h3>
+
+
+
+
+<p>使用scikit-learn库来划分数据集</p>
+
+
+<pre><code class="python">from sklearn import cross_validation as cv
+X_train,x_test = cv.train_test_split(df,test_size=0.2)
+</code></pre>
+
+<h3 id="基于内存的协同过滤">基于内存的协同过滤</h3>
+
+
+
+
+<p>基于内存的协同过滤方法可以分为两个部分：</p>
+
+
+
+
+<ul>
+<li>用户－产品协同过滤，即：基于用户的协同过滤推荐</li>
+<li>产品－产品协同过滤，即：基于物品的协同过滤推荐</li>
+</ul>
+
+
+
+
+<p>基于用户的协同过滤推荐，将选取一个特定的用户，基于打分的相似性发现类似于该用户的用户，并推荐那些相似用户喜欢的产品。基于物品的协同过滤推荐会选取一个产品，发现喜欢该产品的用户，并找到这些相似用户还喜欢的其它产品。</p>
+
+
+
+
+<p>基于用户的协同过滤推荐：“喜欢这东西的人也喜欢……” <br>
+基于物品的协同过滤推荐：“像你一样的人也喜欢（买个该商品的还买了）……”</p>
+
+
+
+
+<p>在这两种情况下，从整个数据集构建一个用户产品矩阵。</p>
+
+
+
+
+<h4 id="用户产品矩阵的例子">用户产品矩阵的例子：</h4>
+
+
+
+
+<p>计算相似性，并创建一个相似性矩阵。 <br>
+通常用于推荐系统中的距离矩阵是余弦相似性，其中，打分被看成n维空间中的向量，而相似性是基于这些向量之间的角度进行计算的。用户a和b的余弦相似性可以用下面的公式进行计算：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-1">Similar_u^{cos}(U_a,U_b)=\frac{U_a*U_b}{||U_a|| * ||U_b||} = \frac {\sum x_{a,m}x_{b,m}}{\sqrt {\sum x^2_{a,m}\sum x^2_{b,m} }}</script></p>
+
+
+
+
+<p>同时，物品a和b的相似读也可以写成以上形式。</p>
+
+
+
+
+<p>创建用户产品矩阵，针对测试数据和训练数据，创建两个矩阵：</p>
+
+
+<pre><code class="python">from sklearn import cross_validation as cv
+X_train,x_test = cv.train_test_split(df,test_size=0.2)
+
+train_data_matrix = np.zeros((n_users,n_items))
+for line in X_train.itertuples():
+    train_data_matrix[line[1]-1, line[2]-1] = line[3]
+test_data_matrix = np.zeros((n_users, n_items))
+for line in x_test.itertuples():
+    test_data_matrix[line[1]-1, line[2]-1] = line[3]
+
+## 通过余弦相似度计算用户和物品的相似度
+from sklearn.metrics.pairwise import pairwise_distances
+user_similarity = pairwise_distances(train_data_matrix, metric = "cosine")
+item_similarity = pairwise_distances(train_data_matrix.T, metric = "cosine")
+</code></pre>
+
+<h4 id="评估">评估</h4>
+
+
+
+
+<p>这里采用均方根误差(RMSE)来度量预测评分的准确性,可以使用sklearn的mean_square_error(MSE)函数，其中RMSE仅仅是MSE的平方根。</p>
+
+
+<pre><code class="python">from sklearn.metrics import mean_squared_error
+from math import sqrt
+def rmse(prediction, ground_truth):
+    prediction = prediction[ground_truth.nonzero()].flatten()
+    ground_truth = ground_truth[ground_truth.nonzero()].flatten()
+    return sqrt(mean_squared_error(prediction, ground_truth))    
+
+print ('User based CF RMSE: ' + str(rmse(user_prediction, test_data_matrix)))
+print ('Item based CF RMSe: ' + str(rmse(item_prediction, test_data_matrix)))
+print ('User based CF RMSE: ' + str(rmse(user_prediction, test_data_matrix)))
+print ('Item based CF RMSe: ' + str(rmse(item_prediction, test_data_matrix)))
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+  User based CF RMSE: 3.087357412872858 <br>
+  Item based CF RMSe: 3.437038163412728</p>
+</blockquote>
+
+
+
+
+<p>但从结果来看，算法的推荐效果还算理想。</p>
+
+
+
+
+<h3 id="基于模型的协同过滤">基于模型的协同过滤</h3>
+
+
+
+
+<p>基于模型的协同过滤是基于<strong>矩阵分解(MF)的</strong>，矩阵分解广泛应用于推荐系统中，它比基于内存的CF有更好的扩展性和稀疏性。MF的目标是从已知的评分中学习用户的潜在喜好和产品的潜在属性，随后通过用户和产品的潜在特征的点积来预测未知的评分。 <br>
+这是一个典型的机器学习的问题，可以将已有的用户喜好信息作为训练样本，训练出一个预测用户喜好的模型，这样以后用户在进入系统，可以基于此模型计算推荐。这种方法的问题在于如何将用户实时或者近期的喜好信息反馈给训练好的模型，从而提高推荐的准确度。</p>
+
+
+
+
+<h4 id="svd">SVD</h4>
+
+
+
+
+<p>SVD即：<strong>奇异值分解（Singular value decomposition）</strong>奇异值分解是线性代数中一种重要的矩阵分解，在信号处理、统计学等领域有重要应用。奇异值分解在某些方面与对称矩阵或Hermite矩阵基于特征向量的对角化类似。然而这两种矩阵分解尽管有其相关性，但还是有明显的不同。对称阵特征向量分解的基础是谱分析，而奇异值分解则是谱分析理论在任意矩阵上的推广。</p>
+
+
+
+
+<p>在矩阵M的奇异值分解中</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-2">M=UΣV^T</script> </p>
+
+
+
+
+<ul>
+<li><strong>U的列(columns)</strong>组成一套对M的正交”输入”或”分析”的基向量。这些向量是MM*的特征向量。</li>
+<li><strong>V的列(columns)</strong>组成一套对M的正交”输出”的基向量。这些向量是M*M的特征向量。</li>
+<li><strong>Σ对角线上的元素</strong>是奇异值，可视为是在输入与输出间进行的标量的”膨胀控制”。这些是M*M及MM*的奇异值，并与U和V的列向量相对应。</li>
+</ul>
+
+
+
+
+<p>那么矩阵M就可以分解成U，Σ，V。 <br>
+U矩阵表示对应于隐藏特性空间中的用户的特性矩阵，而V矩阵表示对应于隐藏特性空间中的产品的特性矩阵。</p>
+
+
+
+
+<p>现在，我们可以通过U，Σ和<script type="math/tex" id="MathJax-Element-3">V^T</script>的点积进行预测了。</p>
+
+
+<pre><code class="python"># 计算矩阵的稀疏度
+sparsity = round(1.0 - len(df) / float(n_users*n_items),3)
+print('The sparsity level of MovieLen100K is ' + str(sparsity * 100) + '%')
+
+import scipy.sparse as sp
+from scipy.sparse.linalg import svds
+u, s, vt = svds(train_data_matrix, k = 20)
+s_diag_matrix = np.diag(s)
+x_pred = np.dot(np.dot(u,s_diag_matrix),vt)
+print('User-based CF MSE: ' + str(rmse(x_pred, test_data_matrix)))
+</code></pre>
+
+<blockquote>
+  <p>输出结果： <br>
+  The sparsity level of MovieLen100K is 93.7% <br>
+  User-based CF MSE: 2.63901831155016</p>
+</blockquote>
+
+
+
+
+<p>最后，我们可以发现，采用SVD分解矩阵的基于模型的协同过滤方法在推荐的表现上更胜一筹。</p>
+
+]]></content>
+  </entry>
+  
+</feed>

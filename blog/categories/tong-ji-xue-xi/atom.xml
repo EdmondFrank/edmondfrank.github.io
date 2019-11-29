@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 统计学习 | EdmondFrank's 时光足迹]]></title>
+  <link href="https://edmondfrank.github.io/blog/categories/tong-ji-xue-xi/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2019-11-29T18:26:24+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[文本建模算法入门-1]]></title>
+    <link href="https://edmondfrank.github.io/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/"/>
+    <updated>2019-01-04T13:43:27+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="文本建模算法入门一">文本建模算法入门（一）</h1></p>
+
+<h3 id="0x1-文本建模">0x1 文本建模</h3>
+
+
+
+
+<p>文本并不像其他数值型的数据一样可以比较轻易的通过运算、函数、方程、矩阵等来表达他们之间的相互关系。</p>
+
+
+
+
+<p>在处理一篇文本的时候，假设每一个文本储存为一篇文档，那么从人的视角来看，这可以说是一段有序的词序列<script type="math/tex; mode=display" id="MathJax-Element-1">Document=(w_1,w_2,...,w_n)</script> <br>
+统计学家将这些序列的生成，生动地描绘成了一个“上帝的游戏”，即人类产生的所有语料的文本都可以看作是：一个伟大的上帝在天堂中掷骰子形成的。我们所看到的文本其实就是这个游戏掷了若干次后产生的序列。</p>
+
+
+
+
+<p>那么，在这个游戏中，我们<strong>最需要关注的两个核心问题</strong>就出现了：</p>
+
+
+
+
+<ol>
+<li>上帝有怎样的骰子？</li>
+<li>上帝是怎么掷的骰子？</li>
+</ol>
+
+
+
+
+<p>对应这两个问题，各大学家持着不同的观点，于是便有了以下三种模型：</p>
+
+
+
+
+<ol>
+<li>Unigram Model</li>
+<li>Topic Model(PLSA)</li>
+<li>LDA</li>
+</ol>
+
+
+
+
+<h4 id="0x11-unigram-model">0x11 Unigram Model</h4>
+
+
+
+
+<p>Unigram Model是非常简单直接的，它假设</p>
+
+
+
+
+<ol>
+<li>上帝只有一个V面的骰子，每一个面对应一个词，同时每个面的概率不一样。（这里可以通过“老千骰子”来理解下，有些面因为被做过了“手脚”，所以抛到的几率就大了，那如果没个面都这样，那么每个面抛到的几率也就不一样了）</li>
+<li>每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyudrkxl14j2086052dg2.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>那现在我们把上帝这个唯一的骰子各个面的概率记为<script type="math/tex" id="MathJax-Element-2">\vec{p}=\{p_1,p_2,...,p_v\}</script>，然后我们把掷这个V面骰子的实验记作<script type="math/tex" id="MathJax-Element-3">w \sim Mult(w|\vec{p}) </script></p>
+
+
+
+
+<p>那么对应一篇文档d，该文档生成的概率就是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-4">p(\vec{w})=p(w_1,w_2,...,w_n)=p(w_1)p(w_2)...p(w_n)</script></p>
+
+
+
+
+<p>而文档和文档之间我们认为是独立的，所以如果语料中有多篇文档<script type="math/tex" id="MathJax-Element-5">W=(\vec{w_1},\vec{w_2},...,\vec{w_m})</script>，则该语料生成的概率就是<script type="math/tex; mode=display" id="MathJax-Element-6">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})</script></p>
+
+
+
+
+<p>在Unigram Model中，我们又假设了文档之间是独立可交换的。即，词与词之间的顺序对文档表示并不造成影响，一篇文档相当于一个袋子，里面装着一些词。这样的模型也称为<strong>词袋模型（Bag-of-words）。</strong></p>
+
+
+
+
+<p>那么，如果语料中的总词频是N，在N个词中，如果我们关注每一个词<script type="math/tex" id="MathJax-Element-7">w_i</script>的发生次数<script type="math/tex" id="MathJax-Element-8">n_i</script>，则<script type="math/tex" id="MathJax-Element-9">\vec{n}=(n_1,n_2,...,n_V)</script>正好是一个多项分布 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-10">p(\vec{n})=Mult(\vec{n}|\vec{p},N)</script> <br>
+此时，语料的概率是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-11">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})=\prod_{k=1}^Vp_k^{n_k}</script></p>
+
+
+
+
+<h4 id="0x110-贝叶斯unigram-model假设">0x110 贝叶斯Unigram Model假设</h4>
+
+
+
+
+<p>在贝叶斯统计学派看来，上帝拥有唯一一个固定的骰子是不合理的。于是他们觉得以上模型的骰子<script type="math/tex" id="MathJax-Element-12">\vec{p}</script>不应该唯一固定，而应该也是一个随机变量。</p>
+
+
+
+
+<p>那这样我们就可以将整个掷骰子的游戏过程更新成以下形式：</p>
+
+
+
+
+<ol>
+<li>上帝有一个装着无穷多骰子的罐子，里面有各种骰子，每个骰子有V个面。每一个面对应一个词</li>
+<li>上帝从罐子抽出一个骰子，然后用这个骰子不断的抛，每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyufvboyshj20a106cjs7.jpg" alt="enter image description here" title=""></li>
+</ol>
+
+
+
+
+<p>在以上的假设之下，由于我们事先并不知道上帝用了哪个骰子<script type="math/tex" id="MathJax-Element-13">\vec{p}</script>，所以每个骰子都是有可能被使用的，只是使用的概率由先验分布<script type="math/tex" id="MathJax-Element-14">p(\vec{p})</script>决定，对每一个具体的骰子<script type="math/tex" id="MathJax-Element-15">\vec{p}</script>，由该骰子产生数据的概率是<script type="math/tex" id="MathJax-Element-16">p(W|\vec{p})</script>，所以最终数据产生的概率就是对每个骰子上产生的数据概率进行积分累加求和 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-17">P(W)=\int p(W|\vec{p})p(\vec{p})d\vec{p}</script> <br>
+在贝叶斯分析的框架之下，此处的先验分布概率其实就是一个多项分布的概率，其中一个比较好的选择即<strong>多项分布对应的共轭分布：Dirichlet分布</strong></p>
+
+
+
+
+<h4 id="0x12-plsa-topic-model">0x12 PLSA Topic Model</h4>
+
+
+
+
+<p>再来回顾Unigram Model我们发现：这个模型的假设过于简单，和人类真实的书写有着较大的差距</p>
+
+
+
+
+<p>从人类视角看，我们在日常构思文章中，我们往往要先确定自己文章的主旨，包含了哪些主题，然后再围绕着这些主题展开阐述。</p>
+
+
+
+
+<p>例如，一篇关于现代教育的文章，它可能就包含了这些主题：教育方法、多媒体技术、互联网等。篇幅上可能以教育方法为主，而其他为辅。然后，在不同的主题里面就包含了许多主题领域内常见的关键词。例如，谈到互联网时，我们会提及Web、Tcp等。</p>
+
+
+
+
+<p>这样一种直观的想法就在<strong>PLSA模型中进行了明确的体现</strong>，如果我们再利用这个想法更新“掷骰子”的游戏就有以下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两种类型骰子，一类是doc-topic骰子，骰子共k个面代表了k个主题；一类是topic-word骰子，骰子V个面，每面对应主题内的一个词</li>
+<li>生成文章的时候，首先要先创造一个特定的doc-topic骰子，使得骰子内的主题围绕文章要阐述的主题</li>
+<li>投掷doc-topic骰子，得到一个主题z</li>
+<li>根据得到的主题z，找到对应的topic-word骰子，投掷它得到一个词</li>
+<li>不断重复3，4步，直至文章生成完成</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyugrx9ybdj20a50810tj.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在上面的游戏规则中，文档与文档之间顺序无关，同一个文档内的词的顺序也是无关的。所以还是一个bag-of-words模型。</p>
+
+
+
+
+<p>那么，在第m篇文档Dm中每个词的生成概率为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-18">p(w|D_m)=\sum^K_{z=1}p(w|z)p(z|D_m)=\sum^K_{z=1}\phi_{zw_i}\theta_{dz}</script> <br>
+<script type="math/tex" id="MathJax-Element-19">\phi_{zw_i}</script>:对应游戏中K个topic-word骰子中第z个骰子对应的词列表</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-20">\theta_{dz}</script>:文档对应的第z个主题，即对应的doc-topic</p>
+
+
+
+
+<p>所以整篇文档的生成概率就为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-21">p(w|D_m)=\prod^n_{i=1}\sum^K_{z=1}p(w_i|z)p(z|D_m)</script></p>
+
+
+
+
+<h4 id="0x13-ldalatent-dirichlet-allocation">0x13 LDA(Latent Dirichlet Allocation)</h4>
+
+
+
+
+<p>就像Unigram Model 加入贝叶斯框架那样，doc-topic和topic-word都是模型的参数，即随机变量。于是类似对Unigram Model的改造对以上两个骰子模型加入先验分布。然后由于<script type="math/tex" id="MathJax-Element-22">\vec{\theta}</script>，<script type="math/tex" id="MathJax-Element-23">\vec{\phi}</script>都对应着多项分布，因此先验分布依旧选择Drichlet分布。于是得到的这个新模型就是<strong>LDA(Latent Dirichlet Allocation)模型</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyuhfhrza5j20cx09bwgm.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在LDA模型中，上帝的游戏规则就又被更新成如下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两个罐子，第一个装着都哦doc-topic骰子，第二个装着topic-word骰子</li>
+<li>上帝随机的从第二个罐子中独立抽出K个topic-doc骰子，编号1-K</li>
+<li>每次生成新文档时，从第一个罐子随机抽一个doc-topic骰子</li>
+<li>投掷得到的doc-topic骰子。得到一个主题编号z</li>
+<li>在K个主题骰子里面选择编号为z的骰子，投掷骰子，得到一个词</li>
+<li>重复4，5步，直至文档生成完成</li>
+</ol>
+
+
+
+
+<h3 id="0x2-后记">0x2 后记</h3>
+
+
+
+
+<p>至此，入门篇（一）的内容就写到这了。由于是第一篇，文章中避过了许多较为复杂的数学证明和计算，尤其是关于LDA模型的。这样是为了，先建立对文本建模思路和过程的直观认识，而不是一上来就深究细节。</p>
+
+
+
+
+<p>加上笔者目前也是在学习阶段，后面的细节再慢慢地一一补充，大家共同进步 !! <br>
+                        \(^_^)/</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[隐马尔可夫模型（HMM）的原理]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/03/10/yin-ma-er-ke-fu-mo-xing-(hmm)de-yuan-li/"/>
+    <updated>2018-03-10T08:48:21+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/03/10/yin-ma-er-ke-fu-mo-xing-(hmm)de-yuan-li</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="隐马尔可夫模型hmm的原理">隐马尔可夫模型（HMM）的原理</h1></p>
+
+<h2 id="简介">简介</h2>
+
+
+
+
+<p>隐马尔可夫模型是一个基于<a href="https://en.wikipedia.org/wiki/Markov_chain">马尔可夫链</a>的统计模型。</p>
+
+
+
+
+<p><strong>马尔可夫链</strong>因<a href="http://wiki.mbalib.com/wiki/%E5%AE%89%E5%BE%B7%E7%83%88%C2%B7%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB">安德烈·马尔可夫（Andrey Markov，1856－1922）</a>得名，是数学中具有马尔可夫性质的离散时间随机过程。该过程中，在给定当前知识或信息的情况下，过去（即当期以前的历史状态）对于预测将来（即当期以后的未来状态）是无关的。</p>
+
+
+
+
+<p>虽然从维基百科上摘取下来的概念和定义看着十分的晦涩难懂，但是模型背后的思想是非常简单的，即：首先假设你的系统可以建模为马尔可夫链，然后，系统所发出的信号（输出的可见结果）仅取决于系统当前的状态。那么，隐马尔可夫模型代表的一种情景就是：系统的状态对你而言是不可见的，你仅仅只能观测到系统所发出的信号或者说是系统所输出的结果。</p>
+
+
+
+
+<p>举个通俗易懂的栗子。</p>
+
+
+
+
+<p>假设你有一个住在国外的朋友，他通常会根据天气来安排他的日常活动。你不知道他的国家那边的天气如何（系统的状态），但你确可以在跟他的聊天中知道他今天进行了什么活动（系统的输出），然后这就是一个简单的隐马尔可夫模型。</p>
+
+
+
+
+<p>我们将整个模型 <br>
+<img src="https://i.loli.net/2017/09/10/59b49b5275c1d.jpg" alt="markov.jpg" title=""></p>
+
+
+
+
+<p>现在有三个比较关键的问题有待我们解决： <br>
+1.  知道整个模型后，你朋友告诉你他这三天的活动是：散步（Walk），购物（Shop），清洁屋子（Clean），那么根据模型，计算产生这些行为序列的概率是多少？ <br>
+2. 知道整个模型后，朋友让你根据他的活动猜一猜他那边这三天天气怎么样 <br>
+3. 朋友告诉你三天里他做了些什么，然后让你找出他活动规律的模型。</p>
+
+
+
+
+<p>为了解决以上的问题我们首先要了解一些有关HMM的基本元素先：</p>
+
+
+
+
+<p><strong>初始概率分布<script type="math/tex" id="MathJax-Element-5">\pi</script></strong>：初始概率分布即事件初始时发生的概率，我们这里隐藏的状态是天气，然后我们在图中可以看出的初始概率有：天气为晴天的概率为0.8 ; 天气为雨天的概率为0.2</p>
+
+
+
+
+<p><strong>转移概率矩阵P</strong>：转移功率矩阵就可以通过一副图来描述了。</p>
+
+
+
+
+<table>
+<thead>
+<tr>
+  <th>晴天</th>
+  <th>雨天</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>晴天</td>
+  <td>0.7</td>
+</tr>
+<tr>
+  <td>雨天</td>
+  <td>0.6</td>
+</tr>
+</tbody></table>
+
+
+
+
+<p>其中，列参数表示第一天的状态，行参数表示第二天状态。表格中的第一行的含义就是已知第一天为晴天，那么第二天为晴天的概率是0.7，而为雨天的概率只是0.3。</p>
+
+
+
+
+<p><strong>观测量的概率分布B</strong>：在这个问题中观测量就是朋友的活动，其概率分布就分别表示为朋友在晴天和雨天的情况下进行散步，购物，打扫屋子各项活动的可能性（概率）。</p>
+
+
+
+
+<p>现在，我们再次回到上面提到的三个问题。其实，每个问题的解决解决在历史上早有前人给出了算法。</p>
+
+
+
+
+<blockquote>
+  <p>问题1 -&gt; <a href="https://en.wikipedia.org/wiki/Forward_algorithm">Forward Algorithm</a>，向前算法 或 <a href="https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm">Backward Algorithm</a>，向后算法。</p>
+  
+  <p>问题2 -&gt; <a href="https://en.wikipedia.org/wiki/Viterbi_algorithm">Viterbi Algorithm</a>，维特比算法。</p>
+  
+  <p>问题3 -&gt; <a href="https://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm">Baum-Welch Algorithm</a>，鲍姆-维尔奇算法。</p>
+</blockquote>
+
+
+
+
+<h2 id="算法思路">算法思路</h2>
+
+
+
+
+<p><strong>假设前提：</strong> <br>
+已知，雨天，朋友选择去散步，购物，收拾的概率分别是0.1，0.4，0.5， 而如果是晴天，选择去散步，购物，收拾的概率分别是0.6，0.3，0.1。 <br>
+三天活动序列：散步（Walk），购物（Shop），清洁屋子（Clean）</p>
+
+
+
+
+<h3 id="forward-algorithm">Forward Algorithm</h3>
+
+
+
+
+<p>然后我们先计算 t = 1 时，发生 “散步” 行为的概率，如果下雨，则<script type="math/tex" id="MathJax-Element-6">P(Walk,Rain) = P_{t=1}(Rain) * P(Walk|Rain) = 0.2 \times 0.1 = 0.02</script>；如果为晴天，则<script type="math/tex" id="MathJax-Element-7">P(Walk,Sunny) = 0.8 \times 0.6 = 0.48</script></p>
+
+
+
+
+<p>t = 2 时，发生 “购物” 的概率，如果 t = 2 下雨，则<script type="math/tex" id="MathJax-Element-8">P(Walk_{t=1},Shop_{t=2},Rain_{t=2}) = [P(Walk_{t=1},Rain_{t=1}) \times P(Rain_{t=2}|Rain_{t=1}) \\ + P(Walk_{t=1},Sunny_{t=1})\times P(Rain_{t=2}|Sunny_{t=1})]\times P(Shop_{t=2}|Rain_{t=2}) \\ = [0.02*0.4+0.48*0.3]*0.4 = 0.0608 </script></p>
+
+
+
+
+<p>如果为晴天，则</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-9">P(Walk_{t=1},Shop_{t=2},Sunny_{t=2}) = [0.02*0.6 +0.48*0.7]*0.3 = 0.1044</script></p>
+
+
+
+
+<p>t = 3 时的算法也可以依此类推， <br>
+<script type="math/tex" id="MathJax-Element-10">P(Walk_{t=1},Shop_{t=2},Clean_{t=3},Rain_{t=3}) = [0.0608*0.4+0.1044*0.3]*0.5 = 0.02782</script>； <br>
+<script type="math/tex" id="MathJax-Element-11">P(Walk_{t=1},Shop_{t=2},Clean_{t=3},Sunny_{t=3}) = [0.0608*0.6+0.1044*0.7]*0.7 = 0.076692</script></p>
+
+
+
+
+<p>所以，最终： <br>
+<script type="math/tex" id="MathJax-Element-12">P(Walk_{t=1},Shop_{t=2},Clean_{t=3}) = 0.02782 + 0.076692 = 0.104512</script></p>
+
+
+
+
+<p>从上面的例子可以看出，向前算法计算了每个时间点时，每个状态的发生观测序列的概率，看似复杂，但在T变大时，复杂度也会随之降低。</p>
+
+
+
+
+<h3 id="backward-algorihm">Backward Algorihm</h3>
+
+
+
+
+<p>既然，向前算法是在时间 t = 1 的时候，一步一步向前计算。那么反过来，向后算法就是从最后一个状态往前推。 <br>
+假设最初时<script type="math/tex" id="MathJax-Element-13">\beta_3(Rain) = 1；\beta_3(Sunny) = 1</script></p>
+
+
+
+
+<p>那么：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-14">\beta_2(Rain) = a_{Rain \to Rain}b_{Rain}(O_3=Clean)\beta_3(Rain) \\+ a_{Rain \to Sunny}b_{Sunny}(O_3=Clean)\beta_3(Sunny)\\=0.4*0.5*1+0.6*0.1*1 = 0.26</script> <br>
+其中第一项则是转移概率，第二天下雨转到第三天下雨的概率为0.4；第二项则是观测概率，第三天下雨的状况下，在家收拾的概率为0.5；第三项就是我们定义的向后变量（backward variable）。</p>
+
+
+
+
+<p>同理也可推得其他数据，并且最终答案与向前算法的求解相同。</p>
+
+
+
+
+<h3 id="viterbi-algorithm维比特算法">Viterbi Algorithm（维比特算法）</h3>
+
+
+
+
+<p>利用动态规划求解概率最大的路径（最优路径）。利用动态规划，可以解决任何一个图中的最短路径问题。而维特比算法是针对一个特殊的图——<strong>篱笆网络的有向图（Lattice）</strong>的最短路径提出的。</p>
+
+
+
+
+<p>我们假设用符号<script type="math/tex" id="MathJax-Element-15">x_{ij}</script>来表示系统的第 i 种状态<script type="math/tex" id="MathJax-Element-16">x_i</script>的第j个可能的值。如果把每个状态按照不同的值展开，就可以得到以下的篱笆网络（Lattice）：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/10/59b4e956e6a56.png" alt="lattice.png" title=""></p>
+
+
+
+
+<p>那么从第一个状态到最后一个状态的任何一条路径（path）都可能产生我们观察到的输出序列Y。当然，这些路径的可能性不一样，而我们要做的就是找到最可能的这条路径。对于每一条给定的路径我们都可以用公式:</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-17">x_1,x_2,...,x_N = \text{ArgMax}\left[P\left(x_1,x_2,...,x_N|y_1,y_2,...,y_N\right)\right(x \in X)]\\=\text{ArgMax}\left[\prod _{i=1}^N P\left(x_i|x_{i-1}\right)P\left(y_i|x_i\right)\right (x \in X)]</script></p>
+
+
+
+
+<p>计算出它的可能性，但是随着组合增多，它使得序列状态数的增长呈指数爆炸式。</p>
+
+
+
+
+<p>为了解决这个问题，需要一个最好能和状态数成正比的算法。也就是我们要讲的维特比算法。</p>
+
+
+
+
+<p>维特比算法的基础可以概括成三点：</p>
+
+
+
+
+<ol>
+<li><p>如果概率最大的路径P（或者说最优路径）经过某个点，如果上图中的<script type="math/tex" id="MathJax-Element-18">x_{22}</script>，那么这条路径上从起始点S 到 <script type="math/tex" id="MathJax-Element-19">x_{22}</script>的这一段子路径Q，一定是S到<script type="math/tex" id="MathJax-Element-20">x_{22}</script>的最短路径。否则用S到<script type="math/tex" id="MathJax-Element-21">x_{22}</script>的最短路径R来代替Q，便构成了一条比P更短的路径。</p></li>
+<li><p>从S到E的路径必定经过第i个时刻的某个状态，假定第i个时刻有k个状态，那么如果记录了从S到第i个状态的所以k个节点的最短路径，最终最短路径必经过其中的一条。这样，在任何时刻，只要考虑非常有限条最短路径即可。</p></li>
+<li><p>结合上述两点，假定当我们从状态 i 进入状态 i + 1 时，从 S 到状态 i 上各个节点的最短路径已经找到，并且记录在这些节点上，那么在计算从起点 S 到第 i + 1 状态的某个节点<script type="math/tex" id="MathJax-Element-22">x_{i+1}</script>的最短路径时，只要考虑从S到前一个状态 i 所有的 k 个节点的最短路径，以及从这 k 个节点到<script type="math/tex" id="MathJax-Element-23">x_{i+1}</script>，j 的距离即可。</p></li>
+</ol>
+
+
+
+
+<h4 id="实现过程">实现过程</h4>
+
+
+
+
+<ol>
+<li>从点S出发，对于第一个状态<script type="math/tex" id="MathJax-Element-24">x_1</script>的各个节点，不妨假定有<script type="math/tex" id="MathJax-Element-25">n_1</script>个。计算出 S 到它们的距离<script type="math/tex" id="MathJax-Element-26">d(S，x_{1i})</script>,其中<script type="math/tex" id="MathJax-Element-27">x_{1i}</script>代表任意状态 1 的节点。因为只有一步，所以这些距离都是S到它们各自的最短距离。</li>
+<li>对于第二个状态<script type="math/tex" id="MathJax-Element-28">x_2</script>的所有节点，要计算出从S到它们的最短距离。我们知道，对于特定的节点<script type="math/tex" id="MathJax-Element-29">x_{2i}</script>，从S到它的路径可以经过状态1的<script type="math/tex" id="MathJax-Element-30">n_1</script>中任何一个节点<script type="math/tex" id="MathJax-Element-31">x_{1i}</script>，当然，对应的路径长度就是<script type="math/tex" id="MathJax-Element-32">d(S,x_{2i}) = d(S,x_{1j})  + d(x_{1j},x_{2j})</script>。由于 j 有<script type="math/tex" id="MathJax-Element-33">n_1</script>种可能性，我们要一一计算，然后找到最小值。即：<script type="math/tex" id="MathJax-Element-34">d(S,x_{2i}) = min_{i=1,n_1}d(S,x_{1j})  + d(x_{1j},x_{2j})</script></li>
+<li>这样对于第二状态的每个节点，需要<script type="math/tex" id="MathJax-Element-35">n_1</script>次乘法计算。假定这个状态有<script type="math/tex" id="MathJax-Element-36">n_2</script>个节点，把S这些节点的距离都算一遍，就有<script type="math/tex" id="MathJax-Element-37">O(n_1 * n_2)</script>次计算。</li>
+</ol>
+
+
+
+
+<p>接下来，类似地按照上述方法从第二个状态走到第三个状态，一直走到最后一个状态，就得到了整个网格从头到尾的最短路径。每一步计算的复杂度都和相邻两个状态<script type="math/tex" id="MathJax-Element-38">S_i和S_{i+1}</script>各自的节点数目<script type="math/tex" id="MathJax-Element-39">n_i，n_{i+1}</script>的乘积成正比，即<script type="math/tex" id="MathJax-Element-40">O(n_i,n_{i+1})</script>。如果假定在这个隐含马尔可夫链中的节点最多的状态有D个节点，也就是说整个网络的宽度为D，那么任何一布的复杂度不超过<script type="math/tex" id="MathJax-Element-41">O(D^2)</script>,由于网络长度是N，所以整个维特比算法的复杂度是<script type="math/tex" id="MathJax-Element-42">O(N*D^2)</script> ——本段推理节选自<a href="https://www.amazon.cn/%E6%95%B0%E5%AD%A6%E4%B9%8B%E7%BE%8E-%E5%90%B4%E5%86%9B/dp/B00P6OJ09C/ref=cm_cr_arp_d_product_top?ie=UTF8">&lt;&lt;数学之美&gt;&gt;第二版</a></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[贝叶斯景象图]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/27/bei-xie-si-jing-xiang-tu/"/>
+    <updated>2018-02-27T22:51:43+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/27/bei-xie-si-jing-xiang-tu</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="贝叶斯景象图">贝叶斯景象图</h1></p>
+
+<h2 id="理论说明">理论说明</h2>
+
+
+
+
+<h3 id="均匀分布">均匀分布</h3>
+
+
+
+
+<p>对于一个含有Ｎ个未知元素的贝叶斯推断问题，我们隐式地为其先验分布创建了一个Ｎ维空间。先验分布上某一点的概率，都投射到某个高维的面或曲线上，其形状由先验分布决定。比如，假定有两个未知元素 <script type="math/tex" id="MathJax-Element-81">p_1、p_2</script>，其先验分布都是（０，５）上的均匀分布，那么先验分布存在于一个边长为５的正方形空间，而其概率面就是正方形上方的一个平面（由于假定了均匀分布，因此每一点概率相同）。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+<pre><code class="python">%matplotlib inline
+import scipy.stats as stats
+from IPython.core.pylabtools import figsize
+import numpy as np
+figsize(12.5, 4)
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+jet = plt.cm.jet
+fig = plt.figure()
+x = y = np.linspace(0, 5, 100)
+X, Y = np.meshgrid(x, y)
+
+plt.subplot(121)
+uni_x = stats.uniform.pdf(x, loc=0, scale=5)
+uni_y = stats.uniform.pdf(y, loc=0, scale=5)
+M = np.dot(uni_x[:, None], uni_y[None, :])
+im = plt.imshow(M, interpolation='none', origin='lower',
+                cmap=jet, vmax=1, vmin=-.15, extent=(0, 5, 0, 5))
+
+plt.xlim(0, 5)
+plt.ylim(0, 5)
+plt.title("Landscape formed by Uniform priors.")
+
+ax = fig.add_subplot(122, projection='3d')
+ax.plot_surface(X, Y, M, cmap=plt.cm.jet, vmax=1, vmin=-.15)
+ax.view_init(azim=390)
+plt.title("Uniform prior landscape; alternate view");
+</code></pre>
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovd74ecb8j20lg083tae.jpg" alt="" title=""></p>
+
+
+
+
+<h3 id="指数分布">指数分布</h3>
+
+
+
+
+<p>再者，如果 <script type="math/tex" id="MathJax-Element-192">p_1、p_2</script>的先验分布为Exp(3)和Exp(10)，那么对应的空间便是二维平面上，各维都取正值确定的范围，而对应的概率面的形状就是一个从（0，0）点向正值方向流淌的瀑布。</p>
+
+
+
+
+<p>以下的示例图就描绘了这样的情形，其中颜色越是趋向于暗红的位置，其先验概率就越高。反过来，颜色越是趋向于深蓝的位置，其先验概率就越低。</p>
+
+
+
+
+<h3 id="代码绘图演示">代码绘图演示</h3>
+
+
+<pre><code class="python">figsize(12.5, 5)
+fig = plt.figure()
+plt.subplot(121)
+
+exp_x = stats.expon.pdf(x, scale=3)
+exp_y = stats.expon.pdf(x, scale=10)
+M = np.dot(exp_x[:, None], exp_y[None, :])
+CS = plt.contour(X, Y, M)
+im = plt.imshow(M, interpolation='none', origin='lower',
+                cmap=jet, extent=(0, 5, 0, 5))
+#plt.xlabel("prior on $p_1$")
+#plt.ylabel("prior on $p_2$")
+plt.title("$Exp(3), Exp(10)$ prior landscape")
+
+ax = fig.add_subplot(122, projection='3d')
+ax.plot_surface(X, Y, M, cmap=jet)
+ax.view_init(azim=390)
+plt.title("$Exp(3), Exp(10)$ prior landscape; \nalternate view");
+</code></pre>
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdfq6o3cj20mg0a577q.jpg" alt="" title=""></p>
+
+
+
+
+<p>这些二维空间的例子很简单，我们的大脑可以轻易想象得到。但实际中，先验分布所在的空间和其概率面往往具有更高的维度。</p>
+
+
+
+
+<h3 id="观测值对先验分布的影响">观测值对先验分布的影响　</h3>
+
+
+
+
+<p>在实际中，观测样本对空间不会有影响，但它会改变概率面的形状，将其在某些局部区域拉伸或挤压，以表明参数的真实性在哪里。更多的数据意味着对概率面更多的拉伸和挤压，使得最初的概率面形状变得十分奇怪。反之数据越少，那么最初的形状就保留得越好。不管如何，最后得到的概率面描述了后验分布的形状。</p>
+
+
+
+
+<p>假如我们现在想对两个参数为<script type="math/tex" id="MathJax-Element-239">\lambda</script>的泊松分布进行估计。那么我们将要分别比较用均匀分布和指数分布来对<script type="math/tex" id="MathJax-Element-240">\lambda</script>的先验分布进行假设的不同效果。</p>
+
+
+
+
+<h3 id="代码绘图演示-2">代码绘图演示</h3>
+
+
+<pre><code class="python"># create the observed data
+
+# sample size of data we observe, trying varying this (keep it less than 100 ;)
+N = 1
+
+# the true parameters, but of course we do not see these values...
+lambda_1_true = 1
+lambda_2_true = 3
+
+#...we see the data generated, dependent on the above two values.
+data = np.concatenate([
+    stats.poisson.rvs(lambda_1_true, size=(N, 1)),
+    stats.poisson.rvs(lambda_2_true, size=(N, 1))
+], axis=1)
+print("observed (2-dimensional,sample size = %d):" % N, data)
+
+# plotting details.
+x = y = np.linspace(.01, 5, 100)
+likelihood_x = np.array([stats.poisson.pmf(data[:, 0], _x)
+                        for _x in x]).prod(axis=1)
+likelihood_y = np.array([stats.poisson.pmf(data[:, 1], _y)
+                        for _y in y]).prod(axis=1)
+L = np.dot(likelihood_x[:, None], likelihood_y[None, :])
+observed (2-dimensional,sample size = 1): [[0 2]]
+In [4]:
+figsize(12.5, 12)
+# matplotlib heavy lifting below, beware!
+plt.subplot(221)
+uni_x = stats.uniform.pdf(x, loc=0, scale=5)
+uni_y = stats.uniform.pdf(x, loc=0, scale=5)
+M = np.dot(uni_x[:, None], uni_y[None, :])
+im = plt.imshow(M, interpolation='none', origin='lower',
+                cmap=jet, vmax=1, vmin=-.15, extent=(0, 5, 0, 5))
+plt.scatter(lambda_2_true, lambda_1_true, c="k", s=50, edgecolor="none")
+plt.xlim(0, 5)
+plt.ylim(0, 5)
+plt.title("Landscape formed by Uniform priors on $p_1, p_2$.")
+
+plt.subplot(223)
+plt.contour(x, y, M * L)
+im = plt.imshow(M * L, interpolation='none', origin='lower',
+                cmap=jet, extent=(0, 5, 0, 5))
+plt.title("Landscape warped by %d data observation;\n Uniform priors on $p_1, p_2$." % N)
+plt.scatter(lambda_2_true, lambda_1_true, c="k", s=50, edgecolor="none")
+plt.xlim(0, 5)
+plt.ylim(0, 5)
+
+plt.subplot(222)
+exp_x = stats.expon.pdf(x, loc=0, scale=3)
+exp_y = stats.expon.pdf(x, loc=0, scale=10)
+M = np.dot(exp_x[:, None], exp_y[None, :])
+
+plt.contour(x, y, M)
+im = plt.imshow(M, interpolation='none', origin='lower',
+                cmap=jet, extent=(0, 5, 0, 5))
+plt.scatter(lambda_2_true, lambda_1_true, c="k", s=50, edgecolor="none")
+plt.xlim(0, 5)
+plt.ylim(0, 5)
+plt.title("Landscape formed by Exponential priors on $p_1, p_2$.")
+
+plt.subplot(224)
+# This is the likelihood times prior, that results in the posterior.
+plt.contour(x, y, M * L)
+im = plt.imshow(M * L, interpolation='none', origin='lower',
+                cmap=jet, extent=(0, 5, 0, 5))
+
+plt.scatter(lambda_2_true, lambda_1_true, c="k", s=50, edgecolor="none")
+plt.title("Landscape warped by %d data observation;\n Exponential priors on \
+$p_1, p_2$." % N)
+plt.xlim(0, 5)
+plt.ylim(0, 5);
+</code></pre>
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdubnzc1j20mo0m10y2.jpg" alt="" title=""></p>
+
+
+
+
+<p>四张图里的黑点代表了参数的真实取值，左下图为均匀先验得到的后验分布图。虽然观测值相同，但是两种假设下的后验分布形状是不一样的。其主要原因是因为观测点的位置在两者的假设的前提先验概率是不一样的。这样，我们可以知道，即便只有一个观测值，形成的山峰也试图要包括参数值的真实位置。当然，在真正的推断中，仅用一个观测值显然也是十分不科学的，这里仅仅为了方便阐述而已。</p>
+
+
+
+
+<p>本文参考自<a href="https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter3_MCMC/Ch3_IntroMCMC_PyMC3.ipynb">《Probabilistic-Programming-and-Bayesian-Methods-for-Hackers》</a></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[最大似然估计]]></title>
+    <link href="https://edmondfrank.github.io/blog/2017/12/21/zui-da-si-ran-gu-ji/"/>
+    <updated>2017-12-21T01:00:04+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2017/12/21/zui-da-si-ran-gu-ji</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="em算法基石-最大似然估计">EM算法基石-最大似然估计</h1></p>
+
+<h2 id="前言">前言</h2>
+
+
+
+
+<p>在统计计算中，<strong>最大期望（EM）算法是在概率模型中寻找参数最大似然估计或者最大后验估计的算法（机器学习十大算法之一）</strong>，其中概率模型依赖于无法观测的隐藏变量（Latent Variable）。最大期望经常用在机器学习和计算机视觉的数据聚类（Data Clustering）领域。而本文要讲的就是最大期望算法的基石-<strong>最大似然估计</strong>。</p>
+
+
+
+
+<h2 id="最大似然估计maximum-likelihoodml">最大似然估计（Maximum Likelihood，ML）</h2>
+
+
+
+
+<h3 id="概述">概述</h3>
+
+
+
+
+<p><strong>最大似然估计</strong>也称极大似然法，是一种统计方法，它用来求一个样本集的相关概率密度函数的参数。这个方法最早是遗传学家以及统计学家罗纳德·费雪爵士在1912年至1922年间开始使用的。</p>
+
+
+
+
+<p><strong>最大似然法</strong>明确地使用概率模型，其目标是寻找能够以较高概率产生观察数据的系统发生树。最大似然法是一类完全基于统计的系统发生树重建方法的代表。</p>
+
+
+
+
+<h3 id="简单举例">简单举例</h3>
+
+
+
+
+<p>设有外形完全相同的两个箱子,甲箱有99个白球1个黑球,乙箱有1个白球99个黑球.今随机地抽取一箱,然后再从这箱中任取一球,结果发现是白球.问这个箱子是甲箱还是乙箱?</p>
+
+
+
+
+<p>仅仅从取出的球是白球这一点是无法从逻辑上严格加以判定该箱究竟是甲箱还是乙箱的。但是如果现在一定要我们做出选择，那么我们只能这样来考虑：从箱中取出的球是白球这一点来看，甲箱和乙箱哪个看上去更像是真正从中取球的箱子？</p>
+
+
+
+
+<p>我们可以这样来分析，如果该箱是甲箱,则取得白球的概率为0.99；如果该箱是乙箱,则取得白球的概率0.01．因此，用“该箱是甲箱”来解释所取的球是白球这一事件更有说服力一些，从而我们判定甲箱比乙箱更像一些。最后我们做出推断,这球是从甲箱取出的。</p>
+
+
+
+
+<h3 id="离散分布离散有限参数空间">离散分布，离散有限参数空间</h3>
+
+
+
+
+<p>看完上面那个简单的例子，下面再来考虑一个抛硬币的例子。假设这个硬币正面跟反面轻重不同。我们把这个硬币抛80次，并把正面的次数记下来，正面记为H，反面记为T），并把抛出一个正面的概率记为p，抛出一个反面的概率记为1 − p。假设我们抛出了49个正面，31 个反面，即49次H，31次T。假设这个硬币是我们从一个装了三个硬币的盒子里头取出的。这三个硬币抛出正面的概率分别为p = 1 / 3, p = 1 / 2, p = 2 / 3. 这些硬币没有标记，所以我们无法知道哪个是哪个。使用最大似然估计，通过这些试验数据，我们可以计算出哪个硬币的可能性最大。这个可能性函数取以下三个值中的一个：</p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-98">P(H=49,T=31|\rho=\frac{1}{3})=\textrm{C}^{49}_{80}(\frac{1}{3})^{49}(1-\frac{1}{3})^{31} \approx 0.000 \\
+P(H=49,T=31|\rho=\frac{1}{2})=\textrm{C}^{49}_{80}(\frac{1}{2})^{49}(1-\frac{1}{2})^{31} \approx 0.012 \\
+P(H=49,T=31|\rho=\frac{2}{3})=\textrm{C}^{49}_{80}(\frac{2}{3})^{49}(1-\frac{2}{3})^{31} \approx 0.054 </script></p>
+
+
+
+
+<p>我们可以看到当<script type="math/tex" id="MathJax-Element-99">\widehat{p}=2/3</script>时，可能性函数取得最大值。这就是p的最大似然估计。</p>
+
+
+
+
+<h3 id="离散分布连续参数空间升级版">离散分布，连续参数空间（升级版）</h3>
+
+
+
+
+<p>现在假设上面的例子中的盒子中有无数个硬币，对于<script type="math/tex" id="MathJax-Element-439">0\leq p \leq 1</script>中的任何一个p， 都有一个抛出正面概率为p的硬币对应，我们再来求其可能性函数的最大值： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-440">f_D(H=49,T=31|\rho)=\textrm{C}^{49}_{80}\rho^{49}(1-\rho^{31})</script> <br>
+两边同时取p微分 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-441">0=\rho^{48}(1-\rho)[49(1-\rho)-31\rho]</script> <br>
+求得其解分别为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-442">\rho=0,\rho=1和\rho=\frac{49}{80}</script> <br>
+使可能性最大的解显然是p = 49 / 80（因为p = 0 和p = 1 这两个解会使可能性为零）。因此我们说最大似然估计值为<script type="math/tex" id="MathJax-Element-443">\widehat{p}=49/80</script>.</p>
+
+
+
+
+<p>这个结果很容易一般化。只需要用一个字母t代替49用以表达伯努利试验中的被观察数据（即样本）的成功次数，用另一个字母n代表伯努利试验的次数即可。使用完全同样的方法即可以得到最大似然估计值: <br>
+<script type="math/tex; mode=display" id="MathJax-Element-444">\widehat{p}=\frac{t}{n}</script></p>
+
+
+
+
+<h3 id="最大似然估计的一般求解步骤">最大似然估计的一般求解步骤</h3>
+
+
+
+
+<ol>
+<li>写出似然函数 <br>
+　　<script type="math/tex; mode=display" id="MathJax-Element-519">L\theta=\prod_{i=1}^n p(x_i;\theta)(总体X为离散型时)\\  L\theta=\prod_{i=1}^n f(x_i;\theta)(总体X为连续型时)</script> <br>
+　　</li>
+<li><p>对似然函数两边取对数有 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-520">lnL\theta=\sum_{i=1}^n lnp(x_i;\theta)
+\\ lnL\theta=\sum_{i=1}^n lnf(x_i;\theta)</script></p></li>
+<li><p>对lnL\theta求导数并令之为0： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-521">\frac{dlnL\theta}{d\theta}=0</script></p></li>
+</ol>
+
+
+
+
+<p>此方程为对数似然方程。解对数似然方程所得，即为未知参数 的最大似然估计值。</p>
+
+
+
+
+<h4 id="举个栗子连续分布连续参数空间终级版">举个栗子：连续分布，连续参数空间（终级版）</h4>
+
+
+
+
+<p>设总体 <script type="math/tex" id="MathJax-Element-805">X~N(μ，σ^2),μ，σ^2(正太分布)</script>为未知参数，<script type="math/tex" id="MathJax-Element-806">X1,X2...,Xn</script>是来自总体X的样本，<script type="math/tex" id="MathJax-Element-807">X1,X2...,Xn</script>是对应的样本值，求<script type="math/tex" id="MathJax-Element-808">μ与σ^2</script>的最大似然估计值。</p>
+
+
+
+
+<p><strong>解:</strong> X的概率密度为 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-809">f(x|μ，σ2)=\frac{1}{\sqrt{2\pi\sigma}}e^-\frac{(x_i-\mu)^2}{2\sigma^2} (-\infty<x<+\infty),</script> <br>
+　　 <br>
+<strong>可得似然函数</strong>如下： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-810">L(μ，σ2)=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{(x_i-\mu)^2}{2{\sigma}^2}}</script></p>
+
+
+
+
+<p><strong>取对数</strong>，得</p>
+
+
+
+
+<p>　　<script type="math/tex; mode=display" id="MathJax-Element-811">lnL(μ，σ2)=-\frac{n}{2}ln(2\pi)-\frac{n}{2}ln(\sigma^2)-\frac{1}{2{\delta}^2}\sum_{i=1}^n{(x_i-\mu)}^2</script></p>
+
+
+
+
+<p><strong>令</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-821">\begin{cases}\frac{\partial}{\partial\mu}ln L(\mu,\sigma)=0,\\\frac{\partial}{\partial\sigma^2}\ln L(\mu,\sigma)=0,\end{cases}</script></p>
+
+
+
+
+<p><strong>可得</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-828">\begin{cases}\frac{1}{\sigma^2}(\sum_{i=1}^2x_i-n\mu)=0,\\-\frac{n}{2\sigma^2}+\frac{1}{2(\sigma^2)^2}\sum_{i=1}^n(x_i-\mu)^2=0.\end{cases}</script></p>
+
+
+
+
+<p><strong>解得</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-843">\begin{cases}\widehat{\mu}=\frac{1}{n}\sum_{i=1}^n x_i=\overline{x}, \\\widehat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n(x_i-\overline{x})^2.\end{cases}</script></p>
+
+
+
+
+<p>故<script type="math/tex" id="MathJax-Element-844">μ和δ2</script>的<strong>最大似然估计量</strong>分别为 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-845">\widehat{\mu}=\overline{X}，\widehat{\delta^2}=\frac{1}{n}\sum_{i=1}^n(X_i-\overline{X})^2</script></p>
+
+]]></content>
+  </entry>
+  
+</feed>

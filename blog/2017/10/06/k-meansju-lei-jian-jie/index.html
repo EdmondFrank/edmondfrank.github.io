@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>K-means聚类简介 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="﻿K-means聚类简介 前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别） &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">K-means聚类简介</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-06T14:28:25+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><p>﻿<h1 id="k-means聚类简介">K-means聚类简介</h1></p>
+
+<p>前面介绍了不少监督学习的各类算法，那么这次我们就来认识和了解一下无监督学习。首先，K-means聚类算法就是一种无监督学习的算法。这就意味着他可以通过没有分类标记的数据学习出训练数据本身的分组信息。（其实他的本质就是自动的将属性/特征类似的数据归到统一类别）而其最后分成的组数则由参数K来决定。</p>
+
+
+
+
+<h2 id="算法基本步骤">算法基本步骤</h2>
+
+
+
+
+<ol>
+<li>随机初始化K个簇心。用作标识各组数据。</li>
+<li>根据各个数据的特征/属性，将他们聚类到距离最接近的一个簇，并打上分类标识。</li>
+<li>根据加入的数据重新计算每个簇的质心（均值，Means）</li>
+<li>重复2，3步，直至最后所有数据被划分成k个簇。</li>
+</ol>
+
+
+
+
+<p>从以后的步骤我们也可以充分地看出，再聚类完毕之前数据是没有分组和标识的，而是通过聚类来查找和分析被划分在一起的数据。</p>
+
+
+
+
+<p>同时，每个簇的质心是定义组的特征的代表，我们往往可以通过一个簇的质心看出该分组的特征以及属性。从而判断出这个簇代表了一个怎么样的组。</p>
+
+
+
+
+<h2 id="应用领域">应用领域</h2>
+
+
+
+
+<ul>
+<li>网站，App的用户群体聚类</li>
+<li>信用卡诈骗监测（这个是利用了聚类算法的反原理，寻找离群值）</li>
+<li>文章自动归类</li>
+<li>图像归类</li>
+<li>人群健康状态监测（同信用卡诈骗检测同原理）</li>
+</ul>
+
+
+
+
+<p>此外，我们还可以通过监控数据点根据时间的变化而造成的组间切换现象找到状态变化的方法。</p>
+
+
+
+
+<h2 id="算法主要原理">算法主要原理</h2>
+
+
+
+
+<p>（1）在数据划分方面，我们主要依赖的思路是：<strong>欧氏距离</strong>。即，每个簇的质心定义了一种聚类，然后每个点根据其到每个簇的质心的欧几里德距离的平方的大小，将其分配到最近的簇中。我们假设<script type="math/tex" id="MathJax-Element-1">c_i</script>是簇集合C中质心i，那么我们可以将其聚类的过程表达成下列形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-2">argmin_{c_i \in C} dist(c_i,x)^2</script></p>
+
+
+
+
+<p>（2）<strong>质心的更新</strong>，在这一步骤中，各个簇的质心将要被重新计算，通过加入新的数据再重新计算包括i新数据在内的的整个簇的均值以此作为新的质心。该过程可以表达为一下形式：</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-3">c_i=\frac{1}{|S_i|}\sum_{x_i \in S_i }x_i</script></p>
+
+
+
+
+<p>在多次迭代之后，该算法可以保证收敛于一个结果，虽然有可能只是一个局部的最优解而已。为了使得最后结果更加稳定和可靠，我们也可以通过多次运行算法然后再在多个结果中取得一个均衡（为什么说多次计算可以得到更好的结果呢？ 因为每次随机初始化的质心都是不同的，这样使得每次的运行结果都不尽相同，为了得到一个更加稳定的结果和更好的鲁棒性，多次运行往往是一个简单但却有效的方法。）</p>
+
+
+
+
+<h2 id="有关k值的选择">有关K值的选择</h2>
+
+
+
+
+<p>在K-means聚类算法中，K值的选择往往是一个较为难以抉择的问题。最后的情况是，在你应用这个算法之前，已经知道数据应该分为多少个类别合适，或者将这种方法应用在一个半监督学习的场合，使得最后的分类结果有据可依。</p>
+
+
+
+
+<p>那么，在一般我们不太清楚分类的情况之下，我们能做的就是通过为K值制定一个范围，然后在这个范围之上，我们尝试运行我们的分类器，然后根据分类效果来评判我们的k的取值。</p>
+
+
+
+
+<p>另外一方面，聚类算法通常会不断降低各个样本点到质心之间的距离，随着k值的增加，“距离”更是一直下降。但是，当k值增大到一定程度时，虽然“距离”仍在下降，但下降的速率已经变得十分缓慢了。我们常常称这个点的k值为<strong>肘点</strong>。往往到达肘点的k值已经能够很好地将各个类别之间的差异信息给描述出来，所以我们可以在不清楚数据具体分类信息的情况下，选择肘点值来作为我们的k值。</p>
+
+
+
+
+<p><img src="https://www.datascience.com/hs-fs/hubfs/Blog/introduction-to-k-means-clustering-elbow-point-example.png?t=1507257936532&amp;width=760&amp;height=411&amp;name=introduction-to-k-means-clustering-elbow-point-example.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h2 id="example">Example</h2>
+
+
+
+
+<p>在这里我们通过Python的Sklearn库来看一下K-means的应用实例</p>
+
+
+
+
+<p><a href="https://raw.githubusercontent.com/datascienceinc/learn-data-science/master/Introduction-to-K-means-Clustering/Data/data_1024.csv">Delivery Fleet Data 数据下载</a></p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data_1024.csv&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">])</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote>
+  <p>输出结果 <br>
+    Driver_ID   Distance_Feature    Speeding_Feature <br>
+  0   3423311935  71.24   28.0 <br>
+  1   3423313212  52.53   25.0 <br>
+  2   3423313724  64.54   27.0 <br>
+  3   3423311373  55.69   22.0 <br>
+  4   3423310999  54.58   25.0 <br>
+  <img src="https://i.loli.net/2017/10/06/59d71bde43c28.png" alt="kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<h3 id="算法使用">算法使用</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+</span><span class='line'><span class="n">X_train</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">,</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">]]</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">kmeas</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">/</span><span class="mf">255.</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">kmeas</span><span class="o">.</span><span class="n">labels_</span><span class="p">]</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Distance_Feature&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;Speeding_Feature&#39;</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Distance_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Speeding_Feature&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Delivery Fleet Data&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  <img src="https://i.loli.net/2017/10/06/59d720b726068.png" alt="sk-kmeans.png" title=""></p>
+</blockquote>
+
+
+
+
+<p>上面的结果展示了，K分别等于2和4时对数据的聚类的结果，由于这个算法使用还算简单，在这里我也不做赘述了。那么有关K-means的简介到这里也就结束了，谢谢大家的阅读。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-06T14:28:25+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/10/06/k-meansju-lei-jian-jie/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/09/30/ji-qi-xue-xi-zhi-ti-du-xia-jiang/" title="Previous Post: 机器学习之梯度下降">&laquo; 机器学习之梯度下降</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/" title="Next Post: SVM支持向量机">SVM支持向量机 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

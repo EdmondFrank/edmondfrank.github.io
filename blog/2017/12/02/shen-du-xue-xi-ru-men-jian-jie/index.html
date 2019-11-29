@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>深度学习入门简介 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="﻿深度学习入门简介 背景 深度学习的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。 概念 深度学习的概念由Hinton等人于2006年提出。基于深度置信网络(DBN) &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">深度学习入门简介</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
+
+
+
+
+<h2 id="概念">概念</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
+
+
+
+
+<h2 id="原理">原理</h2>
+
+
+
+
+<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
+
+
+
+
+<p>（以上内容摘取自百度百科）</p>
+
+
+
+
+<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
+
+
+
+
+<h2 id="结构">结构</h2>
+
+
+
+
+<h3 id="神经元">神经元</h3>
+
+
+
+
+<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
+
+
+
+
+<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
+
+
+
+
+<p>他的主要执行过程：</p>
+
+
+
+
+<blockquote>
+  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
+</blockquote>
+
+
+
+
+<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
+
+
+
+
+<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
+
+
+
+
+<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
+
+
+
+
+<h3 id="连接方式">连接方式</h3>
+
+
+
+
+<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
+
+
+
+
+<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
+
+
+
+
+<h2 id="全连接前馈网络">全连接前馈网络</h2>
+
+
+
+
+<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
+
+
+
+
+<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
+
+
+
+
+<h2 id="输出层">输出层</h2>
+
+
+
+
+<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
+<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
+
+
+
+
+<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
+
+
+
+
+<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/" title="Previous Post: Python在Spark上的机器学习之机器学习实战(下)">&laquo; Python在Spark上的机器学习之机器学习实战(下)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/" title="Next Post: 深度学习入门简介（二）">深度学习入门简介（二） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

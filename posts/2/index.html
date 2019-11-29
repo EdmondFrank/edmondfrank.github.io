@@ -1,751 +1,3548 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title> EdmondFrank's 时光足迹</title>
+  <meta charset="utf-8">
+  <title>EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
 
-	<meta name="author" content="EdmondFrank"> 
-	
-	<meta name="description" content="Xlib编程之-创建全屏透明窗口 Oct 21, 2016 linux,c语言,编程 2016-10-12:天翼校园网客户端登录协议更新 Oct 12, 2016 校园网,编程,linux 从零开始的Rust-Enumerate方法 Sep 21, 2016 rust,linux,编程 &hellip;"> <meta name="keywords" content="">
+  
+  <meta name="description" content="﻿使用树莓派进行24小时不间断直播 开始 多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。 方案一 ffmpeg + ffserver搭建流媒体服务器 首先 我们用到的工具有： 硬件方面： 树莓派主板一块
+兼容树莓派的USB摄像头一个 软件方面： ffmpeg， &hellip;">
+  
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="/stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
-	
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/posts/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
 </head>
 
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
 
 
-<body>
-	<header id="header">
-<div class="inner">
-  <ul class="navigation">
-    <li><a href="/"><h1>EdmondFrank's 时光足迹</h1></a></li>
-    <li><a href="/" class="is-selected">Blog</a></li>
-    <li><a href="http://github.com/EdmondFrank" target="blank">Github</a></li>
-    <li><a href="https://twitter.com/EdmondFrank4" target="blank">Twitter</a></li>
-  </ul>
-</div></header>
 
-	<div id="content" class="inner">
+
+
+
 
 
   
 
 
-	
-	
-	<section class="archives">
 
-<article>
-	<h2 class="title"><a href="/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/">Xlib编程之-创建全屏透明窗口</a></h2>
-	<div class="meta">
-		<div class="date">Oct 21, 2016</div>
-		
+<time datetime="2018-02-12T22:14:22+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-<div class="tags">
 
-	<a class='category' href='/blog/categories/linux-cyu-yan-bian-cheng/'>linux,c语言,编程</a>
+  <div class="entry-content"><p>﻿<h1 id="使用树莓派进行24小时不间断直播">使用树莓派进行24小时不间断直播</h1></p>
+
+<h2 id="开始">开始</h2>
+
+
+
+
+<p>多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。</p>
+
+
+
+
+<h2 id="方案一-ffmpeg-ffserver搭建流媒体服务器">方案一 ffmpeg + ffserver搭建流媒体服务器</h2>
+
+
+
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+
+
+
+<p><strong>硬件方面：</strong></p>
+
+
+
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+
+
+
+<p><strong>软件方面：</strong></p>
+
+
+
+
+<ul>
+<li>ffmpeg，负责媒体文件的转码工作，把你服务器上的源媒体文件转成要发出去的流媒体文件。</li>
+<li>ffserver，负责响应客户端的流媒体请求，把流媒体数据发送给客户端，相当与一个小型的服务端。</li>
+</ul>
+
+
+
+
+<p>具体的工作方式就如下图所示： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzrw4b72j20iu0buq52.jpg" alt="" title=""></p>
+
+
+
+
+<p>多个输入源被“喂”到广播服务器，这些多媒体内容就会分发到多个客户端。上图的目的是显示地表明你的流系统能够被分成多个块部署到网络上，允许你广播不同的在线内容，而不需要改变流媒体系统的结构。</p>
+
+
+
+
+<h3 id="配置">配置</h3>
+
+
+
+
+<p>无论是树莓派官方摄像头模块还是其他兼容的USB摄像头，连接好摄像头之后，运行命令去启用摄像头：</p>
+
+
+
+
+<blockquote>
+  <p>sudo raspi-config</p>
+</blockquote>
+
+
+
+
+<p><strong>ffserver.conf</strong>，ffserver启动时的配置文件，在这个文件中主要是对网络协议，缓存文件feed1.ffm（见下述）和要发送的流媒体文件的格式参数做具体的设定。</p>
+
+
+
+
+<p><strong>feed1.ffm</strong>，可以看成是一个流媒体数据的缓存文件，ffmpeg把转码好的数据发送给ffserver，如果没有客户端连接请求，ffserver把数据缓存到该文件中。</p>
+
+
+
+
+<p><strong>下面就是一个ffserver.conf的一个例子</strong>：</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">Port <span class="hljs-number">8090</span>                      <span class="hljs-preprocessor"># Port to bind the server to</span>
+BindAddress <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>
+MaxHTTPConnections <span class="hljs-number">2000</span>
+MaxClients <span class="hljs-number">1000</span>
+MaxBandwidth <span class="hljs-number">10000</span>             <span class="hljs-preprocessor"># Maximum bandwidth per client</span>
+                               <span class="hljs-preprocessor"># set this high enough to exceed stream bitrate</span>
+CustomLog -
+NoDaemon                       <span class="hljs-preprocessor"># Remove this if you want FFserver to daemonize after start</span>
+
+&lt;Feed feed1<span class="hljs-preprocessor">.ffm</span>&gt;               <span class="hljs-preprocessor"># This is the input feed where FFmpeg will send</span>
+   File ./feed1<span class="hljs-preprocessor">.ffm</span>            <span class="hljs-preprocessor"># video stream.</span>
+   FileMaxSize <span class="hljs-number">64</span>M              <span class="hljs-preprocessor"># Maximum file size for buffering video</span>
+   ACL allow <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>         <span class="hljs-preprocessor"># Allowed IPs</span>
+&lt;/Feed&gt;
+
+&lt;Stream test<span class="hljs-preprocessor">.webm</span>&gt;              <span class="hljs-preprocessor"># Output stream URL definition</span>
+   Feed feed1<span class="hljs-preprocessor">.ffm</span>              <span class="hljs-preprocessor"># Feed from which to receive video</span>
+   Format webm
+
+   <span class="hljs-preprocessor"># Audio settings</span>
+   AudioCodec vorbis
+   AudioBitRate <span class="hljs-number">64</span>             <span class="hljs-preprocessor"># Audio bitrate</span>
+
+   <span class="hljs-preprocessor"># Video settings</span>
+   VideoCodec libvpx
+   VideoSize <span class="hljs-number">720</span>x576           <span class="hljs-preprocessor"># Video resolution</span>
+   VideoFrameRate <span class="hljs-number">25</span>           <span class="hljs-preprocessor"># Video FPS</span>
+   AVOptionVideo flags +global_header  <span class="hljs-preprocessor"># Parameters passed to encoder</span>
+                                       <span class="hljs-preprocessor"># (same as ffmpeg command-line parameters)</span>
+   AVOptionVideo cpu-used <span class="hljs-number">0</span>
+   AVOptionVideo qmin <span class="hljs-number">10</span>
+   AVOptionVideo qmax <span class="hljs-number">42</span>
+   AVOptionVideo quality good
+   AVOptionAudio flags +global_header
+   PreRoll <span class="hljs-number">15</span>
+   StartSendOnKey
+   VideoBitRate <span class="hljs-number">400</span>            <span class="hljs-preprocessor"># Video bitrate</span>
+&lt;/Stream&gt;
+
+&lt;Stream status<span class="hljs-preprocessor">.html</span>&gt;            <span class="hljs-preprocessor"># Server status URL</span>
+   Format status
+   <span class="hljs-preprocessor"># Only allow local people to get the status</span>
+   ACL allow localhost
+   ACL allow <span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> <span class="hljs-number">192.168</span><span class="hljs-number">.255</span><span class="hljs-number">.255</span>
+&lt;/Stream&gt;
+
+&lt;Redirect index<span class="hljs-preprocessor">.html</span>&gt;    <span class="hljs-preprocessor"># Just an URL redirect for index</span>
+   <span class="hljs-preprocessor"># Redirect index.html to the appropriate site</span>
+   URL http://www<span class="hljs-preprocessor">.ffmpeg</span><span class="hljs-preprocessor">.org</span>/
+&lt;/Redirect&gt;</code></pre>
+
+
+
+
+<p>ffserver启动时默认查看 /etc/ffserver.conf 配置文件，你可以通过-f选项控制查阅的配置文件。</p>
+
+
+
+
+<blockquote>
+  <p>ffserver -f ffserver.conf</p>
+</blockquote>
+
+
+
+
+<p>运行结果如下所示的话，那么ffserver就算是启动成功了。</p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzzq0svjj20xm08jgmv.jpg" alt="" title=""></p>
+
+
+
+
+<p>打开<a href="http://localhost:8090/status.html">http://localhost:8090/status.html</a>可以看到当前server中各个流的状态。</p>
+
+
+
+
+<h3 id="接入视频流">接入视频流</h3>
+
+
+
+
+<p>ffserver启动之后，就可以向 <br>
+<a href="http://localhost:8090/feed1.ffm">http://localhost:8090/feed1.ffm</a>接入视频流。</p>
+
+
+
+
+<p><strong>注意</strong>，这里不需要指定编码格式，FFserver会重新编码。</p>
+
+
+
+
+<p>视频流的来源可以是文件、摄像头或者录制屏幕。</p>
+
+
+
+
+<h3 id="接入视频文件">接入视频文件</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">ffmpeg -i testvideo<span class="hljs-preprocessor">.mp</span>4 http://localhost:<span class="hljs-number">8090</span>/feed1<span class="hljs-preprocessor">.ffm</span></code></pre>
+
+
+
+
+<h3 id="接入录制屏幕">接入录制屏幕</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> x11grab <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x512 <span class="hljs-attribute">-i</span> :<span class="hljs-number">0.0</span> <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span>
+</code></pre>
+
+
+
+
+<p>这里有两个-f，第一个指的是视频流，第二个指的是音频流。视频流是抓取屏幕形成视频，-r设置帧率为25帧/s，-s设置抓取图像大小为640x512，-i设置录制视频的初始坐标。音频流设置为alsa(Advanced Linux Sound Architecture)，从Linux系统中获取音频。这其中这样ffmpeg可以录制屏幕feed到feed1.ffm中。</p>
+
+
+
+
+<h3 id="接入摄像头直播">接入摄像头直播</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> video4linux2 <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x480 <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-i</span> /dev/video0 <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span></code></pre>
+
+
+
+
+<h2 id="方案二-avconv-和-gstreamer-用于采集摄像头捕获的视频流并推送到-rtmp-服务">方案二 avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</h2>
+
+
+
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+
+
+
+<p><strong>硬件方面：</strong></p>
+
+
+
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+
+
+
+<p><strong>软件方面：</strong></p>
+
+
+
+
+<ul>
+<li>avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</li>
+<li>NGINX 和 RTMP 模块，用于接收视频流，同时提供视频发布功能</li>
+</ul>
+
+
+
+
+<h3 id="安装配置">安装＆配置</h3>
+
+
+
+
+<p>因为这里我们要用到nginx的rtmp模块作为服务端，而系统自带的apt安装的nginx是没有这个模块的，所以我们需要先安装后移除nginx然后再手动编译（安装是为了下载好相关依赖）。</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">sudo</span> apt-get update
+<span class="hljs-comment">#安装 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y install nginx
+<span class="hljs-comment">#移除 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y remove nginx
+<span class="hljs-built_in">sudo</span> apt-get clean
+<span class="hljs-comment">#清空 nginx 的配置文件</span>
+<span class="hljs-built_in">sudo</span> rm -rf /etc/nginx/*
+<span class="hljs-comment">#安装编译用的模块</span>
+<span class="hljs-built_in">sudo</span> apt-get install -y curl build-essential libpcre3 libpcre3-dev libpcre++-dev zlib1g-dev libcurl4-openssl-dev libssl-dev
+<span class="hljs-comment">#创建存放网页的目录给 nginx 使用</span>
+<span class="hljs-built_in">sudo</span> mkdir -p /var/www
+<span class="hljs-comment">#创建编译用的目录</span>
+mkdir -p ~/nginx_src
+<span class="hljs-built_in">cd</span> ~/nginx_src
+<span class="hljs-comment">#下载 nginx 源码包</span>
+wget http://nginx.org/download/nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+<span class="hljs-comment">#下载 nginx-rtmp-module 源码包</span>
+wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
+tar -zxvf nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+unzip master.zip
+<span class="hljs-built_in">cd</span> nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>
+<span class="hljs-comment">#设定编译参数</span>
+./configure --prefix=/var/www --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_ssl_module --without-http_proxy_module --add-module=/home/pi/nginx_src/nginx-rtmp-module-master
+<span class="hljs-comment">#开始编译安装</span>
+make
+<span class="hljs-built_in">sudo</span> make install</code></pre>
+
+
+
+
+<h3 id="配置-nginx">配置 nginx</h3>
+
+
+
+
+<blockquote>
+  <p>sudo gedit /etc/nginx/nginx.conf</p>
+</blockquote>
+
+
+
+
+<p>在末尾添加</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs applescript">rtmp {
+    server {
+        listen <span class="hljs-number">1935</span>;
+        chunk_size <span class="hljs-number">4096</span>;
+        <span class="hljs-type">application</span> live {
+            live <span class="hljs-function_start"><span class="hljs-keyword">on</span></span>;
+            <span class="hljs-type">record</span> off;
+        }
+    }
+}</code></pre>
+
+
+
+
+<p>重启 nginx 服务。</p>
+
+
+
+
+<blockquote>
+  <p>sudo service nginx start</p>
+</blockquote>
+
+
+
+
+<h3 id="安装-avconv-和-gstreamer">安装 avconv 和 GStreamer</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs cs">sudo apt-<span class="hljs-keyword">get</span> update
+sudo apt-<span class="hljs-keyword">get</span> install libav-tools
+<span class="hljs-preprocessor">#安装 GStreamer</span>
+sudo apt-<span class="hljs-keyword">get</span> install gstreamer1<span class="hljs-number">.0</span>-tools
+<span class="hljs-preprocessor">#安装 GStreamer 扩展组件</span>
+sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span>-dbg libgstreamer1<span class="hljs-number">.0</span>-dev liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span> liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span>-dbg liborc-<span class="hljs-number">0.4</span>-dev liborc-<span class="hljs-number">0.4</span>-doc gir1<span class="hljs-number">.2</span>-gst-plugins-<span class="hljs-keyword">base</span>-<span class="hljs-number">1.0</span> gir1<span class="hljs-number">.2</span>-gstreamer-<span class="hljs-number">1.0</span> gstreamer1<span class="hljs-number">.0</span>-alsa gstreamer1<span class="hljs-number">.0</span>-doc gstreamer1<span class="hljs-number">.0</span>-omx gstreamer1<span class="hljs-number">.0</span>-plugins-bad gstreamer1<span class="hljs-number">.0</span>-plugins-bad-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-bad-doc gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span> gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-apps gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-doc gstreamer1<span class="hljs-number">.0</span>-plugins-good gstreamer1<span class="hljs-number">.0</span>-plugins-good-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-good-doc gstreamer1<span class="hljs-number">.0</span>-plugins-ugly gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-doc gstreamer1<span class="hljs-number">.0</span>-pulseaudio gstreamer1<span class="hljs-number">.0</span>-tools gstreamer1<span class="hljs-number">.0</span>-x libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-dev libgstreamer-plugins-base1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-base1<span class="hljs-number">.0</span>-dev
+</code></pre>
+
+
+
+
+<h3 id="采集与呈现视频流">采集与呈现视频流</h3>
+
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs erlang-repl"><span class="hljs-function_or_atom">gst</span>-<span class="hljs-function_or_atom">launch</span>-<span class="hljs-number">1.0</span> -<span class="hljs-function_or_atom">v</span> <span class="hljs-function_or_atom">v4l2src</span> <span class="hljs-function_or_atom">device</span>=/<span class="hljs-function_or_atom">dev</span>/<span class="hljs-function_or_atom">video0</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-string">'video/x-raw, width=1024, height=768, framerate=30/1'</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">queue</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">videoconvert</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">omxh264enc</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">h264parse</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">flvmux</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">rtmpsink</span> <span class="hljs-function_or_atom">location</span>=<span class="hljs-string">'rtmp://树莓派的IP地址/live live=1'</span> &amp;</code></pre>
+
+
+
+
+<p>采用以上命令就可以在后台采集ＵＳＢ摄像头拍摄的直播内容并推送到ｒｔｍｐ服务端上了。</p>
+
+
+
+
+<p><strong>呈现直播视频画面</strong>：</p>
+
+
+
+
+<p>1、使用 RTMP 播放器播放视频流 <br>
+例如 VLC 等播放器（桌面版和手机版均有）支持 RTMP 视频流播放，填入 rtmp://树莓派的IP地址/live 即可播放。不过这个软件有数十秒的缓冲延迟，需要设定缓冲时间来缩短延迟。</p>
+
+
+
+
+<p>２、推送至斗鱼直播平台观看 <br>
+你可能注意到了 GStreamer 这个命令中有 location 这个参数。这个参数是设定采集到的视频流推向哪里，通过设定这个参数可以将视频流推向任何支持 RTMP 协议的服务器。</p>
+
+
+
+
+<p>斗鱼平台同样采用了 RTMP 协议传输直播视频，首先获取斗鱼的 RTMP 推流地址。开启了直播室之后可以获得推流码。注意，斗鱼的推流码是有时限的，取到推流码需要尽快使用以免过期。</p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a>
+      <time datetime="2018-02-12T22:14:22+08:00" pubdate><span class='month'>Feb</span> <span class='day'>12</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/10/12/tian-yi-xiao-yuan-wang-ke-hu-duan-deng-lu-xie-yi-geng-xin/">2016-10-12:天翼校园网客户端登录协议更新</a></h2>
-	<div class="meta">
-		<div class="date">Oct 12, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2018-02-08T18:17:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/xiao-yuan-wang-bian-cheng-linux/'>校园网,编程,linux</a>
+
+  <div class="entry-content"><p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
+
+
+
+
+<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
+
+
+
+
+<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
+
+
+
+
+<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
+
+
+
+
+<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
+
+
+
+
+<h2 id="什么是automl">什么是AutoML？</h2>
+
+
+
+
+<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
+ <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
+
+
+
+
+<ul>
+<li>预处理数据</li>
+<li>选择适当的功能</li>
+<li>选择一个适当的模型选择系列</li>
+<li>优化模型超参</li>
+<li>后处理机器学习模型</li>
+<li>严格分析所得的结果</li>
+</ul>
+
+
+
+
+<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
+
+
+
+
+<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
+
+
+
+
+<ul>
+<li>执行深层表示的架构搜索</li>
+<li>分析超参数的重要性</li>
+</ul>
+
+
+
+
+<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
+
+
+
+
+<h2 id="automl的架构">AutoML的架构</h2>
+
+
+
+
+<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
+在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
+
+
+
+
+<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
+
+
+
+
+<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
+
+
+
+
+<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
+
+
+
+
+<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
+
+
+
+
+<h2 id="automl的案例应用">AutoML的案例应用</h2>
+
+
+
+
+<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
+
+
+
+
+<ul>
+<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
+<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
+</ul>
+
+
+
+
+<h2 id="测试结果">测试结果</h2>
+
+
+
+
+<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
+有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
+
+
+
+
+<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
+
+
+
+
+<blockquote>
+  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
+  Accuracy score 0.988888888889</p>
+</blockquote>
+
+
+
+
+<p>然后是auto-sklearn框架的自生成模型：</p>
+
+
+
+
+<blockquote>
+  <p>import autosklearn.classification <br>
+  import sklearn.model_selection <br>
+  import sklearn.datasets <br>
+  import sklearn.metrics <br>
+  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
+  X_train, X_test, y_train, y_test = \ <br>
+         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
+  automl = autosklearn.classification.AutoSklearnClassifier() <br>
+  automl.fit(X_train, y_train) <br>
+  y_hat = automl.predict(X_test) <br>
+  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
+   [Out] Accuracy score 0.993333333333</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
+<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
+网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
+新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
+只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a>
+      <time datetime="2018-02-08T18:17:01+08:00" pubdate><span class='month'>Feb</span> <span class='day'>08</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/">树莓派和L298N电机驱动模块实现智能小车控制</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/09/21/cong-ling-kai-shi-de-rust-enumeratefang-fa/">从零开始的Rust-Enumerate方法</a></h2>
-	<div class="meta">
-		<div class="date">Sep 21, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2018-02-05T14:56:53+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/rust-linux-bian-cheng/'>rust,linux,编程</a>
+
+  <div class="entry-content"><p>﻿<h1 id="树莓派与l298n驱动模块实现智能小车控制">树莓派与L298N驱动模块实现智能小车控制</h1></p>
+
+<h2 id="准备">准备</h2>
+
+
+
+
+<p>首先在讲整体实现之前，笔者先附上自己的开发环境以及使用到的工具、硬件等。</p>
+
+
+
+
+<p>用到的工具有：</p>
+
+
+
+
+<ul>
+<li>树莓派3代（自带wifi模块）</li>
+<li>L298N电机驱动板</li>
+<li>USB移动电源一个（为树莓派供电） </li>
+<li>电池组一组（为驱动模块、智能小车的电机供电）</li>
+<li>智能小车底盘</li>
+<li>杜邦线若干</li>
+<li>电脑一台（我的系统：Ubuntu 16.04 LTS Python3.5）</li>
+</ul>
+
+
+
+
+<h2 id="树莓派的gpio引脚定义">树莓派的GPIO引脚定义</h2>
+
+
+
+
+<p>树莓派的GPIO引脚共分为两种类型，一种是<strong>PHYSICAL NUMBERING</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jigs4fdj20o00b2whc.jpg" alt="" title=""></p>
+
+
+
+
+<p>单纯地用从上至下，从左至右的顺序来定义引脚。</p>
+
+
+
+
+<p>另外一种引脚定义方式是<strong>GPIO NUMBERING</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jkecmuvj20o408rdi1.jpg" alt="" title=""></p>
+
+
+
+
+<p>采用特殊（未知）的方式来标记GPIO接口</p>
+
+
+
+
+<p><strong>这里，我采用的是第一种使用的引脚定义的方式。</strong></p>
+
+
+
+
+<h2 id="l298n电机驱动模块">L298N电机驱动模块</h2>
+
+
+
+
+<p>L298N 是一种双H桥电机驱动芯片，其中每个H桥可以提供2A的电流，功率部分的供电电压范围是2.5-48v，逻辑部分5v供电，接受5vTTL电平。一般情况下，功率部分的电压应大于6V否则芯片可能不能正常工作。</p>
+
+
+
+
+<p>实物图如下 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jpmguxqj20j60kg40s.jpg" alt="" title=""></p>
+
+
+
+
+<p>使用说明如下 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jql5sdpj20j60c6q42.jpg" alt="" title=""></p>
+
+
+
+
+<h2 id="我的接线图">我的接线图</h2>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5kpjg1dij20zk0jwabr.jpg" alt="" title=""> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5koxpcwcj20zk0jwtae.jpg" alt="" title=""></p>
+
+
+
+
+<h2 id="代码实现">代码实现</h2>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">argparse</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tornado.web</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="kn">as</span> <span class="nn">GPIO</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">PostHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># I don&#39;t understand decorators, but this fixed my &quot;can&#39;t set attribute&quot; error</span>
+</span><span class='line'>    <span class="nd">@property</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@settings.setter</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="n">settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">data_json</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">escape</span><span class="o">.</span><span class="n">json_decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">allowed_commands</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;37&#39;</span><span class="p">,</span><span class="s">&#39;38&#39;</span><span class="p">,</span><span class="s">&#39;39&#39;</span><span class="p">,</span><span class="s">&#39;40&#39;</span><span class="p">])</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="n">data_json</span><span class="p">[</span><span class="s">&#39;command&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="n">allowed_commands</span> <span class="o">&amp;</span> <span class="n">command</span>
+</span><span class='line'>        <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span><span class="o">+</span><span class="s">&quot;/session.txt&quot;</span>
+</span><span class='line'>        <span class="n">log_entry</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">log_entries</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">command</span><span class="p">,</span><span class="n">timestamp</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log_entry</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;speed&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="s">&#39;37&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward_left</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;38&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;forward&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;39&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward_right</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;40&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;backward&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># This only works on data from the same live python process. It doesn&#39;t </span>
+</span><span class='line'><span class="c"># read from the session.txt file. It only sorts data from the active</span>
+</span><span class='line'><span class="c"># python process. This is required because it reads from a list instead</span>
+</span><span class='line'><span class="c"># of a file  on data from the same live python process. It doesn&#39;t </span>
+</span><span class='line'><span class="c"># read from the session.txt file. It only sorts data from the active</span>
+</span><span class='line'><span class="c"># log_entries python list</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">StoreLogEntriesHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span><span class="o">+</span><span class="s">&quot;/clean_session.txt&quot;</span>
+</span><span class='line'>        <span class="n">sorted_log_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">log_entries</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>        <span class="n">prev_command</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">allowed_commands</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;38&#39;</span><span class="p">,</span><span class="s">&#39;37&#39;</span><span class="p">,</span><span class="s">&#39;39&#39;</span><span class="p">,</span><span class="s">&#39;40&#39;</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">log_entry</span> <span class="ow">in</span> <span class="n">sorted_log_entries</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">command</span> <span class="o">=</span> <span class="n">log_entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">log_entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span> <span class="o">^</span> <span class="n">prev_command</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">prev_command</span> <span class="o">=</span> <span class="n">command</span>
+</span><span class='line'>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">readable_command</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>                    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;37&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;38&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;up&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;39&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;right&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;40&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;down&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">log_entry</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">readable_command</span><span class="p">))</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log_entry</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">print</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Finished&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MultipleKeysHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;HelloWorld&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="s">                &lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="s">                &lt;html&gt;</span>
+</span><span class='line'><span class="s">                    &lt;head&gt;</span>
+</span><span class='line'><span class="s">                        &lt;script src=&quot;https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js&quot;&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="s">                        &lt;script&gt;</span>
+</span><span class='line'><span class="s">                            var keys = {};</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            $(document).keydown(function (e) {</span>
+</span><span class='line'><span class="s">                                keys[e.which] = true;</span>
+</span><span class='line'><span class="s">                                </span>
+</span><span class='line'><span class="s">                                var json_upload = JSON.stringify({command:keys});</span>
+</span><span class='line'><span class="s">                                var xmlhttp = new XMLHttpRequest(); </span>
+</span><span class='line'><span class="s">                                xmlhttp.open(&quot;POST&quot;, &quot;/post&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.send(json_upload);</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                                printKeys();</span>
+</span><span class='line'><span class="s">                            });</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            $(document).keyup(function (e) {</span>
+</span><span class='line'><span class="s">                                delete keys[e.which];</span>
+</span><span class='line'><span class="s">                                </span>
+</span><span class='line'><span class="s">                                var json_upload = JSON.stringify({command:keys});</span>
+</span><span class='line'><span class="s">                                var xmlhttp = new XMLHttpRequest(); </span>
+</span><span class='line'><span class="s">                                xmlhttp.open(&quot;POST&quot;, &quot;/post&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.send(json_upload);</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                                printKeys();</span>
+</span><span class='line'><span class="s">                            });</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            function printKeys() {</span>
+</span><span class='line'><span class="s">                                var hcommandtml = &#39;&#39;;</span>
+</span><span class='line'><span class="s">                                for (var i in keys) {</span>
+</span><span class='line'><span class="s">                                    if (!keys.hasOwnProperty(i)) continue;</span>
+</span><span class='line'><span class="s">                                    html += &#39;&lt;p&gt;&#39; + i + &#39;&lt;/p&gt;&#39;;</span>
+</span><span class='line'><span class="s">                                }</span>
+</span><span class='line'><span class="s">                                $(&#39;#out&#39;).html(html);</span>
+</span><span class='line'><span class="s">                            }</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                        &lt;/script&gt;</span>
+</span><span class='line'><span class="s">                    &lt;/head&gt;</span>
+</span><span class='line'><span class="s">                    &lt;body&gt;</span>
+</span><span class='line'><span class="s">                        Click in thiscommand frame, then try holding down some keys</span>
+</span><span class='line'><span class="s">                        &lt;div id=&quot;out&quot;&gt;&lt;/div&gt;</span>
+</span><span class='line'><span class="s">                    &lt;/body&gt;</span>
+</span><span class='line'><span class="s">                &lt;/html&gt;</span>
+</span><span class='line'><span class="s">            &#39;&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># class Motor:</span>
+</span><span class='line'><span class="c">#     def __init__(self, pinForward, pinBackward, pinControlStraight,</span>
+</span><span class='line'><span class="c">#     pinLeft, pinRight, pinControlSteering):</span>
+</span><span class='line'><span class="c">#         self.pinForward = pinForward</span>
+</span><span class='line'><span class="c">#         self.pinBackward = pinBackward</span>
+</span><span class='line'><span class="c">#         self.pinControlStraight = pinControlStraight</span>
+</span><span class='line'><span class="c">#         self.pinLeft = pinLeft</span>
+</span><span class='line'><span class="c">#         self.pinRight = pinRight</span>
+</span><span class='line'><span class="c">#         self.pinControlSteering = pinControlSteering</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinForward, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinBackward, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinControlStraight, GPIO.OUT)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinLeft, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinRight, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinControlSteering, GPIO.OUT)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward = GPIO.PWM(self.pinForward, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward = GPIO.PWM(self.pinBackward, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.start(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.start(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_left = GPIO.PWM(self.pinLeft, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_right = GPIO.PWM(self.pinRight, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.start(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.start(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         GPIO.output(self.pinControlStraight,GPIO.HIGH) </span>
+</span><span class='line'><span class="c">#         GPIO.output(self.pinControlSteering,GPIO.HIGH) </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)    </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward_left(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)  </span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(100)   </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward_right(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(100)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def backward(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinBackward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(speed)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def left(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(speed)  </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def right(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(speed)   </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def stop(self):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; Set the duty cycle of both control pins to zero to stop the motor. &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Motor</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pinForward</span><span class="p">,</span> <span class="n">pinBackward</span><span class="p">,</span> <span class="n">pinForward2</span><span class="p">,</span>
+</span><span class='line'>     <span class="n">pinBackward2</span><span class="p">,</span><span class="n">pinLeft</span><span class="p">,</span> <span class="n">pinRight</span><span class="p">):</span>
+</span><span class='line'>        <span class="sd">&quot;&quot;&quot; Initialize the motor with its control pins and start pulse-width</span>
+</span><span class='line'><span class="sd">             modulation &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span> <span class="o">=</span> <span class="n">pinForward</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span> <span class="o">=</span> <span class="n">pinBackward</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span> <span class="o">=</span> <span class="n">pinForward2</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span> <span class="o">=</span> <span class="n">pinLeft</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span> <span class="o">=</span> <span class="n">pinRight</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span> <span class="o">=</span> <span class="n">pinBackward2</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span>  <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span>  <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward, False)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward2, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward2, False)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward, False)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward2, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward2, False)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="sd">&quot;&quot;&quot; Set the duty cycle of both control pins to zero </span>
+</span><span class='line'><span class="sd">            to stop the motor. &quot;&quot;&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">make_app</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+</span><span class='line'>        <span class="p">(</span><span class="s">r&quot;/drive&quot;</span><span class="p">,</span><span class="n">MultipleKeysHandler</span><span class="p">),(</span><span class="s">r&quot;/post&quot;</span><span class="p">,</span> <span class="n">PostHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;settings&#39;</span><span class="p">:</span><span class="n">settings</span><span class="p">}),</span>
+</span><span class='line'>        <span class="p">(</span><span class="s">r&quot;/StoreLogEntries&quot;</span><span class="p">,</span><span class="n">StoreLogEntriesHandler</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># Parse CLI args</span>
+</span><span class='line'>    <span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--speed_percent&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Between 0 and 100&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">ap</span><span class="o">.</span><span class="n">parse_args</span><span class="p">())</span>
+</span><span class='line'>    <span class="c">#GPIO.cleanup(0)</span>
+</span><span class='line'>    <span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">motor</span> <span class="o">=</span> <span class="n">Motor</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">log_entries</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;speed&#39;</span><span class="p">:</span><span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">&#39;speed_percent&#39;</span><span class="p">])}</span>
+</span><span class='line'>    <span class="n">app</span> <span class="o">=</span> <span class="n">make_app</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">81</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="使用说明">使用说明</h2>
+
+
+
+
+<p>首先，按照依赖配置好树莓派中的python环境，建议使用python3以上版本。</p>
+
+
+
+
+<p>然后在树莓派接入路由后，采用远程终端的方式，运行以上的python脚本。</p>
+
+
+
+
+<pre><code>sudo python3 drive_api.py --speed_percent 5
+</code></pre>
+
+
+
+
+<p><strong>注：非root用户一定要加上sudo，否则无法读写树莓派的GPIO口。</strong></p>
+
+
+
+
+<p>最后，通过电脑在同一个内网内使用浏览器打开地址<a>192.168.1.208:81/drive</a>（这个地址根据你的树莓派接入路由的实际地址而定，以上为笔者实验使用地址，仅供格式参考）。</p>
+
+
+
+
+<p>在打开的网页内，通过电脑的方向键就可以对树莓派进行“驾驶”了。</p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/">树莓派和L298N电机驱动模块实现智能小车控制</a>
+      <time datetime="2018-02-05T14:56:53+08:00" pubdate><span class='month'>Feb</span> <span class='day'>05</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/18/zhong-du-ren-yue-shen-hua/">重读人月神话</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/">简单cat的实现-1.0</a></h2>
-	<div class="meta">
-		<div class="date">Sep  6, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2018-01-18T19:55:04+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/linux-cyu-yan-bian-cheng/'>linux,c语言,编程</a>
+
+  <div class="entry-content"><p>﻿<h1 id="重读人月神话">重读《人月神话》</h1></p>
+
+<h2 id="何为人月神话">何为《人月神话》？</h2>
+
+
+
+
+<p>今天，偶然地重读了一遍<a href="https://book.douban.com/subject/1102259/">《人月神话》</a>。在IT领域中，即使这本书出版距今已经超过十年，但其中的道理依旧盛行。</p>
+
+
+
+
+<p>《人月神话》虽然是布鲁克斯博士在IBM公司研发并管理System/360计算机家族和OS/360软件支持包期间的项目管理经验，但是其经典程度堪称软件开发项目管理的典范。</p>
+
+
+
+
+<h2 id="什么成就了它的经典">什么成就了它的经典</h2>
+
+
+
+
+<p>翻开《人月神话》这本书的第一感受，这边书不像以往文绉绉的项目管理或软件工程手册。作者用他切身的经验，结合自己精彩的文笔，写出了一本有温度的指导。</p>
+
+
+
+
+<p>书中的很多问题和案例都直击了一个软件开发流程当中出现的情景。作者以一些生动的比喻更为形象的让读者身感同受。</p>
+
+
+
+
+<h2 id="书中的精炼">书中的精炼</h2>
+
+
+
+
+<p>前车之覆，后车之鉴。</p>
+
+
+
+
+<p>在执行项目或任务过程中，一味地添加人员并不能加快项目的进度。 <br>
+因为软件开发本质上是一项系统工作——错综复杂的关系下实践、沟通、交流的工作量非常之大，它很快就消耗了任务分解节省下来的个人时间。从而，添加更多的人手，实际上是延长了而不是缩短了时间进度。</p>
+
+
+
+
+<p>研究表明，效率高和效率低的实施者之间个体差异非常大，经常能够达到数量级水平。</p>
+
+
+
+
+<p>系统设计之中，概念的完整性应该是最重要的考虑因素，为了反映一系列连贯的设计思路，宁可省略一些不规则的特性和改进。</p>
+
+
+
+
+<p>简洁和直白都来自概念的完整性。在语法上，每个部分应使用相同的技巧；在语义上，应具有同样的相似性。因此，易用性实际上需要设计的一致性和概念的完整性。</p>
+
+
+
+
+<p>在等待时，实现人员应该做什么？ <br>
+整个创造性活动包括三个独立的阶段：体系结构、设计实现、物理实现，实际情况中，他们往往可以同时开始和并发进行。</p>
+
+
+
+
+<p>坚持至少拥有两个系统或版本以上的开发设想，避免在设计第二个系统的时候就出现过分设计。</p>
+
+
+
+
+<p>文档化的规格，手册不仅要描述包括所有界面在内的用户可见的一切，还要避免描述用户看不见的事物。后者是编程实现人员的的工作范畴，其设计和创造是不应该被限制的。</p>
+
+
+
+
+<p>贯彻执行，计划书写的再完善，没有贯彻执行也是一张白纸而已。</p>
+
+
+
+
+<p>巴比伦塔的管理教训：大型编程项目中的交流和组织能力非常重要。</p>
+
+
+
+
+<p>团队之间的交流沟通方案： <br>
+非正式途径：电话、短信、邮件、一切即时通讯手段。 <br>
+项目会议：常规会议，进度会议。 <br>
+工作手册及项目文档：准备好开发相关的手册和交互文档。</p>
+
+
+
+
+<p>团队组织的目的是减少所需要的交流和合作的数量，其最好的方法是人力划分和职责限定。</p>
+
+
+
+
+<p>实践是最好的老师，但智者还能从其他地方有所收获。</p>
+
+
+
+
+<p>工作量 = 常数 x 指令数量1.5次方</p>
+
+
+
+
+<p>使用适当的高级语言，编程的生产率可以提高5倍。</p>
+
+
+
+
+<p>书面记录决策是必要的。只有记录下来，分歧才会明朗，矛盾才会突出。书写这项活动需要上百次的细小决定，正是由于它们的存在，人们才能从令人迷惑的现象中得到清晰，确定的策略。</p>
+
+
+
+
+<p>普遍的做法是，选择一种方法，试试看；如果失败了，没关系，再试试别的方法。不管怎么样，重要的是先去尝试。</p>
+
+
+
+
+<p>在项目开发中应该构建 “试验性工厂” 和 “产品” 这两个步骤，不要把产品原型发布给用户。对于大多数项目而言，第一个开发的系统并不合用，它可能太慢、太大或难以使用，这样要解决所有的问题除了重新开始以外，没有其他的办法。</p>
+
+
+
+
+<p>系统软件开发是 “减熵” 的过程，所以它本身是处于亚稳态的。软件维护是 “增熵” 的过程，即使是最熟练的软件维护工作，也只是放缓了系统退化到非稳态的进程。</p>
+
+
+
+
+<p>系统各个组成部分的开发者都会做出一些假设，而这些假设之间的不匹配是大多数致命和难以察觉的bug的主要来源。</p>
+
+
+
+
+<p>模块分割、模块独立、结构化编程、构件单元测试是避免系统性bug的良好手段。</p>
+
+
+
+
+<p>需要什么样的文档？ <br>
+（1）使用程序：每个用户都需要一段对程序进行描述的文字。可是大多数文档只提供了很少总结性的内容，无法达到用户的要求，就是像描绘了树木，形容了树皮和树叶，但却没有一副森林的图案。 <br>
+（2）目的：主要功能是什么？开发程序的目的是什么？ <br>
+（3）环境：程序运行在什么样的机器、硬件配置和操作系统上？ <br>
+（4）范围：输入的有效范围是什么？允许显示的合法输出范围是什么？ <br>
+（5）实现功能和使用的算法：精确地阐述它做了什么？ <br>
+（6）“输入——输出”格式：必须是确切的，完整的。 <br>
+（7）操作指令：包括控制台及输出内容中正常和异常结束的行为。 <br>
+（8）选项：用户的功能选项有哪些？如何在选项之间进行挑选？ <br>
+（9）运行时间：在指定的配置下，解决特定规模问题所需要的时间。 <br>
+（10）精度和校验：期望结果的精确程度？如何进行精度的检测？</p>
+
+
+
+
+<h2 id="团队在书中的倒影">团队在书中的倒影</h2>
+
+
+
+
+<p>我们团队一年来的开发弊端都有在书中的案例体现。</p>
+
+
+
+
+<p>《人月神话》就像是一个个项目开发小组的倒影，项目交流成本、开发者效率的差异、开发人员各自独立的项目假设造成的隐藏bug、对项目进度的乐观预估，其中最为突出的莫过于是<strong>巴比伦塔的管理教训</strong>，沟通和有效组织的缺乏，直接拖缓了整个项目的进度。</p>
+
+
+
+
+<p>我想，在经验中总结前进，最有效的莫过于《人月神话》开篇的第一章：<strong>前车之覆，后车之鉴。</strong>。</p>
+
+
+
+
+<pre><code>                                            By 领沃EdmondFrank
+</code></pre>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2018/01/18/zhong-du-ren-yue-shen-hua/">重读人月神话</a>
+      <time datetime="2018-01-18T19:55:04+08:00" pubdate><span class='month'>Jan</span> <span class='day'>18</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/09/01/wo-de-suan-fa-tian-ti-zhi-lu-zhi-zui-da-zi-zhen-lie/">我的算法天梯之路之-最大子阵列</a></h2>
-	<div class="meta">
-		<div class="date">Sep  1, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2018-01-13T16:23:37+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/bian-cheng-suan-fa-cyu-yan/'>编程,算法,c语言</a>
 
+  <div class="entry-content"><h1>数据恢复利器-Testdisk</h1>
+
+<p>今天我要给大家介绍的主角是<strong>Testdisk</strong></p>
+
+<p>首先，<strong>Testdisk</strong>是一个强大的免费的跨平台的数据恢复工具，根据它的<a href="https://www.cgsecurity.org/wiki/TestDisk">官网</a>上的简介，这款软件主要被设计用于恢复丢失的分区以及修复那些由于人为或者病毒等原因导致分区表错误而无法启动系统的问题。</p>
+
+<p>除此之外，Testdisk更多的特性大家可以参考官方列出的功能列表：</p>
+
+<blockquote><p>TestDisk can
+Fix partition table, recover deleted partition
+Recover FAT32 boot sector from its backup
+Rebuild FAT12/FAT16/FAT32 boot sector
+Fix FAT tables
+Rebuild NTFS boot sector
+Recover NTFS boot sector from its backup
+Fix MFT using MFT mirror
+Locate ext2/ext3/ext4 Backup SuperBlock
+Undelete files from FAT, exFAT, NTFS and ext2 filesystem
+Copy files from deleted FAT, exFAT, NTFS and ext2/ext3/ext4 partitions.</p></blockquote>
+
+<p>对于Testdisk的强大之处，肯定是不容质疑的，对此笔者在之前自己的系统修复过程切身体会过Testdisk的实用与强大之处（在笔者的旧硬盘全盘分区表丢失的情况之下，使用Testdisk成功恢复了大部分的分区，并能成功启动系统。看到系统还能成功开机那一刻别提多激动了！）</p>
+
+<h2>跨平台</h2>
+
+<p>Testdisk不仅强大而且还能够跨平台，跨平台，跨平台使用（重要的事情说三遍）并且还支持多种文件系统。</p>
+
+<p>简单的介绍就到这里了！！</p>
+
+<p>下面我们就用一个实际的例子来演示一下
+Testdisk的具体使用方法：</p>
+
+<p>本例子摘取自：<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">Testdisk 操作指南</a>
+PS：毕竟为了演示而认为制造一些错误也是有一定风险的，所以为了方便和安全起见笔者这里摘抄一份别人的例子啦，反正也是为了向大家安利下这个软件。</p>
+
+<p>前提条件:</p>
+
+<ul>
+<li>TestDisk 需要用管理员权限来运行。</li>
+</ul>
+
+
+<p>使用 TestDisk 的重点:</p>
+
+<ul>
+<li>用 方向键 和 上一页/下一页 按键在TestDisk 中导航。</li>
+<li>然后, 按Enter 键确认你的选择.</li>
+<li>若要返回前一页或者退出TestDisk, 按 q (Quit) 键。</li>
+<li>若要在 TestDisk 下保存修改,按 y (Yes) 或者 Enter 键来确认</li>
+<li>如果确实要把分区信息写入主引导记录（MBR），应该选择 &ldquo;Write&rdquo; 选项并按 Enter 键。</li>
+</ul>
+
+
+<h2>运行Testdisk</h2>
+
+<p>如果 TestDisk 还没有被安装, 可以从这里下载 <a href="https://www.cgsecurity.org/wiki/TestDisk_Download">TestDisk Download</a>。然后解压缩这个归档文件，包括子文件夹。</p>
+
+<h3>　一、新建日志</h3>
+
+<ul>
+<li>选择 Create 来让 Testdisk 新建一个日志文件（ log file） ，里边包含了一些技术信息和消息, 除非你要往一个日志里追加信息 log 或者 你从只读存储器里执行 TestDisk 而且必须在别的地方建立日志 log。</li>
+<li>选择 None 如果你不想让过程中的细节和消息记录到日志文件里 log file (比如当 Testdisk 是在只读位置执行的时候，这很有用).</li>
+<li>按 Enter 键以继续.
+<img src="https://www.cgsecurity.org/mw/images/Create_log.png" alt="enter image description here" /></li>
+</ul>
+
+
+<h3>　二、选择磁盘</h3>
+
+<p>所有的硬盘都应该能被TestDisk检测到并且辅以正确的大小列出来：</p>
+
+<ul>
+<li>用 上/下 键 来选择丢失分区的硬盘。</li>
+<li>按 Enter 键继续。
+<img src="https://www.cgsecurity.org/mw/images/Select_disk_update.png" alt="enter image description here" /></li>
+</ul>
+
+
+<h3>三、选择分区表类型</h3>
+
+<p>TestDisk 会显示分区表类型。</p>
+
+<ul>
+<li>选择正确的分区表类型 - 在 TestDisk 自动检测分区表类型之后，一般预设的那个值是正确的。</li>
+<li>按 Enter 键继续。
+<img src="https://www.cgsecurity.org/mw/images/Partition_table_type.png" alt="enter image description here" /></li>
+</ul>
+
+
+<h3>四、查看当前分区状态</h3>
+
+<p>TestDisk 显示这个菜单的时候 (参见 <a href="https://www.cgsecurity.org/wiki/Running_TestDisk">TestDisk Menu Items</a>).
++ 用预设的“analyze”（分析）选项来检查当前的分区结构并搜索丢失的分区。
++ 分析过程中按 Enter 键继续。
+第一个分区显示了两次，它指向了一个毁坏的分区或一个无效的分区表入口。
++ 无效的 NTFS boot 指向了一个错误的 NTFS boot 扇区, 所以这是一个损坏的文件系统。
+在扩展分区中，只有一个逻辑分区(分区标签为2)可用。 有一个逻辑分区不见了。
++ 选 Quick Search （快速搜索）来继续。
+然后，当前的结构就会被列出来。 接下来就可以在当前的分区结构中检查丢失或错误的分区了。</p>
+
+<p><img src="https://www.cgsecurity.org/mw/images/Analyse.png" alt="enter image description here" /></p>
+
+<h3>五、快速搜索分区</h3>
+
+<p>在 Quick Search（快速搜索）的过程中, TestDisk 找到了两个分区，包括那个不见的逻辑分区（标签为 Partition 3 ）
+<img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
++ 高亮这个分区并按 p 来列出文件 (若要返回前一页，请按 q ).
++ 这里所有的目录和文件都正确列出来了。
++ 按 Enter 键继续。
++ <img src="https://www.cgsecurity.org/mw/images/First_results.png" alt="enter image description here" />
++</p>
+
+<h3>六、保存分区表</h3>
+
+<ul>
+<li><p>当全部分区都可用的时候 并且数据已正确列出,应该选 Write 菜单项保存分区结构. 菜单项 Extd Part gives you the opportunity to decide if the extended partition will use all available disk space or only the required (minimal) space.</p></li>
+<li><p>当一个分区,第一个,仍然找不到, 高亮菜单项 深度搜索 (没有自动进行的时候) ，按 Enter 键继续.</p></li>
+</ul>
+
+
+<p><img src="https://www.cgsecurity.org/mw/images/Search_menu.png" alt="enter image description here" />
+（经过笔者的几次实验和朋友的反馈，其实到了这一步已经能够解决80%以上的问题了！）</p>
+
+<p>所以，有关Testdisk更加深入的功能和其他详细用法大家可以前往这个<a href="https://www.cgsecurity.org/wiki/Testdisk_%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97">中文版的官方指南</a>在这里笔者就不赘述了！</p>
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2018/01/13/shu-ju-hui-fu-li-qi-testdisk/">数据恢复利器-Testdisk</a>
+      <time datetime="2018-01-13T16:23:37+08:00" pubdate><span class='month'>Jan</span> <span class='day'>13</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/21/zui-da-si-ran-gu-ji/">最大似然估计</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/">(转)Linux On Android——在Android手机上跑Linux教程</a></h2>
-	<div class="meta">
-		<div class="date">Aug 21, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2017-12-21T01:00:04+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/linux-android-ubuntu/'>linux,android,ubuntu</a>
+
+  <div class="entry-content"><p>﻿<h1 id="em算法基石-最大似然估计">EM算法基石-最大似然估计</h1></p>
+
+<h2 id="前言">前言</h2>
+
+
+
+
+<p>在统计计算中，<strong>最大期望（EM）算法是在概率模型中寻找参数最大似然估计或者最大后验估计的算法（机器学习十大算法之一）</strong>，其中概率模型依赖于无法观测的隐藏变量（Latent Variable）。最大期望经常用在机器学习和计算机视觉的数据聚类（Data Clustering）领域。而本文要讲的就是最大期望算法的基石-<strong>最大似然估计</strong>。</p>
+
+
+
+
+<h2 id="最大似然估计maximum-likelihoodml">最大似然估计（Maximum Likelihood，ML）</h2>
+
+
+
+
+<h3 id="概述">概述</h3>
+
+
+
+
+<p><strong>最大似然估计</strong>也称极大似然法，是一种统计方法，它用来求一个样本集的相关概率密度函数的参数。这个方法最早是遗传学家以及统计学家罗纳德·费雪爵士在1912年至1922年间开始使用的。</p>
+
+
+
+
+<p><strong>最大似然法</strong>明确地使用概率模型，其目标是寻找能够以较高概率产生观察数据的系统发生树。最大似然法是一类完全基于统计的系统发生树重建方法的代表。</p>
+
+
+
+
+<h3 id="简单举例">简单举例</h3>
+
+
+
+
+<p>设有外形完全相同的两个箱子,甲箱有99个白球1个黑球,乙箱有1个白球99个黑球.今随机地抽取一箱,然后再从这箱中任取一球,结果发现是白球.问这个箱子是甲箱还是乙箱?</p>
+
+
+
+
+<p>仅仅从取出的球是白球这一点是无法从逻辑上严格加以判定该箱究竟是甲箱还是乙箱的。但是如果现在一定要我们做出选择，那么我们只能这样来考虑：从箱中取出的球是白球这一点来看，甲箱和乙箱哪个看上去更像是真正从中取球的箱子？</p>
+
+
+
+
+<p>我们可以这样来分析，如果该箱是甲箱,则取得白球的概率为0.99；如果该箱是乙箱,则取得白球的概率0.01．因此，用“该箱是甲箱”来解释所取的球是白球这一事件更有说服力一些，从而我们判定甲箱比乙箱更像一些。最后我们做出推断,这球是从甲箱取出的。</p>
+
+
+
+
+<h3 id="离散分布离散有限参数空间">离散分布，离散有限参数空间</h3>
+
+
+
+
+<p>看完上面那个简单的例子，下面再来考虑一个抛硬币的例子。假设这个硬币正面跟反面轻重不同。我们把这个硬币抛80次，并把正面的次数记下来，正面记为H，反面记为T），并把抛出一个正面的概率记为p，抛出一个反面的概率记为1 − p。假设我们抛出了49个正面，31 个反面，即49次H，31次T。假设这个硬币是我们从一个装了三个硬币的盒子里头取出的。这三个硬币抛出正面的概率分别为p = 1 / 3, p = 1 / 2, p = 2 / 3. 这些硬币没有标记，所以我们无法知道哪个是哪个。使用最大似然估计，通过这些试验数据，我们可以计算出哪个硬币的可能性最大。这个可能性函数取以下三个值中的一个：</p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-98">P(H=49,T=31|\rho=\frac{1}{3})=\textrm{C}^{49}_{80}(\frac{1}{3})^{49}(1-\frac{1}{3})^{31} \approx 0.000 \\
+P(H=49,T=31|\rho=\frac{1}{2})=\textrm{C}^{49}_{80}(\frac{1}{2})^{49}(1-\frac{1}{2})^{31} \approx 0.012 \\
+P(H=49,T=31|\rho=\frac{2}{3})=\textrm{C}^{49}_{80}(\frac{2}{3})^{49}(1-\frac{2}{3})^{31} \approx 0.054 </script></p>
+
+
+
+
+<p>我们可以看到当<script type="math/tex" id="MathJax-Element-99">\widehat{p}=2/3</script>时，可能性函数取得最大值。这就是p的最大似然估计。</p>
+
+
+
+
+<h3 id="离散分布连续参数空间升级版">离散分布，连续参数空间（升级版）</h3>
+
+
+
+
+<p>现在假设上面的例子中的盒子中有无数个硬币，对于<script type="math/tex" id="MathJax-Element-439">0\leq p \leq 1</script>中的任何一个p， 都有一个抛出正面概率为p的硬币对应，我们再来求其可能性函数的最大值： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-440">f_D(H=49,T=31|\rho)=\textrm{C}^{49}_{80}\rho^{49}(1-\rho^{31})</script> <br>
+两边同时取p微分 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-441">0=\rho^{48}(1-\rho)[49(1-\rho)-31\rho]</script> <br>
+求得其解分别为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-442">\rho=0,\rho=1和\rho=\frac{49}{80}</script> <br>
+使可能性最大的解显然是p = 49 / 80（因为p = 0 和p = 1 这两个解会使可能性为零）。因此我们说最大似然估计值为<script type="math/tex" id="MathJax-Element-443">\widehat{p}=49/80</script>.</p>
+
+
+
+
+<p>这个结果很容易一般化。只需要用一个字母t代替49用以表达伯努利试验中的被观察数据（即样本）的成功次数，用另一个字母n代表伯努利试验的次数即可。使用完全同样的方法即可以得到最大似然估计值: <br>
+<script type="math/tex; mode=display" id="MathJax-Element-444">\widehat{p}=\frac{t}{n}</script></p>
+
+
+
+
+<h3 id="最大似然估计的一般求解步骤">最大似然估计的一般求解步骤</h3>
+
+
+
+
+<ol>
+<li>写出似然函数 <br>
+　　<script type="math/tex; mode=display" id="MathJax-Element-519">L\theta=\prod_{i=1}^n p(x_i;\theta)(总体X为离散型时)\\  L\theta=\prod_{i=1}^n f(x_i;\theta)(总体X为连续型时)</script> <br>
+　　</li>
+<li><p>对似然函数两边取对数有 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-520">lnL\theta=\sum_{i=1}^n lnp(x_i;\theta)
+\\ lnL\theta=\sum_{i=1}^n lnf(x_i;\theta)</script></p></li>
+<li><p>对lnL\theta求导数并令之为0： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-521">\frac{dlnL\theta}{d\theta}=0</script></p></li>
+</ol>
+
+
+
+
+<p>此方程为对数似然方程。解对数似然方程所得，即为未知参数 的最大似然估计值。</p>
+
+
+
+
+<h4 id="举个栗子连续分布连续参数空间终级版">举个栗子：连续分布，连续参数空间（终级版）</h4>
+
+
+
+
+<p>设总体 <script type="math/tex" id="MathJax-Element-805">X~N(μ，σ^2),μ，σ^2(正太分布)</script>为未知参数，<script type="math/tex" id="MathJax-Element-806">X1,X2...,Xn</script>是来自总体X的样本，<script type="math/tex" id="MathJax-Element-807">X1,X2...,Xn</script>是对应的样本值，求<script type="math/tex" id="MathJax-Element-808">μ与σ^2</script>的最大似然估计值。</p>
+
+
+
+
+<p><strong>解:</strong> X的概率密度为 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-809">f(x|μ，σ2)=\frac{1}{\sqrt{2\pi\sigma}}e^-\frac{(x_i-\mu)^2}{2\sigma^2} (-\infty<x<+\infty),</script> <br>
+　　 <br>
+<strong>可得似然函数</strong>如下： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-810">L(μ，σ2)=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{(x_i-\mu)^2}{2{\sigma}^2}}</script></p>
+
+
+
+
+<p><strong>取对数</strong>，得</p>
+
+
+
+
+<p>　　<script type="math/tex; mode=display" id="MathJax-Element-811">lnL(μ，σ2)=-\frac{n}{2}ln(2\pi)-\frac{n}{2}ln(\sigma^2)-\frac{1}{2{\delta}^2}\sum_{i=1}^n{(x_i-\mu)}^2</script></p>
+
+
+
+
+<p><strong>令</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-821">\begin{cases}\frac{\partial}{\partial\mu}ln L(\mu,\sigma)=0,\\\frac{\partial}{\partial\sigma^2}\ln L(\mu,\sigma)=0,\end{cases}</script></p>
+
+
+
+
+<p><strong>可得</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-828">\begin{cases}\frac{1}{\sigma^2}(\sum_{i=1}^2x_i-n\mu)=0,\\-\frac{n}{2\sigma^2}+\frac{1}{2(\sigma^2)^2}\sum_{i=1}^n(x_i-\mu)^2=0.\end{cases}</script></p>
+
+
+
+
+<p><strong>解得</strong></p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-843">\begin{cases}\widehat{\mu}=\frac{1}{n}\sum_{i=1}^n x_i=\overline{x}, \\\widehat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n(x_i-\overline{x})^2.\end{cases}</script></p>
+
+
+
+
+<p>故<script type="math/tex" id="MathJax-Element-844">μ和δ2</script>的<strong>最大似然估计量</strong>分别为 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-845">\widehat{\mu}=\overline{X}，\widehat{\delta^2}=\frac{1}{n}\sum_{i=1}^n(X_i-\overline{X})^2</script></p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2017/12/21/zui-da-si-ran-gu-ji/">最大似然估计</a>
+      <time datetime="2017-12-21T01:00:04+08:00" pubdate><span class='month'>Dec</span> <span class='day'>21</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/08/12/wo-de-suan-fa-tian-ti-zhi-lu-zhi-gui-bing-pai-xu/">我的算法天梯之路之-归并排序</a></h2>
-	<div class="meta">
-		<div class="date">Aug 12, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2017-12-14T23:43:13+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/bian-cheng-suan-fa-bi-ji/'>编程,算法,笔记</a>
+
+  <div class="entry-content"><p>﻿<h1 id="传统机器学习走向神经网络">传统机器学习走向神经网络</h1></p>
+
+<h2 id="神经网络的基本结构">神经网络的基本结构</h2>
+
+
+
+
+<p>首先我们先来看一下最基础的神经网络结构： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgm7cftunj20kf0ckaep.jpg" alt="" title=""></p>
+
+
+
+
+<p>由上图的结构可以看出，这个神经网络具有三层，其中输入层不计。而中间的橙色层则为两层隐藏层，最右的蓝色层为输出层。输入从最左边的输入层进行输入，然后经过两次隐藏层和激活函数之后进行输出，这样我们可以把这个神经网络简单地表示成一下的式子： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-82">Y_{out} = W_iX_{in}+B</script> <br>
+W为X的权重，而B为函数的偏置。 <br>
+其中，偏置值B的存在有利于打破数据对称的局面，使得神经网络可以应用在非对称的数据之上。</p>
+
+
+
+
+<h2 id="神经网络的基本算法">神经网络的基本算法</h2>
+
+
+
+
+<p>前向传导：前向传导的思想比较简单，下面的一张图足以概括它的主要思想。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp39x2ltj20oh0gydi9.jpg" alt="" title=""></p>
+
+
+
+
+<p>反向传播：反向传播的方法其实也比较简单，其主要思想是涉及求偏导，以及链式求导法则。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fmgp6qj2wlj20mj0i441b.jpg" alt="" title=""></p>
+
+
+
+
+<p>梯度下降：梯度下降法是一个最优化算法，通常也称为最速下降法。最速下降法是求解无约束优化问题最简单和最古老的方法之一，虽然现已不具有实用性，但是许多有效算法都是以它为基础进行改进和修正而得到的。最速下降法是用负梯度方向为搜索方向的，最速下降法越接近目标值，步长越小，前进越慢。</p>
+
+
+
+
+<h2 id="朴素贝叶斯和神经网络">朴素贝叶斯和神经网络</h2>
+
+
+
+
+<p>首先朴素贝叶斯算法的原始形式可以表达成以下的形式： <br>
+<script type="math/tex" id="MathJax-Element-1467">G(x)=arg\  max\ p(y)  
+\prod\limits^n_{i=1}p(x_i|y)^{x_i}</script></p>
+
+
+
+
+<p>除此之外，该算法还有一下特点： <br>
+<script type="math/tex" id="MathJax-Element-1468">x_i只有0，1两种取值</script> <br>
+<script type="math/tex" id="MathJax-Element-1469">x_i取1意味着x_i对应了的特征“出现了”</script>  <br>
+<script type="math/tex" id="MathJax-Element-1470">x_i取0意味着x_i对应了的特征“没出现”</script></p>
+
+
+
+
+<p>这样转换成矩阵的形式时，我们可以采用独热编码亦称One-hot Encode。 <br>
+独热编码：</p>
+
+
+
+
+<p>解决了分类标签的问题，那么我们又该怎样用神经网络的线性模型形式来表达贝叶斯公式中概率相乘的情况呢？</p>
+
+
+
+
+<p>没错，就是使用对数函数。根据对数函数的性质<script type="math/tex" id="MathJax-Element-1471">log_2X+log_2Y=log_2XY</script>,我们就可以通过对数变换，将乘法转换成加法的形式，我们可以把上面的朴素贝叶斯公式改写成： <br>
+<script type="math/tex" id="MathJax-Element-1472">G(x)=arg\ max\ log(y)+\sum\limits^n_{i=1}x_ilog\ p(x_i|y)</script></p>
+
+
+
+
+<p>那么我们就可以用退化成线性模型的神经网络来实现朴素贝叶斯模型。</p>
+
+
+
+
+<h3 id="核心实现">核心实现</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># 独热化处理部分</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
+</span><span class='line'><span class="n">enc</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">()</span>
+</span><span class='line'><span class="n">x_train</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</span><span class='line'><span class="n">x_test</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## .....篇幅有限,此处省略其余代码</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># NaiveBayes -&gt; NN 权值转换部分</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">NB2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">NB2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;NaiveBayes&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">nb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="s">&quot;Naive Bayes&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">feature_log_prob_</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">nb</span><span class="o">.</span><span class="n">class_log_prior_</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="决策树贝叶斯和神经网络">决策树贝叶斯和神经网络</h2>
+
+
+
+
+<p>首先，决策树的原理主要就是通过数据信息熵的变化来选择当前的最优分类点，然后从根开始一步一步扩展成树。而实质上，最后成功构建出来的决策树，其从根节点开始到每个分类叶子节点的路径对应的都是一组高维空间上的超平面组合。决策树的分类也就是用一组超平面去划分数据空间，使得最后剩下一个唯一确定的标识。</p>
+
+
+
+
+<p>知道决策树的本质之后，我们就可以用这样的方法来将决策树算法迁移到神经网络上： <br>
+* 第一个隐藏层表达决策树的中间节点所对应的超平面 <br>
+* 第二个隐藏层表达各个决策的路径 <br>
+* 第二个隐藏层和输出层之间的权值矩阵表达各个叶节点</p>
+
+
+
+
+<h3 id="核心实现-1">核心实现</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">## 因为决策树到神经网络的转换较为复杂,此处仅贴出核心代码</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">DT2NN</span><span class="p">(</span><span class="n">TransformationBase</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>        <span class="nb">super</span><span class="p">(</span><span class="n">DT2NN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_name_appendix</span> <span class="o">=</span> <span class="s">&quot;DTree&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">model_param_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;activations&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;sign&quot;</span><span class="p">,</span> <span class="s">&quot;one_hot&quot;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_data</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">tree</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">tree</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_print_model_performance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s">&quot;Decision Tree&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">tree_structure</span> <span class="o">=</span> <span class="n">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">n_leafs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">])</span>
+</span><span class='line'>        <span class="n">n_internals</span> <span class="o">=</span> <span class="n">n_leafs</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Internals : {} ; Leafs : {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_internals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">w3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_leafs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_class</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">node_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">node_sign_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">node_id_cursor</span> <span class="o">=</span> <span class="n">leaf_id_cursor</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">max_route_length</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_units</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_internals</span><span class="p">,</span> <span class="n">n_leafs</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">tree_structure</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">feat_dim</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">):</span>
+</span><span class='line'>                    <span class="n">node_sign_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">node_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node_id_cursor</span><span class="p">,</span> <span class="n">feat_dim</span><span class="p">,</span> <span class="n">rs</span><span class="p">])</span>
+</span><span class='line'>                    <span class="n">w1</span><span class="p">[</span><span class="n">feat_dim</span><span class="p">,</span> <span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>                    <span class="n">b</span><span class="p">[</span><span class="n">node_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">rs</span>
+</span><span class='line'>                    <span class="n">node_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span><span class="p">[:</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>                    <span class="n">node_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:</span><span class="n">depth</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">valid_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span class='line'>                <span class="n">local_sign_list</span> <span class="o">=</span> <span class="n">node_sign_list</span><span class="p">[:]</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_dim</span><span class="p">,</span> <span class="n">node_threshold</span><span class="p">),</span> <span class="n">node_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+</span><span class='line'>                    <span class="nb">zip</span><span class="p">(</span><span class="n">node_list</span><span class="p">,</span> <span class="n">node_sign_list</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">):</span>
+</span><span class='line'>                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span><span class="p">))</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>                        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_dim</span><span class="p">,</span> <span class="n">local_threshold</span><span class="p">),</span> <span class="n">local_sign</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span>
+</span><span class='line'>                            <span class="n">node_list</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">local_sign_list</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>                        <span class="p">)):</span>
+</span><span class='line'>                            <span class="k">if</span> <span class="n">node_sign</span> <span class="o">==</span> <span class="n">local_sign</span> <span class="ow">and</span> <span class="n">node_dim</span> <span class="o">==</span> <span class="n">local_dim</span><span class="p">:</span>
+</span><span class='line'>                                <span class="k">if</span> <span class="p">(</span>
+</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&lt;</span> <span class="n">local_threshold</span><span class="p">)</span> <span class="ow">or</span>
+</span><span class='line'>                                    <span class="p">(</span><span class="n">node_sign</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node_threshold</span> <span class="o">&gt;</span> <span class="n">local_threshold</span><span class="p">)</span>
+</span><span class='line'>                                <span class="p">):</span>
+</span><span class='line'>                                    <span class="n">local_sign_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>                                    <span class="n">valid_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">local_id</span><span class="p">,</span> <span class="n">local_sign</span><span class="p">))</span>
+</span><span class='line'>                                    <span class="k">break</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_sign</span> <span class="ow">in</span> <span class="n">valid_nodes</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">w2</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_sign</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">max_route_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_route_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_nodes</span><span class="p">))</span>
+</span><span class='line'>                <span class="n">w3</span><span class="p">[</span><span class="n">leaf_id_cursor</span><span class="p">]</span> <span class="o">=</span> <span class="n">rs</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">leaf_id_cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">w2</span> <span class="o">*=</span> <span class="n">max_route_length</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">]</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#................ 篇幅有限,省略其余代码</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># DTree -&gt; NN</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">export_structure</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">tree_</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">recurse</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">feature_dim</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">feature</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">feature_dim</span> <span class="o">==</span> <span class="n">_tree</span><span class="o">.</span><span class="n">TREE_UNDEFINED</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">threshold</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
+</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_left</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">yield</span> <span class="n">depth</span><span class="p">,</span> <span class="n">feature_dim</span><span class="p">,</span> <span class="n">threshold</span>
+</span><span class='line'>            <span class="k">yield from</span> <span class="n">recurse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">children_right</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">recurse</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="模型改进">模型改进</h2>
+
+
+
+
+<h3 id="对于朴素贝叶斯">对于朴素贝叶斯</h3>
+
+
+
+
+<p>根据上述的原理和理论，我们可以将朴素贝叶斯和决策树转换成神经网络模型，但是转换之后是否存在意义呢？</p>
+
+
+
+
+<p><strong>首先</strong>本身可以通过简单log对数转换成线性模型的朴素贝叶斯算法来说，其转换的步骤并不复杂，但却能够对朴素贝叶斯的独立假设进行一定的微调修正。</p>
+
+
+
+
+<h3 id="对于决策树">对于决策树</h3>
+
+
+
+
+<p>那么对于决策树来说，神经网络的介入可以对决策树的硬边界作一定的修正和“软化”作用。</p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2017/12/14/chuan-tong-ji-qi-xue-xi-zou-xiang-shen-jing-wang-luo/">传统机器学习走向神经网络</a>
+      <time datetime="2017-12-14T23:43:13+08:00" pubdate><span class='month'>Dec</span> <span class='day'>14</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/">深度学习入门简介（二）</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/08/11/gdbde-jian-dan-shi-yong/">gdb的简单使用</a></h2>
-	<div class="meta">
-		<div class="date">Aug 11, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2017-12-08T12:52:08+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/linux-bian-cheng-xue-xi/'>linux,编程,学习</a>
+
+  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介二">深度学习入门简介（二）</h1></p>
+
+<h2 id="深度学习的三部曲">深度学习的三部曲</h2>
+
+
+
+
+<h3 id="训练前的准备">训练前的准备</h3>
+
+
+
+
+<p>1）训练数据 <br>
+在训练一个深度学习的模型之前，我们首先需要准备的就是训练数据，若是图片的话其中就包括：图片的内容以及他的标签。 <br>
+<strong>注：学习的分类目标也是包括在训练数据里面的</strong></p>
+
+
+
+
+<p>2）学习目标 <br>
+学习的目标往往就是一个二分类或者多分类问题。而对于最后的效果，我们需要达到当我们输入一个待预测或分类的值时，正确的结果应该对应那个最大概率的输出项。</p>
+
+
+
+
+<p>3）损失函数 <br>
+简单来说，深度学习的分类和回归的本质就是，找到一个使得在所有样本项上取得的误差值最小的函数。而预测值与真实值的误差我们可以通过他们之间的距离计算得出。</p>
+
+
+
+
+<h3 id="最小化误差">最小化误差</h3>
+
+
+
+
+<p>为了达到一个分类或预测准确的效果，我们就要找到一个网络中的对应的超参数<script type="math/tex" id="MathJax-Element-471">\theta</script>使得网络的预测与真实值的误差是最小的。其中一个简单而粗暴的方法就是：枚举法。但是这样做的效率显然非常的低效。为了能够更加优化地找到或者说是接近使得网络取得最小误差的超参数<script type="math/tex" id="MathJax-Element-472">\theta</script>我们可以采用<strong>梯度下降法</strong>，其根据预设的学习率不断更新权重的梯度来接近局部最优解。</p>
+
+
+
+
+<p>其具体过程图如下所示： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm92vbwnztj20ps0em0ub.jpg" alt="" title=""></p>
+
+
+
+
+<p><strong>梯度下降的缺点：</strong> <br>
+由于梯度下降每次计算时都是随机选取一个开始点，再根据学习率来慢慢减小全局误差。这样一来，学习率的设定就十分重要了，过大的学习率容易越过最低点，而过小的学习率又使得误差降低的速度过慢，且过小的学习率也会造成学习过程中陷入局部最低点后无法跳出。但实际上由于精度误差的问题梯度下降永远无法到达真正意义上的全局最低点，即无法取得全局最有解。但在多次的迭代运算后一般可以达到一个可接受的损失误差的局部最优解。</p>
+
+
+
+
+<p>具体图示如下： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm937sjcc5j20q40hcdn6.jpg" alt="" title=""></p>
+
+
+
+
+<h3 id="反向传播">反向传播</h3>
+
+
+
+
+<p><strong>反向传播算法</strong>：这是一种高效的计算权值梯度的方式。</p>
+
+
+
+
+<p>有关算法的详细介绍可以参考：</p>
+
+
+
+
+<p><a href="http://speech.ee.ntu.edu.tw/~tlkagk/courses/MLDS_2015_2/Lecture/DNN%20backprop.ecm.mp4/index.html">http://speech.ee.ntu.edu.tw/~tlkagk/courses/MLDS_2015_2/Lecture/DNN%20backprop.ecm.mp4/index.html</a></p>
+
+
+
+
+<p>通常我们在使用流行框架来构建神经网络时，不用亲自考虑如何去计算和处理梯度值，框架的作者在实现框架时已经做好了相关处理。</p>
+
+
+
+
+<h3 id="神经网络的理论">神经网络的理论</h3>
+
+
+
+
+<p>根据 <a href="http://neuralnetworksanddeeplearning.com/chap4.html">A visual proof that neural nets can compute any function</a> 文章的描述任何的连续函数 f 都可以用一个隐藏层内有足够多的神经元的神经网络来近似。</p>
+
+
+
+
+<p><strong>既然这样，为什么今天流行的是深度网络而不是广度网络呢？</strong></p>
+
+
+
+
+<p>根据 <a href="https://www.microsoft.com/en-us/research/publication/conversational-speech-transcription-using-context-dependent-deep-neural-networks/">Seide, Frank, Gang Li, and Dong Yu. “Conversational Speech Transcription <br>
+Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
+</a> 论文的研究，广度和深度网络对降低全局误差时的参数如下表所示：</p>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm98wlbz8yj20np0g2gmz.jpg" alt="fat-vs-deep" title=""></p>
+
+
+
+
+<p>根据上图的研究结果，我们可以发现使用多层的神经元能够更加容易近似一些函数，这其实就跟我们的电子电路中的逻辑电路类似，即便在电子电路中两层的逻辑门电路就可以实现任意的逻辑操作，但是使用多层的逻辑门电路可以更容易的构建一些逻辑操作。</p>
+
+
+
+
+<h3 id="模块化">模块化</h3>
+
+
+
+
+<p>深度学习中还有一个特点就是<strong>模块化</strong>，在一层层的网络层的堆叠中，每一层都会作为一个模块来学习数据。简单来说，深度学习的过程其实就是一个自动提取特征的过程。对于传统的机器学习而言，数据科学家通过特征工程，提取出数据的特征，再利用特征对数据进行建模以此达到分类预测的效果。深度学习通过各个神经元的加权组合以及反向传播的权值调整，使得整个网络的每一层都渐渐趋向稳定，且其稳定值能够在那个维度上进行部分数据的划分，简单来说就是一个区域性的能够对数据有所区分的特性。那随着各个神经层的共同作用使得深度学习在分类预测应用上效果显著。</p>
+
+
+
+
+<p>最后，深度学习在图像分类的本质大概可以用以下这张图片概括： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm99ftf2vwj20ow0dsn0p.jpg" alt="" title=""></p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/">深度学习入门简介（二）</a>
+      <time datetime="2017-12-08T12:52:08+08:00" pubdate><span class='month'>Dec</span> <span class='day'>08</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/08/10/linuxjin-cheng-nei-cun-guan-li/">Linux进程内存管理</a></h2>
-	<div class="meta">
-		<div class="date">Aug 10, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/linux-xue-xi-bi-ji/'>linux,学习,笔记</a>
+
+  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
+
+
+
+
+<h2 id="概念">概念</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
+
+
+
+
+<h2 id="原理">原理</h2>
+
+
+
+
+<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
+
+
+
+
+<p>（以上内容摘取自百度百科）</p>
+
+
+
+
+<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
+
+
+
+
+<h2 id="结构">结构</h2>
+
+
+
+
+<h3 id="神经元">神经元</h3>
+
+
+
+
+<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
+
+
+
+
+<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
+
+
+
+
+<p>他的主要执行过程：</p>
+
+
+
+
+<blockquote>
+  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
+</blockquote>
+
+
+
+
+<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
+
+
+
+
+<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
+
+
+
+
+<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
+
+
+
+
+<h3 id="连接方式">连接方式</h3>
+
+
+
+
+<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
+
+
+
+
+<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
+
+
+
+
+<h2 id="全连接前馈网络">全连接前馈网络</h2>
+
+
+
+
+<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
+
+
+
+
+<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
+
+
+
+
+<h2 id="输出层">输出层</h2>
+
+
+
+
+<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
+<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
+
+
+
+
+<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
+
+
+
+
+<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
 
 </div>
+  
+  
 
 
-	</div>
-</article>
+      <footer>
+      
+      - <a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a>
+      <time datetime="2017-12-02T17:17:32+08:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
 
 
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/08/09/linuxcheng-xu-kai-fa-ming-ling-xing-xuan-xiang-ji-can-shu/">Linux程序开发-命令行选项及参数</a></h2>
-	<div class="meta">
-		<div class="date">Aug  9, 2016</div>
-		
 
-<div class="tags">
+<time datetime="2017-11-27T12:45:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
 
-	<a class='category' href='/blog/categories/linux-bian-cheng-bi-ji/'>linux,编程,笔记</a>
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战下">Python在Spark上的机器学习之机器学习实战(下)</h1></p>
+
+<h2 id="mllib-的使用续">MLlib 的使用（续）</h2>
+
+
+
+
+<p>我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。</p>
+
+
+
+
+<h3 id="统计校验">　统计校验</h3>
+
+
+
+
+<p>在通过特征变量的相关系数选择特征时，对于一般的分类变量而言，我们无法计算它们之间的相关系数，但是我们可以通过对它们进行卡方校验来检测它们的分布之间是否存在较大的差异。</p>
+
+
+
+
+<p><strong>卡方检验</strong>：是用途非常广的一种假设检验方法，它在分类资料统计推断中的应用，包括：两个样本率或两个构成比比较的卡方检验；多个样本率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
+
+
+
+
+<p><strong>卡方检验</strong>就是统计样本的实际观测值与理论推断值之间的偏离程度，实际观测值与理论推断值之间的偏离程度就决定卡方值的大小，卡方值越大，越不符合；卡方值越小，偏差越小，越趋于符合，若两个值完全相等时，卡方值就为0，表明理论值完全符合。</p>
+
+
+
+
+<p>而在PySpark中你可以用 <strong>.chiSqTest()</strong> 方法来轻松实现卡方检验。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.linalg</span> <span class="kn">as</span> <span class="nn">ln</span>
+</span><span class='line'><span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">agg_rdd</span> <span class="o">=</span> <span class="n">agg</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">row_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">Matrices</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">agg_rdd</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">chiSqTest</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>我们遍历所有的分类变量并以 <strong>infant_alive_ at_report</strong>进行分类统计。下一步，我们需要将其转化成RDD，所以我们要先利用pyspark.mllib.linalg模将它们转换成一个矩阵。 <br>
+当我们成功将其转换成矩阵的形式之后，我们就可以用<strong>.chiSqTest()</strong>来校验我们的结果。</p>
+
+
+
+
+<p>最后结果显示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/16/5a0daece4fae9.png" alt="chisqtest.png" title=""></p>
+
+
+
+
+<p>从结果我们可以看出，所有分类变量对理论值的预测都是有意义的，因此，我们在构建最后的预测模型的时候都要考虑上这些分类型特征变量。</p>
+
+
+
+
+<h3 id="创建最后的待训练数据集">创建最后的待训练数据集</h3>
+
+
+
+
+<p>经过一轮的数据分析和特征变量筛选之后，最终到了我们最终的建模阶段了。首先我们将筛选出来以DataFrame数据结构模型表达的数据转换成以LabeledPoints形式表示的RDD。</p>
+
+
+
+
+<p>LabeledPoint 是 MLlib 中的一种数据结构，它包含了两个属性值：label（标识），features（特征）一般用作机器学习模型的训练。</p>
+
+
+
+
+<p>其中，label就是我们目标的分类的标识而features就是我们用于分类的特征， <br>
+通常是一个Numpy 数组，列表，psyspark.mllib.linalg.SparseVector,pyspark.mllib,linalg.DenseVector或者是scipy.sparse的形式。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">as</span> <span class="nn">ft</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.regression</span> <span class="kn">as</span> <span class="nn">reg</span>
+</span><span class='line'><span class="n">hashing</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">HashingTF</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="n">births_hashed</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="nb">list</span><span class="p">(</span><span class="n">hashing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">toArray</span><span class="p">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s">&#39;BIRTH_PLACE&#39;</span>
+</span><span class='line'>          <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span>
+</span><span class='line'>      <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_to_keep</span><span class="p">)])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[[</span><span class="n">e</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">e</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">row</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span class='line'>      <span class="n">ln</span><span class="o">.</span><span class="n">Vectors</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="划分训练集和测试集">划分训练集和测试集</h3>
+
+
+
+
+<p>形如sklearn.model_selection.train_test_split随机划分训练集和测试集的模块一般，在PySpark中RDDs也有一个便利的<strong>.randomSplit(…)</strong>方法用于随机划分训练集和测试集。</p>
+
+
+
+
+<p>在本例中可以这样使用</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">births_train, births_test = births_hashed.randomSplit([<span class="hljs-number">0.6</span>, <span class="hljs-number">0.4</span>])</code></pre>
+
+
+
+
+<p>没错，仅仅需要上面这样一行的代码，我们就可以将我们的待训练数据按照随机60%，40%来划分好我们的训练集和测试集了。</p>
+
+
+
+
+<h3 id="开始建模">开始建模</h3>
+
+
+
+
+<p>在一切准备就绪之后，我们就可以开始通过我们上面的训练数据集来建模了。在这里我们来尝试建立两个模型：一个线性的Logistic回归模型，一个非线性的随机森林模型。然后，在初次建模的时候，我们先采用筛选出来的全部特征来建模，然后我们再通过<strong>ChiSqSelector（…）</strong>方法来归纳出最能代表全部整体的四个主成分。</p>
+
+
+
+
+<h4 id="logistic-回归模型">Logistic 回归模型</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.classification</span> \
+</span><span class='line'><span class="kn">import</span> <span class="n">LogisticRegressionWithLBFGS</span>
+</span><span class='line'><span class="n">LR_Model</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">births_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">LR_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">births_test</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.evaluation</span> <span class="kn">as</span> <span class="nn">ev</span>
+</span><span class='line'><span class="n">LR_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>从上面的建模过程可以看出，使用PySpark训练一个模型也是非常简单的。我们只需要调用<strong>.train(…)</strong>方法，并传入之前处理好的LabeledPoints数据即可。不过需要注意的一点是我们要提前指定一个较小训练的迭代次数以免训练时间过长。</p>
+
+
+
+
+<p>同时，在上面的代码中，我们在训练完一个模型之后使用MLlib中为我们提供的评估分类和回归准确度的<strong>.BinaryClassificationMetrics（…）</strong>方法来分析我们最后预测的结果。</p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc13a5ea1a.png" alt="logistic_roc.png" title=""></p>
+
+
+
+
+<p>通过PR，ROC的结果，我们可以看出，这个模型还是可接受的。</p>
+
+
+
+
+<h3 id="选取出最具代表性的分类特征">选取出最具代表性的分类特征</h3>
+
+
+
+
+<p>通常来说，一个采取更少的特征的简单模型，往往会比一个复杂的模型，在分类问题上更具有代表性和可解释性。而在MLlib中，则可以通过<strong>.Chi-Square selector</strong>来提取出模型中最具代表性的一些分类特征变量来简化我们的模型。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selector</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">ChiSqSelector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">births_train</span><span class="p">)</span>
+</span><span class='line'><span class="n">topFeatures_train</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_train</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_train</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'>  <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span class='line'><span class="n">topFeatures_test</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_test</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="随机森林模型">随机森林模型</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.tree</span> <span class="kn">import</span> <span class="n">RandomForest</span>
+</span><span class='line'><span class="n">RF_model</span> <span class="o">=</span> <span class="n">RandomForest</span> \
+</span><span class='line'><span class="o">.</span><span class="n">trainClassifier</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">topFeatures_train</span><span class="p">,</span>
+</span><span class='line'><span class="n">numClasses</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'><span class="n">categoricalFeaturesInfo</span><span class="o">=</span><span class="p">{},</span>
+</span><span class='line'><span class="n">numTrees</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+</span><span class='line'><span class="n">featureSubsetStrategy</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="n">seed</span><span class="o">=</span><span class="mi">666</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">RF_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">RF_model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="n">RF_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">RF_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">model_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>随机森林模型（Random forest 后面简称RF）在训练上总体与Logistic类似，不同的参数是RF在训练前需要指定类别总数：numClasses，树的棵数：numTrees（这两个参数的意义大家可以参照下随机森林模型的<a href="https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/1974765?fr=aladdin">百科介绍</a>）</p>
+
+
+
+
+<p><strong>注：在随机森林模型的创建中，我们采用的是上面提取出来的最具代表性的有效特征，这就意味着模型用到的特征是比之前的Logistic要少的。</strong></p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc8621d985.png" alt="rf_roc.png" title=""></p>
+
+
+
+
+<p>通过结果我们可以看出，随机森林模型，在采用比之前更少的特征下的建模的最终预测效果是由于之前的Logistic回归模型的。</p>
+
+
+
+
+<p>下面我们同样使用代表性特征来重建一次Logistic回归模型</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">LR_Model_2</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">topFeatures_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">LR_results_2</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model_2</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results_2</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终结果： <br>
+<img src="https://i.loli.net/2017/11/17/5a0dc9d2aa75c.png" alt="logistic_lbfgs.png" title=""></p>
+
+
+
+
+<p>通过结果，我们可以看出，虽然没有达到RF模型的准确度，但是与采用了全特征的Logistic回归模型处于同一水平。所以，我们在可选的情况下，通常采用更少的特征来构建更为简化和有效的模型。</p>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
 
 </div>
-
-
-	</div>
-</article>
-
-
+  
   
 
 
-<article>
-	<h2 class="title"><a href="/blog/2016/07/30/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-7/">百度前端技术学院-任务7</a></h2>
-	<div class="meta">
-		<div class="date">Jul 30, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
+      <footer>
+      
+      - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
+      <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
   
+  <div class="pagination">
+    
+      <a class="prev" href="/posts/3">&larr; Older</a>
+    
+    <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/index.html">Newer &rarr;</a>
+    
+  </div><!-- /div.pagination -->
+</div><!-- /div.blog-index -->
 
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
 
-<article>
-	<h2 class="title"><a href="/blog/2016/07/22/cuo-wu-could-not-reserve-enough-space-for-object-heapde-jie-jue-fang-an/">错误:Could not reserve enough space for object heap的解决方案</a></h2>
-	<div class="meta">
-		<div class="date">Jul 22, 2016</div>
-		
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
 
-<div class="tags">
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
 
-	<a class='category' href='/blog/categories/linux-ruboto-bi-ji/'>linux,ruboto,笔记</a>
-
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
 </div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/21/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-6/">百度前端技术学院-任务6</a></h2>
-	<div class="meta">
-		<div class="date">Jul 21, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/15/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-5/">百度前端技术学院-任务5</a></h2>
-	<div class="meta">
-		<div class="date">Jul 15, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-4/">百度前端技术学院-任务4</a></h2>
-	<div class="meta">
-		<div class="date">Jul 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-3/">百度前端技术学院-任务3</a></h2>
-	<div class="meta">
-		<div class="date">Jul 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/13/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-2/">百度前端技术学院-任务2</a></h2>
-	<div class="meta">
-		<div class="date">Jul 13, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/12/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-1/">百度前端技术学院-任务1</a></h2>
-	<div class="meta">
-		<div class="date">Jul 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/html-bian-cheng-xue-xi/'>html,编程,学习</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/04/emacs-plus-w3m-wo-de-liu-lan-wo-zuo-zhu/">emacs+w3m:我的浏览我做主</a></h2>
-	<div class="meta">
-		<div class="date">Jul  4, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-emacs-bi-ji/'>linux,emacs,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/07/02/rubyshi-xian-de-tian-yi-xiao-yuan-wang-ke-hu-duan/">Ruby实现的天翼校园网客户端</a></h2>
-	<div class="meta">
-		<div class="date">Jul  2, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-ruby-bian-cheng/'>linux,ruby,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a></h2>
-	<div class="meta">
-		<div class="date">Jun 30, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/ruby-linux-bian-cheng/'>ruby,linux,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a></h2>
-	<div class="meta">
-		<div class="date">Jun 27, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javescript-bian-cheng-bi-ji/'>javescript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a></h2>
-	<div class="meta">
-		<div class="date">Jun 26, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-bian-cheng-bi-ji/'>javascript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a></h2>
-	<div class="meta">
-		<div class="date">Jun 24, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-bian-cheng-bi-ji/'>javascript,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/23/goyu-yan-var-slash-init-slash-mainde-zhi-xing-shun-xu/">Go语言var/init/main的执行顺序</a></h2>
-	<div class="meta">
-		<div class="date">Jun 23, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/go-bian-cheng-bi-ji/'>go,编程,笔记</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/20/httpscanpa-chong-sao-miao-xiao-gong-ju/">httpscan爬虫扫描小工具</a></h2>
-	<div class="meta">
-		<div class="date">Jun 20, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/python-sao-miao-xiu-tan-gong-ju/'>python,扫描嗅探,工具</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h2>
-	<div class="meta">
-		<div class="date">Jun 19, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-fu-wu-qi-ubuntu/'>linux,服务器,ubuntu</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a></h2>
-	<div class="meta">
-		<div class="date">Jun 18, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/meng-meng-xiu-ri-ji-qing-ming-meng/'>梦,梦修日记,清明梦</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a></h2>
-	<div class="meta">
-		<div class="date">Jun 16, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/javascript-ying-yong-kai-fa-bian-cheng/'>javascript,应用开发,编程</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/">如何控制你的梦境</a></h2>
-	<div class="meta">
-		<div class="date">Jun 14, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/meng-sui-xiang-xin-li-xue/'>梦,随想,心理学</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h2>
-	<div class="meta">
-		<div class="date">Jun 12, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-shen-tou-gong-ju/'>linux,渗透,工具</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a></h2>
-	<div class="meta">
-		<div class="date">Jun 11, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/linux-bian-cheng-makefile/'>linux,编程,makefile</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a></h2>
-	<div class="meta">
-		<div class="date">Jun 11, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/bian-cheng-ruby-suan-fa/'>编程,ruby,算法</a>
-
-</div>
-
-
-	</div>
-</article>
-
-
-  
-
-
-<article>
-	<h2 class="title"><a href="/blog/2016/06/10/hello/">Hello</a></h2>
-	<div class="meta">
-		<div class="date">Jun 10, 2016</div>
-		
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/test/'>test</a>
-
-</div>
-
-
-	</div>
-</article>
-
-</div>
-	<footer id="footer" class="inner"><div class="aboutme">
-<hr>
-  <div class="profile">
-
-    <h3>EdmondFrank</h3>
-    <p><a href="http://twitter.com/EdmondFrank4">@EdmondFrank4</a></p>
-
-    <div class="codes">
-      <h4>Codes</h4>
-      <div class="github"><a href="https://github.com/EdmondFrank">github.com/EdmondFrank</a></div>
-    </div>
-  </div>
-
-  <div class="float_clear"></div>
-
-</div>
-
-Copyright &copy; 2016
- EdmondFrank 
-<br>
-Powered by Octopress.
-
-
 
 </footer>
-	
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
 
 </body>
 </html>

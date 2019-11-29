@@ -1,0 +1,996 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>树莓派和L298N电机驱动模块实现智能小车控制 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="﻿树莓派与L298N驱动模块实现智能小车控制 准备 首先在讲整体实现之前，笔者先附上自己的开发环境以及使用到的工具、硬件等。 用到的工具有： 树莓派3代（自带wifi模块）
+L298N电机驱动板
+USB移动电源一个（为树莓派供电） 电池组一组（为驱动模块、智能小车的电机供电）
+智能小车底盘 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">树莓派和L298N电机驱动模块实现智能小车控制</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-05T14:56:53+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><p>﻿<h1 id="树莓派与l298n驱动模块实现智能小车控制">树莓派与L298N驱动模块实现智能小车控制</h1></p>
+
+<h2 id="准备">准备</h2>
+
+
+
+
+<p>首先在讲整体实现之前，笔者先附上自己的开发环境以及使用到的工具、硬件等。</p>
+
+
+
+
+<p>用到的工具有：</p>
+
+
+
+
+<ul>
+<li>树莓派3代（自带wifi模块）</li>
+<li>L298N电机驱动板</li>
+<li>USB移动电源一个（为树莓派供电） </li>
+<li>电池组一组（为驱动模块、智能小车的电机供电）</li>
+<li>智能小车底盘</li>
+<li>杜邦线若干</li>
+<li>电脑一台（我的系统：Ubuntu 16.04 LTS Python3.5）</li>
+</ul>
+
+
+
+
+<h2 id="树莓派的gpio引脚定义">树莓派的GPIO引脚定义</h2>
+
+
+
+
+<p>树莓派的GPIO引脚共分为两种类型，一种是<strong>PHYSICAL NUMBERING</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jigs4fdj20o00b2whc.jpg" alt="" title=""></p>
+
+
+
+
+<p>单纯地用从上至下，从左至右的顺序来定义引脚。</p>
+
+
+
+
+<p>另外一种引脚定义方式是<strong>GPIO NUMBERING</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jkecmuvj20o408rdi1.jpg" alt="" title=""></p>
+
+
+
+
+<p>采用特殊（未知）的方式来标记GPIO接口</p>
+
+
+
+
+<p><strong>这里，我采用的是第一种使用的引脚定义的方式。</strong></p>
+
+
+
+
+<h2 id="l298n电机驱动模块">L298N电机驱动模块</h2>
+
+
+
+
+<p>L298N 是一种双H桥电机驱动芯片，其中每个H桥可以提供2A的电流，功率部分的供电电压范围是2.5-48v，逻辑部分5v供电，接受5vTTL电平。一般情况下，功率部分的电压应大于6V否则芯片可能不能正常工作。</p>
+
+
+
+
+<p>实物图如下 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jpmguxqj20j60kg40s.jpg" alt="" title=""></p>
+
+
+
+
+<p>使用说明如下 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5jql5sdpj20j60c6q42.jpg" alt="" title=""></p>
+
+
+
+
+<h2 id="我的接线图">我的接线图</h2>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5kpjg1dij20zk0jwabr.jpg" alt="" title=""> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo5koxpcwcj20zk0jwtae.jpg" alt="" title=""></p>
+
+
+
+
+<h2 id="代码实现">代码实现</h2>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">argparse</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tornado.web</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="kn">as</span> <span class="nn">GPIO</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">PostHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># I don&#39;t understand decorators, but this fixed my &quot;can&#39;t set attribute&quot; error</span>
+</span><span class='line'>    <span class="nd">@property</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@settings.setter</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="n">settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">data_json</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">escape</span><span class="o">.</span><span class="n">json_decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">allowed_commands</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;37&#39;</span><span class="p">,</span><span class="s">&#39;38&#39;</span><span class="p">,</span><span class="s">&#39;39&#39;</span><span class="p">,</span><span class="s">&#39;40&#39;</span><span class="p">])</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="n">data_json</span><span class="p">[</span><span class="s">&#39;command&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="n">allowed_commands</span> <span class="o">&amp;</span> <span class="n">command</span>
+</span><span class='line'>        <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span><span class="o">+</span><span class="s">&quot;/session.txt&quot;</span>
+</span><span class='line'>        <span class="n">log_entry</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">log_entries</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">command</span><span class="p">,</span><span class="n">timestamp</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log_entry</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s">&#39;speed&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">if</span> <span class="s">&#39;37&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward_left</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;38&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;forward&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;39&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">forward_right</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="s">&#39;40&#39;</span> <span class="ow">in</span> <span class="n">command</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;backward&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">motor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># This only works on data from the same live python process. It doesn&#39;t </span>
+</span><span class='line'><span class="c"># read from the session.txt file. It only sorts data from the active</span>
+</span><span class='line'><span class="c"># python process. This is required because it reads from a list instead</span>
+</span><span class='line'><span class="c"># of a file  on data from the same live python process. It doesn&#39;t </span>
+</span><span class='line'><span class="c"># read from the session.txt file. It only sorts data from the active</span>
+</span><span class='line'><span class="c"># log_entries python list</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">StoreLogEntriesHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">file_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span><span class="o">+</span><span class="s">&quot;/clean_session.txt&quot;</span>
+</span><span class='line'>        <span class="n">sorted_log_entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">log_entries</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>        <span class="n">prev_command</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">allowed_commands</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;38&#39;</span><span class="p">,</span><span class="s">&#39;37&#39;</span><span class="p">,</span><span class="s">&#39;39&#39;</span><span class="p">,</span><span class="s">&#39;40&#39;</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">log_entry</span> <span class="ow">in</span> <span class="n">sorted_log_entries</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">command</span> <span class="o">=</span> <span class="n">log_entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">log_entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span> <span class="o">^</span> <span class="n">prev_command</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">prev_command</span> <span class="o">=</span> <span class="n">command</span>
+</span><span class='line'>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">readable_command</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>                    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;37&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;38&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;up&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;39&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;right&quot;</span><span class="p">)</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s">&#39;40&#39;</span><span class="p">:</span>
+</span><span class='line'>                            <span class="n">readable_command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;down&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">log_entry</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">readable_command</span><span class="p">))</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log_entry</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">print</span><span class="p">(</span><span class="n">log_entry</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Finished&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MultipleKeysHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&quot;HelloWorld&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+</span><span class='line'><span class="s">                &lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="s">                &lt;html&gt;</span>
+</span><span class='line'><span class="s">                    &lt;head&gt;</span>
+</span><span class='line'><span class="s">                        &lt;script src=&quot;https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js&quot;&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="s">                        &lt;script&gt;</span>
+</span><span class='line'><span class="s">                            var keys = {};</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            $(document).keydown(function (e) {</span>
+</span><span class='line'><span class="s">                                keys[e.which] = true;</span>
+</span><span class='line'><span class="s">                                </span>
+</span><span class='line'><span class="s">                                var json_upload = JSON.stringify({command:keys});</span>
+</span><span class='line'><span class="s">                                var xmlhttp = new XMLHttpRequest(); </span>
+</span><span class='line'><span class="s">                                xmlhttp.open(&quot;POST&quot;, &quot;/post&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.send(json_upload);</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                                printKeys();</span>
+</span><span class='line'><span class="s">                            });</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            $(document).keyup(function (e) {</span>
+</span><span class='line'><span class="s">                                delete keys[e.which];</span>
+</span><span class='line'><span class="s">                                </span>
+</span><span class='line'><span class="s">                                var json_upload = JSON.stringify({command:keys});</span>
+</span><span class='line'><span class="s">                                var xmlhttp = new XMLHttpRequest(); </span>
+</span><span class='line'><span class="s">                                xmlhttp.open(&quot;POST&quot;, &quot;/post&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);</span>
+</span><span class='line'><span class="s">                                xmlhttp.send(json_upload);</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                                printKeys();</span>
+</span><span class='line'><span class="s">                            });</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                            function printKeys() {</span>
+</span><span class='line'><span class="s">                                var hcommandtml = &#39;&#39;;</span>
+</span><span class='line'><span class="s">                                for (var i in keys) {</span>
+</span><span class='line'><span class="s">                                    if (!keys.hasOwnProperty(i)) continue;</span>
+</span><span class='line'><span class="s">                                    html += &#39;&lt;p&gt;&#39; + i + &#39;&lt;/p&gt;&#39;;</span>
+</span><span class='line'><span class="s">                                }</span>
+</span><span class='line'><span class="s">                                $(&#39;#out&#39;).html(html);</span>
+</span><span class='line'><span class="s">                            }</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">                        &lt;/script&gt;</span>
+</span><span class='line'><span class="s">                    &lt;/head&gt;</span>
+</span><span class='line'><span class="s">                    &lt;body&gt;</span>
+</span><span class='line'><span class="s">                        Click in thiscommand frame, then try holding down some keys</span>
+</span><span class='line'><span class="s">                        &lt;div id=&quot;out&quot;&gt;&lt;/div&gt;</span>
+</span><span class='line'><span class="s">                    &lt;/body&gt;</span>
+</span><span class='line'><span class="s">                &lt;/html&gt;</span>
+</span><span class='line'><span class="s">            &#39;&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># class Motor:</span>
+</span><span class='line'><span class="c">#     def __init__(self, pinForward, pinBackward, pinControlStraight,</span>
+</span><span class='line'><span class="c">#     pinLeft, pinRight, pinControlSteering):</span>
+</span><span class='line'><span class="c">#         self.pinForward = pinForward</span>
+</span><span class='line'><span class="c">#         self.pinBackward = pinBackward</span>
+</span><span class='line'><span class="c">#         self.pinControlStraight = pinControlStraight</span>
+</span><span class='line'><span class="c">#         self.pinLeft = pinLeft</span>
+</span><span class='line'><span class="c">#         self.pinRight = pinRight</span>
+</span><span class='line'><span class="c">#         self.pinControlSteering = pinControlSteering</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinForward, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinBackward, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinControlStraight, GPIO.OUT)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinLeft, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinRight, GPIO.OUT)</span>
+</span><span class='line'><span class="c">#         GPIO.setup(self.pinControlSteering, GPIO.OUT)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward = GPIO.PWM(self.pinForward, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward = GPIO.PWM(self.pinBackward, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.start(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.start(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_left = GPIO.PWM(self.pinLeft, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_right = GPIO.PWM(self.pinRight, 100)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.start(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.start(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         GPIO.output(self.pinControlStraight,GPIO.HIGH) </span>
+</span><span class='line'><span class="c">#         GPIO.output(self.pinControlSteering,GPIO.HIGH) </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)    </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward_left(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)  </span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(100)   </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def forward_right(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(speed)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(100)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def backward(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinBackward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(speed)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def left(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(speed)  </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def right(self, speed):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; pinForward is the forward Pin, so we change its duty</span>
+</span><span class='line'><span class="c">#              cycle according to speed. &quot;&quot;&quot;</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(speed)   </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#     def stop(self):</span>
+</span><span class='line'><span class="c">#         &quot;&quot;&quot; Set the duty cycle of both control pins to zero to stop the motor. &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#         self.pwm_forward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_backward.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_left.ChangeDutyCycle(0)</span>
+</span><span class='line'><span class="c">#         self.pwm_right.ChangeDutyCycle(0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Motor</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pinForward</span><span class="p">,</span> <span class="n">pinBackward</span><span class="p">,</span> <span class="n">pinForward2</span><span class="p">,</span>
+</span><span class='line'>     <span class="n">pinBackward2</span><span class="p">,</span><span class="n">pinLeft</span><span class="p">,</span> <span class="n">pinRight</span><span class="p">):</span>
+</span><span class='line'>        <span class="sd">&quot;&quot;&quot; Initialize the motor with its control pins and start pulse-width</span>
+</span><span class='line'><span class="sd">             modulation &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span> <span class="o">=</span> <span class="n">pinForward</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span> <span class="o">=</span> <span class="n">pinBackward</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span> <span class="o">=</span> <span class="n">pinForward2</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span> <span class="o">=</span> <span class="n">pinLeft</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span> <span class="o">=</span> <span class="n">pinRight</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span> <span class="o">=</span> <span class="n">pinBackward2</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinLeft</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinRight</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span>  <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span>  <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward, False)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward2, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward2, False)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">forward_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speed</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward, False)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinForward2, True)</span>
+</span><span class='line'>        <span class="c"># GPIO.output(self.pinBackward2, False)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="sd">&quot;&quot;&quot; Set the duty cycle of both control pins to zero </span>
+</span><span class='line'><span class="sd">            to stop the motor. &quot;&quot;&quot;</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_left</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">pwm_right</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinForward2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pinBackward2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">make_app</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+</span><span class='line'>        <span class="p">(</span><span class="s">r&quot;/drive&quot;</span><span class="p">,</span><span class="n">MultipleKeysHandler</span><span class="p">),(</span><span class="s">r&quot;/post&quot;</span><span class="p">,</span> <span class="n">PostHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;settings&#39;</span><span class="p">:</span><span class="n">settings</span><span class="p">}),</span>
+</span><span class='line'>        <span class="p">(</span><span class="s">r&quot;/StoreLogEntries&quot;</span><span class="p">,</span><span class="n">StoreLogEntriesHandler</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># Parse CLI args</span>
+</span><span class='line'>    <span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--speed_percent&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Between 0 and 100&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">ap</span><span class="o">.</span><span class="n">parse_args</span><span class="p">())</span>
+</span><span class='line'>    <span class="c">#GPIO.cleanup(0)</span>
+</span><span class='line'>    <span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BOARD</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">motor</span> <span class="o">=</span> <span class="n">Motor</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">log_entries</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;speed&#39;</span><span class="p">:</span><span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">&#39;speed_percent&#39;</span><span class="p">])}</span>
+</span><span class='line'>    <span class="n">app</span> <span class="o">=</span> <span class="n">make_app</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">81</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="使用说明">使用说明</h2>
+
+
+
+
+<p>首先，按照依赖配置好树莓派中的python环境，建议使用python3以上版本。</p>
+
+
+
+
+<p>然后在树莓派接入路由后，采用远程终端的方式，运行以上的python脚本。</p>
+
+
+
+
+<pre><code>sudo python3 drive_api.py --speed_percent 5
+</code></pre>
+
+
+
+
+<p><strong>注：非root用户一定要加上sudo，否则无法读写树莓派的GPIO口。</strong></p>
+
+
+
+
+<p>最后，通过电脑在同一个内网内使用浏览器打开地址<a>192.168.1.208:81/drive</a>（这个地址根据你的树莓派接入路由的实际地址而定，以上为笔者实验使用地址，仅供格式参考）。</p>
+
+
+
+
+<p>在打开的网页内，通过电脑的方向键就可以对树莓派进行“驾驶”了。</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-05T14:56:53+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2018/02/05/shu-mei-pai-he-l298ndian-ji-qu-dong-mo-kuai-shi-xian-zhi-neng-xiao-che-kong-zhi/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/01/18/zhong-du-ren-yue-shen-hua/" title="Previous Post: 重读人月神话">&laquo; 重读人月神话</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/" title="Next Post: 谈谈Google自动编程框架AutoML">谈谈Google自动编程框架AutoML &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 练习代码 | EdmondFrank's 时光足迹]]></title>
+  <link href="https://edmondfrank.github.io/blog/categories/lian-xi-dai-ma/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2019-11-29T18:26:24+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Xlib编程之-创建全屏透明窗口]]></title>
+    <link href="https://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou/"/>
+    <updated>2016-10-21T20:11:20+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2016/10/21/xlibbian-cheng-zhi-chuang-jian-quan-ping-tou-ming-chuang-kou</id>
+    <content type="html"><![CDATA[<h2>Xlib编程之-创建全屏透明窗口</h2>
+
+<pre><code class="c"> //source file : win.c
+ #include &lt;X11/Xlib.h&gt;
+ #include &lt;X11/Xutil.h&gt;
+ int main(int argc, char* argv[])
+ {
+    Display* display = XOpenDisplay(NULL);
+
+    XVisualInfo vinfo;
+    XMatchVisualInfo(display, DefaultScreen(display), 32, TrueColor, &amp;vinfo);
+
+    XSetWindowAttributes attr;//窗口属性设置
+    attr.colormap = XCreateColormap(display, DefaultRootWindow(display), vinfo.visual, AllocNone);
+    attr.border_pixel = 0;
+    attr.background_pixel = 0;
+
+    //取输出设备的长宽像素
+    int screen = DefaultScreen(display);
+    int height = DisplayHeight(display,screen);
+    int width = DisplayWidth(display,screen);
+
+    //开始创建窗口
+    Window win = XCreateWindow(display, DefaultRootWindow(display), 0, 0,width, height , 0, vinfo.depth, InputOutput, vinfo.visual,  CWColormap | CWBorderPixel | CWBackPixel, &amp;attr);
+    XSelectInput(display, win, StructureNotifyMask);
+    //GC gc = XCreateGC(display, win, 0, 0);
+
+    /*
+    Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", 0);
+    XSetWMProtocols(display, win, &amp;wm_delete_window, 1);
+    */
+    XMapWindow(display, win);
+    XMoveWindow(display,win,0,0);
+
+    XFlush(display);//刷新输出设备
+    int keep_running = 1;
+    XEvent event;
+
+    //窗口事件监听尝试
+    while (keep_running) {
+        XNextEvent(display, &amp;event);
+        switch(event.type) {
+            case ClientMessage:
+                if (event.xclient.message_type == XInternAtom(display, "WM_PROTOCOLS", 1) &amp;&amp; (Atom)event.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
+                    keep_running = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+    //结束销毁
+    XDestroyWindow(display, win);
+    XCloseDisplay(display);
+    return 0;
+ }
+</code></pre>
+
+<p><strong>编译</strong></p>
+
+<blockquote><p>gcc -o win ./win.c -L/usr/lib -lX11</p></blockquote>
+
+<p><strong>That is All</strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[简单cat的实现-1.0]]></title>
+    <link href="https://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0/"/>
+    <updated>2016-09-06T23:47:23+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2016/09/06/jian-dan-catde-shi-xian-1-dot-0</id>
+    <content type="html"><![CDATA[<h2>简单cat的实现-1.0</h2>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;stdlib.h&gt;
+void vis(FILE *fp);
+int strip = 0;
+void main(int argc,char *argv[])
+{
+    int i = 0;
+    FILE *fp;
+    while(argc &gt; 1 &amp;&amp; argv[1][0] =='-'){
+        switch(argv[1][1]){
+        case 's':
+            strip = 1;
+            break;
+        default:
+            fprintf(stderr,"%s:unknown arg %s\n",argv[0],argv[1]);
+            exit(1);
+        }
+        argc--;
+        argv++;
+    }
+
+    if(argc == 1)
+    vis(stdin);
+    else
+    for(i=1;i&lt;argc;i++)
+    if((fp=fopen(argv[i],"r")) == NULL){
+        fprintf(stderr,"%s:can't open %s\n",argv[0],argv[i]);
+        exit(1);
+    }else{
+        vis(fp);
+        fclose(fp);
+    }
+    exit(0);
+}
+void vis(FILE *fp){
+    int c;
+    while((c=getc(fp))!=EOF)
+    if(isascii(c) &amp;&amp; (isprint(c) || c=='\n' || c=='\t' || c==' '))
+    putchar(c);
+    else if(!strip)
+    printf("\\%03o",c);
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 数学建模 | EdmondFrank's 时光足迹]]></title>
+  <link href="https://edmondfrank.github.io/blog/categories/shu-xue-jian-mo/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2019-11-29T18:26:24+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[元胞自动机与生命游戏（Game of Life）]]></title>
+    <link href="https://edmondfrank.github.io/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/"/>
+    <updated>2018-02-15T08:44:11+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)</id>
+    <content type="html"><![CDATA[<p>﻿<h1 id="元胞自动机与生命游戏game-of-life">元胞自动机与《生命游戏》（Game of Life）</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>笔者最近读到一篇交通流仿真的论文里，提到了一个挺有意思的模型　－－　<strong>元胞自动机</strong>。</p>
+
+
+
+
+<p>在好奇心的驱使之下查询了不少资料，所以今天就来跟大家来分享一下<strong>“元胞自动机”</strong>这个模型以及它和<strong>“康威《生命游戏》”</strong>的关系。</p>
+
+
+
+
+<p>为了让话题更加有趣，我们先从《生命游戏》开始谈起。</p>
+
+
+
+
+<h2 id="什么是生命游戏">什么是《生命游戏》？</h2>
+
+
+
+
+<p>生命游戏由英国数学家约翰·何顿·康威提出，它其实是一个零玩家游戏，它包括一个二维矩形世界，这个世界中的每个方格居住着一个活着的或死了的细胞。</p>
+
+
+
+
+<p>而整个《生命游戏》是贯彻着一条生命游戏定律的，即：<strong>如果一个生命，其周围的同类生命太少，会因为得不到帮助而死亡；如果太多，则会因为得不到足够的生命资源而死亡。</strong> ——英国数学家约翰·康威</p>
+
+
+
+
+<p>一个细胞在下一个时刻生死取决于相邻八个方格中活着的或死了的细胞的数量。如果相邻方格活着的细胞数量过多，这个细胞会因为资源匮乏而在下一个时刻死去；相反，如果周围活细胞过少，这个细胞会因太孤单而死去。实际中，你可以设定周围活细胞的数目怎样时才适宜该细胞的生存。如果这个数目设定过低，世界中的大部分细胞会因为找不到太多的活的邻居而死去，直到整个世界都没有生命；如果这个数目设定过高，世界中又会被生命充满而没有什么变化。</p>
+
+
+
+
+<p>实际中，这个数目一般选取2或者3；这样整个生命世界才不至于太过荒凉或拥挤，而是一种动态的平衡。</p>
+
+
+
+
+<p>这样的话，游戏的规则就是：当一个方格周围有2或3个活细胞时，方格中的活细胞在下一个时刻继续存活；即使这个时刻方格中没有活细胞，在下一个时刻也会“诞生”活细胞。在这个游戏中，还可以设定一些更加复杂的规则，例如当前方格的状况不仅由父一代决定，而且还考虑祖父一代的情况。你还可以作为这个世界的上帝，随意设定某个方格细胞的死活，以观察对世界的影响。</p>
+
+
+
+
+<p>在游戏的进行中，杂乱无序的细胞会逐渐演化出各种精致、有形的结构；这些结构往往有很好的对称性，而且每一代都在变化形状。一些形状已经锁定，不会逐代变化。</p>
+
+
+
+
+<p>有时，一些已经成形的结构会因为一些无序细胞的“入侵”而被破坏。但是形状和秩序经常能从杂乱中产生出来。</p>
+
+
+
+
+<h2 id="生命游戏和元胞自动机的关系以及什么是元胞自动机">《生命游戏》和元胞自动机的关系以及什么是元胞自动机？</h2>
+
+
+
+
+<p>生命游戏的原理就是基于元胞自动机的，或者说《生命游戏》就是元胞自动机的一个展示。</p>
+
+
+
+
+<p><strong>元胞自动机(Cellular Automata，简称CA</strong>，也有人译为细胞自动机、点格自动机、分子自动机或单元自动机)。是一时间和空间都离散的动力系统。</p>
+
+
+
+
+<p>散布在规则格网 (Lattice Grid)中的每一元胞(Cell)取有限的离散状态，遵循同样的作用规则，依据确定的局部规则作同步更新。大量元胞通过简单的相互作用而构成动态系统的演化。不同于一般的动力学模型，元胞自动机不是由严格定义的物理方程或函数确定，而是用一系列模型构造的规则构成。凡是满足这些规则的模型都可以算作是元胞自动机模型。</p>
+
+
+
+
+<p>因此，元胞自动机是一类模型的总称，或者说是一个方法框架。其特点是时间、空间、状态都离散，每个变量只取有限多个状态，且其状态改变的规则在时间和空间上都是局部的。</p>
+
+
+
+
+<p><strong>初等元胞自动机（ Elementary Cellular Automata， ECA)</strong>的基本要素如下</p>
+
+
+
+
+<ul>
+<li>空间：一维直线上等间距的点。可为某区间上的整数点的集合。</li>
+<li>状态集：S={s1,s2} 即只有两种不同的状态。这两种不同的状态可将其分别编码为0 与 1；若用图形表示，则可对应“黑”与“白” 或者其他两种不同的颜色。</li>
+<li>邻居：取邻居半径r=1，即每个元胞最多只有“左邻右舍”两个邻居。</li>
+<li>演化规则：任意设定， 最多2^8=256</li>
+</ul>
+
+
+
+
+<p><strong>元胞以相邻的8个元胞为邻居。即Moore邻居；一个元胞的生死由其在该时刻本身的生死状态和周围八个邻居的状态。</strong></p>
+
+
+
+
+<p>为了解释它，我们可以把计算机中的宇宙想象成是一堆方格子构成的封闭空间，尺寸为N的空间就有N*N个格子。而每一个格子都可以看成是一个生命体，每个生命都有生和死两种状态，如果该格子生就显示蓝色，死则显示白色。每一个格子旁边都有邻居格子存在，如果我们把3ｘ3的9个格子构成的正方形看成一个基本单位的话，那么这个正方形中心的格子的邻居就是它旁边的8个格子。</p>
+
+
+
+
+<p>每个格子的生死遵循下面的原则：</p>
+
+
+
+
+<ol>
+<li>如果一个细胞周围有3个细胞为生（一个细胞周围共有8个细胞），则该细胞为生（即该细胞若原先为死，则转为生，若原先为生，则保持不变）。</li>
+<li>如果一个细胞周围有2个细胞为生，则该细胞的生死状态保持不变；</li>
+<li>在其它情况下，该细胞为死（即该细胞若原先为生，则转为死，若原先为死，则保持不变） </li>
+</ol>
+
+
+
+
+<p>设定图像中每个像素的初始状态后依据上述的游戏规则演绎生命的变化，由于初始状态和迭代次数不同，将会得到令人叹服的优美图案。</p>
+
+
+
+
+<p>这样就把这些若干个格子（生命体）构成了一个复杂的动态世界。运用简单的3条作用规则构成的群体会涌现出很多意想不到的复杂行为，这就是复杂性科学的研究焦点。</p>
+
+
+
+
+<h2 id="元胞自动机的应用">元胞自动机的应用</h2>
+
+
+
+
+<p>在实际应用过程中，有的元胞自动机模型对其中的某些特征进行了扩展，有的在规则设计中引入随机因素，如：森林火灾模型。 又如，在交通、通讯发达的今天， 研究流行病或计算机病毒的传播问题时， 我们还可以将空间背景换成复杂网络的结点，用网络邻接点作为邻居。</p>
+
+
+
+
+<p>这样的调整显然比仍旧使用二维欧氏空间、采用欧氏距离的模型更加符合实际情况。 在大型场所人群紧急疏散问题模拟研究中，可以考虑年龄、性别等因素，即元胞不是同质的，更加有利于使模拟系统接近真实系统。</p>
+
+
+
+
+<h2 id="生命游戏实现python版">《生命游戏实现》Python版</h2>
+
+
+<pre><code class="python">import numpy as np
+import matplotlib.pyplot as plt
+
+
+class GameOfLife(object):
+
+  def __init__(self, cells_shape):
+    """
+    Parameters
+    ----------
+    cells_shape : 一个元组，表示画布的大小。
+
+    Examples
+    --------
+    建立一个高20，宽30的画布
+    game = GameOfLife((20, 30))
+
+    """
+
+    # 矩阵的四周不参与运算
+    self.cells = np.zeros(cells_shape)
+
+    real_width = cells_shape[0] - 2
+    real_height = cells_shape[1] - 2
+
+    self.cells[1:-1, 1:-1] = np.random.randint(2, size=(real_width, real_height))
+    self.timer = 0
+    self.mask = np.ones(9)
+    self.mask[4] = 0
+
+  def update_state(self):
+    """更新一次状态"""
+    buf = np.zeros(self.cells.shape)
+    cells = self.cells
+    for i in range(1, cells.shape[0] - 1):
+      for j in range(1, cells.shape[0] - 1):
+        # 计算该细胞周围的存活细胞数
+        neighbor = cells[i-1:i+2, j-1:j+2].reshape((-1, ))
+        neighbor_num = np.convolve(self.mask, neighbor, 'valid')[0]
+        if neighbor_num == 3:
+          buf[i, j] = 1
+        elif neighbor_num == 2:
+          buf[i, j] = cells[i, j]
+        else:
+          buf[i, j] = 0
+    self.cells = buf
+    self.timer += 1
+
+  def plot_state(self):
+    """画出当前的状态"""
+    plt.title('Iter :{}'.format(self.timer))
+    plt.imshow(self.cells)
+    plt.show()
+
+  def update_and_plot(self, n_iter):
+    """更新状态并画图
+    Parameters
+    ----------
+    n_iter : 更新的轮数
+    """
+    plt.ion()
+    for _ in range(n_iter):
+      plt.title('Iter :{}'.format(self.timer))
+      plt.imshow(self.cells)
+      self.update_state()
+      plt.pause(0.2)
+    plt.ioff()
+
+
+if __name__ == '__main__':
+  game = GameOfLife(cells_shape=(60, 60))
+  game.update_and_plot(200)
+</code></pre>
+
+<p>效果图　</p>
+
+
+
+
+<blockquote>
+  <p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtk3ezxj209908tdgf.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjw782j208u08y0sw.jpg" alt="" title=""> <br>
+  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjvhopj209109274d.jpg" alt="" title=""></p>
+</blockquote>
+
+
+
+]]></content>
+  </entry>
+  
+</feed>

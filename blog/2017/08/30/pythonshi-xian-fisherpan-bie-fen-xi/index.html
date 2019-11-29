@@ -1,0 +1,516 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Python实现Fisher判别分析 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="Python实现Fisher 判别分析 Fisher原理 费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Python实现Fisher判别分析</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-08-30T09:06:21+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h1 id="python实现fisher-判别分析">Python实现Fisher 判别分析</h1>
+
+
+
+
+<h2 id="fisher原理">Fisher原理</h2>
+
+
+
+
+<p>费歇（Fisher）判别思想是投影，使多维问题化为一维问题来处理。选择一个适当的投影轴，使所有的样本点都投影在这个轴上得到一个投影值。对这个投影轴的方向的要求是：使每一类内的投影值所形成的类内距离差尽可能小，而不同类间的投影值所形成的类间距离差尽可能大。 <br>
+<img src="https://i.loli.net/2017/09/01/59a90dda8790e.png" alt="" title=""></p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/01/59a9136f647d1.png" alt="enter image description here" title=""></p>
+
+
+
+
+<p>这样如果我们想要同类样列的投影点尽可能接近，可以让同类样列投影点的协方差尽可能小，即<script type="math/tex" id="MathJax-Element-1">w^T \left(\sum _0 w\right)+w^T \left(\sum _1 w\right)</script>尽可能小;而欲使异类样列的投影点尽可能远离，可以让类中心之间的距离尽可能大，即<script type="math/tex" id="MathJax-Element-2">\left[\left[u_0 w^T-u_1 w^T\right]\right]</script>尽可能大。同时结合两者我们可以得到欲最大化的目标： <br>
+<img src="https://i.loli.net/2017/09/01/59a9136f56af9.png" alt="enter image description here" title=""></p>
+
+
+
+
+<p>(本文图片截取自<a href="https://book.douban.com/subject/26708119/">《机器学习》</a>周志华)</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/09/01/59a9136f635c6.png" alt="enter image description here" title=""></p>
+
+
+
+
+<p>有了上面的推理之后我们接下来就以DNA分类为例来实现一下Fisher线性判别。</p>
+
+
+
+
+<h2 id="数据准备">数据准备</h2>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+</span><span class='line'><span class="n">dna_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;dna2&#39;</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">dna_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()))</span>
+</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dna_list</span><span class="p">))</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">generate_feature</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="p">[</span>
+</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;t&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">chary</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="s">&#39;g&#39;</span><span class="p">)</span><span class="o">/</span><span class="n">size</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">generate_feature</span><span class="p">(</span><span class="n">dna_list</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span class='line'><span class="n">y</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span><span class="o">=</span><span class="mi">2</span>
+</span><span class='line'><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">20</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote>
+  <p>输出结果： <br>
+  40 <br>
+  [[ 0.2972973   0.13513514  0.17117117  0.3963964 ] <br>
+   [ 0.35454545  0.5         0.04545455  0.1       ] <br>
+   [ 0.42342342  0.28828829  0.10810811  0.18018018] <br>
+   [ 0.35135135  0.12612613  0.12612613  0.3963964 ] <br>
+   [ 0.27927928  0.18918919  0.16216216  0.36936937] <br>
+   [ 0.21818182  0.56363636  0.14545455  0.07272727] <br>
+   [ 0.20720721  0.15315315  0.20720721  0.43243243] <br>
+   [ 0.3         0.5         0.08181818  0.11818182] <br>
+   [ 0.2         0.56363636  0.17272727  0.06363636] <br>
+   [ 0.27027027  0.06306306  0.21621622  0.45045045] <br>
+   [ 0.32727273  0.5         0.02727273  0.14545455] <br>
+   [ 0.23423423  0.10810811  0.23423423  0.42342342] <br>
+   [ 0.29090909  0.64545455  0.          0.06363636] <br>
+   [ 0.18181818  0.13636364  0.27272727  0.40909091] <br>
+   [ 0.29090909  0.5         0.11818182  0.09090909] <br>
+   [ 0.25454545  0.51818182  0.1         0.12727273] <br>
+   [ 0.27433628  0.36283186  0.19469027  0.16814159] <br>
+   [ 0.27027027  0.15315315  0.16216216  0.41441441]]  <br>
+   [ 1.  2.  1.  1.  1.  2.  1.  2.  2.  1.  2.  1.  2.  1.  2.  2.  2.  1.]</p>
+</blockquote>
+
+
+
+
+<h2 id="fisher算法实现">Fisher算法实现</h2>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">cal_cov_and_avg</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    给定一个类别的数据，计算协方差矩阵和平均向量</span>
+</span><span class='line'><span class="sd">    :param samples: </span>
+</span><span class='line'><span class="sd">    :return: </span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">u1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">cov_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">t</span> <span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="n">u1</span>
+</span><span class='line'>        <span class="n">cov_m</span> <span class="o">+=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">cov_m</span><span class="p">,</span> <span class="n">u1</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">fisher</span><span class="p">(</span><span class="n">c_1</span><span class="p">,</span> <span class="n">c_2</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    fisher算法实现(请参考上面推导出来的公式，那个才是精华部分)</span>
+</span><span class='line'><span class="sd">    :param c_1: </span>
+</span><span class='line'><span class="sd">    :param c_2: </span>
+</span><span class='line'><span class="sd">    :return: </span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">cov_1</span><span class="p">,</span> <span class="n">u1</span> <span class="o">=</span> <span class="n">cal_cov_and_avg</span><span class="p">(</span><span class="n">c_1</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">cov_2</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">cal_cov_and_avg</span><span class="p">(</span><span class="n">c_2</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">s_w</span> <span class="o">=</span> <span class="n">cov_1</span> <span class="o">+</span> <span class="n">cov_2</span>
+</span><span class='line'>    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">s_w</span><span class="p">)</span>  <span class="c"># 奇异值分解</span>
+</span><span class='line'>    <span class="n">s_w_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s</span><span class="p">))),</span> <span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s_w_inv</span><span class="p">,</span> <span class="n">u1</span> <span class="o">-</span> <span class="n">u2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2 id="判别类型">判别类型</h2>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">judge</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c_1</span><span class="p">,</span> <span class="n">c_2</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    true 属于1</span>
+</span><span class='line'><span class="sd">    false 属于2</span>
+</span><span class='line'><span class="sd">    :param sample:</span>
+</span><span class='line'><span class="sd">    :param w:</span>
+</span><span class='line'><span class="sd">    :param center_1:</span>
+</span><span class='line'><span class="sd">    :param center_2:</span>
+</span><span class='line'><span class="sd">    :return:</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">u1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">c_1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">u2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">c_2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">center_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">u1</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">center_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">u2</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sample</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="n">center_1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="n">center_2</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">w</span> <span class="o">=</span> <span class="n">fisher</span><span class="p">(</span><span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>  <span class="c"># 调用函数，得到参数w</span>
+</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">judge</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># 判断所属的类别</span>
+</span><span class='line'><span class="c"># evaluate accuracy</span>
+</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">pred</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
+</span><span class='line'><span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">judge</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">w</span><span class="p">,</span> <span class="n">X_train</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># 判断所属的类别</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote>
+  <p>输出结果： <br>
+  [ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  2.  2.  2.  2.  2.  2.  2.  2. <br>
+    2.  2.] [1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 1] <br>
+  0.95 <br>
+  [1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1]</p>
+</blockquote>
+
+
+
+
+<p>在这我们可以看出我们的Fisher算法在测试集中的误差率还算理想，误判率仅有5%。但是，我们可以看出其预测分类并不如其他KNN，SVM，等算法的预测效果。</p>
+
+
+
+
+<p>最后，有关Fisher算法的介绍也就到此结束了！</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-08-30T09:06:21+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2017/08/30/pythonshi-xian-fisherpan-bie-fen-xi/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/23/k-jin-lin-suan-fa-part2/" title="Previous Post: K-近邻算法-Part2">&laquo; K-近邻算法-Part2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/09/03/ru-he-gou-jian-%5B%3F%5D-ge-po-su-bei-xie-si-fen-lei-qi/" title="Next Post: 如何构建一个朴素贝叶斯分类器">如何构建一个朴素贝叶斯分类器 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
