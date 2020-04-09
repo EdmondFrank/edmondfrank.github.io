@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rails 常量加载机制 - EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="0x1 基本介绍 首先，在编写Rails应用时，代码会预加载：通过约定类定义所在的文件名与类名一致映射，实现自动加载 Rails 通过config.cache_classes参数来设置常见加载的模式，主要有以下两种形式： Kernel#require(一般用于生产环境，只加载一次)
+Kernel# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/blog/2020/04/09/rails-chang-liang-jia-zai-ji-zhi/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title"><a href="">Rails 常量加载机制</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2020-04-09T09:12:45+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+<div class="entry-content"><h2>0x1 基本介绍</h2>
+
+<p>首先，在编写Rails应用时，代码会预加载：通过约定类定义所在的文件名与类名一致映射，实现自动加载</p>
+
+<p>Rails 通过config.cache_classes参数来设置常见加载的模式，主要有以下两种形式：</p>
+
+<ul>
+<li>Kernel#require(一般用于生产环境，只加载一次)</li>
+<li>Kernel#load（一般用于开发环境）</li>
+</ul>
+
+
+<p>除了加载的方式不同，在<code>config.cache_classes = false</code>时，Rails还会启用Reloader中间件
+在代码发生变更时，通过<code>remove_constant</code>/<code>const_missing</code>等方法实现么常量、模块热替换</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># railties-4.0.13/lib/rails/application.rb:384
+</span><span class='line'>unless config.cache_classes
+</span><span class='line'>    middleware.use ::ActionDispatch::Reloader, lambda { app.reload_dependencies? }
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面，本文逐步解析下Ruby及Rails下的常量加载机制</p>
+
+<h2>0x2 常量刷新机载</h2>
+
+<p>Ruby中常见的常量：
+- 模块 module
+- 类 class
+- 自定义常量</p>
+
+<p>其中，既然module和class在Ruby中本质就是常量的话，类和模块定义的嵌套创建的命名空间也是常量了</p>
+
+<p>Ruby 的常量嵌套从内向外展开，嵌套通过Module.nesting方法审查</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module X
+</span><span class='line'>  module Y
+</span><span class='line'>    def self.test
+</span><span class='line'>      puts Module.nesting
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>X::Y.test
+</span><span class='line'>
+</span><span class='line'>module A
+</span><span class='line'>  module B
+</span><span class='line'>     def self.test
+</span><span class='line'>      puts Module.nesting
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>A::B.test
+</span><span class='line'>
+</span><span class='line'>module X::Y
+</span><span class='line'>  module A::B
+</span><span class='line'>    def self.test
+</span><span class='line'>      puts Module.nesting
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>A::B.test
+</span><span class='line'>
+</span><span class='line'># &gt;&gt;
+</span><span class='line'>#[X::Y, X]
+</span><span class='line'>#[A::B, A]
+</span><span class='line'>#[A::B, X::Y]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从上面的例子看出，嵌套中的类和模块的名称与所在的命名空间没有必然联系</p>
+
+<p>嵌套是解释器维护的一个内部堆栈，根据下述规则修改：
+1. 执行 class 关键字后面的定义体时，类对象入栈；执行完毕后出栈。
+2. 执行 module 关键字后面的定义体时，模块对象入栈；执行完毕后出栈。
+3. 执行 class &lt;&lt; object 打开的单例类时，类对象入栈；执行完毕后出栈。
+4. 调用 <code>instance_eval</code> 时如果传入字符串参数，接收者的单例类入栈求值的代码所在的嵌套层次。
+5. 调用 <code>class_eval</code> 或 <code>module_eval</code> 时如果传入字符串参数，接收者入栈求值的代码所在的嵌套层次.
+6. 顶层代码中由 Kernel#load 解释嵌套是空的，除非调用 load 时把第二个参数设为真值；如果是这样，Ruby 会创建一个匿名模块，将其入栈。</p>
+
+<p>定义类和模块的本质是为常量赋值</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class C
+</span><span class='line'>end
+</span><span class='line'># =&gt; 本质：在Object中创建一个常量C，并将一个类对象存储进去
+</span><span class='line'>
+</span><span class='line'>class Project &lt; ApplicationRecord
+</span><span class='line'>end
+</span><span class='line'>＃ =&gt; 本质：Project = Class.new(ApplicationRecord)
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>module Admin
+</span><span class='line'>end
+</span><span class='line'># =&gt; 本质：Admin = Module.new
+</span><span class='line'>
+</span><span class='line'>Admin.name # =&gt; "Admin"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>常量赋值的一条特殊规则：如果被赋值的对象是匿名类或模块，Ruby 会把对象的名称设为常量的名称。</p>
+
+<p>自此之后常量和实例发生的事情无关紧要。例如，可以把常量删除，类对象可以赋值给其他常量，或者不再存储于常量中，等等。名称一旦设定就不会再变。</p>
+
+<h2>0x3 常量解析</h2>
+
+<h3>0x31 映射</h3>
+
+<p>当常量存储在模块中，常量就会和类和模块中的常量表关联映射（类似哈希表）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module Colors
+</span><span class='line'>    RED = '0xff0000'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解析模块定义体时，会在Colors常量中的常量表新建一条映射，把"RED"映射到字符串"0xff0000"</p>
+
+<h3>0x32 Ruby下的解析</h3>
+
+<p>相对常量、绝对常量、限定常量</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Billing::Invoice #此时，Billing为相对常量，Invoice为限定常量
+</span><span class='line'>::Billing::Invoice #此时，Billing为绝对常量（顶层常量）在Object中查找</span></code></pre></td></tr></table></div></figure>
+
+
+<p>相对常量解析：
+在代码中的特定位置，假如使用 cref 表示嵌套中的第一个元素，如果没有嵌套，则表示 Object。</p>
+
+<ol>
+<li>嵌套不为空，在嵌套元素中按元素顺序查找，元素祖先忽略不记</li>
+<li>未果，向上回溯，进去cref的祖先链</li>
+<li>未果，当cref为module时，进入Object查找常量</li>
+<li>未果，在cref上调用const_missing，默认抛出NameError异常，可覆写</li>
+</ol>
+
+
+<p>限定常量解析：
+上面例子 Invoice 由 Billing 限定，解析算法如下</p>
+
+<ol>
+<li>在 Billing 及其祖先中查找 Invoice 常量</li>
+<li>未果，调用 Billing 的const_missing方法，默认抛出NameError异常</li>
+</ol>
+
+
+<p>但Rails 的自动加载机制没有仿照这个算法，查找的起点是要自动加载的常量名称和限定的类或模块对象</p>
+
+<p>如果缺失限定常量，Rails 不会在父级命名空间中查找。</p>
+
+<p>但是有一点要留意：缺失常量时，Rails 不知道它是相对引用还是限定引用。</p>
+
+<p>如果类或模块的父级命名空间中没有缺失的常量，Rails 假定引用的是相对常量。否则是限定常量。</p>
+
+<p>还有在Rails开发环境中，常量时惰性加载的。遇到不存在的常量再触发<code>const_missing</code>使用Rails的自动加载机制</p>
+
+<p>但在生产环境中，预先把所有 autoload 目录下的文件都加载过了。没有触发<code>const_missing</code>使用Ruby本身的常量查找</p>
+
+<h2>0x4 加载机制</h2>
+
+<p>config.cache_classes 设为 false 时，Rails 会重新自动加载常量</p>
+
+<p>在应用运行的过程中，如果相关的逻辑有变，会重新加载代码。为此，Rails 会监控下述文件：</p>
+
+<ul>
+<li>config/routes.rb</li>
+<li>本地化文件</li>
+<li>autoload_paths 中的 Ruby 文件</li>
+<li>db/schema.rb 和 db/structure.sql</li>
+</ul>
+
+
+<p>如果这些文件中的内容有变，有个中间件会发现，然后重新加载代码。</p>
+
+<p>主要原理：
+1. 先覆写 <code>const_missing</code> 方法，按需去load对应依赖
+2. 监听文件变化，自动加载机制会记录自动加载的常量
+3. 检测到发生变更，重新加载机制使用 Module#remove_const 方法把它们从相应的类和模块中删除
+4. 这样，运行代码时那些常量就变成未知了，从而按需重新加载文件。</p>
+
+<p>但是，因为类之间的依赖极难处理。Rails默认reloader模块经常比较极端，不止重新加载有变化的代码，而是重载一切</p>
+
+<h3>0x41 Ruby Module#autoload 的缺陷</h3>
+
+<p>Module#autoload 是Ruby 提供的惰性常量加载机制，可以遍历应用树调用autoload把文件名和常规的常量名对应起来</p>
+
+<p>但是，Module#autoload 只能使用 require 加载文件，因此无法重新加载。</p>
+
+<p>不仅如此，它使用的还仅是 require 关键字，而不是 Kernel#require 方法。</p>
+
+<p>因此，删除文件后，它无法移除声明。如果使用 Module#remove_const 把常量删除了，不会触发 Module#autoload</p>
+
+<p>综上，在Rails的常量自动加载机制中使用了覆写Module#const_missing 的方式来实现</p>
+
+<p>Rails(ActiveSupport) 中的会根据触发 const_missing 的常量名称来猜测并尝试加载对应的文件, 以加载 Auth::User 为例:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># demo/role.rb
+</span><span class='line'>module Demo
+</span><span class='line'>  class Role
+</span><span class='line'>    User
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># demo/user.rb
+</span><span class='line'>module Demo
+</span><span class='line'>  class User
+</span><span class='line'>    "class Demo::User loaded"
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># app/models/auth/user.rb
+</span><span class='line'>module Auth
+</span><span class='line'>  class User
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Demo::Role 找不到 User 常量, 触发 <code>const_missing(const_name)</code>, 此处 <code>const_name == 'User'</code></p>
+
+<p>ActiveSupport 中先拼接出来一个查询的起点 &ldquo;#{Demo::Role.name}::#{const_name}&rdquo;, 即 Demo::Role::User</p>
+
+<p>首先尝试查找 autoload_paths 下的 demo/role/user.rb, 没找到</p>
+
+<p>然后往上走一层, 尝试查找 autoload_paths 下的 demo/user.rb, 找到了</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">EdmondFrank</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2020-04-09T09:12:45+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rails/'>rails</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://edmondfrank.github.io/blog/2020/04/09/rails-chang-liang-jia-zai-ji-zhi/" data-via="EdmondFrank4" data-counturl="https://edmondfrank.github.io/blog/2020/04/09/rails-chang-liang-jia-zai-ji-zhi/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/11/29/magit-inside-emacs/" title="Previous Post: Magit inside Emacs">&laquo; Magit inside Emacs</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2020 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

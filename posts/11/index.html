@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="百度前端技术学院-任务三 任务三：三栏式布局 style.css 1
+  <meta name="description" content="百度前端技术学院-任务四 任务四：定位和居中问题 1
 2
 3
 4
@@ -50,7 +50,9 @@
 39
 40
 41
-42 &hellip;">
+42
+43
+44 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,6 +107,156 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-4/">百度前端技术学院-任务4</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-07-14T17:52:48+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>百度前端技术学院-任务四</h1>
+
+<p><strong><a href="http://ife.baidu.com/task/detail?taskId=4">任务四：定位和居中问题</a></strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Language&quot;</span> <span class="na">content=</span><span class="s">&quot;zh-ch&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>任务四<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;style&gt;</span>
+</span><span class='line'>        <span class="nt">html</span><span class="o">,</span><span class="nt">body</span><span class="o">,</span><span class="nt">div</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">text-align</span><span class="o">:</span><span class="k">center</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">width</span><span class="o">:</span><span class="m">100%</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">height</span><span class="o">:</span> <span class="m">100%</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nc">.center</span><span class="p">{</span>
+</span><span class='line'>            <span class="k">width</span><span class="o">:</span> <span class="m">400px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">height</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">margin</span><span class="o">:</span><span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">background</span><span class="o">:</span> <span class="m">#ccc</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">top</span><span class="o">:</span> <span class="m">50%</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">transform</span><span class="o">:</span> <span class="n">translateY</span><span class="p">(</span><span class="m">-50%</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nc">.center</span> <span class="nc">.leftcir</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">background</span><span class="o">:</span> <span class="m">#fc0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">width</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">height</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">border-bottom</span><span class="o">-</span><span class="k">right</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nc">.center</span> <span class="nc">.rightcri</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">background</span><span class="o">:</span> <span class="m">#fc0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">bottom</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">right</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">width</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">height</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">border-top</span><span class="o">-</span><span class="k">left</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">50px</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="nt">&lt;/style&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span>  <span class="na">class=</span><span class="s">&quot;center&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;leftcir&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;rightcri&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/07/14/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-4/">百度前端技术学院-任务4</a>
+      <time datetime="2016-07-14T17:52:48+08:00" pubdate><span class='month'>Jul</span> <span class='day'>14</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1780,197 +1932,6 @@
       </footer>
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-27T16:23:25+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>JavaScript DOM对象学习笔记</h1>
-
-<h2>节点属性</h2>
-
-<p>在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性:</p>
-
-<p>(1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text.</p>
-
-<blockquote><p>1.元素节点的nodeName与标签名相同<br>
-2.属性节点的nodeName是属性的名称<br>
-3.文本节点的nodeName永远是#text<br>
-4.文档节点的nodeName永远是#document<br></p></blockquote>
-
-<p><strong>(注:nodeName,是只读的)</strong></p>
-
-<p>(2) noType:节点类型 => 返回值:</p>
-
-<blockquote><p>返回值为<br>
-1,元素节点;<br>
-2,属性节点;<br>
-3,文本节点;<br>
-8,注释;<br>
-9.文档;<br></p></blockquote>
-
-<p><strong>(注:nodeType,也是只读的)</strong></p>
-
-<p>(3) nodeValue:节点的值,返回一个字符串,表示这个节点的值.元素节点返回null,属性节点返回属性值,文本节点返回文本.</p>
-
-<blockquote><p>1.元素节点的nodeValue是undefined或null<br>
-2.文本节点的nodeValue是文本自身<br>
-3.属性节点的nodeValue是属性的值<br></p></blockquote>
-
-<p><strong>(nodeValue除了对元素节点不能写外,可读可写,但一般只用于设置文本节点的值)</strong></p>
-
-<h2>元素内容</h2>
-
-<p>我们有两种方法替换元素的内容,一个是innerHTML,另一个是innerText</p>
-
-<ul>
-<li>innerHTML属性用于获取或替换元素的内容.</li>
-<li>innerText属性用于获取或替换元素的文本内容，只有文本内容，没有其它HTML标签.</li>
-</ul>
-
-
-<h3>使用语法</h3>
-
-<blockquote><p>Object.innerHTML
-Object.innerText</p></blockquote>
-
-<p><strong>(Object 是获取的元素对象,如通过document.getElementById(&ldquo;ID&rdquo;)获取的元素)</strong></p>
-
-<p>innerHTML 和 innerText 都是既可读又可写的,他们既可以直接输出值或赋值给变量.</p>
-
-<p>eg:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">alert</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">)</span><span class="err">或</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">ostr</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>元素样式</h2>
-
-<h3>1.style的使用语法:</h3>
-
-<blockquote><p>Object.style.property = new style;</p></blockquote>
-
-<p><strong>(property为css样式属性,比如 color,width等等)</strong></p>
-
-<h3>2.className属性可以设置或返回元素的class 属性</h3>
-
-<blockquote><p>Object.className = classname;</p></blockquote>
-
-<p><strong>(className为元素的class属性)</strong></p>
-
-<h2>遍历节点树</h2>
-
-<h3>父子节点</h3>
-
-<p>可以使用childNodes对象访问选定元素节点下的所有子节点的列表,返回的值可以看作是一个数组,他具有length属性。如果选定的节点没有子节点,则该属性返回不包含节点的 NodeList.</p>
-
-<blockquote><p>elementNode.childNodes</p></blockquote>
-
-<p>有子节点,相应的,就有父亲节点.
-parentNode可获取指定节点的父节点</p>
-
-<blockquote><p>elementNode.parentNode</p></blockquote>
-
-<p><strong>(注意:父节点只能有一个)</strong></p>
-
-<h3>兄弟节点</h3>
-
-<p>在 DOM 树形结构中,除了父子关系属性外,还有同辈关系属性.
-同辈关系中,也分为两种,一种是向前的同辈关系 previousSibling,另一种是向后的同辈关系nextSibling
-<strong>(注:两个属性获取的是节点,所以我们可以先判断节点nodeType是否为1,如不为元素节点,跳过)</strong></p>
-
-<h2>创建节点</h2>
-
-<h3>创建元素</h3>
-
-<blockquote><p>document.createElement(tagName);</p>
-
-<p>参数说明：
-tagName：字符串值,这个字符串用来指明创建元素的类型.</p></blockquote>
-
-<p><strong>(注意:createElement()方法只是创建元素,并不会自动出现在文档中,如果想显示在浏览器中,还需要与appendChild() 或 insertBefore()方法联合使用)</strong></p>
-
-<h3>创建文本节点</h3>
-
-<blockquote><p>document.createTextNode(str);</p>
-
-<p>str,为字符串值,可规定此节点文本.</p></blockquote>
-
-<h2>添加与删除节点</h2>
-
-<blockquote><p>nodeObject.appendChild(newnode);</p></blockquote>
-
-<p>nodeObject:父节点;newnode指定追加的节点.</p>
-
-<blockquote><p>nodeObject.removeChild(node);</p></blockquote>
-
-<p>参数意义同上.</p>
-
-<p><strong>(注:把删除的子节点赋值给rm,这个子节点不在 DOM 树中,但是还存在内存中,如果要完全删除对象,需给rm赋null值)</strong></p>
-
-<h2>指定位置插入字节点</h2>
-
-<blockquote><p>fnode.insertBefore(newnode,node);</p></blockquote>
-
-<p>参数说明:</p>
-
-<blockquote><p>newnode:必需,表示需要插入的新节点<br>
-node:可选,在其之前插入新节点的子节点,默认为末尾插入<br>
-返回值:插入的节点<br></p></blockquote>
-
-<h2>子节点的替换</h2>
-
-<blockquote><p>fnode.replaceChild(newnode,oldnode);</p></blockquote>
-
-<p>参数说明:</p>
-
-<blockquote><p>newnode:用于替换的新节点<br>
-oldnode:被newnode替换的节点<br>
-返回值:被替换的节点<br></p></blockquote>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a>
-      <time datetime="2016-06-27T16:23:25+08:00" pubdate><span class='month'>Jun</span> <span class='day'>27</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
-      
-      </footer>
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/12">&larr; Older</a>
@@ -2044,7 +2005,7 @@ oldnode:被newnode替换的节点<br>
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2019 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2020 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>
