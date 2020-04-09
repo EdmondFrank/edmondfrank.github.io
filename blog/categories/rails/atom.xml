@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2020-04-09T15:47:06+08:00</updated>
+  <updated>2020-04-09T15:52:44+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -33,7 +33,7 @@
 <p>除了加载的方式不同，在<code>config.cache_classes = false</code>时，Rails还会启用Reloader中间件
 在代码发生变更时，通过<code>remove_constant</code>/<code>const_missing</code>等方法实现么常量、模块热替换</p>
 
-<pre><code># railties-4.0.13/lib/rails/application.rb:384
+<pre><code class="ruby"># railties-4.0.13/lib/rails/application.rb:384
 unless config.cache_classes
     middleware.use ::ActionDispatch::Reloader, lambda { app.reload_dependencies? }
 end
@@ -43,16 +43,20 @@ end
 
 <h2>0x2 常量刷新机载</h2>
 
-<p>Ruby中常见的常量：
-- 模块 module
-- 类 class
-- 自定义常量</p>
+<p>Ruby中常见的常量：</p>
+
+<ul>
+<li>模块 module</li>
+<li>类 class</li>
+<li>自定义常量</li>
+</ul>
+
 
 <p>其中，既然module和class在Ruby中本质就是常量的话，类和模块定义的嵌套创建的命名空间也是常量了</p>
 
 <p>Ruby 的常量嵌套从内向外展开，嵌套通过Module.nesting方法审查</p>
 
-<pre><code>module X
+<pre><code class="ruby">module X
   module Y
     def self.test
       puts Module.nesting
@@ -97,7 +101,7 @@ A::B.test
 
 <p>定义类和模块的本质是为常量赋值</p>
 
-<pre><code>class C
+<pre><code class="ruby">class C
 end
 # =&gt; 本质：在Object中创建一个常量C，并将一个类对象存储进去
 
@@ -123,7 +127,7 @@ Admin.name # =&gt; "Admin"
 
 <p>当常量存储在模块中，常量就会和类和模块中的常量表关联映射（类似哈希表）</p>
 
-<pre><code>module Colors
+<pre><code class="ruby">module Colors
     RED = '0xff0000'
 end
 </code></pre>
@@ -134,7 +138,7 @@ end
 
 <p>相对常量、绝对常量、限定常量</p>
 
-<pre><code>Billing::Invoice #此时，Billing为相对常量，Invoice为限定常量
+<pre><code class="ruby">Billing::Invoice #此时，Billing为相对常量，Invoice为限定常量
 ::Billing::Invoice #此时，Billing为绝对常量（顶层常量）在Object中查找
 </code></pre>
 
@@ -208,7 +212,7 @@ end
 
 <p>Rails(ActiveSupport) 中的会根据触发 const_missing 的常量名称来猜测并尝试加载对应的文件, 以加载 Auth::User 为例:</p>
 
-<pre><code># demo/role.rb
+<pre><code class="ruby"># demo/role.rb
 module Demo
   class Role
     User

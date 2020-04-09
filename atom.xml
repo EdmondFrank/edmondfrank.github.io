@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2020-04-09T15:47:06+08:00</updated>
+  <updated>2020-04-09T15:52:44+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -33,30 +33,35 @@
 <p>除了加载的方式不同，在<code>config.cache_classes = false</code>时，Rails还会启用Reloader中间件
 在代码发生变更时，通过<code>remove_constant</code>/<code>const_missing</code>等方法实现么常量、模块热替换</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># railties-4.0.13/lib/rails/application.rb:384
-</span><span class='line'>unless config.cache_classes
-</span><span class='line'>    middleware.use ::ActionDispatch::Reloader, lambda { app.reload_dependencies? }
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># railties-4.0.13/lib/rails/application.rb:384</span>
+</span><span class='line'><span class="k">unless</span> <span class="n">config</span><span class="o">.</span><span class="n">cache_classes</span>
+</span><span class='line'>    <span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="o">::</span><span class="no">ActionDispatch</span><span class="o">::</span><span class="no">Reloader</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="n">app</span><span class="o">.</span><span class="n">reload_dependencies?</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>下面，本文逐步解析下Ruby及Rails下的常量加载机制</p>
 
 <h2>0x2 常量刷新机载</h2>
 
-<p>Ruby中常见的常量：
-- 模块 module
-- 类 class
-- 自定义常量</p>
+<p>Ruby中常见的常量：</p>
+
+<ul>
+<li>模块 module</li>
+<li>类 class</li>
+<li>自定义常量</li>
+</ul>
+
 
 <p>其中，既然module和class在Ruby中本质就是常量的话，类和模块定义的嵌套创建的命名空间也是常量了</p>
 
 <p>Ruby 的常量嵌套从内向外展开，嵌套通过Module.nesting方法审查</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -87,37 +92,38 @@
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
 <span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module X
-</span><span class='line'>  module Y
-</span><span class='line'>    def self.test
-</span><span class='line'>      puts Module.nesting
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>X::Y.test
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">X</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Y</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">test</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="no">Module</span><span class="o">.</span><span class="n">nesting</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">X</span><span class="o">::</span><span class="n">Y</span><span class="o">.</span><span class="n">test</span>
 </span><span class='line'>
-</span><span class='line'>module A
-</span><span class='line'>  module B
-</span><span class='line'>     def self.test
-</span><span class='line'>      puts Module.nesting
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>A::B.test
+</span><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>     <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">test</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="no">Module</span><span class="o">.</span><span class="n">nesting</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">.</span><span class="n">test</span>
 </span><span class='line'>
-</span><span class='line'>module X::Y
-</span><span class='line'>  module A::B
-</span><span class='line'>    def self.test
-</span><span class='line'>      puts Module.nesting
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>end
-</span><span class='line'>A::B.test
+</span><span class='line'><span class="k">module</span> <span class="nn">X::Y</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">A::B</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">test</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="no">Module</span><span class="o">.</span><span class="n">nesting</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">.</span><span class="n">test</span>
 </span><span class='line'>
-</span><span class='line'># &gt;&gt;
-</span><span class='line'>#[X::Y, X]
-</span><span class='line'>#[A::B, A]
-</span><span class='line'>#[A::B, X::Y]</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="c1"># &gt;&gt;</span>
+</span><span class='line'><span class="c1">#[X::Y, X]</span>
+</span><span class='line'><span class="c1">#[A::B, A]</span>
+</span><span class='line'><span class="c1">#[A::B, X::Y]</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>从上面的例子看出，嵌套中的类和模块的名称与所在的命名空间没有必然联系</p>
@@ -132,7 +138,7 @@
 
 <p>定义类和模块的本质是为常量赋值</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -146,20 +152,21 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class C
-</span><span class='line'>end
-</span><span class='line'># =&gt; 本质：在Object中创建一个常量C，并将一个类对象存储进去
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># =&gt; 本质：在Object中创建一个常量C，并将一个类对象存储进去</span>
 </span><span class='line'>
-</span><span class='line'>class Project &lt; ApplicationRecord
-</span><span class='line'>end
-</span><span class='line'>＃ =&gt; 本质：Project = Class.new(ApplicationRecord)
+</span><span class='line'><span class="k">class</span> <span class="nc">Project</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="err">＃</span> <span class="o">=&gt;</span> <span class="err">本质：</span><span class="no">Project</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ApplicationRecord</span><span class="p">)</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'>module Admin
-</span><span class='line'>end
-</span><span class='line'># =&gt; 本质：Admin = Module.new
+</span><span class='line'><span class="k">module</span> <span class="nn">Admin</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># =&gt; 本质：Admin = Module.new</span>
 </span><span class='line'>
-</span><span class='line'>Admin.name # =&gt; "Admin"</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="no">Admin</span><span class="o">.</span><span class="n">name</span> <span class="c1"># =&gt; &quot;Admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>常量赋值的一条特殊规则：如果被赋值的对象是匿名类或模块，Ruby 会把对象的名称设为常量的名称。</p>
@@ -172,12 +179,13 @@
 
 <p>当常量存储在模块中，常量就会和类和模块中的常量表关联映射（类似哈希表）</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module Colors
-</span><span class='line'>    RED = '0xff0000'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Colors</span>
+</span><span class='line'>    <span class="no">RED</span> <span class="o">=</span> <span class="s1">&#39;0xff0000&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>解析模块定义体时，会在Colors常量中的常量表新建一条映射，把"RED"映射到字符串"0xff0000"</p>
@@ -186,10 +194,11 @@
 
 <p>相对常量、绝对常量、限定常量</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Billing::Invoice #此时，Billing为相对常量，Invoice为限定常量
-</span><span class='line'>::Billing::Invoice #此时，Billing为绝对常量（顶层常量）在Object中查找</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Billing</span><span class="o">::</span><span class="no">Invoice</span> <span class="c1">#此时，Billing为相对常量，Invoice为限定常量</span>
+</span><span class='line'><span class="o">::</span><span class="no">Billing</span><span class="o">::</span><span class="no">Invoice</span> <span class="c1">#此时，Billing为绝对常量（顶层常量）在Object中查找</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>相对常量解析：
@@ -262,7 +271,7 @@
 
 <p>Rails(ActiveSupport) 中的会根据触发 const_missing 的常量名称来猜测并尝试加载对应的文件, 以加载 Auth::User 为例:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -281,25 +290,26 @@
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># demo/role.rb
-</span><span class='line'>module Demo
-</span><span class='line'>  class Role
-</span><span class='line'>    User
-</span><span class='line'>  end
-</span><span class='line'>end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># demo/role.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Demo</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Role</span>
+</span><span class='line'>    <span class="no">User</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'># demo/user.rb
-</span><span class='line'>module Demo
-</span><span class='line'>  class User
-</span><span class='line'>    "class Demo::User loaded"
-</span><span class='line'>  end
-</span><span class='line'>end
+</span><span class='line'><span class="c1"># demo/user.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Demo</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>    <span class="s2">&quot;class Demo::User loaded&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'># app/models/auth/user.rb
-</span><span class='line'>module Auth
-</span><span class='line'>  class User
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="c1"># app/models/auth/user.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">Auth</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Demo::Role 找不到 User 常量, 触发 <code>const_missing(const_name)</code>, 此处 <code>const_name == 'User'</code></p>
