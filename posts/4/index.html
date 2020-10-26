@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(上) MLlib 的使用 在上面的章节之中，我们已经讲过了如何利用PySpark进行数据操作和分析了。那么在这篇文章中，我们就真正利用PySpark结合MLlib来建立一个分类模型。 MLlib：即Machine Learning &hellip;">
+  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(下) MLlib 的使用（续） 我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。 　统计校验 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,493 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-11-27T12:45:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习之机器学习实战下">Python在Spark上的机器学习之机器学习实战(下)</h1></p>
+
+<h2 id="mllib-的使用续">MLlib 的使用（续）</h2>
+
+
+
+
+<p>我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。</p>
+
+
+
+
+<h3 id="统计校验">　统计校验</h3>
+
+
+
+
+<p>在通过特征变量的相关系数选择特征时，对于一般的分类变量而言，我们无法计算它们之间的相关系数，但是我们可以通过对它们进行卡方校验来检测它们的分布之间是否存在较大的差异。</p>
+
+
+
+
+<p><strong>卡方检验</strong>：是用途非常广的一种假设检验方法，它在分类资料统计推断中的应用，包括：两个样本率或两个构成比比较的卡方检验；多个样本率或多个构成比比较的卡方检验以及分类资料的相关分析等。</p>
+
+
+
+
+<p><strong>卡方检验</strong>就是统计样本的实际观测值与理论推断值之间的偏离程度，实际观测值与理论推断值之间的偏离程度就决定卡方值的大小，卡方值越大，越不符合；卡方值越小，偏差越小，越趋于符合，若两个值完全相等时，卡方值就为0，表明理论值完全符合。</p>
+
+
+
+
+<p>而在PySpark中你可以用 <strong>.chiSqTest()</strong> 方法来轻松实现卡方检验。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.linalg</span> <span class="kn">as</span> <span class="nn">ln</span>
+</span><span class='line'><span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">categorical_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;INFANT_ALIVE_AT_REPORT&#39;</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">agg_rdd</span> <span class="o">=</span> <span class="n">agg</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+</span><span class='line'>              <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">row_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">collect</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">agg</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">Matrices</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">agg_rdd</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">Statistics</span><span class="o">.</span><span class="n">chiSqTest</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">pValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>我们遍历所有的分类变量并以 <strong>infant_alive_ at_report</strong>进行分类统计。下一步，我们需要将其转化成RDD，所以我们要先利用pyspark.mllib.linalg模将它们转换成一个矩阵。 <br>
+当我们成功将其转换成矩阵的形式之后，我们就可以用<strong>.chiSqTest()</strong>来校验我们的结果。</p>
+
+
+
+
+<p>最后结果显示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/16/5a0daece4fae9.png" alt="chisqtest.png" title=""></p>
+
+
+
+
+<p>从结果我们可以看出，所有分类变量对理论值的预测都是有意义的，因此，我们在构建最后的预测模型的时候都要考虑上这些分类型特征变量。</p>
+
+
+
+
+<h3 id="创建最后的待训练数据集">创建最后的待训练数据集</h3>
+
+
+
+
+<p>经过一轮的数据分析和特征变量筛选之后，最终到了我们最终的建模阶段了。首先我们将筛选出来以DataFrame数据结构模型表达的数据转换成以LabeledPoints形式表示的RDD。</p>
+
+
+
+
+<p>LabeledPoint 是 MLlib 中的一种数据结构，它包含了两个属性值：label（标识），features（特征）一般用作机器学习模型的训练。</p>
+
+
+
+
+<p>其中，label就是我们目标的分类的标识而features就是我们用于分类的特征， <br>
+通常是一个Numpy 数组，列表，psyspark.mllib.linalg.SparseVector,pyspark.mllib,linalg.DenseVector或者是scipy.sparse的形式。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">as</span> <span class="nn">ft</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.regression</span> <span class="kn">as</span> <span class="nn">reg</span>
+</span><span class='line'><span class="n">hashing</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">HashingTF</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="n">births_hashed</span> <span class="o">=</span> <span class="n">births_transformed</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">rdd</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="nb">list</span><span class="p">(</span><span class="n">hashing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">toArray</span><span class="p">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s">&#39;BIRTH_PLACE&#39;</span>
+</span><span class='line'>          <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span>
+</span><span class='line'>      <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_to_keep</span><span class="p">)])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[[</span><span class="n">e</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">e</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">row</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">row</span>
+</span><span class='line'>          <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">])</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span class='line'>      <span class="n">ln</span><span class="o">.</span><span class="n">Vectors</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="划分训练集和测试集">划分训练集和测试集</h3>
+
+
+
+
+<p>形如sklearn.model_selection.train_test_split随机划分训练集和测试集的模块一般，在PySpark中RDDs也有一个便利的<strong>.randomSplit(…)</strong>方法用于随机划分训练集和测试集。</p>
+
+
+
+
+<p>在本例中可以这样使用</p>
+
+
+
+
+<pre class="prettyprint"><code class="language-python hljs ">births_train, births_test = births_hashed.randomSplit([<span class="hljs-number">0.6</span>, <span class="hljs-number">0.4</span>])</code></pre>
+
+
+
+
+<p>没错，仅仅需要上面这样一行的代码，我们就可以将我们的待训练数据按照随机60%，40%来划分好我们的训练集和测试集了。</p>
+
+
+
+
+<h3 id="开始建模">开始建模</h3>
+
+
+
+
+<p>在一切准备就绪之后，我们就可以开始通过我们上面的训练数据集来建模了。在这里我们来尝试建立两个模型：一个线性的Logistic回归模型，一个非线性的随机森林模型。然后，在初次建模的时候，我们先采用筛选出来的全部特征来建模，然后我们再通过<strong>ChiSqSelector（…）</strong>方法来归纳出最能代表全部整体的四个主成分。</p>
+
+
+
+
+<h4 id="logistic-回归模型">Logistic 回归模型</h4>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.classification</span> \
+</span><span class='line'><span class="kn">import</span> <span class="n">LogisticRegressionWithLBFGS</span>
+</span><span class='line'><span class="n">LR_Model</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">births_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">LR_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">births_test</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">pyspark.mllib.evaluation</span> <span class="kn">as</span> <span class="nn">ev</span>
+</span><span class='line'><span class="n">LR_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>从上面的建模过程可以看出，使用PySpark训练一个模型也是非常简单的。我们只需要调用<strong>.train(…)</strong>方法，并传入之前处理好的LabeledPoints数据即可。不过需要注意的一点是我们要提前指定一个较小训练的迭代次数以免训练时间过长。</p>
+
+
+
+
+<p>同时，在上面的代码中，我们在训练完一个模型之后使用MLlib中为我们提供的评估分类和回归准确度的<strong>.BinaryClassificationMetrics（…）</strong>方法来分析我们最后预测的结果。</p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc13a5ea1a.png" alt="logistic_roc.png" title=""></p>
+
+
+
+
+<p>通过PR，ROC的结果，我们可以看出，这个模型还是可接受的。</p>
+
+
+
+
+<h3 id="选取出最具代表性的分类特征">选取出最具代表性的分类特征</h3>
+
+
+
+
+<p>通常来说，一个采取更少的特征的简单模型，往往会比一个复杂的模型，在分类问题上更具有代表性和可解释性。而在MLlib中，则可以通过<strong>.Chi-Square selector</strong>来提取出模型中最具代表性的一些分类特征变量来简化我们的模型。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">selector</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">ChiSqSelector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">births_train</span><span class="p">)</span>
+</span><span class='line'><span class="n">topFeatures_train</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_train</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_train</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'>  <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span class='line'><span class="n">topFeatures_test</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'>  <span class="n">births_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'>  <span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">selector</span> \
+</span><span class='line'>      <span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">births_test</span> \
+</span><span class='line'>          <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">reg</span><span class="o">.</span><span class="n">LabeledPoint</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3 id="随机森林模型">随机森林模型</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pyspark.mllib.tree</span> <span class="kn">import</span> <span class="n">RandomForest</span>
+</span><span class='line'><span class="n">RF_model</span> <span class="o">=</span> <span class="n">RandomForest</span> \
+</span><span class='line'><span class="o">.</span><span class="n">trainClassifier</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">topFeatures_train</span><span class="p">,</span>
+</span><span class='line'><span class="n">numClasses</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'><span class="n">categoricalFeaturesInfo</span><span class="o">=</span><span class="p">{},</span>
+</span><span class='line'><span class="n">numTrees</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+</span><span class='line'><span class="n">featureSubsetStrategy</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="n">seed</span><span class="o">=</span><span class="mi">666</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">RF_results</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">RF_model</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="n">RF_evaluation</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">RF_results</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">RF_evaluation</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">model_evaluation</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>随机森林模型（Random forest 后面简称RF）在训练上总体与Logistic类似，不同的参数是RF在训练前需要指定类别总数：numClasses，树的棵数：numTrees（这两个参数的意义大家可以参照下随机森林模型的<a href="https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/1974765?fr=aladdin">百科介绍</a>）</p>
+
+
+
+
+<p><strong>注：在随机森林模型的创建中，我们采用的是上面提取出来的最具代表性的有效特征，这就意味着模型用到的特征是比之前的Logistic要少的。</strong></p>
+
+
+
+
+<p>最后，结果图示如下：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/11/17/5a0dc8621d985.png" alt="rf_roc.png" title=""></p>
+
+
+
+
+<p>通过结果我们可以看出，随机森林模型，在采用比之前更少的特征下的建模的最终预测效果是由于之前的Logistic回归模型的。</p>
+
+
+
+
+<p>下面我们同样使用代表性特征来重建一次Logistic回归模型</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">LR_Model_2</span> <span class="o">=</span> <span class="n">LogisticRegressionWithLBFGS</span> \
+</span><span class='line'><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">topFeatures_train</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">LR_results_2</span> <span class="o">=</span> <span class="p">(</span>
+</span><span class='line'><span class="n">topFeatures_test</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> \
+</span><span class='line'><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">LR_Model_2</span> \
+</span><span class='line'><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">topFeatures_test</span> \
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">features</span><span class="p">)))</span>
+</span><span class='line'><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">BinaryClassificationMetrics</span><span class="p">(</span><span class="n">LR_results_2</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under PR: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderPR</span><span class="p">))</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Area under ROC: {0:.2f}&#39;</span> \
+</span><span class='line'><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">areaUnderROC</span><span class="p">))</span>
+</span><span class='line'><span class="n">LR_evaluation_2</span><span class="o">.</span><span class="n">unpersist</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终结果： <br>
+<img src="https://i.loli.net/2017/11/17/5a0dc9d2aa75c.png" alt="logistic_lbfgs.png" title=""></p>
+
+
+
+
+<p>通过结果，我们可以看出，虽然没有达到RF模型的准确度，但是与采用了全特征的Logistic回归模型处于同一水平。所以，我们在可选的情况下，通常采用更少的特征来构建更为简化和有效的模型。</p>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>到这里，Python在Spark上的机器学习的实战案例也结束了，欢迎大家继续关注我的博客。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/11/27/pythonzai-sparkshang-de-ji-qi-xue-xi-zhi-ji-qi-xue-xi-shi-zhan-xia/">Python在Spark上的机器学习之机器学习实战(下)</a>
+      <time datetime="2017-11-27T12:45:01+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2503,305 +2990,6 @@ rdd.foreach(println)</code></pre>
       <time datetime="2017-10-16T14:07:29+08:00" pubdate><span class='month'>Oct</span> <span class='day'>16</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/">SVM支持向量机</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-10-11T16:38:50+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="svmsupport-vector-machines-支持向量机">SVM(Support Vector Machines)-支持向量机</h1></p>
-
-<p>曾经很多人都认为SVM是现在的最好的分类器，即：在不加以修改的前提之下，就能够在数据上进行训练并能够对训练集之外的数据点做出很好的分类决策。</p>
-
-
-
-
-<h2 id="基于最大间隔分割数据">基于最大间隔分割数据</h2>
-
-
-
-
-<p><strong>支持向量机：</strong> <br>
-优点：泛化错误率低，计算开销不大，结果容易解释 <br>
-缺点：对参数调节和核函数的选择策略敏感，原始分类器不加修改仅适用于处理二类问题。 <br>
-<img src="http://scikit-learn.org/stable/_images/sphx_glr_plot_separating_hyperplane_0011.png" alt="enter image description here" title=""></p>
-
-
-
-
-<p>在上图中，我们可以看出：我们可以很容易在图中画出一条直线将两组数据点分开。在这种情况下，这组数据被称为<strong>线性可分(linearly separable)</strong>数据，而将数据集分割开来的直线我们称为<strong>分隔超平面(separating hyperplane)</strong>。在上图例子中，由于数据点都在二维平面上，所有此时分隔超平面就只是一条直线而已。但是，如果所给的数据为三维的，那么此时用来分隔数据的就是一个平面。依此类推，如果给出一个N（N&gt;3）维数据集，那么则要用一个N-1维的对象来对数据进行分隔，该对象亦被称为<strong>超平面(hyperplane)</strong>。</p>
-
-
-
-
-<p>我们希望通过这样的方式来构建分类器。即如果数据点离决策边界越远，那么其最后的预测效果就越可信。那么我们继续看回上面的图片，我们可以看到有三条直线（一条实线，两条虚线）它们分别都能将数据分隔开，但是其中哪一条才是最理想的呢？通常，我们可以做过这样的方法来确定一个最佳分隔平面，即：我们先找到离分隔平面最近的点，确保它们离分隔平面的距离尽可能远。</p>
-
-
-
-
-<p>这里我们又要先引入一些新的概念： <br>
-首先是，点到分隔面的距离被称为<strong>间隔(margin)</strong> <br>
-<strong>支持向量(support vector)：</strong>就是离分割平面最近的那些点。</p>
-
-
-
-
-<p>接下来，就是最大化支持向量都分隔面的距离，并需要找到此问题的优化求解方法。</p>
-
-
-
-
-<h2 id="寻找最大间隔">寻找最大间隔</h2>
-
-
-
-
-<p><strong>Maximum Marginal（最大间隔）</strong>是SVM的一个理论基础之一。选择使得间隔最大的函数作为分隔平面是十分容易解释的。从概率的角度上而言，就是使得置信度最小的点置信度最大;从现实意义上而言，两个个体的类别差异越大，我们自然也能够更为准确地分类。</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd657a3c93.png" alt="svm.png" title=""></p>
-
-
-
-
-<p>上图就是一个对之前所提及的类别间隙的一个描述。其中中间的黑色实线为<strong>分隔边界（Classifier Boundary）</strong>是我们算法中要求解的<strong>f(x)</strong>，红色和蓝色的线(plus plane 与 minus plane)就是支持变量所在的平面，而红色，蓝色之间的间隙就是我们要最大化的分类间的间隙。</p>
-
-
-
-
-<p>首先，我们可以知道其两个支持向量的所在平面可以表达成如下形式：</p>
-
-
-
-
-<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a677ed33ca0c840aa9295405fc095c8aefa73e48" alt="enter image description here" title=""></p>
-
-
-
-
-<p>和</p>
-
-
-
-
-<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c3dbeeb7d5af27a2551ec07ce172ddbce62fc58" alt="enter image description here" title=""></p>
-
-
-
-
-<p>然后，这两个超平面的距离可以表达成：<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac553c94aec996dffa3369adcf285319178a474f" alt="enter image description here" title=""></p>
-
-
-
-
-<p>因此，为了最大化两个平面的距离，我们只要最小化<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">即可。</p>
-
-
-
-
-<p><strong>综上所述</strong>，我们可以将整个原理表示为：</p>
-
-
-
-
-<blockquote>
-  <p>Minimize<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">  <br>
-  subject to<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7181cf8e723b24ad6d85b73b9513dcaac0d31023" alt="" title=""> <br>
-  for <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/520ffef648f7b26db5bae564be860346630635fc" alt="enter image description here" title=""></p>
-</blockquote>
-
-
-
-
-<p>当支持变量确定的时候，整个分割函数也就确定了下来。除此之外，支持向量的出现还可以让向量后方的样本点不用再参与计算，大大降低了算法的计算复杂度。</p>
-
-
-
-
-<p>再者，有关距离计算的优化。<script type="math/tex" id="MathJax-Element-41">||\vec w||</script>的意思是<script type="math/tex" id="MathJax-Element-42">\vec w</script>的二范数，由之前我们得到的最大间隔<script type="math/tex" id="MathJax-Element-43">M=2/||\vec w||</script>，最大化这个式子等价于最小化<script type="math/tex" id="MathJax-Element-44">|||\vec w||</script>，另外由于<script type="math/tex" id="MathJax-Element-45">||\vec w||</script>是一个单调函数，我们可以对其进行平方，和加上系数。数学经验丰富的朋友可能一眼就看出来，这样做是为了方便求导。</p>
-
-
-
-
-<p>最后我们的式子可以写成：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726bc801.png" alt="svmalg.png" title=""></p>
-
-
-
-
-<p><strong>s.t的意思是subject to</strong>，也就是在后面这个限制条件下的意思，这个词在svm的论文里面非常容易见到。这其实是一个<strong>带约束的二次规划(quadratic programming, QP)问题</strong>，是一个<strong>凸问题</strong>，凸问题就是指的不会有局部最优解，可以想象一个漏斗，不管我们开始的时候将一个小球放在漏斗的什么位置，这个小球最终一定可以掉出漏斗，也就是得到全局最优解。s.t.后面的限制条件可以看做是一个凸多面体，我们要做的就是在这个凸多面体中找到最优解。</p>
-
-
-
-
-<h2 id="优化求解">优化求解</h2>
-
-
-
-
-<p>这个优化问题可以用<a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">拉格朗日乘子法</a>去解，使用了<a href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">KKT条件</a>的理论，这里直接作出这个式子的拉格朗日目标函数： <br>
-<img src="https://i.loli.net/2017/10/11/59ddd726bb94a.png" alt="Lagrange.png" title=""></p>
-
-
-
-
-<p>由于求解这个式子的过程需要<a href="https://en.wikipedia.org/wiki/Quadratic_programming#Lagrangian_duality">拉格朗日对偶性</a>的相关知识，以及较深入的数学背景知识，在这篇文章中暂且不谈，以后博客再另外写一篇有关具体推导的文章。</p>
-
-
-
-
-<p>在此，我先贴出在该问题在论文中的关键推导步骤：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726dd5a4.png" alt="formulation.png" title=""></p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/10/11/59ddd726d9bc8.png" alt="dual.png" title=""></p>
-
-
-
-
-<p>上图就是我们需要最终优化的式子了。整篇文章到这里，我们终于得到了SVM线性可分问题的优化式子。</p>
-
-
-
-
-<h2 id="svm的使用">SVM的使用</h2>
-
-
-
-
-<p>由于支持向量机算法的实现涉及过多的数学背景，在本中暂不使用原生程序代码实现，而是选择调用Python sklearn 库现有的SVM算法进行使用的举例。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
-</span><span class='line'><span class="n">clf</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">()</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
-</span><span class='line'><span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
-</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
-</span><span class='line'><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>输出结果 <br>
-  SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, <br>
-    decision_function_shape=None, degree=3, gamma=’auto’, kernel=’rbf’, <br>
-    max_iter=-1, probability=False, random_state=None, shrinking=True, <br>
-    tol=0.001, verbose=False) <br>
-  0.986666666667</p>
-</blockquote>
-
-
-
-
-<p>本例使用的是<strong>sklearn</strong>库自带的<strong>iris</strong>数据集使用SVM算法进行训练，然后再进行回测。首先，我们可以看到在不做任意处理的前提下，SVM模型的预估效果也是相当不错的，其准确率高达98%（其结果主要因为使用的数据集优秀导致的，直接运用于工程上时不会有这么高的准确率）。</p>
-
-
-
-
-<p>当然，上面例子中的算法模型的实现方式是十分简陋的。如果真正要使用SVM进行严格地建模，测试集与训练集的划分问题，数据的归一化处理问题等。都是我们需要考虑的元素。但由于本文主要为了介绍与探讨SVM算法，其他细节问题就不一一处理，详细方法可以参考我写的其他文章。</p>
-
-
-
-
-<h2 id="svm的其他实现">SVM的其他实现</h2>
-
-
-
-
-<p>除了Python的sklearn库外，SVM在其它语言及平台也有实现。其中： <br>
-最流行的有</p>
-
-
-
-
-<blockquote>
-  <p><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM：</a><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">https://www.csie.ntu.edu.tw/~cjlin/libsvm/</a> <br>
-  这是经典的svm库支持多种语言调用</p>
-</blockquote>
-
-
-
-
-<p>再者，在R语言中也有SVM算法的实现：</p>
-
-
-
-
-<blockquote>
-  <p><a href="https://cran.r-project.org/web/packages/e1071/index.html">e1071：</a> <br>
-  <a href="https://cran.r-project.org/web/packages/e1071/index.html">https://cran.r-project.org/web/packages/e1071/index.html</a></p>
-</blockquote>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/">SVM支持向量机</a>
-      <time datetime="2017-10-11T16:38:50+08:00" pubdate><span class='month'>Oct</span> <span class='day'>11</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
       </footer>
     </article>

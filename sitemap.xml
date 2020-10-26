@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://edmondfrank.github.io/blog/2020/10/26/java-dev-tools-and-debugging-notes/</loc>
+<lastmod>2020-10-26T23:27:35+08:00</lastmod>
+</url>
+<url>
 <loc>https://edmondfrank.github.io/blog/2020/04/09/rails-chang-liang-jia-zai-ji-zhi/</loc>
 <lastmod>2020-04-09T09:12:45+08:00</lastmod>
 </url>
@@ -440,6 +444,9 @@
 </url>
 <url>
 <loc>https://edmondfrank.github.io/blog/categories/rails/</loc>
+</url>
+<url>
+<loc>https://edmondfrank.github.io/blog/categories/java/</loc>
 </url>
 <url>
 <loc>https://edmondfrank.github.io/googled42af9789c9866d1.html</loc>

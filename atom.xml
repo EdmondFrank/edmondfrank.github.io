@@ -4,7 +4,7 @@
   <title><![CDATA[EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2020-04-09T15:52:44+08:00</updated>
+  <updated>2020-10-26T23:29:40+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,224 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java Dev tools and Debugging notes]]></title>
+    <link href="https://edmondfrank.github.io/blog/2020/10/26/java-dev-tools-and-debugging-notes/"/>
+    <updated>2020-10-26T23:27:35+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2020/10/26/java-dev-tools-and-debugging-notes</id>
+    <content type="html"><![CDATA[<h1>Jave Dev tools and Debugging Notes</h1>
+
+<ol>
+<li><a href="#org1b5c54c">Java</a>
+
+<ol>
+<li><a href="#org65d3833">Maven</a>
+
+<ol>
+<li><a href="#org6c8dc4e">use maven with proxy and skip tests:</a></li>
+<li><a href="#orge347d7a">Structure</a></li>
+</ol>
+</li>
+<li><a href="#orgb3fa18c">JShell</a></li>
+<li><a href="#orgd240f02">Javap</a></li>
+<li><a href="#org6db32e3">Jar Files</a>
+
+<ol>
+<li><a href="#orgef3a76f">compile and package as a FAT-JAR</a></li>
+<li><a href="#orgc84a88c">differences between &ldquo;java -cp&rdquo; and &ldquo;java -jar&rdquo;</a></li>
+</ol>
+</li>
+<li><a href="#orge743cbc">Debugging</a>
+
+<ol>
+<li><a href="#org8d022e6">Exec args:</a></li>
+<li><a href="#orgdc3e49d">Jdb</a></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+
+
+<p><a id="org1b5c54c"></a></p>
+
+<h1>Java</h1>
+
+<p>Some notes about Java dev tools and debuggers</p>
+
+<p><a id="org65d3833"></a></p>
+
+<h2>Maven</h2>
+
+<p><strong>build lifecycle targets</strong></p>
+
+<ul>
+<li><strong>validate</strong>: validate the project is correct and all necessary information is available</li>
+<li><strong>compile:</strong> compile the source code of the project</li>
+<li><strong>test</strong>: test the compiled source code using a suitable unit testing framework. There tests should not require the code be packaged or deployed</li>
+<li><strong>package</strong>: take the compiled code and package it in its distributable format, such as JAR</li>
+<li><strong>verify</strong>: run any checks on results of integration tests to ensure quality criteria are met</li>
+<li><strong>install</strong>: install the package into the local repository, for use as a dependency in other projects locally</li>
+<li><strong>deploy</strong>: done in the build environment, copies the final package to the remote repository for sharing with other developers and projects</li>
+</ul>
+
+
+<p><a id="org6c8dc4e"></a></p>
+
+<h3>use maven with proxy and skip tests:</h3>
+
+<p>-Dmaven.test.skip=true
+-Dhttps.proxyHost=127.0.0.1
+-Dhttps.proxyPort=1081
+-Dhttp.proxyHost=127.0.0.1
+-Dhttp.proxyPort=1081</p>
+
+<p><a id="orge347d7a"></a></p>
+
+<h3>Structure</h3>
+
+<ol>
+<li>Expected directory structure:
+
+<ul>
+<li>Java files are in src/main/java as well as src/test/java.</li>
+<li>Resource files are under src/main/resources and src/test/resources.</li>
+</ul>
+</li>
+<li><strong>mvn archetype:generate</strong>: Generates a skeleton of a project based on your inputs (package name, versioning, project name, etc)</li>
+<li>Edit pom.xml and set the jdk version there..</li>
+<li>mvn package - compile, test, bundle.</li>
+</ol>
+
+
+<p><a id="orgb3fa18c"></a></p>
+
+<h2>JShell</h2>
+
+<p>Java REPL(Read Eval Print Loop) import after Java 9</p>
+
+<ul>
+<li><strong>/list</strong> -start - shows modules imported at startup.</li>
+<li><strong>/edit <number></strong> - edit that line in a new window.</li>
+<li><strong>/set editor &ldquo;vi&rdquo;</strong> - use vi instead of the default graphical edit pad.</li>
+<li><strong>/save abc.java</strong> - save current buffer to file.</li>
+<li><strong>/load abc.java</strong> - load from file into shell.</li>
+<li><strong>/-1</strong> - execute last snippet.</li>
+<li><strong>/1</strong> - execute first snippet.</li>
+<li><strong>/drop N</strong> - drop Nth snippet.</li>
+<li><strong>/vars</strong> - show only variables that were defined in snippets.</li>
+<li><strong>/types</strong> - show only classes that were defined in snippets.</li>
+</ul>
+
+
+<p><a id="orgd240f02"></a></p>
+
+<h2>Javap</h2>
+
+<p>javap TestDecompile.class - decompile .class file to human readable format. Does not show content of methods though.
+javap -c TestDecompile.class - show jvm bytecode in human readable -form, including methods.</p>
+
+<p><a id="org6db32e3"></a></p>
+
+<h2>Jar Files</h2>
+
+<p>These are zip files that have a META-INF folder with a Manifest.mf file inside.</p>
+
+<p><a id="orgef3a76f"></a></p>
+
+<h3>compile and package as a FAT-JAR</h3>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;build&gt;
+   &lt;finalName&gt;indexer-spider&lt;/finalName&gt;
+   &lt;plugins&gt;
+      &lt;plugin&gt;
+         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+         &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+         &lt;version&gt;2.4.1&lt;/version&gt;
+         &lt;configuration&gt;
+            &lt;!--  get all project dependencies  --&gt;
+            &lt;descriptorRefs&gt;
+               &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+            &lt;/descriptorRefs&gt;
+            &lt;!--  MainClass in mainfest make a executable jar  --&gt;
+            &lt;archive&gt;
+               &lt;manifest&gt;
+                  &lt;mainClass&gt;org.apache.maven.indexer.examples.BasicUsageExample&lt;/mainClass&gt;
+               &lt;/manifest&gt;
+            &lt;/archive&gt;
+         &lt;/configuration&gt;
+         &lt;executions&gt;
+            &lt;execution&gt;
+               &lt;id&gt;make-assembly&lt;/id&gt;
+               &lt;!--  bind to the packaging phase  --&gt;
+               &lt;phase&gt;package&lt;/phase&gt;
+               &lt;goals&gt;
+                  &lt;goal&gt;single&lt;/goal&gt;
+               &lt;/goals&gt;
+            &lt;/execution&gt;
+         &lt;/executions&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+         &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+         &lt;configuration&gt;
+            &lt;source&gt;8&lt;/source&gt;
+            &lt;target&gt;8&lt;/target&gt;
+         &lt;/configuration&gt;
+      &lt;/plugin&gt;
+   &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+
+<p><a id="orgc84a88c"></a></p>
+
+<h3>differences between &ldquo;java -cp&rdquo; and &ldquo;java -jar&rdquo;</h3>
+
+<ul>
+<li>There won&rsquo;t be any difference in terms of performance.</li>
+<li><strong>java -cp:</strong> must specify the required classes and jar&rsquo;s in the classpath for running a java class file.</li>
+<li><strong>java -jar:</strong> jvm finds the class that it needs to run from <strong>/META-INF/MANIFEST.MF</strong> file inside the jar file</li>
+</ul>
+
+
+<p><a id="orge743cbc"></a></p>
+
+<h2>Debugging</h2>
+
+<ul>
+<li><strong>jps</strong> - Shows all runnning java processes.</li>
+<li><strong>jvisualvm</strong> - If you have it, it shows the java processes on the system with details on threads, profiler etc.</li>
+<li><strong>debugging mode</strong> - Use these args to start a process in debugging mode</li>
+</ul>
+
+
+<p><a id="org8d022e6"></a></p>
+
+<h3>Exec args:</h3>
+
+<p><code>-Xagentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=&lt;port&gt;</code></p>
+
+<ul>
+<li><strong>agentlib=jdwp</strong> - Load the jdwp agent, for debugging.</li>
+<li><strong>transport=dt_socket</strong> - for connecting a debugging client over the network.</li>
+<li><strong>server=y</strong> - this one is the server half of the debugging.</li>
+<li><strong>suspend=y</strong> - don&rsquo;t start executing until a client debugger attaches.</li>
+<li><strong>address=7777</strong> - port we listen on.</li>
+</ul>
+
+
+<p><a id="orgdc3e49d"></a></p>
+
+<h3>Jdb</h3>
+
+<ul>
+<li><strong>jdb -attach <port></strong>: attach debug process start with debugging mode.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails 常量加载机制]]></title>
@@ -5886,166 +6104,6 @@ Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
 
 <p>最后，深度学习在图像分类的本质大概可以用以下这张图片概括： <br>
 <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fm99ftf2vwj20ow0dsn0p.jpg" alt="" title=""></p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[深度学习入门简介]]></title>
-    <link href="https://edmondfrank.github.io/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/"/>
-    <updated>2017-12-02T17:17:32+08:00</updated>
-    <id>https://edmondfrank.github.io/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie</id>
-    <content type="html"><![CDATA[<p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
-
-
-
-
-<h2 id="概念">概念</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
-
-
-
-
-<h2 id="原理">原理</h2>
-
-
-
-
-<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
-
-
-
-
-<p>（以上内容摘取自百度百科）</p>
-
-
-
-
-<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
-
-
-
-
-<h2 id="结构">结构</h2>
-
-
-
-
-<h3 id="神经元">神经元</h3>
-
-
-
-
-<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
-
-
-
-
-<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
-
-
-
-
-<p>他的主要执行过程：</p>
-
-
-
-
-<blockquote>
-  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
-</blockquote>
-
-
-
-
-<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
-
-
-
-
-<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
-
-
-
-
-<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
-
-
-
-
-<h3 id="连接方式">连接方式</h3>
-
-
-
-
-<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
-
-
-
-
-<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
-
-
-
-
-<h2 id="全连接前馈网络">全连接前馈网络</h2>
-
-
-
-
-<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
-
-
-
-
-<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
-
-
-
-
-<h2 id="输出层">输出层</h2>
-
-
-
-
-<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
-<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
-
-
-
-
-<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
-
-
-
-
-<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
 
 ]]></content>
   </entry>

@@ -9,8 +9,8 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="JavaScript DOM对象学习笔记 节点属性 在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性: (1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text. 1.元素节点的nodeName与标签名相同
-2. &hellip;">
+  <meta name="description" content="Ruby Shoes：用户界面优雅的轻量之选 Shoes简介 人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括： 将Ruby绑定到Qt或者GTK这样的用户界面库
+使用基于JRuby的嵌入式DSL或者API创建Swing界面 Ruby Shoes实现GUI的方式则略显不同.Ruby &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,102 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-30T20:10:11+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
+
+<h2>Shoes简介</h2>
+
+<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
+
+<ul>
+<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
+<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
+</ul>
+
+
+<hr />
+
+<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
+
+<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
+
+<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
+
+<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
+
+<h2>示例代码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Shoes</span><span class="o">.</span><span class="n">app</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span> <span class="mi">200</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">background</span> <span class="n">lime</span><span class="o">.</span><span class="n">.blue</span>
+</span><span class='line'>  <span class="n">stack</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">para</span> <span class="s2">&quot;Welcome to the world of Shoes!&quot;</span>
+</span><span class='line'>    <span class="n">button</span> <span class="s2">&quot;Click me&quot;</span> <span class="k">do</span> <span class="n">alert</span> <span class="s2">&quot;Nice click!&quot;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">image</span> <span class="s2">&quot;http://shoesrb.com/img/shoes-icon.png&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">margin_top</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="ss">margin_left</span><span class="p">:</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>界面效果如下:</p>
+
+<p>　<img src="/images/shoes4.png"></p>
+
+<hr />
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a>
+      <time datetime="2016-06-30T20:10:11+08:00" pubdate><span class='month'>Jun</span> <span class='day'>30</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1185,83 +1281,6 @@ apache2.conf的路径:</p>
       <time datetime="2016-06-19T16:34:50+08:00" pubdate><span class='month'>Jun</span> <span class='day'>19</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-18T14:58:51+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>梦修日记-卸载电脑浏览器</h1>
-
-<blockquote><p>2016-6-18 记一次失败的清醒梦经历</p></blockquote>
-
-<hr />
-
-<p>中午吃完饭后,休息了近乎一个小时然后准备上床睡觉.不知道是本来疲惫还是天气热的原因,进入浅度睡眠状态的过程十分轻易.在床上,做了几天深呼吸,然后想象全身放松,然后就感觉全身的力气好像被蒸发掉了一样,整个人就迷迷糊糊的,处于似睡非睡的边缘状态了.</p>
-
-<p>再持续个几分钟(个人感觉而已,事实上我也不知道过了多久了),脑海开始浮现画面,梦中的我出现在了一个久未逢面好友的家中,我们面对着一台笔记本电脑.虽然不知道是否是我忘记了起因,还是原本剧情的进展就是如此的突然.我大脑突然就接收到了要帮助好友一起卸载面前的笔记本的IE浏览器的讯息,就像是在游戏中突然接受NPC委派的神秘任务一样愕然.</p>
-
-<p>我顺应着梦中的指示一路任由剧情发展,接着,在梦中的好友,接过了电脑的操作权,打开360准备卸载ie浏览器.然后一个以红色色系为主且窗口布局十分传统的UI窗口出现在我面前.(虽然我已经转入linux阵营有一大段时间了,但我记得在我用Windows那段时间里,除了国庆假日之外鲜有使用红色主题,更何况即使在XP依旧更新时代360也抛弃了传统的窗口布局,如此强行的梦中设定,我能信?)</p>
-
-<p>&hellip;&hellip;!!,我信了!剧情继续发展,好友开始卸载ie浏览器.按下一键卸载按钮后,弹出了一个进度提示框.</p>
-
-<p>显示:</p>
-
-<blockquote><p>正在卸载Internet Explorer &hellip;</p>
-
-<p>==>=============== 剩余10.xx MB</p></blockquote>
-
-<p> &hellip; =Σ( ° △ °|||)!</p>
-
-<p>(IE浏览器连个安装包都30M+了,整个应用居然才统计出10来M,我能信?)</p>
-
-<p>&hellip;&hellip;!!! (-_-) 我又信了!</p>
-
-<p>就这样任由的梦境的发展,最后一阵狂风袭来,袭击了虚掩着的门,在砰的一声关门声下,我从梦中惊醒.</p>
-
-<h2>总结:虽然这次的自己在梦中意识清晰,然后在面对着错漏百出的梦境,我却没有去怀疑.难怪别人总说清明梦的关键并非是逻辑强大,意识清晰而在于警觉性.若没有在梦中遇到不合理的现象就疑梦验梦的警觉,其余都是徒然.梦修尚未成功,Edmond仍在努力!!!</h2>
-
-<h4>o(<em>￣▽￣</em>)ゞ</h4>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a>
-      <time datetime="2016-06-18T14:58:51+08:00" pubdate><span class='month'>Jun</span> <span class='day'>18</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
       
       </footer>
     </article>

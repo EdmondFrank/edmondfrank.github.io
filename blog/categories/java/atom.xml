@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: java | EdmondFrank's 时光足迹]]></title>
+  <link href="https://edmondfrank.github.io/blog/categories/java/atom.xml" rel="self"/>
+  <link href="https://edmondfrank.github.io/"/>
+  <updated>2020-10-26T23:29:40+08:00</updated>
+  <id>https://edmondfrank.github.io/</id>
+  <author>
+    <name><![CDATA[EdmondFrank]]></name>
+    <email><![CDATA[EdmomdFrank@yahoo.co.jp]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Java Dev tools and Debugging notes]]></title>
+    <link href="https://edmondfrank.github.io/blog/2020/10/26/java-dev-tools-and-debugging-notes/"/>
+    <updated>2020-10-26T23:27:35+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2020/10/26/java-dev-tools-and-debugging-notes</id>
+    <content type="html"><![CDATA[<h1>Jave Dev tools and Debugging Notes</h1>
+
+<ol>
+<li><a href="#org1b5c54c">Java</a>
+
+<ol>
+<li><a href="#org65d3833">Maven</a>
+
+<ol>
+<li><a href="#org6c8dc4e">use maven with proxy and skip tests:</a></li>
+<li><a href="#orge347d7a">Structure</a></li>
+</ol>
+</li>
+<li><a href="#orgb3fa18c">JShell</a></li>
+<li><a href="#orgd240f02">Javap</a></li>
+<li><a href="#org6db32e3">Jar Files</a>
+
+<ol>
+<li><a href="#orgef3a76f">compile and package as a FAT-JAR</a></li>
+<li><a href="#orgc84a88c">differences between &ldquo;java -cp&rdquo; and &ldquo;java -jar&rdquo;</a></li>
+</ol>
+</li>
+<li><a href="#orge743cbc">Debugging</a>
+
+<ol>
+<li><a href="#org8d022e6">Exec args:</a></li>
+<li><a href="#orgdc3e49d">Jdb</a></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+
+
+<p><a id="org1b5c54c"></a></p>
+
+<h1>Java</h1>
+
+<p>Some notes about Java dev tools and debuggers</p>
+
+<p><a id="org65d3833"></a></p>
+
+<h2>Maven</h2>
+
+<p><strong>build lifecycle targets</strong></p>
+
+<ul>
+<li><strong>validate</strong>: validate the project is correct and all necessary information is available</li>
+<li><strong>compile:</strong> compile the source code of the project</li>
+<li><strong>test</strong>: test the compiled source code using a suitable unit testing framework. There tests should not require the code be packaged or deployed</li>
+<li><strong>package</strong>: take the compiled code and package it in its distributable format, such as JAR</li>
+<li><strong>verify</strong>: run any checks on results of integration tests to ensure quality criteria are met</li>
+<li><strong>install</strong>: install the package into the local repository, for use as a dependency in other projects locally</li>
+<li><strong>deploy</strong>: done in the build environment, copies the final package to the remote repository for sharing with other developers and projects</li>
+</ul>
+
+
+<p><a id="org6c8dc4e"></a></p>
+
+<h3>use maven with proxy and skip tests:</h3>
+
+<p>-Dmaven.test.skip=true
+-Dhttps.proxyHost=127.0.0.1
+-Dhttps.proxyPort=1081
+-Dhttp.proxyHost=127.0.0.1
+-Dhttp.proxyPort=1081</p>
+
+<p><a id="orge347d7a"></a></p>
+
+<h3>Structure</h3>
+
+<ol>
+<li>Expected directory structure:
+
+<ul>
+<li>Java files are in src/main/java as well as src/test/java.</li>
+<li>Resource files are under src/main/resources and src/test/resources.</li>
+</ul>
+</li>
+<li><strong>mvn archetype:generate</strong>: Generates a skeleton of a project based on your inputs (package name, versioning, project name, etc)</li>
+<li>Edit pom.xml and set the jdk version there..</li>
+<li>mvn package - compile, test, bundle.</li>
+</ol>
+
+
+<p><a id="orgb3fa18c"></a></p>
+
+<h2>JShell</h2>
+
+<p>Java REPL(Read Eval Print Loop) import after Java 9</p>
+
+<ul>
+<li><strong>/list</strong> -start - shows modules imported at startup.</li>
+<li><strong>/edit <number></strong> - edit that line in a new window.</li>
+<li><strong>/set editor &ldquo;vi&rdquo;</strong> - use vi instead of the default graphical edit pad.</li>
+<li><strong>/save abc.java</strong> - save current buffer to file.</li>
+<li><strong>/load abc.java</strong> - load from file into shell.</li>
+<li><strong>/-1</strong> - execute last snippet.</li>
+<li><strong>/1</strong> - execute first snippet.</li>
+<li><strong>/drop N</strong> - drop Nth snippet.</li>
+<li><strong>/vars</strong> - show only variables that were defined in snippets.</li>
+<li><strong>/types</strong> - show only classes that were defined in snippets.</li>
+</ul>
+
+
+<p><a id="orgd240f02"></a></p>
+
+<h2>Javap</h2>
+
+<p>javap TestDecompile.class - decompile .class file to human readable format. Does not show content of methods though.
+javap -c TestDecompile.class - show jvm bytecode in human readable -form, including methods.</p>
+
+<p><a id="org6db32e3"></a></p>
+
+<h2>Jar Files</h2>
+
+<p>These are zip files that have a META-INF folder with a Manifest.mf file inside.</p>
+
+<p><a id="orgef3a76f"></a></p>
+
+<h3>compile and package as a FAT-JAR</h3>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;build&gt;
+   &lt;finalName&gt;indexer-spider&lt;/finalName&gt;
+   &lt;plugins&gt;
+      &lt;plugin&gt;
+         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+         &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+         &lt;version&gt;2.4.1&lt;/version&gt;
+         &lt;configuration&gt;
+            &lt;!--  get all project dependencies  --&gt;
+            &lt;descriptorRefs&gt;
+               &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+            &lt;/descriptorRefs&gt;
+            &lt;!--  MainClass in mainfest make a executable jar  --&gt;
+            &lt;archive&gt;
+               &lt;manifest&gt;
+                  &lt;mainClass&gt;org.apache.maven.indexer.examples.BasicUsageExample&lt;/mainClass&gt;
+               &lt;/manifest&gt;
+            &lt;/archive&gt;
+         &lt;/configuration&gt;
+         &lt;executions&gt;
+            &lt;execution&gt;
+               &lt;id&gt;make-assembly&lt;/id&gt;
+               &lt;!--  bind to the packaging phase  --&gt;
+               &lt;phase&gt;package&lt;/phase&gt;
+               &lt;goals&gt;
+                  &lt;goal&gt;single&lt;/goal&gt;
+               &lt;/goals&gt;
+            &lt;/execution&gt;
+         &lt;/executions&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+         &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+         &lt;configuration&gt;
+            &lt;source&gt;8&lt;/source&gt;
+            &lt;target&gt;8&lt;/target&gt;
+         &lt;/configuration&gt;
+      &lt;/plugin&gt;
+   &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+
+<p><a id="orgc84a88c"></a></p>
+
+<h3>differences between &ldquo;java -cp&rdquo; and &ldquo;java -jar&rdquo;</h3>
+
+<ul>
+<li>There won&rsquo;t be any difference in terms of performance.</li>
+<li><strong>java -cp:</strong> must specify the required classes and jar&rsquo;s in the classpath for running a java class file.</li>
+<li><strong>java -jar:</strong> jvm finds the class that it needs to run from <strong>/META-INF/MANIFEST.MF</strong> file inside the jar file</li>
+</ul>
+
+
+<p><a id="orge743cbc"></a></p>
+
+<h2>Debugging</h2>
+
+<ul>
+<li><strong>jps</strong> - Shows all runnning java processes.</li>
+<li><strong>jvisualvm</strong> - If you have it, it shows the java processes on the system with details on threads, profiler etc.</li>
+<li><strong>debugging mode</strong> - Use these args to start a process in debugging mode</li>
+</ul>
+
+
+<p><a id="org8d022e6"></a></p>
+
+<h3>Exec args:</h3>
+
+<p><code>-Xagentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=&lt;port&gt;</code></p>
+
+<ul>
+<li><strong>agentlib=jdwp</strong> - Load the jdwp agent, for debugging.</li>
+<li><strong>transport=dt_socket</strong> - for connecting a debugging client over the network.</li>
+<li><strong>server=y</strong> - this one is the server half of the debugging.</li>
+<li><strong>suspend=y</strong> - don&rsquo;t start executing until a client debugger attaches.</li>
+<li><strong>address=7777</strong> - port we listen on.</li>
+</ul>
+
+
+<p><a id="orgdc3e49d"></a></p>
+
+<h3>Jdb</h3>
+
+<ul>
+<li><strong>jdb -attach <port></strong>: attach debug process start with debugging mode.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
