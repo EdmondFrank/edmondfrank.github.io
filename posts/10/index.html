@@ -9,9 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="我的算法天梯之路之-归并排序 插入排序算法采取增量式(Incremental)的策略解决问题,每次添一个元素到已排序的子序列
-中,逐渐将整个数组排序完毕,它的时间复杂度是Θ(n2)。下面介绍另一个典型的排序算法&ndash;
-归并排序,它采取分而治之(Divide-and-Conquer)的策略, &hellip;">
+  <meta name="description" content="(转)Linux On Android——在Android手机上跑Linux教程(以Ubuntu14.04-core为例） 前言 Android 是基于 Linux 内核的开源操作系统，主要用在移动设备上。当然同样是基于 Linux 内核的操作系统，现在支持的 Android &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +64,178 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/">(转)Linux on Android——在Android手机上跑Linux教程</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-08-21T17:15:20+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>(转)Linux On Android——在Android手机上跑Linux教程(以Ubuntu14.04-core为例）</h2>
+
+<p>前言</p>
+
+<p>Android 是基于 Linux 内核的开源操作系统，主要用在移动设备上。当然同样是基于 Linux 内核的操作系统，现在支持的 Android 的智能手机理论来说都能运行基于 Linux 的操作系统，比如现在流行的发行版：Ubuntu、Fedora 等等。不仅如此，现在的智能移动设备的硬件也越来越强，更为能运行 Linux 系统提供了良好的硬件支持。今天就带大家来尝试一下在 Android 手机上安装 Ubuntu14.04操作系统。
+有关说明:</p>
+
+<ul>
+<li><strong>原帖点<a href="http://www.jianshu.com/p/3c5f792bca1f">这里</a></strong></li>
+<li><strong>注:ubuntu14.04-core类似于Ubuntu系列的服务器版本,想使用图形界面的朋友可以在系统安装完成后,自行下载Ubuntu的图形界面(KDE,GNOME,XFCE或LXDE,而在图形界面方面博主较为推荐LXDE,轻便,简捷,占用资源及空间较少.但是用户友好度不高,适合低配低容量手机(装在SD卡的读者可以无视这个建议!))</strong></li>
+<li><strong>想用图形界面,但又怕安装图形界面麻烦的读者可以直接安装Ubuntu12.04-Full,更多其他linux发行版可以在sourceforge.net的LinuxonAndroid目录列表中查询,详情可以继续往下阅读.</strong></li>
+</ul>
+
+
+<h3>配置要求</h3>
+
+<ul>
+<li><strong>设备需要 root 权限(重点,没有root的手机以下的关键操作基本都无法执行)，并且安装了 BusyBox</strong></li>
+<li>最小 1GHz 处理器(推荐)</li>
+<li>Android 系统版本 2.1 或以上</li>
+<li>手机容量,一般有张4GB的SD卡就够了(其他像kali的映像(至少5G)除外) (安装full映像需要3.5GB,small映像需要2G,core映像则只需要1G)</li>
+<li>支持 Ext2 文件系统(大部分 Android 设备应该都支持)</li>
+</ul>
+
+
+<h3>博主设备</h3>
+
+<ul>
+<li>手机型号:lenvon A5500</li>
+<li>处理器主频:1.6GHz</li>
+<li>无SD卡(由于博主装的是core版,使用1G的机身空余容量即可)</li>
+<li>Android版本:5.0</li>
+</ul>
+
+
+<h3>需要的软件(此处清单基本照抄原帖主)</h3>
+
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=jackpal.androidterm">Android Terminal Emulator (终端模拟器)</a> ：用于运行 shell 脚本</li>
+<li><a href="https://play.google.com/store/apps/details?id=stericson.busybox">BusyBox</a> ：用于提供 shell 命令的支持</li>
+<li><a href="https://play.google.com/store/apps/details?id=android.androidVNC">Android VNC Viewer</a>：用于 Android 设备的远程连接工具</li>
+<li><a href="http://sourceforge.net/projects/linuxonandroid/files/">Ubuntu 14.04-core的映像文件</a>：用于安装 Ubuntu 的映像文件(该网站中有很多 Linux 发行版，大家也可以尝试其他发行版)</li>
+<li>ubuntu.sh：Ubuntu 的安装脚本
+
+<ul>
+<li>链接：<a href="http://pan.baidu.com/s/1hqgVxvY">http://pan.baidu.com/s/1hqgVxvY</a> 密码：o0xa</li>
+</ul>
+</li>
+<li>bootscript.sh：Ubuntu 的启动脚本
+
+<ul>
+<li>链接：<a href="http://pan.baidu.com/s/1pJkeSkF">http://pan.baidu.com/s/1pJkeSkF</a> 密码：whfe</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>开始安装</h2>
+
+<h3>0. 取得 ROOT 权限</h3>
+
+<p>首先您的手机需要 root，也就是能够获得root权限去操作，相当于越狱。不懂的可以去 Google 一下“Android获取root权限”。root是前提，所以先要把这个做好，不过现在很多ROM都做的很好，比如MIUI就有很好的权限管理。</p>
+
+<h3>1. 安装文件下载</h3>
+
+<p>首先就是下载必要的文件，这个是在 sourceforge.net 上的一个叫 Linux-on-Android 的项目。
+我上面给的地址中有一般三个包可供下载(Ubuntu14.04除外,目前只有core版)：</p>
+
+<p>其实下面就有英文的介绍，我就在这里简单介绍一下：</p>
+
+<blockquote><p>   full 映像包含了完整的 Ubuntu 系统，其中包括 Unity 桌面，还有很多如GIMP等常用软件，非常齐全。需要 3.5G 以上空间。</p>
+
+<p>   small 映像包含了的基本的 Ubuntu 系统，其中包括 LXDE 桌面，需要 2G 以上空间。</p>
+
+<p>   core 映像包含了基础的 Ubuntu 系统，不过这个没有GUI的，也就是没有桌面只有命令行。</p></blockquote>
+
+<p>下载完待安装的 Ubuntu 14.04-core 的映像文件，然后我们安装还需要安装脚本，也就是上面说的 ubuntu.sh ，还有安装后的启动脚本 bootscript.sh 。有了这些文件后我们在手机的根目录，新建一个文件夹取名为 ubuntu ，然后把这里我们刚才下载好的文件放到这个文件夹里面，到这里 ubuntu 文件夹里就分别有 ubuntu.img、ubuntu.sh、bootcript.sh 这三个文件了。</p>
+
+<p><strong>注:由于原帖主安装的是Ubuntu12.04,文件系统才用的是ext2,而此处我们要安装的是Ubuntu14.04-core所以两个脚本文件的内容有些许的出入,大家用编辑器将两个.sh文件打开,用搜索替换功能将脚本里面的"ext2"替换成"ext4"保存退出即可.</strong></p>
+
+<h2>安装软件(此处照搬原帖,博主懒得码字了&hellip;)</h2>
+
+<p>首先需要的是 Terminal 这个软件，也就是一个终端，通过终端我们可以用来执行很多命令和脚本。上面我给出了Google Play的地址，这个在很多地方都有的下的，还有Android VNC Viewer也可以在 Google Play 里面找到安装。</p>
+
+<p>在这里我要说一下 BusyBox，它使得你可以在 Terminal 中运行很多命令，现在很多 Android 的 Rom (我用的MIUI_v4_2.8.10也是) 的终端中很多命令都不能运行，比如 cp、mv、cut 等，但是这些都是我们脚本里面需要用到的，如果不能运行这些命令而执行脚本的话，会提示 **: not found 这样的提示。所以安装 BusyBox 可以使得这些命令都能够在终端里面执行。如果你的Rom本来够强大已经包含了BusyBox的新版本，能够运行基本的shell命令的话，那也可以不用装这个。</p>
+
+<p>当然安装 BusyBox 以及后面我们在 Terminal 中都需要 root 权限，如果是MIUI系统的话则可以直接在 授权管理 > ROOT权限管理 里面打开该选项，然后需要root权限的时候允许就可以了。其他的系统我没用过，不过可以直接用 一键ROOT工具 来操作。</p>
+
+<p>安装 BusyBox，安装好后，打开BusyBox点击 Install 开始安装，如果弹出需要ROOT权限，点下一步允许就行!</p>
+
+<h2>安装 ubuntu 14.04-core</h2>
+
+<p>首先，打开 终端模拟器(Terminal) ，在光标处输入 “cd /ubuntu”(不包括引号，注意cd后有空格)然后回车，这样就来到了刚才我们在SD卡里面新建的目录了.</p>
+
+<p>接下来我们就要开始运行 ubuntu.sh 这个安装脚本了，但在这之前我们需要使用 root 用户来运行这个脚本，在终端中使用命令 “su” 来切换至 root 用户权限，如果弹出授权信息点击下一步允许就行了，或者直接用 一键ROOT 来开启终端重复上面操作，成功后如图之前的“$”变成了“#”，这就说明已经获得Root权限了</p>
+
+<p>然后运行安装脚本，输入命令 “sh ubuntu.sh”，进行安装</p>
+
+<p>然后脚本为你建立了一个名字为“ubuntu”的帐号，这里提示你需要为你的帐号设置一个密码，这个密码会在以后你操作 Ubuntu 的时候一些授权应用到，比如我在这里设置密码为：“ubuntu”，这里注意的是在终端里面输入密码是不会显示出来的，你看见光标没有动静，但实际上你已经输入进去了。回车后提示再次输入密码以保证你两次密码一样</p>
+
+<p>密码设置完成后，提示是否启动VNC服务和SSH服务，我们只要输入“y”然后回车，开启了这两个服务后我们才能通过远程连接来连上系统</p>
+
+<p>然后提示我们输入设备屏幕的尺寸，我的屏幕是1280x800的，所以我输入“1280x800”（小米手机注意：小米手机是854×480的，但是后面用Android VNC 连接的时候有问题，在右边会显示一条线，所以小米手机用户最好设置成“852×480”，其他手机没有测试过，在设置的时候请注意！）。注意：这里两个数字之间的不是乘号，而是字母“xyz”的“x”，输错了不能远程连接的.</p>
+
+<p>然后，提示是否保存你刚才的设置为默认设置，只要输入“y”即可</p>
+
+<p>然后你就可以看到操作完成后光标前的字符变成了“root@localhost:~#”，这样说明你已经成功进入ubuntu系统中了.</p>
+
+<h2>远程桌面连接</h2>
+
+<p>自行查询VNC的使用说明,在此博主不再赘述.
+连接ip:localhost:5900(其中":5900",可填可不填)
+密码:ubuntu</p>
+
+<h2>退出 Ubuntu 系统</h2>
+
+<p>只需要回到刚才我们运行的终端，输入命令 “exit” 回车，等待片刻即可退出 Ubuntu 系统，再次输入 “exit” 回车 则是退出手机终端的 root 用户权限，然后再次 “exit” 回车后则是退出手机终端，这样就完全退出了</p>
+
+<h2>下次启动</h2>
+
+<p>下次启动的时候只需要开启 终端，然后输入 “su” 获得 root 权限，再输入 “cd /ubuntu” 来到ubuntu文件夹下，然后在输入 “sh bootscript.sh” 运行启动脚本就可以运行启动 Ubuntu 了，需要连接桌面的话按照上面说的用 Android VNC 就可以了。</p>
+
+<p><strong>(其实对于一个服务器系统来说,博主更推荐使用ssh连接来代替VNC连接)</strong></p>
+
+<p>最后补一张最终效果图(此处博主已经自行安装了LXDE桌面环境):
+<img src="/images/ubuntu.jpg"></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/08/21/zhuan-linux-on-android-zai-androidshou-ji-shang-pao-linuxjiao-cheng/">(转)Linux On Android——在Android手机上跑Linux教程</a>
+      <time datetime="2016-08-21T17:15:20+08:00" pubdate><span class='month'>Aug</span> <span class='day'>21</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/zhuan-zai-fen-xiang/'>转载分享</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -3616,739 +3786,6 @@ or</p>
       <time datetime="2016-07-22T20:59:57+08:00" pubdate><span class='month'>Jul</span> <span class='day'>22</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/wen-ti-ji/'>问题集</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/07/21/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-6/">百度前端技术学院-任务6</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-07-21T21:07:36+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>百度前端技术学院-任务六</h1>
-
-<p><strong><a href="http://ife.baidu.com/task/detail?taskId=6">任务六：通过HTML及CSS模拟报纸排版</a></strong></p>
-
-<blockquote><p>style.css</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-<span class='line-number'>212</span>
-<span class='line-number'>213</span>
-<span class='line-number'>214</span>
-<span class='line-number'>215</span>
-<span class='line-number'>216</span>
-<span class='line-number'>217</span>
-<span class='line-number'>218</span>
-<span class='line-number'>219</span>
-<span class='line-number'>220</span>
-<span class='line-number'>221</span>
-<span class='line-number'>222</span>
-<span class='line-number'>223</span>
-<span class='line-number'>224</span>
-<span class='line-number'>225</span>
-<span class='line-number'>226</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="o">*</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nt">header</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">border-bottom</span><span class="o">:</span> <span class="m">2px</span> <span class="k">solid</span> <span class="m">#938e3c</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">61px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nt">header</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">61px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">110px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#e74457</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nt">header</span> <span class="nt">div</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">left</span><span class="o">:</span> <span class="m">6px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">bottom</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">12px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#fff</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-family</span><span class="o">:</span> <span class="s2">&quot;黑体&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nt">header</span> <span class="o">&gt;</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">right</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">bottom</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">12px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#d45d5c</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-family</span><span class="o">:</span> <span class="s2">&quot;黑体&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column1</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column1</span> <span class="nf">#img1</span><span class="o">,</span>
-</span><span class='line'><span class="nf">#column1</span> <span class="nt">img</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">641px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">301px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#img1</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#img1</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">191px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">301px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">opacity</span><span class="o">:</span> <span class="m">0</span><span class="o">.</span><span class="m">6</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">bottom</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#img1</span> <span class="nc">.green</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#20a176</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">left</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#img1</span> <span class="nc">.red</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#a6435a</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">right</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right1</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">203px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">border-top</span><span class="o">:</span> <span class="m">2px</span> <span class="k">solid</span> <span class="m">#938e8c</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right1</span> <span class="nc">.about</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">26px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">border-bottom</span><span class="o">:</span> <span class="m">2px</span> <span class="k">solid</span> <span class="m">#808080</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right1</span> <span class="nc">.about</span> <span class="o">&gt;</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-family</span><span class="o">:</span> <span class="s2">&quot;Microsoft YaHei&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">18px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#000</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right1</span> <span class="nc">.about</span> <span class="o">&gt;</span> <span class="nt">p</span><span class="nd">:first-letter</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">24px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column2</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column2</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin-right</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column2</span> <span class="nt">div</span> <span class="nt">p</span><span class="nd">:first-child</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="k">bolder</span> <span class="m">16px</span> <span class="s2">&quot;微软雅黑&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">text-decoration</span><span class="o">:</span> <span class="k">underline</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column2</span> <span class="nt">div</span> <span class="nt">span</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-style</span><span class="o">:</span> <span class="k">italic</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#cd4a48</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">border-bottom</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="m">#938e8c</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column3</span> <span class="nf">#left3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">415px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column3</span> <span class="nf">#left3</span> <span class="nf">#leftUp3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">border-bottom</span><span class="o">:</span> <span class="m">2px</span> <span class="k">solid</span> <span class="m">#11456b</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column3</span> <span class="nf">#left3</span> <span class="nf">#leftUp3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="k">bolder</span> <span class="m">42px</span> <span class="s2">&quot;黑体&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#11456b</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">line-height</span><span class="o">:</span> <span class="m">42px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#column3</span> <span class="nf">#left3</span> <span class="nf">#leftUp3</span> <span class="nt">p</span> <span class="nt">span</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">72px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-style</span><span class="o">:</span> <span class="k">italic</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#f5e327</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">line-height</span><span class="o">:</span> <span class="m">72px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#leftDown3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">30px</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#leftDown3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="m">12px</span> <span class="s2">&quot;宋体&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#767777</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">line-height</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#leftDown3</span> <span class="nt">p</span><span class="nd">:first-child:first-letter</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="m">70px</span> <span class="s2">&quot;微软雅黑&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#f5e327</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#leftDown3</span> <span class="nt">img</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">300px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span> <span class="m">20px</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">458px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="nf">#rightUp3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">275px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="nf">#rightUp3</span> <span class="nt">img</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">458px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">275px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="nf">#rightUp3</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">458px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">61px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#717171</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">opacity</span><span class="o">:</span> <span class="m">0</span><span class="o">.</span><span class="m">4</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">bottom</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="nf">#rightUp3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">44px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">border-left</span><span class="o">:</span> <span class="m">3px</span> <span class="k">solid</span> <span class="m">#72b16a</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="m">26px</span> <span class="s2">&quot;微软雅黑&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#fff</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">bottom</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">line-height</span><span class="o">:</span> <span class="m">44px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">0</span> <span class="m">8px</span> <span class="m">30px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#right3</span> <span class="nf">#rightUp3</span> <span class="nt">p</span> <span class="nt">span</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="k">italic</span> <span class="m">12px</span> <span class="s2">&quot;微软雅黑&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#72b16a</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">0</span> <span class="m">8px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#rightDown3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="n">rgba</span><span class="p">(</span><span class="m">172</span><span class="o">,</span><span class="m">118</span><span class="o">,</span><span class="m">92</span><span class="o">,</span><span class="m">0</span><span class="o">.</span><span class="m">42</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#rightDown3</span> <span class="nf">#downUp3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">margin</span><span class="o">:</span> <span class="m">20px</span> <span class="m">0</span> <span class="m">20px</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#rightDown3</span> <span class="nf">#downUp3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-family</span><span class="o">:</span><span class="s2">&quot;宋体&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#5a5b5b</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">20px</span> <span class="m">10px</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#rightDown3</span> <span class="nf">#downUp3</span> <span class="nt">p</span> <span class="nt">span</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="k">italic</span> <span class="m">12px</span> <span class="s2">&quot;宋体&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">text-align</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">160px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">margin-top</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="nf">#downL3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">260px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">160px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span> <span class="m">#d45d5c</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="nf">#downL3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#fff</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="nf">#downR3</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">overflow</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">float</span><span class="o">:</span> <span class="k">right</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span> <span class="m">198px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span> <span class="m">160px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="nf">#downR3</span> <span class="nt">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font</span><span class="o">:</span> <span class="k">italic</span> <span class="m">14px</span> <span class="s2">&quot;黑体&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#5a5b5b</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">text-indent</span><span class="o">:</span> <span class="m">3em</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">padding</span><span class="o">:</span> <span class="m">16px</span> <span class="m">0</span> <span class="m">0</span> <span class="m">16px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">relative</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nf">#down3</span> <span class="nf">#downR3</span> <span class="nt">p</span> <span class="nt">span</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">72px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#d45d5c</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">font-family</span><span class="o">:</span><span class="s2">&quot;黑体&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>index.html</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Language&quot;</span> <span class="na">content=</span><span class="s">&quot;zh-ch&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;title&gt;</span>任务六<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;width: 980px;height: 1386px;margin: 0 auto;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;margin: 0 auto;width: 892px;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;header&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;&lt;p&gt;</span>ife.baidu.com<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;p&gt;</span>2016.03<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/header&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;column1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;img1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic1.png&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;green&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;red&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;right1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;about&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;</span>ABOUT<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;br/&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;about&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;</span>TECHNOLOGE<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 楷体;color: #676767;line-height: 10px; padding-top: 4px;&quot;</span><span class="nt">&gt;</span>About technologe about technoge about technoge<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: italic 116px 微软雅黑;color: #75b86b;&quot;</span><span class="nt">&gt;</span>700<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;display: inline-block;&quot;</span><span class="nt">&gt;&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 55px 微软雅黑;color: #cc8091;&quot;</span><span class="nt">&gt;</span>3.2<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;display: inline-block;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 21px 微软雅黑;color: #cc8091;&quot;</span><span class="nt">&gt;</span>css<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 微软雅黑;color: #cc8091;&quot;</span><span class="nt">&gt;</span>cssssssssss<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;column2&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: #418c59;&quot;</span><span class="nt">&gt;</span>What<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 宋体;color: #767777;line-height: 16px;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端端前端前端前端前端前端前端前端<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: #d2994f;&quot;</span><span class="nt">&gt;</span>When<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 微软雅黑;color: #231815;line-height: 16px;opacity: 0.7;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div&gt;&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: #cc7680;&quot;</span><span class="nt">&gt;</span>How<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 微软雅黑;color: #231815;line-height: 20px;opacity: 0.7;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    前端前端前前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端端前端前端前端前端前端前端前端<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;br&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;br&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: bolder 12px 微软雅黑;color: #231815;line-height: 20px;opacity: 0.7;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    What--------<span class="nt">&lt;span&gt;</span>40%<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: bolder 12px 微软雅黑;color: #231815;line-height: 20px;opacity: 0.7;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    What--------<span class="nt">&lt;span&gt;</span>30%<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: bolder 12px 微软雅黑;color: #231815;line-height: 20px;opacity: 0.7;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    What--------<span class="nt">&lt;span&gt;</span>30%<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;column3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;left3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;leftUp3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;&lt;span&gt;</span>THE<span class="nt">&lt;/span&gt;</span> TECHNOLOGE OF FRONT<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;</span>前端技术领域<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;leftDown3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;</span>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic2.png&quot;</span> <span class="na">alt=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;text-indent: 2em;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;text-indent: 2em;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端前端
-</span><span class='line'>                    <span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;right3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;rightUp3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;pic3.png&quot;</span> <span class="na">alt=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;div&gt;&lt;/div&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;p&gt;</span>前端技术<span class="nt">&lt;span&gt;</span>前端技术前端技术<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;rightDown3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;downUp3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;padding-top: 30px;&quot;</span><span class="nt">&gt;</span>▲ 前端前端前端前端前端前端 ...................<span class="nt">&lt;span&gt;</span>前端<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span>▲ 前端前端前端前端 .........................<span class="nt">&lt;span&gt;</span>前端前<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;p&gt;</span>▲ 前端前端前端前端前端前端 ...................<span class="nt">&lt;span&gt;</span>前端<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;down3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;downL3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 110px 微软雅黑;display: inline-block;line-height: 160px;&quot;</span><span class="nt">&gt;</span>0<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&quot;display: inline-block;height: 86px;border-left: 2px solid #ffffff;position: absolute;top: 50%;margin-top: -43px;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: italic 21px 黑体;padding-left: 3px;&quot;</span><span class="nt">&gt;</span>ONE TWO<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;P</span> <span class="na">style=</span><span class="s">&quot;font: italic 21px 黑体;padding-left: 3px;&quot;</span><span class="nt">&gt;</span>THREE FOUR FIVE<span class="nt">&lt;/P&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;P</span> <span class="na">style=</span><span class="s">&quot;font: 12px 黑体;padding-left: 3px;&quot;</span><span class="nt">&gt;</span>hello world hello world<span class="nt">&lt;/P&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;font: 12px 黑体;padding-left: 3px;&quot;</span><span class="nt">&gt;</span>hello word<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;downR3&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;p&gt;&lt;span</span> <span class="na">style=</span><span class="s">&quot;left:-35px;top: 0;&quot;</span><span class="nt">&gt;</span>“<span class="nt">&lt;/span&gt;</span> world
-</span><span class='line'>                                hello world hello world hello world hello world
-</span><span class='line'>                                hello world hello world hello world hello world
-</span><span class='line'>                                hello world hello world <span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">&quot;right: 0;&quot;</span><span class="nt">&gt;</span>”<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;float: right;font: 12px 黑体;color: #d45d5c;&quot;</span><span class="nt">&gt;</span>ife.baidu.com<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/07/21/bai-du-qian-duan-ji-zhu-xue-yuan-ren-wu-6/">百度前端技术学院-任务6</a>
-      <time datetime="2016-07-21T21:07:36+08:00" pubdate><span class='month'>Jul</span> <span class='day'>21</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
       
       </footer>
     </article>

@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿隐马尔可夫模型（HMM）的原理 简介 隐马尔可夫模型是一个基于马尔可夫链的统计模型。 马尔可夫链因安德烈·马尔可夫（Andrey Markov，1856－1922）得名，是数学中具有马尔可夫性质的离散时间随机过程。该过程中，在给定当前知识或信息的情况下，过去（即当期以前的历史状态）对于预测将来（ &hellip;">
+  <meta name="description" content="穷举搜索的例子－Google方程式 　问题描述 有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,237 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-05-30T22:15:17+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="穷举搜索的例子google方程式">穷举搜索的例子－Google方程式</h2>
+
+
+
+
+<h3 id="问题描述">　问题描述</h3>
+
+
+
+
+<p>有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换，并且替换之后能够满足等式。</p>
+
+
+
+
+<h3 id="问题分析">问题分析</h3>
+
+
+
+
+<p>从排列组合的角度来看，这道题是一道典型的排列组合问题，题目中一共出现了9个字母。</p>
+
+
+
+
+<p>如果不考虑0开头的情况下，这样的组合应该有10x9x8x7x6x5x4x3x2=3628800种组合。</p>
+
+
+
+
+<p>在这样的情况之下，计算机的穷举处理应该是毫无压力的。</p>
+
+
+
+
+<h3 id="问题求解">问题求解</h3>
+
+
+
+
+<p>首先为了能够表示这样一种可变的字符元素列表，我们需要自定义一种数据结构。首先我们知道这个自定义结构中应该包含有三个属性，分别是 字符本身，字符代表的数字以及是否为数字的最高位，因为最高位是不能为0的，所以在这里我们要区别对待。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharItem</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">leading</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_ITEM</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>接着我们初始化这个列表。=</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">CHAR_ITEM</span> <span class="n">charItem</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;D&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;O&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;T&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;G&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;L&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span>
+</span><span class='line'><span class="p">{</span><span class="sc">&#39;E&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;C&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为这是一个组合问题，那么两个字母就不能被指定为相同的数字，这样我们需要定义额外的占用标识。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharValue</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">isused</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="n">CHAR_VALUE</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//穷举算法实现如下</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">SearchingResult</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[],</span><span class="n">CHAR_VALUE</span> <span class="n">cv</span><span class="p">[],</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">index</span><span class="p">,</span><span class="n">CharListReadyFuncPtr</span> <span class="n">callback</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">max_char_count</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">callback</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">max_number_count</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">IsValueValid</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">SearchingResult</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">callback</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>根据题目要求，W，G，D三者都不能为0，为了加快穷举速度可以对他们为0的情况进行剪枝。 <br>
+IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数可以减少约30%。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//callback代码实现</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">OnCharListReady</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">minuend</span> <span class="o">=</span> <span class="s">&quot;WWWDOT&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">subtrahend</span> <span class="o">=</span> <span class="s">&quot;GOOGLE&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">=</span> <span class="s">&quot;DOTCOM&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">minuend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">subtrahend</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">diff</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="n">d</span><span class="p">){</span>
+</span><span class='line'>      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span><span class="n">s</span><span class="o">&lt;&lt;</span> <span class="s">&quot;=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>问题答案 <br>
+  777589 - 188103 = 589486 <br>
+  777589 - 188106 = 589483</p>
+</blockquote>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a>
+      <time datetime="2018-05-30T22:15:17+08:00" pubdate><span class='month'>May</span> <span class='day'>30</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2573,239 +2804,6 @@ sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class
       <time datetime="2018-02-12T22:14:22+08:00" pubdate><span class='month'>Feb</span> <span class='day'>12</span> <span class='year'>2018</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-08T18:17:01+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
-
-
-
-
-<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
-
-
-
-
-<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
-
-
-
-
-<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
-
-
-
-
-<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
-
-
-
-
-<h2 id="什么是automl">什么是AutoML？</h2>
-
-
-
-
-<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
- <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
-
-
-
-
-<ul>
-<li>预处理数据</li>
-<li>选择适当的功能</li>
-<li>选择一个适当的模型选择系列</li>
-<li>优化模型超参</li>
-<li>后处理机器学习模型</li>
-<li>严格分析所得的结果</li>
-</ul>
-
-
-
-
-<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
-
-
-
-
-<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
-
-
-
-
-<ul>
-<li>执行深层表示的架构搜索</li>
-<li>分析超参数的重要性</li>
-</ul>
-
-
-
-
-<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
-
-
-
-
-<h2 id="automl的架构">AutoML的架构</h2>
-
-
-
-
-<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
-在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
-
-
-
-
-<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
-
-
-
-
-<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
-
-
-
-
-<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
-
-
-
-
-<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
-
-
-
-
-<h2 id="automl的案例应用">AutoML的案例应用</h2>
-
-
-
-
-<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
-
-
-
-
-<ul>
-<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
-<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
-</ul>
-
-
-
-
-<h2 id="测试结果">测试结果</h2>
-
-
-
-
-<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
-有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
-
-
-
-
-<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
-
-
-
-
-<blockquote>
-  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
-  Accuracy score 0.988888888889</p>
-</blockquote>
-
-
-
-
-<p>然后是auto-sklearn框架的自生成模型：</p>
-
-
-
-
-<blockquote>
-  <p>import autosklearn.classification <br>
-  import sklearn.model_selection <br>
-  import sklearn.datasets <br>
-  import sklearn.metrics <br>
-  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
-  X_train, X_test, y_train, y_test = \ <br>
-         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
-  automl = autosklearn.classification.AutoSklearnClassifier() <br>
-  automl.fit(X_train, y_train) <br>
-  y_hat = automl.predict(X_test) <br>
-  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
-   [Out] Accuracy score 0.993333333333</p>
-</blockquote>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
-<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
-网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
-新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
-只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a>
-      <time datetime="2018-02-08T18:17:01+08:00" pubdate><span class='month'>Feb</span> <span class='day'>08</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
       </footer>
     </article>

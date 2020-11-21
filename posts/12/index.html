@@ -9,8 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Ruby Shoes：用户界面优雅的轻量之选 Shoes简介 人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括： 将Ruby绑定到Qt或者GTK这样的用户界面库
-使用基于JRuby的嵌入式DSL或者API创建Swing界面 Ruby Shoes实现GUI的方式则略显不同.Ruby &hellip;">
+  <meta name="description" content="Ruby实现的天翼校园网客户端 众所周知,由于Linux客户量在国内十分少,因此十分多的国内软件商都很少有提供Linux下的客户端. 即使是天翼校园网也不例外. 这样便苦了我们这一批在校学习的大学学子们了. 为了尝试去解决这样的困境,我通过模拟天翼校园网Windows客户端的post登录协议, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +64,222 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/02/rubyshi-xian-de-tian-yi-xiao-yuan-wang-ke-hu-duan/">Ruby实现的天翼校园网客户端</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-07-02T20:33:30+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Ruby实现的天翼校园网客户端</h2>
+
+<p>众所周知,由于Linux客户量在国内十分少,因此十分多的国内软件商都很少有提供Linux下的客户端. 即使是<a href="http://zsteduapp.10000.gd.cn/index.html">天翼校园网</a>也不例外. 这样便苦了我们这一批在校学习的大学学子们了.</p>
+
+<p>为了尝试去解决这样的困境,我通过模拟天翼校园网Windows客户端的post登录协议,成功登录了校园网.</p>
+
+<p>在此,将核心POST代码放出供大家参考(Ruby实现),完整代码可以前往我的<a href="https://github.com/EdmondFrank/Esurfing">github</a>浏览和下载.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/ruby</span>
+</span><span class='line'><span class="c1">#coding:utf-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;mechanize&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;digest/md5&#39;</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">getTimestamp</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_i</span><span class="o">.</span><span class="n">to_s</span><span class="o">+</span><span class="s1">&#39;520&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">getmac</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">return</span> <span class="sb">`(ifconfig $i|grep &quot;eth&quot;|awk &#39;{print$5}&#39;|sed &#39;s/:/-/g&#39;|tr &#39;[a-z]&#39; &#39;[A-Z]&#39;)`</span><span class="o">.</span><span class="n">strip</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">vaildmac?</span><span class="p">(</span><span class="n">mac</span><span class="p">)</span>
+</span><span class='line'>   <span class="k">return</span> <span class="n">mac</span><span class="o">=~</span><span class="sr">/^(([\d|a-fA-F]{2}-){5}[\d|a-fA-F]{2})$/</span> <span class="p">?</span> <span class="kp">true</span> <span class="p">:</span> <span class="kp">false</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">vaildip?</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">ip</span> <span class="o">=~</span><span class="sr">/((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))/</span> <span class="p">?</span> <span class="kp">true</span> <span class="p">:</span> <span class="kp">false</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1">#mac=1a-2b-3c-4d-5e-33; if echo $mac | grep -qiP &quot;^([\dA-F]{2}-){5}[\dA-F]{2}$&quot;; then echo $mac yes; else echo $mac no; fi</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">getlocalip</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">ip</span><span class="o">=</span><span class="sb">`(ifconfig $i | grep &quot;inet &quot; | awk -F: &#39;{print $2}&#39; | awk &#39;{print $1}&#39;)`</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">ip</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">getmd5</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span>  <span class="no">Digest</span><span class="o">::</span><span class="no">MD5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">str</span><span class="o">+</span><span class="s1">&#39;Eshore!@#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upcase</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">timestamp</span> <span class="o">=</span> <span class="n">getTimestamp</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">=</span> <span class="n">getmd5</span><span class="p">(</span><span class="n">clientip</span><span class="o">+</span><span class="n">nasip</span><span class="o">+</span><span class="n">mac</span><span class="o">+</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://enet.10000.gd.cn:8001/hbservice/client/active?username=</span><span class="si">#{</span><span class="n">username</span><span class="si">}</span><span class="s2">&amp;clientip=</span><span class="si">#{</span><span class="n">clientip</span><span class="si">}</span><span class="s2">&amp;nasip=</span><span class="si">#{</span><span class="n">nasip</span><span class="si">}</span><span class="s2">&amp;mac=</span><span class="si">#{</span><span class="n">mac</span><span class="si">}</span><span class="s2">&amp;timestamp=</span><span class="si">#{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&amp;authenticator=</span><span class="si">#{</span><span class="n">authenticator</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">agent</span> <span class="o">=</span> <span class="no">Mechanize</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>  <span class="n">page</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">page</span><span class="o">.</span><span class="n">body</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">,</span><span class="n">code</span><span class="p">,</span><span class="n">iswifi</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://enet.10000.gd.cn:10001/client/login&quot;</span>
+</span><span class='line'>  <span class="n">timestamp</span> <span class="o">=</span> <span class="n">getTimestamp</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">=</span><span class="n">getmd5</span><span class="p">(</span><span class="n">clientip</span><span class="o">+</span><span class="n">nasip</span><span class="o">+</span><span class="n">mac</span><span class="o">+</span><span class="n">timestamp</span><span class="o">+</span><span class="n">code</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;username&#39;</span><span class="o">]=</span><span class="n">username</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;password&#39;</span><span class="o">]=</span><span class="n">password</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;clientip&#39;</span><span class="o">]=</span><span class="n">clientip</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;nasip&#39;</span><span class="o">]=</span><span class="n">nasip</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;mac&#39;</span><span class="o">]=</span><span class="n">mac</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;timestamp&#39;</span><span class="o">]=</span><span class="n">timestamp</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;authenticator&#39;</span><span class="o">]=</span><span class="n">authenticator</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;iswifi&#39;</span><span class="o">]=</span><span class="n">iswifi</span>
+</span><span class='line'>  <span class="n">data</span><span class="o">=</span><span class="n">postdata</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">agent</span> <span class="o">=</span> <span class="no">Mechanize</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>  <span class="n">resp</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">status</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;resinfo&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">return</span>  <span class="s2">&quot;登陆信息回馈:&quot;</span><span class="o">+</span><span class="n">status</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">challenge</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">clientip</span><span class="p">,</span><span class="n">nasip</span><span class="p">,</span><span class="n">mac</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://enet.10000.gd.cn:10001/client/challenge&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">timestamp</span> <span class="o">=</span> <span class="n">getTimestamp</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">=</span> <span class="n">getmd5</span><span class="p">(</span><span class="n">clientip</span><span class="o">+</span><span class="n">nasip</span><span class="o">+</span><span class="n">mac</span><span class="o">+</span><span class="n">timestamp</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">=</span><span class="p">{}</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;username&#39;</span><span class="o">]=</span><span class="n">username</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;clientip&#39;</span><span class="o">]=</span><span class="n">clientip</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;nasip&#39;</span><span class="o">]=</span><span class="n">nasip</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;mac&#39;</span><span class="o">]=</span><span class="n">mac</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;timestamp&#39;</span><span class="o">]=</span><span class="n">timestamp</span>
+</span><span class='line'>  <span class="n">postdata</span><span class="o">[</span><span class="s1">&#39;authenticator&#39;</span><span class="o">]=</span><span class="n">authenticator</span>
+</span><span class='line'>  <span class="n">data</span><span class="o">=</span><span class="n">postdata</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'>  <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X-Forwarded_For&#39;</span> <span class="o">=&gt;</span> <span class="n">clientip</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">agent</span> <span class="o">=</span> <span class="no">Mechanize</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>  <span class="n">resp</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">headers</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">result</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;challenge&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/07/02/rubyshi-xian-de-tian-yi-xiao-yuan-wang-ke-hu-duan/">Ruby实现的天翼校园网客户端</a>
+      <time datetime="2016-07-02T20:33:30+08:00" pubdate><span class='month'>Jul</span> <span class='day'>02</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1141,146 +1356,6 @@ httpscan会返回IP http状态码 Web容器版本 以及网站标题。</p>
       <time datetime="2016-06-20T16:30:07+08:00" pubdate><span class='month'>Jun</span> <span class='day'>20</span> <span class='year'>2016</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-19T16:34:50+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Ubuntu下Web服务器Apache的安装及配置</h1>
-
-<h2>一.安装</h2>
-
-<h3>1. 终端下安装Apache:</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo apt-get install apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回车后等待安装完成即可.</p>
-
-<h3>2. 源码编译安装</h3>
-
-<blockquote><p>1.前往 <a href="http://httpd.apache.org">Apache官方网站</a> 下载并解压源码包.</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ tar zxvf httpd-2.4.20.tar.gz
-</span><span class='line'>$ cd httpd-2.4.20</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>2.配置安装路径</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./configure --prefix=/usr/local/apache</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>3.编译并安装</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ make
-</span><span class='line'>$ make install</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>4.启动服务器</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/local/apache/bin
-</span><span class='line'>$ ./apachectrl start</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二.配置</h2>
-
-<p>(1)默认页面的路径
-Apache安装完成后,默认的网站根目录是"/var/www/html"</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /var/www/html
-</span><span class='line'>=&gt; index.html //该文件即为apache的默认页面</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)Apache配置文件的路径
-apache2.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>000-default.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2/sites-available</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)修改网站根目录
-有关网页根目录的设置以上讲述的两个配置文件的设置有关</p>
-
-<p>1)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/apache2.conf
-</span><span class='line'>--&gt;找到"&lt;Directory /var/www/&gt;"的位置--&gt;更改"/var/www/"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<p>2)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/sites-available/000-default.conf
-</span><span class='line'>--&gt;找到"DocumentRoot /var/www/html"的位置--&gt;更改"/var/www/html"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>三.重启Apache使设置生效</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重启完毕后,往修改后的新目录添加你的自定义index.html主页文件,再在浏览器的地址栏键入127.0.0.1就可以查看apache服务器的运行效果了.</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a>
-      <time datetime="2016-06-19T16:34:50+08:00" pubdate><span class='month'>Jun</span> <span class='day'>19</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
       
       </footer>
     </article>

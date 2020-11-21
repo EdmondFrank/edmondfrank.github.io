@@ -9,10 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Jave Dev tools and Debugging Notes Java Maven use maven with proxy and skip tests:
-Structure JShell
-Javap
-Jar Files compile and package as a FAT-JAR &hellip;">
+  <meta name="description" content="Java Reflection - Private Fields and Methods Note: This only works when running the code as a standalone Java application, like you do with unit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +64,187 @@ Jar Files compile and package as a FAT-JAR &hellip;">
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2020/11/21/java-reflection/">Java Reflection</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2020-11-21T16:25:03+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Java Reflection - Private Fields and Methods</h2>
+
+<blockquote><p>Note: This only works when running the code as a standalone Java application, like you do with unit tests and regular applications.
+if you try to do this inside a Java Applet, you will need to fiddle around with <code>SecurityManager</code>.</p></blockquote>
+
+<h3>Accessing Private Fields</h3>
+
+<p>To access a private field you will need to call <code>Class.getDeclaredFiled(String name)</code> method</p>
+
+<p>The methods <code>Class.getField(String name)</code> only return public fields.</p>
+
+<h4>Example</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">java.lang.reflect.Field</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">PrivateObject</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">privateString</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">PrivateObject</span><span class="o">(</span><span class="n">String</span> <span class="n">privateString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">privateString</span> <span class="o">=</span> <span class="n">privateString</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">test</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">NoSuchFieldException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">PrivateObject</span> <span class="n">privateObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PrivateObject</span><span class="o">(</span><span class="s">&quot;The Private Value&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Field</span> <span class="n">privateStringField</span> <span class="o">=</span> <span class="n">privateObject</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getDeclaredField</span><span class="o">(</span><span class="s">&quot;privateString&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">privateStringField</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">oldFieldValue</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">privateStringField</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">privateObject</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;fieldValue: &quot;</span> <span class="o">+</span> <span class="n">oldFieldValue</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">newFieldValue</span> <span class="o">=</span> <span class="n">oldFieldValue</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">&quot;The&quot;</span><span class="o">,</span> <span class="s">&quot;That&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">privateStringField</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">privateObject</span><span class="o">,</span> <span class="n">newFieldValue</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalAccessException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>PS</strong>:
+    by calling <code>Field.setAccessible(true)</code> just turn off the access checks for this particular Field instance, for reflection only. Now you can access it even if it is <strong>private/protected</strong> or <strong>package scope</strong>. even if <code>the caller is not part of those scopes</code> But you still can&rsquo;t access the field using normal code which would be disallowed by compiler.</p>
+
+<h3>Accessing Private Methods</h3>
+
+<p>To access a private method you will need to call the <code>Class.getDeclaredMethod(String name, Class[] parameterTypes)</code></p>
+
+<p>The methods <code>Class.getMethod(String name, Class[] parameterTypes)</code>  only return public methods</p>
+
+<h4>Example</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">java.lang.reflect.InvocationTargetException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.lang.reflect.Method</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">PrivateObject</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">privateString</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">PrivateObject</span><span class="o">(</span><span class="n">String</span> <span class="n">privateString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">privateString</span> <span class="o">=</span> <span class="n">privateString</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getPrivateString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">privateString</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">test</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">NoSuchMethodException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">PrivateObject</span> <span class="n">privateObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PrivateObject</span><span class="o">(</span><span class="s">&quot;The Private Value&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Method</span> <span class="n">privateStringMethod</span> <span class="o">=</span> <span class="n">PrivateObject</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getDeclaredMethod</span><span class="o">(</span><span class="s">&quot;getPrivateString&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">privateStringMethod</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">returnValue</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">privateStringMethod</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">privateObject</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;returnValue = &quot;</span> <span class="o">+</span> <span class="n">returnValue</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalAccessException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvocationTargetException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2020/11/21/java-reflection/">Java Reflection</a>
+      <time datetime="2020-11-21T16:25:03+08:00" pubdate><span class='month'>Nov</span> <span class='day'>21</span> <span class='year'>2020</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/java/'>java</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -1934,237 +2112,6 @@ number1 method</p></blockquote>
       <time datetime="2018-06-01T20:09:15+08:00" pubdate><span class='month'>Jun</span> <span class='day'>01</span> <span class='year'>2018</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ke-ji-zi-xun/'>科技资讯</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-05-30T22:15:17+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="穷举搜索的例子google方程式">穷举搜索的例子－Google方程式</h2>
-
-
-
-
-<h3 id="问题描述">　问题描述</h3>
-
-
-
-
-<p>有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换，并且替换之后能够满足等式。</p>
-
-
-
-
-<h3 id="问题分析">问题分析</h3>
-
-
-
-
-<p>从排列组合的角度来看，这道题是一道典型的排列组合问题，题目中一共出现了9个字母。</p>
-
-
-
-
-<p>如果不考虑0开头的情况下，这样的组合应该有10x9x8x7x6x5x4x3x2=3628800种组合。</p>
-
-
-
-
-<p>在这样的情况之下，计算机的穷举处理应该是毫无压力的。</p>
-
-
-
-
-<h3 id="问题求解">问题求解</h3>
-
-
-
-
-<p>首先为了能够表示这样一种可变的字符元素列表，我们需要自定义一种数据结构。首先我们知道这个自定义结构中应该包含有三个属性，分别是 字符本身，字符代表的数字以及是否为数字的最高位，因为最高位是不能为0的，所以在这里我们要区别对待。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharItem</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">bool</span> <span class="n">leading</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="n">CHAR_ITEM</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>接着我们初始化这个列表。=</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">CHAR_ITEM</span> <span class="n">charItem</span><span class="p">[]</span><span class="o">=</span><span class="p">{</span>
-</span><span class='line'><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;D&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;O&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},</span>
-</span><span class='line'><span class="p">{</span><span class="sc">&#39;T&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;G&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">true</span><span class="p">},{</span><span class="sc">&#39;L&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},</span>
-</span><span class='line'><span class="p">{</span><span class="sc">&#39;E&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;C&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">},{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">false</span><span class="p">}</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>因为这是一个组合问题，那么两个字母就不能被指定为相同的数字，这样我们需要定义额外的占用标识。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">tagCharValue</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">bool</span> <span class="n">isused</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="n">CHAR_VALUE</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//穷举算法实现如下</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">SearchingResult</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[],</span><span class="n">CHAR_VALUE</span> <span class="n">cv</span><span class="p">[],</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">index</span><span class="p">,</span><span class="n">CharListReadyFuncPtr</span> <span class="n">callback</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">max_char_count</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="n">callback</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">return</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">max_number_count</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">IsValueValid</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span><span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">ci</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">;</span>
-</span><span class='line'>      <span class="n">SearchingResult</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">cv</span><span class="p">,</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">callback</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">cv</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">isused</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p>根据题目要求，W，G，D三者都不能为0，为了加快穷举速度可以对他们为0的情况进行剪枝。 <br>
-IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数可以减少约30%。</p>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//callback代码实现</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">OnCharListReady</span><span class="p">(</span><span class="n">CHAR_ITEM</span> <span class="n">ci</span><span class="p">[])</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">minuend</span> <span class="o">=</span> <span class="s">&quot;WWWDOT&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">subtrahend</span> <span class="o">=</span> <span class="s">&quot;GOOGLE&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span> <span class="n">diff</span> <span class="o">=</span> <span class="s">&quot;DOTCOM&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">minuend</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">subtrahend</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">MakeIntegerValue</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span><span class="n">diff</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="n">d</span><span class="p">){</span>
-</span><span class='line'>      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">m</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span><span class="n">s</span><span class="o">&lt;&lt;</span> <span class="s">&quot;=&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote>
-  <p>问题答案 <br>
-  777589 - 188103 = 589486 <br>
-  777589 - 188106 = 589483</p>
-</blockquote>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/05/30/wo-de-suan-fa-tian-ti-zhi-lu-zhi-qiong-ju-sou-suo/">我的算法天梯之路之-穷举搜索</a>
-      <time datetime="2018-05-30T22:15:17+08:00" pubdate><span class='month'>May</span> <span class='day'>30</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
       
       </footer>
     </article>

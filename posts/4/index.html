@@ -9,7 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿Python在Spark上的机器学习之机器学习实战(下) MLlib 的使用（续） 我们在上篇讲到了：数据相关性分析和特征选取，但是我们在上篇中所提及的方法基本都是针对标准的数值型的数据特征；那么，我们下篇就继续将分类变量的统计检验分析，以及最后的建模过程讲述完整。 　统计校验 &hellip;">
+  <meta name="description" content="﻿深度学习入门简介 背景 深度学习的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。 概念 深度学习的概念由Hinton等人于2006年提出。基于深度置信网络(DBN) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,204 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
+
+
+
+
+<h2 id="概念">概念</h2>
+
+
+
+
+<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
+
+
+
+
+<h2 id="原理">原理</h2>
+
+
+
+
+<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
+
+
+
+
+<p>（以上内容摘取自百度百科）</p>
+
+
+
+
+<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
+
+
+
+
+<h2 id="结构">结构</h2>
+
+
+
+
+<h3 id="神经元">神经元</h3>
+
+
+
+
+<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
+
+
+
+
+<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
+
+
+
+
+<p>他的主要执行过程：</p>
+
+
+
+
+<blockquote>
+  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
+</blockquote>
+
+
+
+
+<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
+
+
+
+
+<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
+
+
+
+
+<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
+
+
+
+
+<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
+
+
+
+
+<h3 id="连接方式">连接方式</h3>
+
+
+
+
+<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
+
+
+
+
+<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
+
+
+
+
+<h2 id="全连接前馈网络">全连接前馈网络</h2>
+
+
+
+
+<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
+
+
+
+
+<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
+
+
+
+
+<h2 id="输出层">输出层</h2>
+
+
+
+
+<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
+<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
+
+
+
+
+<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
+
+
+
+
+<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a>
+      <time datetime="2017-12-02T17:17:32+08:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2463,531 +2661,6 @@ RDD，全称Resilient Distributed Datasets，又称弹性分布式数据集。�
       
       - <a href="/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/"> Python在Spark上的机器学习(二)之数据操作</a>
       <time datetime="2017-10-22T16:18:47+08:00" pubdate><span class='month'>Oct</span> <span class='day'>22</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-10-16T14:07:29+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习一之环境搭建">Python在Spark上的机器学习(一)之环境搭建</h1></p>
-
-<p>前面已经介绍了不少机器学习的算法了，那么机器学习又该如何结合大数据一起使用么？</p>
-
-
-
-
-<h2 id="常言道工欲善其事必先利其器">常言道：工欲善其事，必先利其器</h2>
-
-
-
-
-<p>既然来结合大数据与机器学习，我们就不得不提Spark了。</p>
-
-
-
-
-<p>首先，<a href="https://spark.apache.org/docs/latest/index.html">Apache Spark</a> 是专为大规模数据处理而设计的快速通用的计算引擎。Spark是UC Berkeley AMP lab (加州大学伯克利分校的AMP实验室)所开源的类Hadoop MapReduce的通用并行框架，Spark，拥有Hadoop MapReduce所具有的优点；但不同于MapReduce的是Job中间输出结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的MapReduce的算法。</p>
-
-
-
-
-<p>Spark 是一种与 Hadoop 相似的开源集群计算环境，但是两者之间还存在一些不同之处，这些有用的不同之处使 Spark 在某些工作负载方面表现得更加优越，换句话说，Spark 启用了内存分布数据集，除了能够提供交互式查询外，它还可以优化迭代工作负载。</p>
-
-
-
-
-<p>讲了这么多Spark的优点，那么现在我们就先开始来搭建一个Spark 集群环境吧！</p>
-
-
-
-
-<h3 id="安装基础环境">安装基础环境</h3>
-
-
-
-
-<p><strong>1. Java1.8环境搭建</strong>（下载JDK1.8的）：</p>
-
-
-
-
-<blockquote>
-  <p>下载页面： <br>
-  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
-</blockquote>
-
-
-
-
-<p>安装过程可以参考<a href="http://www.linuxidc.com/Linux/2016-05/131348.htm">Linux公社给出的教程</a></p>
-
-
-
-
-<p><strong>Ubuntu用户：</strong> <br>
-Ubuntu用户可以通过添加PPA源再通过Apt来进行安装</p>
-
-
-
-
-<blockquote>
-  <p><span>$</span> sudo add-apt-repository ppa:webupd8team/java <br>
-  <span>$</span> sudo apt-get update <br>
-  <span>$</span> sudo apt-get install oracle-java8-installer</p>
-</blockquote>
-
-
-
-
-<p><strong>2. Scala环境搭建</strong></p>
-
-
-
-
-<p>下载scala安装包：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs avrasm">wget -O <span class="hljs-string">"scala-2.12.3.deb"</span> 
-<span class="hljs-label">https:</span>//downloads<span class="hljs-preprocessor">.lightbend</span><span class="hljs-preprocessor">.com</span>/scala/<span class="hljs-number">2.12</span><span class="hljs-number">.3</span>/scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span>
-或者
-wget -O <span class="hljs-string">"scala-2.12.3.rpm"</span> <span class="hljs-string">"https://downloads.lightbend.com/scala/2.12.3/scala-2.12.3.rpm"</span>
-</code></pre>
-
-
-
-
-<p>安装deb/rpm包：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs avrasm">rpm -ivh scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.rpm</span>
-dpkg -i scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span></code></pre>
-
-
-
-
-<p>增加SCALA_HOME</p>
-
-
-
-
-<blockquote>
-  <p>$ vim /etc/profile</p>
-</blockquote>
-
-
-
-
-<p>增加如下内容;</p>
-
-
-
-
-<blockquote>
-  <p>export SCALA_HOME=/usr/share/scala</p>
-</blockquote>
-
-
-
-
-<p>刷新配置</p>
-
-
-
-
-<blockquote>
-  <p>$ source /etc/profile</p>
-</blockquote>
-
-
-
-
-<h3 id="安装hadoop">安装Hadoop</h3>
-
-
-
-
-<p><strong>1.下载二进制包：</strong> <br>
-wget <a href="http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz">http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz</a></p>
-
-
-
-
-<p><strong>2.解压并移动至相应目录：</strong></p>
-
-
-
-
-<p>我的习惯是将软件放置/opt目录下：</p>
-
-
-
-
-<blockquote>
-  <p>tar -xvf hadoop-2.7.3.tar.gz <br>
-  mv hadoop-2.7.3 /opt</p>
-</blockquote>
-
-
-
-
-<p><strong>3.修改相应的配置文件：</strong></p>
-
-
-
-
-<blockquote>
-  <p><strong>（1）</strong> $ vim /etc/profile</p>
-</blockquote>
-
-
-
-
-<p>增加如下内容：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#hadoop enviroment </span>
-<span class="hljs-keyword">export</span> HADOOP_HOME=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/
-<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$HADOOP_HOME</span>/bin:<span class="hljs-variable">$HADOOP_HOME</span>/sbin:<span class="hljs-variable">$PATH</span>"</span>
-<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop
-<span class="hljs-keyword">export</span> YARN_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop</code></pre>
-
-
-
-
-<blockquote>
-  <p><strong>（2）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hadoop-env.sh</p>
-</blockquote>
-
-
-
-
-<p>修改JAVA_HOME 如下：</p>
-
-
-
-
-<blockquote>
-  <p>export JAVA_HOME=&lt;你的Java安装目录&gt;</p>
-</blockquote>
-
-
-
-
-<p>-</p>
-
-
-
-
-<blockquote>
-  <p><strong>（3）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/core-site.xml</p>
-</blockquote>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>fs.defaultFS<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>hdfs://master:9000<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>io.file.buffer.size<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>131072<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-       <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>hadoop.tmp.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>/opt/hadoop-2.7.3/tmp<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
-
-
-
-
-<blockquote>
-  <p><strong>（4）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hdfs-site.xml</p>
-</blockquote>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:50090<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.replication<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.name.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/name<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.datanode.data.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/data<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
-
-
-
-
-<blockquote>
-  <p><strong>（5）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/mapred-site.xml</p>
-</blockquote>
-
-
-
-
-<p>复制template，生成xml：</p>
-
-
-
-
-<blockquote>
-  <p>cp mapred-site.xml.template mapred-site.xml</p>
-</blockquote>
-
-
-
-
-<p>内容：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
- <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.framework.name<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>yarn<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:10020<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:19888<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
-
-
-
-
-<p><strong>（6）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/yarn-site.xml</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-comment">&lt;!-- Site specific YARN configuration properties --&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>mapreduce_shuffle<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-           <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-           <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8032<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.scheduler.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8030<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.resource-tracker.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8031<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.admin.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8033<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
-     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.webapp.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8088<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
-     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span></code></pre>
-
-
-
-
-<p>至此master节点的hadoop搭建完毕</p>
-
-
-
-
-<p>再启动之前我们需要</p>
-
-
-
-
-<p>格式化一下namenode</p>
-
-
-
-
-<blockquote>
-  <p>$ hadoop namenode -format</p>
-</blockquote>
-
-
-
-
-<h3 id="安装spark">安装Spark</h3>
-
-
-
-
-<p><strong>下载文件：</strong></p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs mathematica">wget -<span class="hljs-keyword">O</span> <span class="hljs-string">"spark-2.1.0-bin-hadoop2.7.tgz"</span> <span class="hljs-string">"http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz"</span></code></pre>
-
-
-
-
-<p><strong>解压并移动至相应的文件夹：</strong></p>
-
-
-
-
-<blockquote>
-  <p>tar -xvf spark-2.1.0-bin-hadoop2.7.tgz <br>
-  mv spark-2.1.0-bin-hadoop2.7 /opt</p>
-</blockquote>
-
-
-
-
-<p><strong>修改相应的配置文件：</strong></p>
-
-
-
-
-<blockquote>
-  <p><strong>（1）</strong> <span>$</span> vim /etc/profie</p>
-</blockquote>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#Spark enviroment</span>
-<span class="hljs-keyword">export</span> SPARK_HOME=/opt/spark-<span class="hljs-number">2.1</span>.<span class="hljs-number">0</span>-bin-hadoop2.<span class="hljs-number">7</span>/
-<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$SPARK_HOME</span>/bin:<span class="hljs-variable">$PATH</span>"</span></code></pre>
-
-
-
-
-<blockquote>
-  <p><strong>（2）</strong> <span>$</span> vim $SPARK_HOME/conf/spark-env.sh</p>
-</blockquote>
-
-
-
-
-<p>-</p>
-
-
-
-
-<blockquote>
-  <p>cp spark-env.sh.template spark-env.sh</p>
-</blockquote>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#配置内容如下：</span>
-<span class="hljs-keyword">export</span> SCALA_HOME=/usr/share/scala
-<span class="hljs-keyword">export</span> JAVA_HOME=&lt;你的Java安装目录&gt;
-<span class="hljs-keyword">export</span> SPARK_MASTER_IP=master
-<span class="hljs-keyword">export</span> SPARK_WORKER_MEMORY=<span class="hljs-number">1</span>g
-<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/etc/hadoop</code></pre>
-
-
-
-
-<p>至此，我们大部分环境基本安装完毕！</p>
-
-
-
-
-<h2 id="测试spark">测试Spark</h2>
-
-
-
-
-<p>为了避免麻烦这里我们使用spark-shell以及本地的文件（非hdfs），做一个简单的worcount的测试。</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs livecodeserver">val <span class="hljs-built_in">file</span>=sc.textFile(<span class="hljs-string">"/home/ef/Desktop/Notes/wordcount_test"</span>)
-val rdd = <span class="hljs-built_in">file</span>.flatMap(<span class="hljs-built_in">line</span> =&gt; <span class="hljs-built_in">line</span>.<span class="hljs-built_in">split</span>(<span class="hljs-string">" "</span>)).map(<span class="hljs-built_in">word</span> =&gt; (<span class="hljs-built_in">word</span>,<span class="hljs-number">1</span>)).reduceByKey(_+_)
-rdd.collect()
-rdd.foreach(println)</code></pre>
-
-
-
-
-<p><strong>展示图：</strong> <br>
-<img src="https://i.loli.net/2017/10/10/59dc80d01e9ff.png" alt="spark-shell.png" title=""></p>
-
-
-
-
-<h2 id="小结">小结</h2>
-
-
-
-
-<p>到此，我们在Spark上进行机器学习训练的环境，就搭建完毕了，下章我们再开始讲Spark中的数据结构与Python中的区别，以及结合Pyspark来进行数据处理。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a>
-      <time datetime="2017-10-16T14:07:29+08:00" pubdate><span class='month'>Oct</span> <span class='day'>16</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       

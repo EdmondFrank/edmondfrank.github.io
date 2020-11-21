@@ -4,7 +4,7 @@
   <title><![CDATA[Category: java | EdmondFrank's 时光足迹]]></title>
   <link href="https://edmondfrank.github.io/blog/categories/java/atom.xml" rel="self"/>
   <link href="https://edmondfrank.github.io/"/>
-  <updated>2020-10-26T23:29:40+08:00</updated>
+  <updated>2020-11-21T16:26:36+08:00</updated>
   <id>https://edmondfrank.github.io/</id>
   <author>
     <name><![CDATA[EdmondFrank]]></name>
@@ -12,6 +12,94 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java Reflection]]></title>
+    <link href="https://edmondfrank.github.io/blog/2020/11/21/java-reflection/"/>
+    <updated>2020-11-21T16:25:03+08:00</updated>
+    <id>https://edmondfrank.github.io/blog/2020/11/21/java-reflection</id>
+    <content type="html"><![CDATA[<h2>Java Reflection - Private Fields and Methods</h2>
+
+<blockquote><p>Note: This only works when running the code as a standalone Java application, like you do with unit tests and regular applications.
+if you try to do this inside a Java Applet, you will need to fiddle around with <code>SecurityManager</code>.</p></blockquote>
+
+<h3>Accessing Private Fields</h3>
+
+<p>To access a private field you will need to call <code>Class.getDeclaredFiled(String name)</code> method</p>
+
+<p>The methods <code>Class.getField(String name)</code> only return public fields.</p>
+
+<h4>Example</h4>
+
+<pre><code class="java">import java.lang.reflect.Field;
+
+class PrivateObject {
+    private String privateString = null;
+    public PrivateObject(String privateString) {
+        this.privateString = privateString;
+    }
+}
+public class test {
+    public static void main(String[] args) throws NoSuchFieldException {
+        PrivateObject privateObject = new PrivateObject("The Private Value");
+        Field privateStringField = privateObject.getClass().getDeclaredField("privateString");
+        privateStringField.setAccessible(true);
+        try {
+            String oldFieldValue = (String) privateStringField.get(privateObject);
+            System.out.println("fieldValue: " + oldFieldValue);
+            String newFieldValue = oldFieldValue.replace("The", "That");
+            privateStringField.set(privateObject, newFieldValue);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<p><strong>PS</strong>:
+    by calling <code>Field.setAccessible(true)</code> just turn off the access checks for this particular Field instance, for reflection only. Now you can access it even if it is <strong>private/protected</strong> or <strong>package scope</strong>. even if <code>the caller is not part of those scopes</code> But you still can&rsquo;t access the field using normal code which would be disallowed by compiler.</p>
+
+<h3>Accessing Private Methods</h3>
+
+<p>To access a private method you will need to call the <code>Class.getDeclaredMethod(String name, Class[] parameterTypes)</code></p>
+
+<p>The methods <code>Class.getMethod(String name, Class[] parameterTypes)</code>  only return public methods</p>
+
+<h4>Example</h4>
+
+<pre><code class="java">import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+class PrivateObject {
+    private String privateString = null;
+    public PrivateObject(String privateString) {
+        this.privateString = privateString;
+    }
+
+    private String getPrivateString() {
+        return this.privateString;
+    }
+}
+public class test {
+    public static void main(String[] args) throws NoSuchMethodException {
+        PrivateObject privateObject = new PrivateObject("The Private Value");
+
+        try {
+            Method privateStringMethod = PrivateObject.class.getDeclaredMethod("getPrivateString", null);
+            privateStringMethod.setAccessible(true);
+            String returnValue = (String) privateStringMethod.invoke(privateObject, null);
+
+            System.out.println("returnValue = " + returnValue);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java Dev tools and Debugging notes]]></title>

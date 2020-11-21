@@ -9,10 +9,7 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="﻿树莓派与L298N驱动模块实现智能小车控制 准备 首先在讲整体实现之前，笔者先附上自己的开发环境以及使用到的工具、硬件等。 用到的工具有： 树莓派3代（自带wifi模块）
-L298N电机驱动板
-USB移动电源一个（为树莓派供电） 电池组一组（为驱动模块、智能小车的电机供电）
-智能小车底盘 &hellip;">
+  <meta name="description" content="﻿谈谈Google自动编程框架AutoML 背景 首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。 据最新的报道：Google AutoML 系统自主编写机器学习代码， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +64,239 @@ USB移动电源一个（为树莓派供电） 电池组一组（为驱动模块�
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2018-02-08T18:17:01+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="谈谈google自动编程框架automl">谈谈Google自动编程框架AutoML</h1></p>
+
+<h2 id="背景">背景</h2>
+
+
+
+
+<p>首先，近年在Google AI First 的战略领导之下，Google 陆陆续续发布了不少AI相关产品。那么，我们今天就来看看最近许多公众号和报道中提到的AutoML系统。</p>
+
+
+
+
+<p>据最新的报道：Google AutoML 系统自主编写机器学习代码，其效率在某种程度上竟然超过了专业的研发工程师。</p>
+
+
+
+
+<p>但AutoML的目标并不是要将人类从开发过程中剥离出去，也不是要开发全新的人工智能，而是让人工智能继续维持某种速度来改变世界。</p>
+
+
+
+
+<p>看完这篇报道后许多程序员开始担心未来程序员的工作将很快会被替代。但在笔者看来，AutoML的出现更像是机器学习领域中早就该出现的一个“编译器”，而对于被替代的担心，纯属无稽之谈。就像人写的汇编代码几乎都不可能好过由编程自动生成的优化后的汇编代码一样。</p>
+
+
+
+
+<p>下面就让我们一起来看看AutoML到底是何方神圣吧。</p>
+
+
+
+
+<h2 id="什么是automl">什么是AutoML？</h2>
+
+
+
+
+<p>根据<a href="http://www.ml4aad.org/automl/">AutoML官网</a>上的介绍： <br>
+ <strong>机器学习(Machine Learning, ML)</strong>近年来取得了相当大的成功，越来越多的学科需要依赖它。然而，这个成功的关键是需要人类机器学习工程师完成以下的工作：</p>
+
+
+
+
+<ul>
+<li>预处理数据</li>
+<li>选择适当的功能</li>
+<li>选择一个适当的模型选择系列</li>
+<li>优化模型超参</li>
+<li>后处理机器学习模型</li>
+<li>严格分析所得的结果</li>
+</ul>
+
+
+
+
+<p>由于这些任务的复杂性通常超过了非机器学习专家的能力，机器学习应用的快速增长产生了对于现成的机器学习方法的需求，而且这些现成的机器学习方法简单易使用且不需要专业的知识。我们称以机器学习的渐进自动化为目标的研究领域为<strong>AutoML(Automatic Machine Learning, AutoML)</strong>。</p>
+
+
+
+
+<p>​虽然它的最终用户面向那些没有专业机器学习知识的人，但AutoML依然向机器学习专业人士提供一些新的工具，如：</p>
+
+
+
+
+<ul>
+<li>执行深层表示的架构搜索</li>
+<li>分析超参数的重要性</li>
+</ul>
+
+
+
+
+<p>遵循<a href="http://www.prog-by-opt.net/">优化编程</a>的范例，AutoML主张开发可以用数据驱动的方式自动实例化的灵活软件包。</p>
+
+
+
+
+<h2 id="automl的架构">AutoML的架构</h2>
+
+
+
+
+<p>AutoML网络的设计从卷积架构的初始版本进行多年的仔细实验和细化完成的。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95t6n59bj20hs084aai.jpg" alt="" title=""> <br>
+在团队一个名为「AutoML」的项目中（如图所示），左边有一个名为「控制器」（the controller）的 RNN，它设计出一个「child」的模型架构，而后者能够通过某些特定任务进行训练与评估。随后，反馈的结果（feedback）得以返回到控制器中，并在下一次循环中提升它的训练设定。这一过程重复上千次——生成新的架构、测试、再把反馈输送给控制器再次学习。最终，控制器会倾向于设计那些在数据集中能获得更高准确性的架构，而反之亦然。</p>
+
+
+
+
+<p>谷歌团队将这一方法应用于深度学习的两大数据集中，专注图像识别的 CIFAR-10 与语言建模的 Penn Treebank。在两个数据集上，系统自行设计的模型性能表现与目前机器学习专家所设计的领先模型不相上下。 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fo95uv0zlvj20hs08adgr.jpg" alt="" title=""></p>
+
+
+
+
+<p>让机器自行选择架构（machine-chosen architecture），与人类在设计神经网络的时候有一些共通之处，比如都采用了合并输入，并借鉴了此前的隐藏层。但其中也有一些亮点，比如机器选择的架构包含乘法组合 ( multiplicative combination)，如右图最左边（机器设计）的蓝色标签为「elem_mult」。对于循环神经网络而言，出现组合的情况并不多见，可能因为人类研究者并没有发现明显的优势。有意思的地方在于，此前人类设计者也提议过机器采用的乘法组合，认为这种方法能够有效缓解梯度消失/爆炸问题。这也就意味着，机器选择的架构能够对发现新的神经架构大有裨益。</p>
+
+
+
+
+<p>此外，机器还能教会人类为何某些神经网络的运行效果比较好。上图右边的架构有非常多的渠道，梯度可以向后流动，这也解释了为何 LSTM RNNs 的表现比标准 RNN 的性能要好。</p>
+
+
+
+
+<p>「从长远看来，我们对于机器所设计的架构进行深入的分析和测试，这能够帮助我们重新定义原本自身对架构的看法。如果我们成功，这意味着将会启发新的神经网络的诞生，也能让一些非专家研究人员根据自己的需要创造神经网络，让机器学习造福每一个人。」</p>
+
+
+
+
+<h2 id="automl的案例应用">AutoML的案例应用</h2>
+
+
+
+
+<p>AutoML旨在创建可以由ML新手”开箱即用“的软件。</p>
+
+
+
+
+<ul>
+<li><a href="http://www.cs.ubc.ca/labs/beta/Projects/autoweka/">AutoWEAK</a>：就是是一种可以同时选择机器学习算法和其对应超参数的方法；通过使用WEKA包，可以为各种数据集自动生成良好的模型。</li>
+<li><a href="http://automl.github.io/auto-sklearn/stable/">auto-sklearn</a>：则是一个自动化的机器学习工具包，甚至可以直接替换scikit-learn estimator模块。</li>
+</ul>
+
+
+
+
+<h2 id="测试结果">测试结果</h2>
+
+
+
+
+<p>既然，AutoML说的这么厉害，笔者这里就使用auto-sklearn来测试下分类模型的效果。（使用MNIST数据集） <br>
+有关AutoML的具体使用教程，日后再放出，这里就先简单贴个结果，评测个模型准确率和性能。</p>
+
+
+
+
+<p>首先，是笔者的LogisticRegression模型+特征工程：</p>
+
+
+
+
+<blockquote>
+  <p>LogisticRegression(PolynomialFeatures(input_matrix, degree=2, include_bias=False, interaction_only=False), C=0.5, dual=False, penalty=l2) <br>
+  Accuracy score 0.988888888889</p>
+</blockquote>
+
+
+
+
+<p>然后是auto-sklearn框架的自生成模型：</p>
+
+
+
+
+<blockquote>
+  <p>import autosklearn.classification <br>
+  import sklearn.model_selection <br>
+  import sklearn.datasets <br>
+  import sklearn.metrics <br>
+  X, y = sklearn.datasets.load_digits(return_X_y=True) <br>
+  X_train, X_test, y_train, y_test = \ <br>
+         sklearn.model_selection.train_test_split(X, y, random_state=1) <br>
+  automl = autosklearn.classification.AutoSklearnClassifier() <br>
+  automl.fit(X_train, y_train) <br>
+  y_hat = automl.predict(X_test) <br>
+  print(“Accuracy score”, sklearn.metrics.accuracy_score(y_test, y_hat)) <br>
+   [Out] Accuracy score 0.993333333333</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>看到结果，心情复杂。辛辛苦苦的特征工程果然还是干不过AutoML。不过，AutoML生成模型的耗时也是相当高的。 <br>
+<strong>PS</strong> 说个题外话。微软一样的服务（不用写代码，不用调参数，会拖控件就能帮你训练深度学习模型）已经发布快一年了。 <br>
+网站：<a href="https://www.customvision.ai/">https://www.customvision.ai/</a> <br>
+新闻报道：<a href="https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/">https://thenextweb.com/dd/2017/05/10/microsofts-custom-vision-lets-build-computer-vision-ai-models-minutes/</a> <br>
+只能说Google不愧是IT界的”广告公司“，这公关的对决高下立判。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2018/02/08/tan-tan-googlezi-dong-bian-cheng-kuang-jia-automl/">谈谈Google自动编程框架AutoML</a>
+      <time datetime="2018-02-08T18:17:01+08:00" pubdate><span class='month'>Feb</span> <span class='day'>08</span> <span class='year'>2018</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -2071,204 +2301,6 @@ Using Context-Dependent Deep Neural Networks.” Interspeech. 2011. <br>
       
       - <a href="/blog/2017/12/08/shen-du-xue-xi-ru-men-jian-jie-(er-)/">深度学习入门简介（二）</a>
       <time datetime="2017-12-08T12:52:08+08:00" pubdate><span class='month'>Dec</span> <span class='day'>08</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-12-02T17:17:32+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="深度学习入门简介">深度学习入门简介</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念源于人工神经网络的研究。含多隐层的多层感知器就是一种深度学习结构。深度学习通过组合低层特征形成更加抽象的高层表示属性类别或特征，以发现数据的分布式特征表示。</p>
-
-
-
-
-<h2 id="概念">概念</h2>
-
-
-
-
-<p><strong>深度学习</strong>的概念由Hinton等人于2006年提出。基于深度置信网络(DBN)提出非监督贪心逐层训练算法，为解决深层结构相关的优化难题带来希望，随后提出多层自动编码器深层结构。此外Lecun等人提出的卷积神经网络是第一个真正多层结构学习算法，它利用空间相对关系减少参数数目以提高训练性能。</p>
-
-
-
-
-<h2 id="原理">原理</h2>
-
-
-
-
-<p><strong>深度学习</strong>是机器学习中一种基于对数据进行表征学习的方法。观测值（例如一幅图像）可以使用多种方式来表示，如每个像素强度值的向量，或者更抽象地表示成一系列边、特定形状的区域等。而使用某些特定的表示方法更容易从实例中学习任务（例如，人脸识别或面部表情识别）。深度学习的好处是用非监督式或半监督式的特征学习和分层特征提取高效算法来替代手工获取特征。</p>
-
-
-
-
-<p>（以上内容摘取自百度百科）</p>
-
-
-
-
-<p><strong>个人理解：</strong>如果说机器学习是为了找出一个能够代表输入变量和输出变量的关系的函数的话；那么深度学习就是先根据输入和输出变量之间的关系，列出一系列能够代表他们之间关系的函数，然后再从这个函数集之中提取一个最优的函数。</p>
-
-
-
-
-<h2 id="结构">结构</h2>
-
-
-
-
-<h3 id="神经元">神经元</h3>
-
-
-
-
-<p>随着神经网络的应用和深度学习在人工智能领域的大放异彩，很多人都说神经网络的是最成功的仿真模型。那么他的结构究竟是怎样子的呢？</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/01/5a217a29cf015.png" alt="nn.png" title=""></p>
-
-
-
-
-<p>一个简单的神经网咯函数（一般称作：神经元），就如上图所示。</p>
-
-
-
-
-<p>他的主要执行过程：</p>
-
-
-
-
-<blockquote>
-  <p>多个输入a X 各自的权重w + 偏置值b =&gt; 激活函数 =&gt; 输出</p>
-</blockquote>
-
-
-
-
-<p>其中，在这个流程之中，我们可能比较迷惑的是那个激活函数Activation function。</p>
-
-
-
-
-<p><strong>Activation Function：</strong>即激活函数，目前的常用的激活函数由挺多的，例如，Simmoid Function，tanh，relu等等。虽然形式上不同，但是他们大体的目的都是较为一致的，就是用来加入非线性因素的，因为线性模型的表达能力不够。</p>
-
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-1"> 如下所示的Sigmoid Function \\\sigma(z)=\frac{1}{1+e^{-z}}</script></p>
-
-
-
-
-<p>同时，激活函数可以将非常大或非常小的数据映射到“逻辑空间”[-1,1]之间，这样映射过后的数据更适合在反向传播算法中进行梯度下降。</p>
-
-
-
-
-<h3 id="连接方式">连接方式</h3>
-
-
-
-
-<p>上面我们提及的仅仅是神经网络中的一个神经元，他是神经网络之中最基本的组成单位。但是如果要构建一个强大智能的神经网络，仅仅靠一个神经元是不行的。于是，我们便可以将多个神经元分层连接起来，这样才构成了我们所知道的神经网络。</p>
-
-
-
-
-<p>既然，神经网络的构成本质就是神经元的连接，那么不同的连接方式就会形成不同的神经网络结构如全连接前馈网络，多层感知器，卷积神经网络，循环神经网络等等。</p>
-
-
-
-
-<h2 id="全连接前馈网络">全连接前馈网络</h2>
-
-
-
-
-<p>在众多的连接之间，全连接的前馈网络不仅较为简单，也是很多深层网络的基础。他的基本连接方式如下图片所示：</p>
-
-
-
-
-<p><img src="https://i.loli.net/2017/12/02/5a2180e6120e2.png" alt="feedforward.png" title=""></p>
-
-
-
-
-<p>其中，一般来说神经网络的第一层通常都是输入层，而最后一层便是输出层以及中间的都统一称作隐藏层。深度神经网络中的“深”便代表了这个网络中间有非常多的隐藏层。</p>
-
-
-
-
-<h2 id="输出层">输出层</h2>
-
-
-
-
-<p>通常，输出层一般为Softmax 层，并且其可以为任意值。在应用中，输出的结果通常用概率的形式表达，其具体形式如下图所示： <br>
-<img src="https://i.loli.net/2017/12/02/5a218350cc19b.png" alt="output.png" title=""></p>
-
-
-
-
-<p>那么，我们知道了神经网络的组成之后，我们要是想自己构建一个神经网络，我们又该如何确定神经网络的层数和每层的神经元的个数呢？</p>
-
-
-
-
-<p><strong>就目前来说，</strong>并没有相当的严谨的理论来指导神经网络的构建。我们往往需要依靠直觉和训练测试结果的误差反馈来一步一步选择我们的层数和神经元数以达到要求的效果。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/12/02/shen-du-xue-xi-ru-men-jian-jie/">深度学习入门简介</a>
-      <time datetime="2017-12-02T17:17:32+08:00" pubdate><span class='month'>Dec</span> <span class='day'>02</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
       
