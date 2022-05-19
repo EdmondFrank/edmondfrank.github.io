@@ -1,0 +1,108 @@
+---
+layout: post
+title: "(转)Linux On Android——在Android手机上跑Linux教程"
+date: 2016-08-21 17:15:20 +0800
+comments: true
+categories: 转载分享
+---
+
+##(转)Linux On Android——在Android手机上跑Linux教程(以Ubuntu14.04-core为例）
+前言
+
+Android 是基于 Linux 内核的开源操作系统，主要用在移动设备上。当然同样是基于 Linux 内核的操作系统，现在支持的 Android 的智能手机理论来说都能运行基于 Linux 的操作系统，比如现在流行的发行版：Ubuntu、Fedora 等等。不仅如此，现在的智能移动设备的硬件也越来越强，更为能运行 Linux 系统提供了良好的硬件支持。今天就带大家来尝试一下在 Android 手机上安装 Ubuntu14.04操作系统。
+有关说明:
+
+- **原帖点[这里](http://www.jianshu.com/p/3c5f792bca1f)**
+- **注:ubuntu14.04-core类似于Ubuntu系列的服务器版本,想使用图形界面的朋友可以在系统安装完成后,自行下载Ubuntu的图形界面(KDE,GNOME,XFCE或LXDE,而在图形界面方面博主较为推荐LXDE,轻便,简捷,占用资源及空间较少.但是用户友好度不高,适合低配低容量手机(装在SD卡的读者可以无视这个建议!))**
+- **想用图形界面,但又怕安装图形界面麻烦的读者可以直接安装Ubuntu12.04-Full,更多其他linux发行版可以在sourceforge.net的LinuxonAndroid目录列表中查询,详情可以继续往下阅读.**
+
+###配置要求
+
+- **设备需要 root 权限(重点,没有root的手机以下的关键操作基本都无法执行)，并且安装了 BusyBox**
+- 最小 1GHz 处理器(推荐)
+- Android 系统版本 2.1 或以上
+- 手机容量,一般有张4GB的SD卡就够了(其他像kali的映像(至少5G)除外) (安装full映像需要3.5GB,small映像需要2G,core映像则只需要1G)
+- 支持 Ext2 文件系统(大部分 Android 设备应该都支持)
+
+###博主设备
+- 手机型号:lenvon A5500
+- 处理器主频:1.6GHz
+- 无SD卡(由于博主装的是core版,使用1G的机身空余容量即可)
+- Android版本:5.0
+
+###需要的软件(此处清单基本照抄原帖主)
+- [Android Terminal Emulator (终端模拟器)](https://play.google.com/store/apps/details?id=jackpal.androidterm) ：用于运行 shell 脚本
+- [BusyBox](https://play.google.com/store/apps/details?id=stericson.busybox) ：用于提供 shell 命令的支持
+- [Android VNC Viewer](https://play.google.com/store/apps/details?id=android.androidVNC)：用于 Android 设备的远程连接工具
+- [Ubuntu 14.04-core的映像文件](http://sourceforge.net/projects/linuxonandroid/files/)：用于安装 Ubuntu 的映像文件(该网站中有很多 Linux 发行版，大家也可以尝试其他发行版)
+- ubuntu.sh：Ubuntu 的安装脚本
+    - 链接：http://pan.baidu.com/s/1hqgVxvY 密码：o0xa
+- bootscript.sh：Ubuntu 的启动脚本
+    - 链接：http://pan.baidu.com/s/1pJkeSkF 密码：whfe
+
+##开始安装
+###0. 取得 ROOT 权限
+
+首先您的手机需要 root，也就是能够获得root权限去操作，相当于越狱。不懂的可以去 Google 一下“Android获取root权限”。root是前提，所以先要把这个做好，不过现在很多ROM都做的很好，比如MIUI就有很好的权限管理。
+###1. 安装文件下载
+
+首先就是下载必要的文件，这个是在 sourceforge.net 上的一个叫 Linux-on-Android 的项目。
+我上面给的地址中有一般三个包可供下载(Ubuntu14.04除外,目前只有core版)：
+
+其实下面就有英文的介绍，我就在这里简单介绍一下：
+
+>    full 映像包含了完整的 Ubuntu 系统，其中包括 Unity 桌面，还有很多如GIMP等常用软件，非常齐全。需要 3.5G 以上空间。
+
+>    small 映像包含了的基本的 Ubuntu 系统，其中包括 LXDE 桌面，需要 2G 以上空间。
+
+>    core 映像包含了基础的 Ubuntu 系统，不过这个没有GUI的，也就是没有桌面只有命令行。
+
+
+下载完待安装的 Ubuntu 14.04-core 的映像文件，然后我们安装还需要安装脚本，也就是上面说的 ubuntu.sh ，还有安装后的启动脚本 bootscript.sh 。有了这些文件后我们在手机的根目录，新建一个文件夹取名为 ubuntu ，然后把这里我们刚才下载好的文件放到这个文件夹里面，到这里 ubuntu 文件夹里就分别有 ubuntu.img、ubuntu.sh、bootcript.sh 这三个文件了。
+
+**注:由于原帖主安装的是Ubuntu12.04,文件系统才用的是ext2,而此处我们要安装的是Ubuntu14.04-core所以两个脚本文件的内容有些许的出入,大家用编辑器将两个.sh文件打开,用搜索替换功能将脚本里面的"ext2"替换成"ext4"保存退出即可.**
+
+##安装软件(此处照搬原帖,博主懒得码字了...)
+首先需要的是 Terminal 这个软件，也就是一个终端，通过终端我们可以用来执行很多命令和脚本。上面我给出了Google Play的地址，这个在很多地方都有的下的，还有Android VNC Viewer也可以在 Google Play 里面找到安装。
+
+在这里我要说一下 BusyBox，它使得你可以在 Terminal 中运行很多命令，现在很多 Android 的 Rom (我用的MIUI_v4_2.8.10也是) 的终端中很多命令都不能运行，比如 cp、mv、cut 等，但是这些都是我们脚本里面需要用到的，如果不能运行这些命令而执行脚本的话，会提示 **: not found 这样的提示。所以安装 BusyBox 可以使得这些命令都能够在终端里面执行。如果你的Rom本来够强大已经包含了BusyBox的新版本，能够运行基本的shell命令的话，那也可以不用装这个。
+
+当然安装 BusyBox 以及后面我们在 Terminal 中都需要 root 权限，如果是MIUI系统的话则可以直接在 授权管理 > ROOT权限管理 里面打开该选项，然后需要root权限的时候允许就可以了。其他的系统我没用过，不过可以直接用 一键ROOT工具 来操作。
+
+安装 BusyBox，安装好后，打开BusyBox点击 Install 开始安装，如果弹出需要ROOT权限，点下一步允许就行!
+
+##安装 ubuntu 14.04-core
+首先，打开 终端模拟器(Terminal) ，在光标处输入 “cd /ubuntu”(不包括引号，注意cd后有空格)然后回车，这样就来到了刚才我们在SD卡里面新建的目录了.
+
+接下来我们就要开始运行 ubuntu.sh 这个安装脚本了，但在这之前我们需要使用 root 用户来运行这个脚本，在终端中使用命令 “su” 来切换至 root 用户权限，如果弹出授权信息点击下一步允许就行了，或者直接用 一键ROOT 来开启终端重复上面操作，成功后如图之前的“$”变成了“#”，这就说明已经获得Root权限了
+
+然后运行安装脚本，输入命令 “sh ubuntu.sh”，进行安装
+
+然后脚本为你建立了一个名字为“ubuntu”的帐号，这里提示你需要为你的帐号设置一个密码，这个密码会在以后你操作 Ubuntu 的时候一些授权应用到，比如我在这里设置密码为：“ubuntu”，这里注意的是在终端里面输入密码是不会显示出来的，你看见光标没有动静，但实际上你已经输入进去了。回车后提示再次输入密码以保证你两次密码一样
+
+密码设置完成后，提示是否启动VNC服务和SSH服务，我们只要输入“y”然后回车，开启了这两个服务后我们才能通过远程连接来连上系统
+
+然后提示我们输入设备屏幕的尺寸，我的屏幕是1280x800的，所以我输入“1280x800”（小米手机注意：小米手机是854×480的，但是后面用Android VNC 连接的时候有问题，在右边会显示一条线，所以小米手机用户最好设置成“852×480”，其他手机没有测试过，在设置的时候请注意！）。注意：这里两个数字之间的不是乘号，而是字母“xyz”的“x”，输错了不能远程连接的.
+
+然后，提示是否保存你刚才的设置为默认设置，只要输入“y”即可
+
+然后你就可以看到操作完成后光标前的字符变成了“root@localhost:~#”，这样说明你已经成功进入ubuntu系统中了.
+
+##远程桌面连接
+自行查询VNC的使用说明,在此博主不再赘述.
+连接ip:localhost:5900(其中":5900",可填可不填)
+密码:ubuntu
+
+##退出 Ubuntu 系统
+只需要回到刚才我们运行的终端，输入命令 “exit” 回车，等待片刻即可退出 Ubuntu 系统，再次输入 “exit” 回车 则是退出手机终端的 root 用户权限，然后再次 “exit” 回车后则是退出手机终端，这样就完全退出了
+
+##下次启动
+下次启动的时候只需要开启 终端，然后输入 “su” 获得 root 权限，再输入 “cd /ubuntu” 来到ubuntu文件夹下，然后在输入 “sh bootscript.sh” 运行启动脚本就可以运行启动 Ubuntu 了，需要连接桌面的话按照上面说的用 Android VNC 就可以了。
+
+**(其实对于一个服务器系统来说,博主更推荐使用ssh连接来代替VNC连接)**
+
+最后补一张最终效果图(此处博主已经自行安装了LXDE桌面环境):
+{% img /images/ubuntu.jpg %}
+
+
+

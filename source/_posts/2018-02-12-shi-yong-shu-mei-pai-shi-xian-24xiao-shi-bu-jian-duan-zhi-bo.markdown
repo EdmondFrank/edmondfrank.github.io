@@ -1,0 +1,255 @@
+---
+layout: post
+title: "使用树莓派实现24小时不间断直播"
+date: 2018-02-12 22:14:22 +0800
+comments: true
+categories: 树莓派
+---
+﻿<h1 id="使用树莓派进行24小时不间断直播">使用树莓派进行24小时不间断直播</h1>
+
+<h2 id="开始">开始</h2>
+
+<p>多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。</p>
+
+
+
+<h2 id="方案一-ffmpeg-ffserver搭建流媒体服务器">方案一 ffmpeg + ffserver搭建流媒体服务器</h2>
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+<p><strong>硬件方面：</strong></p>
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+<p><strong>软件方面：</strong></p>
+
+<ul>
+<li>ffmpeg，负责媒体文件的转码工作，把你服务器上的源媒体文件转成要发出去的流媒体文件。</li>
+<li>ffserver，负责响应客户端的流媒体请求，把流媒体数据发送给客户端，相当与一个小型的服务端。</li>
+</ul>
+
+<p>具体的工作方式就如下图所示： <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzrw4b72j20iu0buq52.jpg" alt="" title=""></p>
+
+<p>多个输入源被“喂”到广播服务器，这些多媒体内容就会分发到多个客户端。上图的目的是显示地表明你的流系统能够被分成多个块部署到网络上，允许你广播不同的在线内容，而不需要改变流媒体系统的结构。</p>
+
+<h3 id="配置">配置</h3>
+
+<p>无论是树莓派官方摄像头模块还是其他兼容的USB摄像头，连接好摄像头之后，运行命令去启用摄像头：</p>
+
+<blockquote>
+  <p>sudo raspi-config</p>
+</blockquote>
+
+<p><strong>ffserver.conf</strong>，ffserver启动时的配置文件，在这个文件中主要是对网络协议，缓存文件feed1.ffm（见下述）和要发送的流媒体文件的格式参数做具体的设定。</p>
+
+<p><strong>feed1.ffm</strong>，可以看成是一个流媒体数据的缓存文件，ffmpeg把转码好的数据发送给ffserver，如果没有客户端连接请求，ffserver把数据缓存到该文件中。</p>
+
+<p><strong>下面就是一个ffserver.conf的一个例子</strong>：</p>
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">Port <span class="hljs-number">8090</span>                      <span class="hljs-preprocessor"># Port to bind the server to</span>
+BindAddress <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>
+MaxHTTPConnections <span class="hljs-number">2000</span>
+MaxClients <span class="hljs-number">1000</span>
+MaxBandwidth <span class="hljs-number">10000</span>             <span class="hljs-preprocessor"># Maximum bandwidth per client</span>
+                               <span class="hljs-preprocessor"># set this high enough to exceed stream bitrate</span>
+CustomLog -
+NoDaemon                       <span class="hljs-preprocessor"># Remove this if you want FFserver to daemonize after start</span>
+
+&lt;Feed feed1<span class="hljs-preprocessor">.ffm</span>&gt;               <span class="hljs-preprocessor"># This is the input feed where FFmpeg will send</span>
+   File ./feed1<span class="hljs-preprocessor">.ffm</span>            <span class="hljs-preprocessor"># video stream.</span>
+   FileMaxSize <span class="hljs-number">64</span>M              <span class="hljs-preprocessor"># Maximum file size for buffering video</span>
+   ACL allow <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>         <span class="hljs-preprocessor"># Allowed IPs</span>
+&lt;/Feed&gt;
+
+&lt;Stream test<span class="hljs-preprocessor">.webm</span>&gt;              <span class="hljs-preprocessor"># Output stream URL definition</span>
+   Feed feed1<span class="hljs-preprocessor">.ffm</span>              <span class="hljs-preprocessor"># Feed from which to receive video</span>
+   Format webm
+
+   <span class="hljs-preprocessor"># Audio settings</span>
+   AudioCodec vorbis
+   AudioBitRate <span class="hljs-number">64</span>             <span class="hljs-preprocessor"># Audio bitrate</span>
+
+   <span class="hljs-preprocessor"># Video settings</span>
+   VideoCodec libvpx
+   VideoSize <span class="hljs-number">720</span>x576           <span class="hljs-preprocessor"># Video resolution</span>
+   VideoFrameRate <span class="hljs-number">25</span>           <span class="hljs-preprocessor"># Video FPS</span>
+   AVOptionVideo flags +global_header  <span class="hljs-preprocessor"># Parameters passed to encoder</span>
+                                       <span class="hljs-preprocessor"># (same as ffmpeg command-line parameters)</span>
+   AVOptionVideo cpu-used <span class="hljs-number">0</span>
+   AVOptionVideo qmin <span class="hljs-number">10</span>
+   AVOptionVideo qmax <span class="hljs-number">42</span>
+   AVOptionVideo quality good
+   AVOptionAudio flags +global_header
+   PreRoll <span class="hljs-number">15</span>
+   StartSendOnKey
+   VideoBitRate <span class="hljs-number">400</span>            <span class="hljs-preprocessor"># Video bitrate</span>
+&lt;/Stream&gt;
+
+&lt;Stream status<span class="hljs-preprocessor">.html</span>&gt;            <span class="hljs-preprocessor"># Server status URL</span>
+   Format status
+   <span class="hljs-preprocessor"># Only allow local people to get the status</span>
+   ACL allow localhost
+   ACL allow <span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> <span class="hljs-number">192.168</span><span class="hljs-number">.255</span><span class="hljs-number">.255</span>
+&lt;/Stream&gt;
+
+&lt;Redirect index<span class="hljs-preprocessor">.html</span>&gt;    <span class="hljs-preprocessor"># Just an URL redirect for index</span>
+   <span class="hljs-preprocessor"># Redirect index.html to the appropriate site</span>
+   URL http://www<span class="hljs-preprocessor">.ffmpeg</span><span class="hljs-preprocessor">.org</span>/
+&lt;/Redirect&gt;</code></pre>
+
+<p>ffserver启动时默认查看 /etc/ffserver.conf 配置文件，你可以通过-f选项控制查阅的配置文件。</p>
+
+<blockquote>
+  <p>ffserver -f ffserver.conf</p>
+</blockquote>
+
+<p>运行结果如下所示的话，那么ffserver就算是启动成功了。</p>
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzzq0svjj20xm08jgmv.jpg" alt="" title=""></p>
+
+<p>打开<a href="http://localhost:8090/status.html">http://localhost:8090/status.html</a>可以看到当前server中各个流的状态。</p>
+
+<h3 id="接入视频流">接入视频流</h3>
+
+<p>ffserver启动之后，就可以向 <br>
+<a href="http://localhost:8090/feed1.ffm">http://localhost:8090/feed1.ffm</a>接入视频流。</p>
+
+<p><strong>注意</strong>，这里不需要指定编码格式，FFserver会重新编码。</p>
+
+<p>视频流的来源可以是文件、摄像头或者录制屏幕。</p>
+
+<h3 id="接入视频文件">接入视频文件</h3>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs avrasm">ffmpeg -i testvideo<span class="hljs-preprocessor">.mp</span>4 http://localhost:<span class="hljs-number">8090</span>/feed1<span class="hljs-preprocessor">.ffm</span></code></pre>
+
+
+
+<h3 id="接入录制屏幕">接入录制屏幕</h3>
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> x11grab <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x512 <span class="hljs-attribute">-i</span> :<span class="hljs-number">0.0</span> <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span>
+</code></pre>
+
+<p>这里有两个-f，第一个指的是视频流，第二个指的是音频流。视频流是抓取屏幕形成视频，-r设置帧率为25帧/s，-s设置抓取图像大小为640x512，-i设置录制视频的初始坐标。音频流设置为alsa(Advanced Linux Sound Architecture)，从Linux系统中获取音频。这其中这样ffmpeg可以录制屏幕feed到feed1.ffm中。</p>
+
+<h3 id="接入摄像头直播">接入摄像头直播</h3>
+
+<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> video4linux2 <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x480 <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-i</span> /dev/video0 <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span></code></pre>
+
+<h2 id="方案二-avconv-和-gstreamer-用于采集摄像头捕获的视频流并推送到-rtmp-服务">方案二 avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</h2>
+
+<p><strong>首先</strong> <br>
+我们用到的工具有：</p>
+
+<p><strong>硬件方面：</strong></p>
+
+<ul>
+<li>树莓派主板一块</li>
+<li>兼容树莓派的USB摄像头一个</li>
+</ul>
+
+<p><strong>软件方面：</strong></p>
+
+<ul>
+<li>avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</li>
+<li>NGINX 和 RTMP 模块，用于接收视频流，同时提供视频发布功能</li>
+</ul>
+
+<h3 id="安装配置">安装＆配置</h3>
+
+<p>因为这里我们要用到nginx的rtmp模块作为服务端，而系统自带的apt安装的nginx是没有这个模块的，所以我们需要先安装后移除nginx然后再手动编译（安装是为了下载好相关依赖）。</p>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">sudo</span> apt-get update
+<span class="hljs-comment">#安装 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y install nginx
+<span class="hljs-comment">#移除 nginx</span>
+<span class="hljs-built_in">sudo</span> apt-get -y remove nginx
+<span class="hljs-built_in">sudo</span> apt-get clean
+<span class="hljs-comment">#清空 nginx 的配置文件</span>
+<span class="hljs-built_in">sudo</span> rm -rf /etc/nginx/*
+<span class="hljs-comment">#安装编译用的模块</span>
+<span class="hljs-built_in">sudo</span> apt-get install -y curl build-essential libpcre3 libpcre3-dev libpcre++-dev zlib1g-dev libcurl4-openssl-dev libssl-dev
+<span class="hljs-comment">#创建存放网页的目录给 nginx 使用</span>
+<span class="hljs-built_in">sudo</span> mkdir -p /var/www
+<span class="hljs-comment">#创建编译用的目录</span>
+mkdir -p ~/nginx_src
+<span class="hljs-built_in">cd</span> ~/nginx_src
+<span class="hljs-comment">#下载 nginx 源码包</span>
+wget http://nginx.org/download/nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+<span class="hljs-comment">#下载 nginx-rtmp-module 源码包</span>
+wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
+tar -zxvf nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
+unzip master.zip
+<span class="hljs-built_in">cd</span> nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>
+<span class="hljs-comment">#设定编译参数</span>
+./configure --prefix=/var/www --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_ssl_module --without-http_proxy_module --add-module=/home/pi/nginx_src/nginx-rtmp-module-master
+<span class="hljs-comment">#开始编译安装</span>
+make
+<span class="hljs-built_in">sudo</span> make install</code></pre>
+
+
+
+<h3 id="配置-nginx">配置 nginx</h3>
+
+<blockquote>
+  <p>sudo gedit /etc/nginx/nginx.conf</p>
+</blockquote>
+
+<p>在末尾添加</p>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs applescript">rtmp {
+    server {
+        listen <span class="hljs-number">1935</span>;
+        chunk_size <span class="hljs-number">4096</span>;
+        <span class="hljs-type">application</span> live {
+            live <span class="hljs-function_start"><span class="hljs-keyword">on</span></span>;
+            <span class="hljs-type">record</span> off;
+        }
+    }
+}</code></pre>
+
+<p>重启 nginx 服务。</p>
+
+<blockquote>
+  <p>sudo service nginx start</p>
+</blockquote>
+
+<h3 id="安装-avconv-和-gstreamer">安装 avconv 和 GStreamer</h3>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs cs">sudo apt-<span class="hljs-keyword">get</span> update
+sudo apt-<span class="hljs-keyword">get</span> install libav-tools
+<span class="hljs-preprocessor">#安装 GStreamer</span>
+sudo apt-<span class="hljs-keyword">get</span> install gstreamer1<span class="hljs-number">.0</span>-tools
+<span class="hljs-preprocessor">#安装 GStreamer 扩展组件</span>
+sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span>-dbg libgstreamer1<span class="hljs-number">.0</span>-dev liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span> liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span>-dbg liborc-<span class="hljs-number">0.4</span>-dev liborc-<span class="hljs-number">0.4</span>-doc gir1<span class="hljs-number">.2</span>-gst-plugins-<span class="hljs-keyword">base</span>-<span class="hljs-number">1.0</span> gir1<span class="hljs-number">.2</span>-gstreamer-<span class="hljs-number">1.0</span> gstreamer1<span class="hljs-number">.0</span>-alsa gstreamer1<span class="hljs-number">.0</span>-doc gstreamer1<span class="hljs-number">.0</span>-omx gstreamer1<span class="hljs-number">.0</span>-plugins-bad gstreamer1<span class="hljs-number">.0</span>-plugins-bad-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-bad-doc gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span> gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-apps gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-doc gstreamer1<span class="hljs-number">.0</span>-plugins-good gstreamer1<span class="hljs-number">.0</span>-plugins-good-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-good-doc gstreamer1<span class="hljs-number">.0</span>-plugins-ugly gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-doc gstreamer1<span class="hljs-number">.0</span>-pulseaudio gstreamer1<span class="hljs-number">.0</span>-tools gstreamer1<span class="hljs-number">.0</span>-x libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-dev libgstreamer-plugins-base1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-base1<span class="hljs-number">.0</span>-dev
+</code></pre>
+
+<h3 id="采集与呈现视频流">采集与呈现视频流</h3>
+
+
+
+<pre class="prettyprint"><code class="language-sh hljs erlang-repl"><span class="hljs-function_or_atom">gst</span>-<span class="hljs-function_or_atom">launch</span>-<span class="hljs-number">1.0</span> -<span class="hljs-function_or_atom">v</span> <span class="hljs-function_or_atom">v4l2src</span> <span class="hljs-function_or_atom">device</span>=/<span class="hljs-function_or_atom">dev</span>/<span class="hljs-function_or_atom">video0</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-string">'video/x-raw, width=1024, height=768, framerate=30/1'</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">queue</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">videoconvert</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">omxh264enc</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">h264parse</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">flvmux</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">rtmpsink</span> <span class="hljs-function_or_atom">location</span>=<span class="hljs-string">'rtmp://树莓派的IP地址/live live=1'</span> &amp;</code></pre>
+
+<p>采用以上命令就可以在后台采集ＵＳＢ摄像头拍摄的直播内容并推送到ｒｔｍｐ服务端上了。</p>
+
+<p><strong>呈现直播视频画面</strong>：</p>
+
+<p>1、使用 RTMP 播放器播放视频流 <br>
+例如 VLC 等播放器（桌面版和手机版均有）支持 RTMP 视频流播放，填入 rtmp://树莓派的IP地址/live 即可播放。不过这个软件有数十秒的缓冲延迟，需要设定缓冲时间来缩短延迟。</p>
+
+<p>２、推送至斗鱼直播平台观看 <br>
+你可能注意到了 GStreamer 这个命令中有 location 这个参数。这个参数是设定采集到的视频流推向哪里，通过设定这个参数可以将视频流推向任何支持 RTMP 协议的服务器。</p>
+
+<p>斗鱼平台同样采用了 RTMP 协议传输直播视频，首先获取斗鱼的 RTMP 推流地址。开启了直播室之后可以获得推流码。注意，斗鱼的推流码是有时限的，取到推流码需要尽快使用以免过期。</p>
