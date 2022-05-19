@@ -9,10 +9,10 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Ubuntu下Web服务器Apache的安装及配置 一.安装 1. 终端下安装Apache: 1
-$ sudo apt-get install apache2 回车后等待安装完成即可. 2. 源码编译安装 1.前往 Apache官方网站 下载并解压源码包. 1
-2
-$ tar zxvf httpd &hellip;">
+  <meta name="description" content="Table of Contents 1. 算法原理介绍 1.1. 简介
+1.2. 定义 2. 基本步骤 2.1. 前提需求
+2.2. 提取网页正文
+2.3. 算法实现 3. 效果测试 算法原理介绍 简介 本文主要采用基于标记窗的方法来提取网页的正文信息，不仅仅适合于处理一个网页中所有正文 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,7 +73,7 @@ $ tar zxvf httpd &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/">Web正文提取(偏純文本类)</a></h1>
     
     
       <div class="post-meta">
@@ -91,7 +91,7 @@ $ tar zxvf httpd &hellip;">
 
 
 
-<time datetime="2016-06-19T16:34:50+08:00" pubdate data-updated="true"></time> -</span>
+<time datetime="2017-05-02T20:48:47+08:00" pubdate data-updated="true"></time> -</span>
           
         </p>
       </div>
@@ -99,545 +99,71 @@ $ tar zxvf httpd &hellip;">
   </header>
 
 
-  <div class="entry-content"><h1>Ubuntu下Web服务器Apache的安装及配置</h1>
-
-<h2>一.安装</h2>
-
-<h3>1. 终端下安装Apache:</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo apt-get install apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回车后等待安装完成即可.</p>
-
-<h3>2. 源码编译安装</h3>
-
-<blockquote><p>1.前往 <a href="http://httpd.apache.org">Apache官方网站</a> 下载并解压源码包.</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ tar zxvf httpd-2.4.20.tar.gz
-</span><span class='line'>$ cd httpd-2.4.20</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>2.配置安装路径</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./configure --prefix=/usr/local/apache</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>3.编译并安装</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ make
-</span><span class='line'>$ make install</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>4.启动服务器</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/local/apache/bin
-</span><span class='line'>$ ./apachectrl start</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二.配置</h2>
-
-<p>(1)默认页面的路径
-Apache安装完成后,默认的网站根目录是"/var/www/html"</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /var/www/html
-</span><span class='line'>=&gt; index.html //该文件即为apache的默认页面</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)Apache配置文件的路径
-apache2.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>000-default.conf的路径:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls /etc/apache2/sites-available</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)修改网站根目录
-有关网页根目录的设置以上讲述的两个配置文件的设置有关</p>
-
-<p>1)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/apache2.conf
-</span><span class='line'>--&gt;找到"&lt;Directory /var/www/&gt;"的位置--&gt;更改"/var/www/"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<p>2)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /etc/apache2/sites-available/000-default.conf
-</span><span class='line'>--&gt;找到"DocumentRoot /var/www/html"的位置--&gt;更改"/var/www/html"为新的根目录就可以了</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>三.重启Apache使设置生效</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/init.d/apache2 restart</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重启完毕后,往修改后的新目录添加你的自定义index.html主页文件,再在浏览器的地址栏键入127.0.0.1就可以查看apache服务器的运行效果了.</p>
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 算法原理介绍</a>
+<ul>
+<li><a href="#sec-1-1">1.1. 简介</a></li>
+<li><a href="#sec-1-2">1.2. 定义</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. 基本步骤</a>
+<ul>
+<li><a href="#sec-2-1">2.1. 前提需求</a></li>
+<li><a href="#sec-2-2">2.2. 提取网页正文</a></li>
+<li><a href="#sec-2-3">2.3. 算法实现</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. 效果测试</a></li>
+</ul>
 </div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/19/ubuntuxia-webfu-wu-qi-apachede-an-zhuang-ji-pei-zhi/">Ubuntu下Web服务器Apache的安装及配置</a>
-      <time datetime="2016-06-19T16:34:50+08:00" pubdate><span class='month'>Jun</span> <span class='day'>19</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-18T14:58:51+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>梦修日记-卸载电脑浏览器</h1>
-
-<blockquote><p>2016-6-18 记一次失败的清醒梦经历</p></blockquote>
-
-<hr />
-
-<p>中午吃完饭后,休息了近乎一个小时然后准备上床睡觉.不知道是本来疲惫还是天气热的原因,进入浅度睡眠状态的过程十分轻易.在床上,做了几天深呼吸,然后想象全身放松,然后就感觉全身的力气好像被蒸发掉了一样,整个人就迷迷糊糊的,处于似睡非睡的边缘状态了.</p>
-
-<p>再持续个几分钟(个人感觉而已,事实上我也不知道过了多久了),脑海开始浮现画面,梦中的我出现在了一个久未逢面好友的家中,我们面对着一台笔记本电脑.虽然不知道是否是我忘记了起因,还是原本剧情的进展就是如此的突然.我大脑突然就接收到了要帮助好友一起卸载面前的笔记本的IE浏览器的讯息,就像是在游戏中突然接受NPC委派的神秘任务一样愕然.</p>
-
-<p>我顺应着梦中的指示一路任由剧情发展,接着,在梦中的好友,接过了电脑的操作权,打开360准备卸载ie浏览器.然后一个以红色色系为主且窗口布局十分传统的UI窗口出现在我面前.(虽然我已经转入linux阵营有一大段时间了,但我记得在我用Windows那段时间里,除了国庆假日之外鲜有使用红色主题,更何况即使在XP依旧更新时代360也抛弃了传统的窗口布局,如此强行的梦中设定,我能信?)</p>
-
-<p>&hellip;&hellip;!!,我信了!剧情继续发展,好友开始卸载ie浏览器.按下一键卸载按钮后,弹出了一个进度提示框.</p>
-
-<p>显示:</p>
-
-<blockquote><p>正在卸载Internet Explorer &hellip;</p>
-
-<p>==>=============== 剩余10.xx MB</p></blockquote>
-
-<p> &hellip; =Σ( ° △ °|||)!</p>
-
-<p>(IE浏览器连个安装包都30M+了,整个应用居然才统计出10来M,我能信?)</p>
-
-<p>&hellip;&hellip;!!! (-_-) 我又信了!</p>
-
-<p>就这样任由的梦境的发展,最后一阵狂风袭来,袭击了虚掩着的门,在砰的一声关门声下,我从梦中惊醒.</p>
-
-<h2>总结:虽然这次的自己在梦中意识清晰,然后在面对着错漏百出的梦境,我却没有去怀疑.难怪别人总说清明梦的关键并非是逻辑强大,意识清晰而在于警觉性.若没有在梦中遇到不合理的现象就疑梦验梦的警觉,其余都是徒然.梦修尚未成功,Edmond仍在努力!!!</h2>
-
-<h4>o(<em>￣▽￣</em>)ゞ</h4>
 </div>
-  
-  
 
 
-      <footer>
-      
-      - <a href="/blog/2016/06/18/meng-xiu-ri-ji-xie-zai-liu-lan-qi-wo-yu-qing-xing-meng-cha-jian-er-guo/">梦修日记-卸载浏览器(我与清醒梦檫肩而过)</a>
-      <time datetime="2016-06-18T14:58:51+08:00" pubdate><span class='month'>Jun</span> <span class='day'>18</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
+<h1>算法原理介绍<a id="sec-1" name="sec-1"></a></h1>
 
+<h2>简介<a id="sec-1-1" name="sec-1-1"></a></h2>
 
+<p>本文主要采用基于标记窗的方法来提取网页的正文信息，不仅仅适合于处理一个网页中所有正文
+信息均放在一个td的情况，也适合于处理网页正文放在多个td中的情况。即，它能够解决非Table
+结构的网页正文提取问题。</p>
 
+<h2>定义<a id="sec-1-2" name="sec-1-2"></a></h2>
 
+<p>一般称HTML中成对出现的标记为标记对，称HTML格式的网页中出现在Title之后显示内容为非空的
+标记对为标记窗</p>
 
+<h1>基本步骤<a id="sec-2" name="sec-2"></a></h1>
 
+<h2>前提需求<a id="sec-2-1" name="sec-2-1"></a></h2>
 
-
-  
-
-
-
-<time datetime="2016-06-16T22:23:37+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Electron - 用JavaScript来构建跨平台的桌面应用</h1>
-
-<p>　　  Electron 框架的前身是 Atom Shell，可以让你写使用 JavaScript，HTML 和 CSS 构建跨平台的桌面应用程序。它是基于io.js 和 Chromium 开源项目，并用于在 Atom 编辑器中。Electron 是开源的，由 GitHub 维护，有一个活跃的社区。最重要的是，Electron 应用服务构建和运行在 Mac，Windows 和 Linux。</p>
-
-<h2>　　　　</h2>
-
-<p>　　
-　　<img src="/images/Electron.png"></p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/16/electron-yong-javascriptlai-gou-jian-kua-ping-tai-de-zhuo-mian-ying-yong/">Electron-用JavaScript来构建跨平台的桌面应用</a>
-      <time datetime="2016-06-16T22:23:37+08:00" pubdate><span class='month'>Jun</span> <span class='day'>16</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/">如何控制你的梦境</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-14T15:49:20+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>如何控制梦境</h1>
-
-<hr />
-
-<p>说到如何控制梦境,那么不得不提到的就是"清醒梦"了.</p>
-
-<h2>控制梦境的基础-清醒梦</h2>
-
-<p><strong>清醒梦</strong>:(英语:<em>lucid dream</em>)又被称为"清明梦",是指在意识清醒的时候所作的梦.清醒梦跟白日梦并不相同,清醒梦是做梦者于睡眠状态中保持意识清醒;而白日梦则是做梦者于清醒状态中进行冥想或幻想,而不进入睡眠状态之中.在清醒梦的状态下，做梦者可以在梦中拥有清醒时候的思考和记忆能力，部分的人甚至可以使自己的梦境中的感觉真实得跟现实世界并无二样，但却知道自己身处梦中，清醒梦者亦能记忆大部分各个不同清醒梦之世界与情境。</p>
-
-<p>清醒梦是人们在做梦的时候还保持意识的清醒。这时会有更加清楚的感觉，甚至有时可以直接控制梦的内容。完整的从开始到结束的这种过程就叫做清醒梦。</p>
-
-<hr />
-
-<p>控制梦境可能是一个人能够拥有的最迷人的经历了,在梦中的世界,你可以自由翱翔,发挥你的想象力尽情创造.那么如何控制你的梦境呢?往下读,或许就能得到对你有用的提示了!</p>
-
-<h2>控制梦境的方法</h2>
-
-<h3>方法一:记录你的梦境</h3>
-
-<ol>
-<li>买一个小的笔记本,这会成为你的追梦笔记.把笔记本放在床边,准备上一支你喜欢的笔,这样你就能在醒来的时候快速写下梦中发生的事情了.</li>
-<li>记得,要放在床头喔.如果时间拖得太长,有关梦中的记忆就会消失咯.</li>
-<li>在你的笔记本里写下你想要梦到什么.我喜欢把这称为目标梦境.</li>
-<li>画出图画并写下指示,细节越多越好.</li>
-<li>并且其中一个很重要的秘诀就是告诉你自己在梦中会经历什么,这样当你在梦境之中就能够意识到自己在做梦了.</li>
-<li>每天早晨,一觉醒来之后,就记录下自己的梦.即使你的梦境不是你所期待的,也要写下来喔.</li>
-<li>就像运动员要每天锻炼一样,时常训练自己的大脑回忆梦境,有助于作出更加精确而深入的梦.</li>
-<li>再者,对比已发生的梦境和目标梦境的类似和不同之处,尝试解读自己的梦境.要记住梦境不会像大脑清醒时一样为你呈现出具体的影像或问题的答案,更多的是通过隐喻或抽象的图像来与你交流.</li>
-</ol>
-
-
-<hr />
-
-<h3>方法二:练习觉醒</h3>
-
-<ol>
-<li>阅读你的目标梦境.在每天晚上睡觉之前,尽可能频繁地阅读它,并尝试将其细节映入脑中.</li>
-<li>当你把一个内容看过一两次后,你的大脑就会认为它已经明白这些词的意思,并开始倦怠下来.因此,要确认完全掌握了目标梦境的意义,这样你才能在睡觉前全面地感知它.</li>
-<li>躺下来,闭上眼睛,然后努力想想你的目标梦境.放松,再放松,仔细想想它的细节.</li>
-<li>幻想你目标梦境中的画面出现在你的潜意识中。你的潜意识会产生许多画面，有些和你的目标梦境完全不相干，所以排开那些不相干的，并努力把注意力集中在相关的上面。</li>
-<li>想想你的目标梦境中的背景画面和声音;努力在意识中听到这声音。试着感受与你的感觉，情绪等有关联的感觉。</li>
-<li>如果没有出现清晰的声音或图像，试着再次在做梦笔记中阅读你的目标梦境。</li>
-<li>漫步在你的目标梦境之中.由始至终以第一人称的视角,想象你的眼睛会看到什么.</li>
-<li>试着按照梦境中应当发生的顺序在你的目标梦境中慢步。</li>
-<li>努力地想，但要保持静止的姿势。不过紧张，放松就好。</li>
-<li>带着脑中的这些画面和声音睡觉。记得在醒来时要记录你的梦，不管是什么梦。</li>
-</ol>
-
-
-<hr />
-
-<h3>方法三:控制自己的梦境</h3>
-
-<ol>
-<li>试着在白天进行“真实性核实”.真实性核实是当你问自己：“我是醒着，还是在做梦？”这最终能帮助你在睡着后识别梦境和现实的不同.</li>
-<li>真实性核实要求注意到梦境和现实的一个根本不同：在做梦时，状态是流动的，而现实中，状态是不变的。在梦里，文字会变成不同的词组；树木会改变颜色和形状；时钟会让时间倒流而不是向前走。而在现实中，文字是不会变的，树木长在地上，而时钟精准地走动。</li>
-<li>要有效地确认真实性，无论在现实还是梦境里，都可以看文字。假设房间里有张贴画上写着“吉米·亨德里克斯”。转过身待一会儿，然后再次看这个贴画。如果上面还写着“吉米·亨德里克斯”，这次真实性核实说明你醒着。如果你转过身去，再看贴画时上面写着“琼斯母亲”，那么这次真实性核实说明你在做梦。</li>
-<li>利用你的真实性核查。当你在做梦，并意识到自己在做梦时，就开始能控制梦里发生的大部分事情了。</li>
-<li>当你战胜了梦境并意识到自己在做梦时，试着让自己平静下来。如果你对于终于能有控制梦境太激动了，你可能会因为激动突然醒来。</li>
-<li>先尝试小的运动。再一次，这关乎于控制住自己的兴奋，不要突然醒来。当你意识到自己能完全掌控梦境后，连做饭，爬梯子，或是玩滑板这样的平常事都会很有趣。</li>
-<li>逐步地在梦里尝试更大的活动。许多人喜欢飞翔，游进大海深处的感觉，还有时空旅行。试着移动巨大的物体，穿过墙壁，甚至是心灵遥感。你在梦里能做的事情只被自己的想象力所限制！</li>
-</ol>
-
-
-<hr />
-
-<h1>最后祝大家好梦</h1>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/14/ru-he-kong-zhi-ni-de-meng-jing/">如何控制你的梦境</a>
-      <time datetime="2016-06-14T15:49:20+08:00" pubdate><span class='month'>Jun</span> <span class='day'>14</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xin-lu-sui-xiang/'>心路随想</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-12T16:37:33+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>图片截获工具driftnet</h1>
-
-<p>driftnet是一款简单强大的图片捕获工具,可以在网络数据包之中实时判断和离线捕获图片,该工具内置于kali工具包之中.在正常的Linux系统系统也可以在<a href="https://github.com/deiv/driftnet">Github</a>上下载源码编译使用.</p>
-
-<h3><strong>语法</strong>:driftnet [options] [fifter code]</h3>
-
-<h3><strong>常用选项</strong>:</h3>
+<p>满足规范化网页，即：</p>
 
 <ul>
-<li>-h:显示帮助信息</li>
-<li>-b:捕获到新图片时,发出蜂鸣声.</li>
-<li>-i interface:选择监听接口(默认为全部接口,<em>此选项为关键选项</em>.)</li>
-<li>-f file:读取一个指定pcap数据包中的图片</li>
-<li>-p:不让所监听的接口使用混杂模式</li>
-<li>-a:后台模式,即截取的图片自动保存至临时目录中,不显示在屏幕上.</li>
-<li>-m number:指定保存图片的最大数目</li>
-<li>-d directory:指定保存图片的路径</li>
-<li>-x prefix:指定保存图片的前缀名</li>
-<li>-s:尝试解读网络数据包中的音频流或视频流信息,现只支持MPEG格式</li>
-<li>-S:类似-s</li>
+<li>除了网页标记tag外的地方出现"&lt;&ldquo;,&rdquo;>&ldquo;用&lt;&gt;替代</li>
+<li>所有标记的属性值放在引号中，如 a herf=&ldquo;www.baidu.com"。</li>
+<li>所有标记都是匹配的，即每个开始标记均对应着一个结束，如<body></body></li>
+<li>所有标记都是正确嵌套的</li>
 </ul>
 
 
-<blockquote><p>使用示例:</p></blockquote>
+<h2>提取网页正文<a id="sec-2-2" name="sec-2-2"></a></h2>
 
-<p>Wlan0监听:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -i wlan0</span></code></pre></td></tr></table></div></figure>
-
-
-<p>读取指定pcap数据包:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>driftnet -f /home/tmp/tmp.pcapng -a -d /tmp/</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>找出所有的标记窗Tw，对每一个标记窗Tw<sub>i</sub>(i=1,&#x2026;,N),去掉其中的HTML标记，得到不含任何HTML</li>
+</ol>
 
 
-<h3>常用组合:</h3>
+<p>标记的字符串。
+2.  对每个标记窗Tw<sub>i</sub> 内的字符串分词，得到字符串序列。取出S<sub>twi</sub> 中的实词，得到S<sub>twi</sub> ＝{</p>
 
-<blockquote><p>ettercap + driftnet</p>
+<p>W<sub>tw1</sub>,W<sub>tw2</sub>,&#x2026;,W<sub>twq</sub>}。使用Levenshtein Distance公式计算标题词序列S<sub>title与字符串</sub>
+序列S<sub>twi的距离（即主题相关性）</sub>
+3.  比较计算结果和閥值大小，如果小于则为正文信息，将其提取，否则，舍弃。</p>
 
-<p>arproof + driftnet</p></blockquote>
-
-<p>(有关组合的使用以及dirftnet的其他用法,博主会在后期的博客,陆续更新,敬请期待.)</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2016/06/12/tu-pian-jie-huo-gong-ju-driftnet/">图片截获工具driftnet</a>
-      <time datetime="2016-06-12T16:37:33+08:00" pubdate><span class='month'>Jun</span> <span class='day'>12</span> <span class='year'>2016</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/an-quan-shen-tou/'>安全渗透</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2016-06-11T20:16:12+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>标准化configure文件的生成</h1>
-
-<p>作为一个Linux系统下的开发者,都会或多或少地使用make这个命令来编译自己的程序，既然要用到make命令的话，一个简易的Makefile文件是必不可少的。平时大家自己编译时，如果要使用make命令编译的话，应该都是自己手写一个简单实用的Makefile文件。但一般软件需要发布的时候，由于自己手写的Makefile文件，不符合GNU的标准，且没有考虑各种诸多因素，导致程序在编译时也会出现各种问题。
-因此为了解决如何生成符合CNU标准的configure和Makefile文件，我们可以使用Linux中autotools系统的工具来进行自动生成configure脚本来创建Makefile文件。</p>
-
-<p>下面我以一个简单的HelloWorld程序作为例子：</p>
-
-<h2>一、建立项目文件夹</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir /tmp/hello
-</span><span class='line'>$ cd /tmp/hello</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二、编写源文件(博主此处以C++程序为例）</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim hello.cpp
-</span><span class='line'>(此处大家可以自己喜欢的编辑器编写）</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//hello.cpp</span>
-</span><span class='line'><span class="cp">#include&lt;iostream&gt;</span>
-</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>     <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;Hello World!&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'>     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>保存并退出后，当前目录下就有了一个hello.cpp的程序源文件了。</p>
-
-<h2>三、生成初步configure文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">autoscan</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大家用man来查看autoscan这个命令就会知道，这个命令使用扫描当前源代码目录并生成configure.in模板的，这个命令的输出文件是configure.scan,我们只要将它重命名为configure.in再编辑其中的内容即可。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">mv</span> <span class="n">configure</span><span class="p">.</span><span class="n">scan</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
-</span><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">configure</span><span class="p">.</span><span class="n">in</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注："#&ldquo;在脚本语言或linux的大部分配置文件中代表注释，与C&amp;C++的“//”意义相同</strong>
-现在将configure.in修改下一下内容</p>
+<h2>算法实现<a id="sec-2-3" name="sec-2-3"></a></h2>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -653,128 +179,518 @@ apache2.conf的路径:</p>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="cp"># -*- Autoconf -*-</span>
-</span><span class='line'><span class="cp"># Process this file with autoconf to produce a configure script.</span>
-</span><span class='line'><span class="n">AC_PREREQ</span><span class="p">([</span><span class="mf">2.63</span><span class="p">])</span>
-</span><span class='line'><span class="n">AC_INIT</span><span class="p">(</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>  <span class="err">#此项代表源代码的路径，</span><span class="mf">1.0</span><span class="err">为版本号（可省略）</span>
-</span><span class='line'><span class="n">AM_INIT_AUTOMAKE</span><span class="p">(</span><span class="n">hello</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="err">#此项为必需项，代表生成软件包的名字和版本号</span>
-</span><span class='line'><span class="cp">#AC_CONFIG_SRCDIR(hello.cpp) #为了简化操作，我们注释掉这两项内容</span>
-</span><span class='line'><span class="cp">#AC_CONFIG_HEADERS([config.h])</span>
-</span><span class='line'><span class="cp"># Checks for programs.</span>
-</span><span class='line'><span class="n">AC_PROG_CXX</span>   <span class="err">#此项代表使用</span><span class="n">C</span><span class="o">++</span><span class="err">编译器</span>
-</span><span class='line'><span class="cp"># Checks for libraries.</span>
-</span><span class='line'><span class="cp"># Checks for header files.</span>
-</span><span class='line'><span class="cp"># Checks for typedefs, structures, and compiler characteristics.</span>
-</span><span class='line'><span class="cp"># Checks for library functions.</span>
-</span><span class='line'><span class="n">AC_OUTPUT</span><span class="p">(</span><span class="n">Makefile</span><span class="p">)</span> <span class="err">#此项填写我们要输出的</span><span class="n">Makefile</span><span class="err">的名字</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>保存退出后。
-我们再来执行aclocal和autoconf这两个命令，来分别生成aclocal.m4和configure文件</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">aclocal</span> <span class="o">&amp;&amp;</span> <span class="n">autoconf</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中生成的两个文件</p>
-
-<p><strong>aclocal.m4</strong>: 是由aclocal这个perl脚本程序自动生成的，而aclocal的定义是："aclocal - create aclocal.m4 by scanning configure.ac"</p>
-
-<p><strong>configure</strong>:则是由autoconf根据GNU m4宏处理器处理aclocal.m4文件，生成的一个脚本。</p>
-
-<p><strong>所以，以上命令的顺序不可颠倒。</strong></p>
-
-<h2>四、手建一个Makefile.am文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">vim</span> <span class="n">Makefile</span><span class="p">.</span><span class="n">am</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Makefile.am文件中主要包括三个项：</p>
-
-<h3>1.AUTOMAKE_OPTIONS：</h3>
-
-<p>这个是automake 的选项。在执行automake 时，它会检查目录下是否存在标准GNU 软件包中应具备的各种文件，例如AUTHORS 、ChangeLog 、NEWS 等文件。我们将其设置成foreign 时，automake 会改用一般软件包的标准来检查。除此之外，可选的条目还有如下所示：</p>
-
-<ul>
-<li>&ndash;cygnus
-     assume program is part of Cygnus-style tree</li>
-<li>&ndash;foreign
-        set strictness to foreign</li>
-<li>&ndash;gnits
-           set strictness to gnits</li>
-<li>&ndash;gnu
-           set strictness to gnu</li>
-</ul>
-
-
-<h3>2.bin_PROGRAMS:</h3>
-
-<p>这个是指定我们所要产生的可执行文件的文件名。如果你要产生多个可执行文件，那么在各个名字间用空格隔开。</p>
-
-<h3>3.hello_SOURCES:</h3>
-
-<p>这个是指定产生“hello” 时所需要的源代码。如果它用到了多个源文件，那么请使用空格符号将它们隔开。</p>
-
-<p><em>eg</em>:
-hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="c1">//编辑Makefile.am文件内容如下：</span>
-</span><span class='line'><span class="n">AUTOMAKE_OPTIONS</span><span class="o">=</span><span class="n">foreign</span>
-</span><span class='line'><span class="n">bin_PROGRAMS</span><span class="o">=</span><span class="n">hello</span>
-</span><span class='line'><span class="n">hello_SOURCES</span><span class="o">=</span><span class="n">hello</span><span class="p">.</span><span class="n">cpp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>五、执行automake</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">automake</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">missing</span>
-</span><span class='line'><span class="err">（或</span> <span class="n">automake</span> <span class="o">-</span><span class="n">a</span><span class="err">，命令意义相同）</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中以上的命令选项</p>
-
-<ul>
-<li>-a, &ndash;add-missing
-        add missing standard files to package</li>
-</ul>
-
-
-<p>代表自动添加软件包所需要的标准文件。</p>
-
-<h2>六、执行configure脚本来生成我们的目标Makefile文件</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至此我们想要的标准的configure和Makefile文件都已经生成了。</p>
-
-<p>最后只要执行make命令就可以编译我们的hello程序了</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="err">$</span> <span class="n">make</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="c">#虚词列表</span>
+</span><span class='line'><span class="n">excludeWords</span> <span class="o">=</span> <span class="p">()</span>
+</span><span class='line'><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;excludeWords&#39;</span><span class="p">,</span><span class="s">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">excludeWords</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="n">excludeWords</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">excludeWords</span><span class="p">)</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">domNode</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">parentNode</span><span class="o">=</span><span class="bp">None</span>
+</span><span class='line'>    <span class="n">currNode</span><span class="o">=</span><span class="bp">None</span>
+</span><span class='line'>    <span class="n">innerText</span><span class="o">=</span><span class="bp">None</span>
+</span><span class='line'>    <span class="n">posi</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parentNode</span><span class="p">,</span><span class="n">currNode</span><span class="p">,</span><span class="n">innerText</span><span class="p">,</span><span class="n">posi</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">=</span><span class="n">parentNode</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">currNode</span><span class="o">=</span><span class="n">currNode</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">innerText</span><span class="o">=</span><span class="n">innerText</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">posi</span><span class="o">=</span><span class="n">posi</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">levenshtein</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;相似度计算.&quot;</span>
+</span><span class='line'>    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">:</span>
+</span><span class='line'>        <span class="c"># Make sure n &lt;= m, to use O(min(n,m)) space</span>
+</span><span class='line'>        <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span>
+</span><span class='line'>        <span class="n">n</span><span class="p">,</span><span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="p">,</span><span class="n">n</span>
 </span><span class='line'>
-</span><span class='line'><span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">hello</span>
+</span><span class='line'>    <span class="n">current</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">add</span><span class="p">,</span> <span class="n">delete</span> <span class="o">=</span> <span class="n">previous</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">current</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+</span><span class='line'>            <span class="n">change</span> <span class="o">=</span> <span class="n">previous</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">change</span> <span class="o">=</span> <span class="n">change</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="n">current</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">current</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">filter_words</span><span class="p">(</span><span class="n">sourList</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">dest</span><span class="o">=</span><span class="p">[]</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sourList</span><span class="p">)</span><span class="o">!=</span><span class="s">&quot;&lt;type &#39;set&#39;&gt;&quot;</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">dest</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sourList</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">dest</span><span class="o">=</span><span class="n">sourList</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">filterList</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">filterList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">dest</span>
+</span><span class='line'>    <span class="n">dest</span> <span class="o">=</span> <span class="p">[</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dest</span> <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">filterList</span><span class="p">)</span> <span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">dest</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">getContextByNode</span><span class="p">(</span><span class="n">htmlSoup</span><span class="p">,</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">sentenceList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">levenshtein</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">,</span><span class="n">titleKeyWordList</span><span class="p">)</span><span class="o">&gt;=</span><span class="nb">len</span><span class="p">(</span><span class="n">sentenceList</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">None</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sentenceList</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">getHTMLContext</span><span class="p">(</span><span class="n">html</span><span class="p">,</span><span class="n">filterList</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;获取html的正文内容，不包含tag标签&quot;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">html</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">html</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="n">encodeHtml</span><span class="o">=</span><span class="n">encodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">htmlSoup</span><span class="o">=</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">encodeHtml</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#去除script和style内容</span>
+</span><span class='line'>    <span class="k">if</span>  <span class="n">htmlSoup</span><span class="o">.</span><span class="n">script</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">htmlSoup</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">style</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">htmlSoup</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="n">htmlSoup</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">==</span><span class="bp">None</span> <span class="ow">or</span> <span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">title</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#提取标题</span>
+</span><span class='line'>    <span class="n">title</span><span class="o">=</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">string</span>
+</span><span class='line'>    <span class="c">#print(title)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">title</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">titleKeyWordList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span><span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span><span class="n">titleKeyWordList</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">titleKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#print(titleKeyWordList)</span>
+</span><span class='line'>    <span class="c"># 实词是否为空</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">markWindowsList</span><span class="o">=</span><span class="n">getMarkWindowsList</span><span class="p">(</span><span class="n">htmlSoup</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#print(type(markWindowsList))</span>
+</span><span class='line'>    <span class="c">#print(markWindowsList)</span>
+</span><span class='line'>    <span class="n">markWindowsList</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">markWindowsList</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="n">cmp_to_key</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">posi</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">posi</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#print(titleKeyWordList)</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">markWindowsList</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">innerText</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">innerText</span>
+</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">innerText</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">,</span><span class="n">excludeWords</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">markWindowKeyWordList</span><span class="o">=</span><span class="n">filter_words</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">,</span><span class="n">filterList</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">kl</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">markWindowKeyWordList</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">kl</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">continue</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">l</span><span class="o">=</span><span class="n">levenshtein</span><span class="p">(</span><span class="n">titleKeyWordList</span><span class="p">,</span><span class="n">markWindowKeyWordList</span><span class="p">)</span>
+</span><span class='line'>        <span class="c">#print(markWindowsList,l)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">l</span><span class="o">&lt;</span><span class="n">kl</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">context</span><span class="o">+=</span><span class="n">innerText</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">+</span><span class="s">&#39;.</span><span class="se">\n</span><span class="s">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span>  <span class="n">decodeSpecialTag</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">x</span><span class="o">-</span><span class="n">y</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">cmp_to_key</span><span class="p">(</span><span class="n">mycmp</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&#39;Convert a cmp= function into a key= function&#39;</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">K</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">mycmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">K</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">repl</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">contents</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">contents</span> <span class="o">==</span> <span class="s">&#39;&lt;/p&gt;&#39;</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&#39;[[p]]&#39;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">contents</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">encodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+</span><span class='line'>    <span class="s">&quot;这里的规则有助于正文内容的识别,还可以保留部分标签，如下面就保留了P，br等标签&quot;</span>
+</span><span class='line'>    <span class="n">comment</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;!--[.\s\S]*?--&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">comment</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#h tag</span>
+</span><span class='line'>    <span class="n">hPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?[hH][1-6][^&lt;&gt;]*&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[h4]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">hAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/[hH][1-6][^&lt;&gt;]*&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/h4]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">br</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[ \t]*?br[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">br</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[br /]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">hr</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[ \t]*?hr[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">hr</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[hr /]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">strongPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?strong[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">strongPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[strong]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">strongAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/strong[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">strongAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/strong]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#    labelPre=re.compile(r&quot;&lt;[\t ]*?label[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
+</span><span class='line'><span class="c">#    html=labelPre.sub(&#39;[[label]]&#39;, html)</span>
+</span><span class='line'><span class="c">#    labelAfter=re.compile(r&quot;&lt;[\t ]*?/label[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
+</span><span class='line'><span class="c">#    html=labelAfter.sub(&#39;[[/label]]&#39;, html)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#    spanPre=re.compile(r&quot;&lt;[\t ]*?span[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
+</span><span class='line'><span class="c">#    html=spanPre.sub(&#39;[[span]]&#39;, html)</span>
+</span><span class='line'><span class="c">#    spanAfter=re.compile(r&quot;&lt;[\t ]*?/span[^&lt;&gt;]*&gt;&quot;, re.IGNORECASE)</span>
+</span><span class='line'><span class="c">#    html=spanAfter.sub(&#39;[[/span]]&#39;, html)</span>
+</span><span class='line'>    <span class="n">pPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/p[^&lt;&gt;]*&gt;[^&lt;&gt;]*&lt;[\t ]*?p[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">pPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[/p]][[p]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">pAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?p[^&lt;&gt;]*&gt;(?=[^(\[\[)]*\[\[/p\]\]\[\[p\]\])&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">pAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;[[p]]&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#    pAfter=re.compile(r&quot;(\[\[p\]\].*&gt;)([^&lt;&gt;]*)(&lt;/p&gt;)&quot;, re.IGNORECASE)</span>
+</span><span class='line'><span class="c">#    html=pAfter.sub(repl,html)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">aPre</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?a[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">aPre</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">aAfter</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;[\t ]*?/a[^&lt;&gt;]*&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">aAfter</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#    chardet.detect(html)[&#39;encoding&#39;]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">js</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;(script)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">js</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">css</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;&lt;(style)[\w\s\S.\u4e00-\u9fa5\uac00-\ud7ff\u30a0-\u30ff\u3040-\u309f]*?&lt;/\1&gt;(?s)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">css</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">html</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">decodeSpecialTag</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[strong]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;strong&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/strong]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/strong&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[hr /]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;hr /&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[br /]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;br /&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[h4]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;h4&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/h4]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/h4&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[label]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;label&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/label]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/label&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[span]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;span&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/span]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/span&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[p]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;p&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;[[/p]]&quot;</span><span class="p">,</span><span class="s">&quot;&lt;/p&gt;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">html</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">getMarkWindowsList</span><span class="p">(</span><span class="n">bodySoup</span><span class="p">):</span>
+</span><span class='line'>    <span class="c">#过滤a标签</span>
+</span><span class='line'>    <span class="n">nodeQueue</span><span class="o">=</span><span class="p">[]</span>
+</span><span class='line'>    <span class="n">innerTextNodeList</span><span class="o">=</span><span class="p">[]</span>
+</span><span class='line'>    <span class="n">nodeQueue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bodySoup</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'>    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodeQueue</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">currNode</span><span class="o">=</span><span class="n">nodeQueue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">del</span> <span class="n">nodeQueue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">childNode</span>  <span class="ow">in</span> <span class="n">currNode</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">string</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">innerText</span><span class="o">=</span><span class="n">childNode</span><span class="o">.</span><span class="n">string</span>
+</span><span class='line'>                <span class="n">innerText</span><span class="o">=</span><span class="n">innerText</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">tmp</span><span class="o">=</span><span class="n">innerText</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;  &#39;</span><span class="p">,</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;  &#39;</span><span class="p">,</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">tmpInt</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">tmpInt</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span><span class="k">continue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">))</span><span class="o">&lt;=</span><span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">innerText</span><span class="p">)</span><span class="o">-</span><span class="n">tmpInt</span><span class="o">&gt;</span><span class="n">tmpInt</span><span class="p">:</span><span class="k">continue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span>  <span class="ow">and</span> <span class="n">innerText</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;©&quot;</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">innerText</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;&amp;copy;&quot;</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span> <span class="p">:</span>
+</span><span class='line'>                    <span class="n">dn</span><span class="o">=</span><span class="n">domNode</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span><span class="n">childNode</span><span class="p">,</span><span class="n">innerText</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">innerTextNodeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dn</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+</span><span class='line'><span class="c">#                    print &quot;i&quot;,</span>
+</span><span class='line'><span class="c">#                    print i,</span>
+</span><span class='line'><span class="c">#                    print &quot;=&quot;,</span>
+</span><span class='line'><span class="c">#                    print childNode</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#这里的规则可能有助于垃圾信息的排除</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&#39;style&#39;</span><span class="p">:</span><span class="k">continue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&#39;script&#39;</span><span class="p">:</span><span class="k">continue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;a&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">2</span><span class="p">:</span><span class="k">continue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span> <span class="ow">and</span> <span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">!=</span><span class="bp">None</span>   <span class="ow">and</span>  <span class="n">childNode</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;span&quot;</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">childNode</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="s">&quot;li&quot;</span> <span class="p">)</span><span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">childNode</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">continue</span>
+</span><span class='line'>                <span class="n">nodeQueue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">childNode</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">innerTextNodeList</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#soup=BeautifulSoup(html)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+</span><span class='line'>    <span class="s">&#39;User-Agent&#39;</span><span class="p">:</span><span class="s">&#39;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">c</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://www.xfocus.net/articles/200808/984.html&#39;</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">content</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;gbk&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="c">#content=c.text</span>
+</span><span class='line'>    <span class="c"># #print(content)</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">getHTMLContext</span><span class="p">(</span><span class="n">content</span><span class="p">,[</span><span class="s">&#39;&#39;</span><span class="p">]))</span>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">test</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>输出如下:</p>
+<h1>效果测试<a id="sec-3" name="sec-3"></a></h1>
 
-<blockquote><p>Hello World!</p></blockquote>
+<p><img src="/images/webcrawl.png"></p>
 </div>
   
   
@@ -782,10 +698,10 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 
       <footer>
       
-      - <a href="/blog/2016/06/11/biao-zhun-hua-configurewen-jian-de-sheng-cheng/">标准化configure文件的生成</a>
-      <time datetime="2016-06-11T20:16:12+08:00" pubdate><span class='month'>Jun</span> <span class='day'>11</span> <span class='year'>2016</span></time>
+      - <a href="/blog/2017/05/02/webzheng-wen-ti-qu-pian-chun-wen-ben-lei/">Web正文提取(偏純文本类)</a>
+      <time datetime="2017-05-02T20:48:47+08:00" pubdate><span class='month'>May</span> <span class='day'>02</span> <span class='year'>2017</span></time>
       
-      <span class="categories">posted in <a class='category' href='/blog/categories/linuxza-tan/'>linux杂谈</a></span>
+      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
       
       </footer>
     </article>
@@ -795,7 +711,7 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/">比较网页结构相似度</a></h1>
     
     
       <div class="post-meta">
@@ -813,7 +729,7 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 
 
 
-<time datetime="2016-06-11T11:17:42+08:00" pubdate data-updated="true"></time> -</span>
+<time datetime="2017-04-23T12:34:29+08:00" pubdate data-updated="true"></time> -</span>
           
         </p>
       </div>
@@ -821,37 +737,51 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
   </header>
 
 
-  <div class="entry-content"><h1>我的算法天梯之路之-爬楼梯</h1>
-
-<p>最近在计蒜客的算法练习题目之中看到了这样一道比较有意思的题目.</p>
-
-<p>原题如下所示:</p>
-
-<blockquote><p>假设你现在正在爬楼梯，楼梯有n级。每次你只能爬1级或者2级，那么你有多少种方法爬到楼梯的顶部？
-格式：
-  第一行输入一个数n(n&lt;=50)，代表楼梯的级数。
-  接下来一行输出你的方法总数。
-样例输入
-5
-样例输出
-8</p></blockquote>
-
-<p>从题面上看,可以发现这是一道比较典型的递归算法题目.
-既然已知阶梯数为N,而最大跨步数为2,那么我们可以先假设有3级阶梯,那么所有的走法就有:</p>
-
-<blockquote><p>111 12 21</p></blockquote>
-
-<p>这样子分析完之后,我们可以发现,我们总共要处理的情况有两种:</p>
-
-<ol>
-<li>剩余阶梯数大于最大步数</li>
-<li>剩余阶梯数小于最大步数</li>
-</ol>
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. 总体介绍</a></li>
+<li><a href="#sec-2">2. 最长公共子序列</a></li>
+<li><a href="#sec-3">3. 递归式展示</a></li>
+<li><a href="#sec-4">4. 算法实现（python实现）</a></li>
+<li><a href="#sec-5">5. 网页相似度计算</a></li>
+</ul>
+</div>
+</div>
 
 
-<p>而判断走法是否可行的条件就是:<strong>最后的当前阶梯数是否为0</strong></p>
+<h1>总体介绍<a id="sec-1" name="sec-1"></a></h1>
 
-<p>因此我们可以写出如下的递归函数:</p>
+<p>网页网页结构相似度计算通常是网页自动分类的基础，在一般的网页信息提取中，判断网页片断是“噪声”还是“有效信息”通常是个两类分类问题。
+简单地，我们可以把一般网页分为三个类，即：</p>
+
+<ul>
+<li>目录导航式页面（List\Index Page）</li>
+<li>详细页面（Detail Page）</li>
+<li>未知页面（Unknown Page）</li>
+</ul>
+
+
+<p>由于网页本身就可以抽象成串行的节点或者是DOM树，那么对于串行序列，就可以常用最长公共子序列来衡量相似度</p>
+
+<h1>最长公共子序列<a id="sec-2" name="sec-2"></a></h1>
+
+<p>最长公共子序列是动态规划的基本问题：</p>
+
+<p>序列a共有m个元素，序列b共有n个元素，如果a[m-1]==b[n-1]，</p>
+
+<p>那么a[:m]和b[:n]的最长公共子序列长度就是a[:m-1]和b[:n-1]的最长公共子序列长度+1；</p>
+
+<p>如果a[m-1]!=b[n-1]，那么a[:m]和b[:n]的最长公共子序列长度就是</p>
+
+<p>MAX（a[:m-1]和b[:n]的最长公共子序列长度，a[:m]和b[:n-1]的最长公共子序列长度）</p>
+
+<h1>递归式展示<a id="sec-3" name="sec-3"></a></h1>
+
+<p>　<img src="/images/lcs.png"></p>
+
+<h1>算法实现（python实现）<a id="sec-4" name="sec-4"></a></h1>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -864,24 +794,37 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">ladder</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">ladder</span> <span class="o">==</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">].</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="n">sum</span><span class="o">+=</span> <span class="n">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="o">-</span><span class="n">i</span><span class="p">)}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">sum</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">ladder</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class='line'><span class="nb">puts</span> <span class="n">calcSumofMethod</span><span class="p">(</span><span class="n">ladder</span><span class="p">)</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#params：</span>
+</span><span class='line'><span class="c"># - a : str</span>
+</span><span class='line'><span class="c"># - b : str</span>
+</span><span class='line'><span class="c">#return</span>
+</span><span class='line'><span class="c"># - c : 过程处理矩阵</span>
+</span><span class='line'><span class="c"># - c[x][y] : the lcs-length(最长公共子序列长度)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">lcs</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">lena</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">lenb</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">c</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenb</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lena</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lena</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenb</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+</span><span class='line'>            <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">c</span><span class="p">,</span><span class="n">c</span><span class="p">[</span><span class="n">lena</span><span class="p">][</span><span class="n">lenb</span><span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>  但是由于计蒜客的算法问题有1000ms运行时间的限制,因此在此处用Ruby的递归算法来实现并非是正解(可能是Ruby的性能问题导致运行超时,博主没试过用C进行递归.有兴趣的人可以试一试.)</p>
-
-<p>  我们再自习观察前10级阶梯数算出的结果会发现:随着阶梯数N的增长,走法的总数符合斐波那契数列规律增长, f(N)=f(N-1)+f(N-2)
-  利用这个规律我们可以采取以下循环方法实现:</p>
+<h1>网页相似度计算<a id="sec-5" name="sec-5"></a></h1>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -892,18 +835,44 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">calcArray</span>
-</span><span class='line'>  <span class="n">result</span><span class="o">=</span><span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>  <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="o">]=</span><span class="mi">1</span>
-</span><span class='line'>  <span class="n">result</span><span class="o">[</span><span class="mi">1</span><span class="o">]=</span><span class="mi">2</span>
-</span><span class='line'>  <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="n">.</span><span class="mi">49</span><span class="p">)</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">]=</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]+</span><span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="o">]</span><span class="p">}</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">result</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">ladder</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">to_i</span>
-</span><span class='line'><span class="nb">puts</span> <span class="n">calcArray</span><span class="o">[</span><span class="n">ladder</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#-*-coding:utf-8-*-</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">lxml.html.soupparser</span> <span class="kn">as</span> <span class="nn">soupparser</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">requests</span>
+</span><span class='line'><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s">&quot;User-Agent&quot;</span><span class="p">:</span><span class="s">&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">get_domtree</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">dom</span> <span class="o">=</span> <span class="n">soupparser</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">dom</span><span class="o">.</span><span class="n">iter</span><span class="p">():</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">similar_web</span><span class="p">(</span><span class="n">a_url</span><span class="p">,</span><span class="n">b_url</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">html1</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a_url</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>    <span class="n">html2</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b_url</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>    <span class="n">dom_tree1</span> <span class="o">=</span> <span class="s">&quot;&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="nb">str</span><span class="p">),</span><span class="nb">list</span><span class="p">(</span><span class="n">get_domtree</span><span class="p">(</span><span class="n">html1</span><span class="p">)))))</span>
+</span><span class='line'>    <span class="n">dom_tree2</span> <span class="o">=</span> <span class="s">&quot;&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="nb">str</span><span class="p">),</span><span class="nb">list</span><span class="p">(</span><span class="n">get_domtree</span><span class="p">(</span><span class="n">html2</span><span class="p">)))))</span>
+</span><span class='line'>    <span class="n">c</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">length</span> <span class="o">=</span> <span class="n">lcs</span><span class="p">(</span><span class="n">dom_tree1</span><span class="p">,</span><span class="n">dom_tree2</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">length</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dom_tree1</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">dom_tree2</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">percent</span> <span class="o">=</span> <span class="n">similar_web</span><span class="p">(</span>
+</span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/04/05/qian-tan-mongodb/&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="s">&#39;http://edmondfrank.github.io/blog/2017/03/27/emacsshi-yong-zhi-nan/&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="c">#相似度（百分比）</span>
 </span></code></pre></td></tr></table></div></figure>
-
-
 
 </div>
   
@@ -912,10 +881,581 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 
       <footer>
       
-      - <a href="/blog/2016/06/11/wo-de-suan-fa-tian-ti-zhi-lu-zhi-pa-lou-ti/">我的算法天梯之路之-爬楼梯</a>
-      <time datetime="2016-06-11T11:17:42+08:00" pubdate><span class='month'>Jun</span> <span class='day'>11</span> <span class='year'>2016</span></time>
+      - <a href="/blog/2017/04/23/bi-jiao-wang-ye-jie-gou-xiang-si-du/">比较网页结构相似度</a>
+      <time datetime="2017-04-23T12:34:29+08:00" pubdate><span class='month'>Apr</span> <span class='day'>23</span> <span class='year'>2017</span></time>
       
-      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
+      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/05/qian-tan-mongodb/">浅谈MongoDB</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-04-05T14:28:56+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Mongodb 简介</a>
+<ul>
+<li><a href="#sec-1-1">1.1. 基本概念</a>
+<ul>
+<li><a href="#sec-1-1-1">1.1.1. 数据库（database）</a></li>
+<li><a href="#sec-1-1-2">1.1.2. 文档（document）</a></li>
+<li><a href="#sec-1-1-3">1.1.3. 集合（collection）</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">1.2. 基本设计</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. MongoDB 启动</a></li>
+<li><a href="#sec-3">3. MongoDB shell 简介</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 运行shell</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. MongoDB 客户端</a></li>
+<li><a href="#sec-5">5. MongoDB 基本操作</a>
+<ul>
+<li><a href="#sec-5-1">5.1. 创建</a></li>
+<li><a href="#sec-5-2">5.2. 读取</a></li>
+<li><a href="#sec-5-3">5.3. 更新</a></li>
+<li><a href="#sec-5-4">5.4. 删除</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<h1>Mongodb 简介<a id="sec-1" name="sec-1"></a></h1>
+
+<p>MongoDB 是一款强大，灵活，且易于扩展的通用型数据库。</p>
+
+<p>它能够扩展出非常多的功能，如二级索引，范围查询，排序，聚合以及本地空间索引的功能</p>
+
+<h2>基本概念<a id="sec-1-1" name="sec-1-1"></a></h2>
+
+<p>Mongodb 是一个面向文档的NoSQL型数据库，不采用关系模型。
+其中mongodb 不再有“行”的概念，而是以文档取而代之。</p>
+
+<p>另外也不存在预定义模式，即文档的键（key）和值（value）不再是固定的类型和大小</p>
+
+<h3>数据库（database）<a id="sec-1-1-1" name="sec-1-1-1"></a></h3>
+
+<p>Mongodb 的一个实例可以拥有多个相互独立的数据库,</p>
+
+<p>在Mongodb中，多个文档组合成集合，而多个集合即组成数据库。</p>
+
+<h3>文档（document）<a id="sec-1-1-2" name="sec-1-1-2"></a></h3>
+
+<p>Mongodb 中的数据的基本单元，类似于关系型数据库管理系统中的行</p>
+
+<p>表示形式：</p>
+
+<p>{&ldquo;greeting&rdquo;:&ldquo;Hello World&rdquo;,
+          &#x2026;.           }</p>
+
+<h3>集合（collection）<a id="sec-1-1-3" name="sec-1-1-3"></a></h3>
+
+<p>类似的，可以看作是一个拥有动态模式的表</p>
+
+<h2>基本设计<a id="sec-1-2" name="sec-1-2"></a></h2>
+
+<p>Mongodb 的设计采用横向扩展。同时面向文档的数据模型</p>
+
+<p>使它能够很容易的在多台服务器之间进行数据分割。</p>
+
+<h1>MongoDB 启动<a id="sec-2" name="sec-2"></a></h1>
+
+<p>通常，MongoDB做为网络服务守护进程运行，客户端可连接到该服务器并执行操作。</p>
+
+<ol>
+<li><p>下载MongoDB（<a href="http://www.mongodb.org/downloads">http://www.mongodb.org/downloads</a>）</p></li>
+<li><p>解压，并运行 <strong>mongod</strong> 命令</p></li>
+</ol>
+
+
+<p>启动后，在默认情况下服务器会打印版本和系统信息，并监听27017端口。</p>
+
+<p>除此之外 mongod 还会启动一个非常基本的HTTP服务器，监听比主端口号高1000的端口</p>
+
+<p>这意味着你可以访问 <a href="http://localhost:28017">http://localhost:28017</a> 来获取数据库管理信息</p>
+
+<h1>MongoDB shell 简介<a id="sec-3" name="sec-3"></a></h1>
+
+<p>MongoDB 自带JavaScript Shell，可以在shell中用命令行与Mongodb实例交互</p>
+
+<h2>运行shell<a id="sec-3-1" name="sec-3-1"></a></h2>
+
+<pre><code>mongo
+
+MongoDB Shell version: 2.4.0
+
+connecting to :test
+
+&gt;
+</code></pre>
+
+<p>shell 是一个功能完备的JavaScript解释器，可以运行任意JavaScript程序，另外还可以充分使用JavaScript的标准库</p>
+
+<h1>MongoDB 客户端<a id="sec-4" name="sec-4"></a></h1>
+
+<p>在客户端的shell启动后，如果要查看db当前执行哪个数据库，可以使用 <strong>db</strong> 命令</p>
+
+<pre><code>&gt; db
+
+test
+</code></pre>
+
+<h1>MongoDB 基本操作<a id="sec-5" name="sec-5"></a></h1>
+
+<h2>创建<a id="sec-5-1" name="sec-5-1"></a></h2>
+
+<p><em>insert</em> 函数可以将一个文档添加到集合中。举一个存储文章的例子：首先，</p>
+
+<p>创建一个名为post的局部变量，这是一个JavaScript对象，用于表示我们的文档</p>
+
+<p>他会有几个键：“ <strong>title</strong> ”、“ <strong>content</strong> ”和 “ <strong>date</strong> ”（发布时间）</p>
+
+<pre><code>&gt; post = {
+"title":"hello",
+"content":"Here's my blog post",
+"date":new Date()
+}
+
+&gt; db.blog.insert(post)
+</code></pre>
+
+<p>此时，这篇文章已经存到数据库中了，要查看它可用调用集合的 <em>find</em> 方法</p>
+
+<pre><code>&gt; db.blog.find()
+</code></pre>
+
+<h2>读取<a id="sec-5-2" name="sec-5-2"></a></h2>
+
+<p><em>find</em> 和 <em>findOne</em> 可以接收一个 <strong>查询文档</strong> 为限定条件，并返回符合一定条件的文件，使用</p>
+
+<p><em>find</em> 的默认自动显示最多20个匹配的文档。</p>
+
+<h2>更新<a id="sec-5-3" name="sec-5-3"></a></h2>
+
+<p>使用 <em>update</em> 修改文章：</p>
+
+<p>update接收（至少）两个参数：
+-   第一个是限定条件（用于匹配待更新的文档）
+-   第二个是新的文档</p>
+
+<p>例如我们为之前的文章增加评论功能，就需要新增一个键，用于保存评论数组。</p>
+
+<pre><code>&gt; post.comments = []
+[ ]
+
+&gt; db.blog.update({ title : "hello"} , post)
+</code></pre>
+
+<p>再用 find 查看一下，就可以看见新的键。</p>
+
+<pre><code>&gt; db.blog.find()
+</code></pre>
+
+<h2>删除<a id="sec-5-4" name="sec-5-4"></a></h2>
+
+<p>使用remove方法可以将文档从数据库中永久删除。如果没用任何参数传入，他将删除集合内的全部文档。</p>
+
+<p>同时，它可以接收一个做为限定条件的文档做为参数。例如：</p>
+
+<pre><code>&gt; db.blog.reomve({ title : "hello" })
+</code></pre>
+
+<hr />
+
+<p><strong><em>有关Mongodb的简单描述到此结束，更多Mongdb使用操作内容，欢迎参考下一篇文章</em></strong></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/04/05/qian-tan-mongodb/">浅谈MongoDB</a>
+      <time datetime="2017-04-05T14:28:56+08:00" pubdate><span class='month'>Apr</span> <span class='day'>05</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/27/emacsshi-yong-zhi-nan/">Emacs使用指南</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-03-27T20:33:02+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Emacs快速指南</h1>
+
+<h2>传说中的神级编辑器？？</h2>
+
+<h3>基础介绍</h3>
+
+<p>vim 和 emacs 分别被称为「 编辑器之神」与「 神之编辑器」，自有其独到之处。</p>
+
+<blockquote><p>快捷键的无差别延续</p></blockquote>
+
+<p>vim 和 emacs 诞生于 30 年前，快捷键基本没什么变化。这意味着，一旦你学会使用这两个编辑器，无论以后软件怎么更新，都不需要学习别的快捷键了。因为历史较长，加上快捷键变化不大，新兴编辑器大多提供模拟 vim/emacs 操作的插件。这也方便了用户迁移到其他编辑器，无需学习更多的同质快捷键。</p>
+
+<blockquote><p>基础和适用的默认配置</p></blockquote>
+
+<p>vim 和 emacs 都可以运行在终端，也有图形化的软件，非常适合快速编辑文件。当需要在无法运行图形界面的服务器上编辑代码的时候，二者也足以胜任。虽然在终端也有 nano 这样的编辑器，但毕竟过于简洁，无法支撑较为复杂的编辑工作。这两个编辑器的默认配置的功能就已经很强大了，语法着色、补全、缩进等功能都很不错。</p>
+
+<blockquote><p>emacs有别于vim的地方</p></blockquote>
+
+<p>为了实现强大的功能，vim 选择了多模式编辑（Normal, Insert, Visual 模式），而 emacs 没有输入上的 mode 差别，所以需要依赖复杂的快捷键来实现强大的编辑功能，正如上图所示。emacs 插件想象力更加丰富，有「伪装成编辑器的操作系统」之称。插件的 major mode 和 minor mode 的设计很出彩，对一个文件，只有一个 major mode，但是可以有多个 minor mode，这样一个文件一个主插件，多个附加插件，可以实现很多有趣的效果。</p>
+
+<h3>快捷键说明</h3>
+
+<p>在网上的Emacs文档或手册中，总有一些快捷键说明如下所示：</p>
+
+<p>C-v : 其中C 代表 Ctrl，因此这项快捷键代表 Ctrl + C
+M-v : 其中M 代表 Alt，这项快捷键代表 Alt + V</p>
+
+<h3>基本光标控制</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>                    上一行 C-p
+</span><span class='line'>                      ：
+</span><span class='line'>                      ：
+</span><span class='line'>    向左移 C-b：：： 目前光标位置 ：：： 向右移 C-f
+</span><span class='line'>                      ：
+</span><span class='line'>                      ：
+</span><span class='line'>                    下一行 C-n
+</span><span class='line'>
+</span><span class='line'>                 亦可使用小键盘方向键
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>M-f 移动到词的末尾
+M-b 移动到词的首部</p>
+
+<p>请注意 C-f 、C-b 和 M-f 、M-b 两对之间的类比关系。通常的惯例是：META 系
+列组合键用来操作“由语言定义的单位（比如词、句子、段落）”，而 CONTROL
+系列组合键用来操作“与语言无关的基本单位（比如字符、行等等）”。</p>
+
+<p>这里对简单的光标移动命令做一个总结，其中也包括了整词和整句的移动：</p>
+
+<pre><code>    C-f     向右移动一个字符
+    C-b     向左移动一个字符
+
+    M-f     向右移动一个词【对中文是移动到下一个标点符号】
+    M-b     向左移动一个词【对中文是移动到上一个标点符号】
+
+    C-n     移动到下一行
+    C-p     移动到上一行
+
+    C-a     移动到行首
+    C-e     移动到行尾
+
+    M-a     移动到句首
+    M-e     移动到句尾
+</code></pre>
+
+<h2><em>窗格(WINDOWS)</em></h2>
+
+<p>Emacs 可以有多个“窗格”，每个窗格显示不同的文字。后面会介绍怎么对付多个窗
+格，现在我们先学会如何关掉多余的窗格。其实也很简单：</p>
+
+<pre><code>    C-x 1   只保留一个窗格（也就是关掉其它所有窗格）。
+</code></pre>
+
+<p>也就是先按 CONTROL-x 然后再按 1。C-x 1 会保留光标所在的窗格，并将其扩大
+到整个屏幕，同时关掉所有其它的窗格。</p>
+
+<blockquote><p>把光标移到本行然后输入 C-u 0 C-l。</p>
+
+<p>输入 C-h k C-f。观察当一个新窗格出现时当前窗格（用来显示
+  C-f 命令的文档）是如何缩小的。</p>
+
+<p>输入 C-x 1 关掉文档窗格。</p></blockquote>
+
+<p><em>Emacs中的删除</em></p>
+
+<p>在Emacs删除文字有很多种方法。在说明相应的操作方法前，我们需要先弄明白几个概念：“删除（Delete）”、“移除（Kill）”、“召回（Yank）”还有“移除环（Kill-Ring）”</p>
+
+<p>好吧，“删除”和“移除”在文本编辑的过程中实现的效果非常类似——对应的字符或内容在文档中“消失”了。存在细微差别的地方在与取回这些“消失”的内容的方法上：</p>
+
+<p>被“删除”的内容，只能使用“撤销（Undo）”的办法来找回这些“消失的字符”。和大多数人预想的一样，这些“消失的字符”只会重新出现在原来它们所在的地方。</p>
+
+<p><em>Emacs的剪贴板以及Undo/Redo</em></p>
+
+<p>被“移除”的内容，除了可以使用“撤销”的方法了找回内容以外，还可以使用“召回”的方法让这些“消失”的内容出现在当前光标之后。这样的操作效果和使用了“剪贴板”的效果类似了。</p>
+
+<p>“召回”，是将移除的内容插入到光标所在位置的一种操作。使用召回操作，让人有一种使用“剪贴板”的感觉。不过Emacs会记录多次“移除”操作的内容，这一点可要比windows操作系统提供的“剪贴板”功能要强大多了。这种记录多次“移除”操作内容的机制在Emacs中叫做“移除环”——Yank Ring。</p>
+
+<p><em>Emacs中的查找和替换</em></p>
+
+<p>任何编辑器都有查找和替换的功能，Emacs也不例外。在Emacs中最常用的查找方法是“增量查找”。除此之外，Emacs还提供了“正则查找”、“词组查找”、“简单查找”三种方法。这些查找方法，一般来说，熟练掌握其中的一至两类就足够应付日常使用的需要了。</p>
+
+<p><em>Emacs中的文件操作</em></p>
+
+<p>基础的Emacs文件操作是创建、保存、另存。</p>
+
+<p>创建新文件：
+使用组合键 Ctrl-x Ctrl-f 打开“find file”
+在提示符处输入一个不存在的文件名
+回车确认后，Emacs即创建了一个空的Buffer供输入使用。
+保存文件
+Emac的保存文件非常简单，只需要按下组合键Ctrl-x Ctrl-s即可。
+另存文件
+要另存一个文件，按下组合键Ctrl-x Ctrl-w，按提示输入新的文件名即可。</p>
+
+<h3>常用快捷键</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>C-v : 向前移动一屏（PageUp）
+</span><span class='line'>M-v : 向后移动一屏（PageDn）
+</span><span class='line'>
+</span><span class='line'>导航操作：
+</span><span class='line'>c-p            上一行
+</span><span class='line'>c-n            下一行
+</span><span class='line'>c-f            下一个字符
+</span><span class='line'>c-b            上一个字符
+</span><span class='line'>c-a            行首
+</span><span class='line'>c-e            行尾
+</span><span class='line'>
+</span><span class='line'>M-p            下一段
+</span><span class='line'>M-b            上一段
+</span><span class='line'>M-f            下一个单词
+</span><span class='line'>M-b            上一个单词
+</span><span class='line'>M-a            句首
+</span><span class='line'>M-e            句尾
+</span><span class='line'>
+</span><span class='line'>c-v            下一页
+</span><span class='line'>M-v            上一页
+</span><span class='line'>
+</span><span class='line'>c-l            以本行为中间显示
+</span><span class='line'>
+</span><span class='line'>M-&lt;            文本头
+</span><span class='line'>M-&gt;            文本尾部
+</span><span class='line'>
+</span><span class='line'>c-M-v            不移动光标让另一个窗口翻下一页
+</span><span class='line'>c-S-M-v<span class="o">(</span>S:shift<span class="o">)</span>    不移动光标让另一个窗口翻上一页
+</span><span class='line'>
+</span><span class='line'>撤销操作：
+</span><span class='line'>c-_ / c-x c-u        撤销
+</span><span class='line'>c-h l            列出最近操作
+</span><span class='line'>M-x revert-buffer    重新读入buffer<span class="o">(</span>撤销本次全部更改<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>文件操作:
+</span><span class='line'>c-x c-f            打开文件（没有就创建一个新的）
+</span><span class='line'>c-x c-s            保存文件
+</span><span class='line'>c-x c-w            另存为文件
+</span><span class='line'>M-x recover-file 文件名    从错误中恢复<span class="o">(</span>读取自动保存的文件<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>buffers:
+</span><span class='line'>c-x b 输入buffer名字    切换buffer
+</span><span class='line'>    方向键可以切换buffer
+</span><span class='line'>c-x k 输入buffer名字    终止buffer
+</span><span class='line'>c-x c-b            列出所有buffer
+</span><span class='line'>    之后按下：
+</span><span class='line'>    <span class="m">1</span>            让选中的个buffer全屏
+</span><span class='line'>    o            让选中的buffer在另外的窗口显示并且切换到该窗口
+</span><span class='line'>    c-o         让选中的buffer在另外的窗口显示并且不切换到该窗口
+</span><span class='line'>    s            标记当前buffer为保存
+</span><span class='line'>    d/c-d        标记一个要删除的buffer并且光标下/上移动
+</span><span class='line'>    x            按下x后执行标记了要删除的buffer或者标记要保存的buffer
+</span><span class='line'>
+</span><span class='line'>fram<span class="p">&amp;</span>windows：
+</span><span class='line'>c-x <span class="m">2</span>            在frame内横向分割两个windows
+</span><span class='line'>c-x <span class="m">3</span>            在frame内纵向分割两个windows
+</span><span class='line'>c-x <span class="m">1</span>            删除其他windows
+</span><span class='line'>c-x <span class="m">0</span>            删除当前windows
+</span><span class='line'>c-x o            切换到另外的窗口
+</span><span class='line'><span class="c">#c-x {            水平缩小当前窗口（分两个窗口的时候）</span>
+</span><span class='line'><span class="c">#c-x }            水平扩大当前窗口</span>
+</span><span class='line'>c-x <span class="m">5</span> <span class="m">2</span>            水平创建一个新的frame
+</span><span class='line'>c-x <span class="m">5</span> <span class="m">0</span>         杀死当前的fram（最后一个不可以哦）
+</span><span class='line'>c-x <span class="m">5</span> o            切换fram
+</span><span class='line'>
+</span><span class='line'>Searching:
+</span><span class='line'>c-s            向前搜索
+</span><span class='line'>c-r            向后搜索
+</span><span class='line'>搜索时按下：
+</span><span class='line'>    M-p        搜索历史向上
+</span><span class='line'>    M-n        搜索历史向后
+</span><span class='line'>M-%            搜索并替换，替换时询问每一个是否需要被替换（y表示是n表示否!表示全部y）
+</span><span class='line'>M-x replace-string    搜索并替换，不询问
+</span><span class='line'>c-r             进入紧急编辑<span class="o">(</span>保存当前的查询替换的状态<span class="o">)</span>
+</span><span class='line'>c-M-c            退出紧急编辑
+</span><span class='line'>c-<span class="o">[</span>            取消紧急编辑<span class="o">(</span>无视原来保护的现场Orz<span class="o">)</span>
+</span><span class='line'>M-x occur 匹配串    找到并列出所有匹配串
+</span><span class='line'>
+</span><span class='line'>helping:
+</span><span class='line'>c-h            帮助首菜单
+</span><span class='line'>c-h c-h            帮助buffer
+</span><span class='line'>c-h k    按键        显示绑定这个键位的功能
+</span><span class='line'>c-h a    输入功能    显示对应的按键<span class="o">(</span>正则匹配<span class="o">)</span>
+</span><span class='line'>c-x c-h            显示全部c-x的命令
+</span><span class='line'>c-x w    输入功能    显示对应的按键（非正则匹配）
+</span><span class='line'>c-x h    输入功能    显示这个功能的具体功能
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/03/27/emacsshi-yong-zhi-nan/">Emacs使用指南</a>
+      <time datetime="2017-03-27T20:33:02+08:00" pubdate><span class='month'>Mar</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
       
       </footer>
     </article>
@@ -993,7 +1533,7 @@ hello_SOURCES=test.cpp test.h test1.cpp test2.h</p>
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2020 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2022 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>

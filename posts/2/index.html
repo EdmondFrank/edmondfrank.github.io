@@ -9,7 +9,15 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="穷举搜索的例子－Google方程式 　问题描述 有一个由字符组成的等式，WWWDOT-GOOGLE = DOTCOM，每个字符代表一个0-9之间的数字，WWWDOT、GOOGLE和DOTCOM都是合法的数字，不能以零开头。请找出一组字符与数字的对应关系，使得他们可以互相转换， &hellip;">
+  <meta name="description" content="1）简单内部类 1
+2
+3
+4
+5
+6
+7
+8
+module ActiveSupport::Concern ..... class MultipleIncludedBlocks &lt; StandardError #:nodoc: def initialize super &quot; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +72,832 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/11/27/railsde-activesupport-concern/">Railsçš„ActiveSupport::Concern</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-11-27T18:47:49+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>1）简单内部类</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">MultipleIncludedBlocks</span> <span class="o">&lt;</span> <span class="no">StandardError</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>      <span class="k">super</span> <span class="s2">&quot;Cannot define multiple &#39;included&#39; blocks for a Concern&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ActiveSupport::Concern简单定义了一个内部的错误类型，
+这个自定义错误类型主要用于提醒我们在扩展了ActiveSupport::Concern的模块中</p>
+
+<p>只能够显式调用模块方法ActiveSupport::Concern::included一次，</p>
+
+<p>第二次调用的话就会抛出这个自定义的错误类型。</p>
+
+<h3>2）设置“胎记”</h3>
+
+<p>我们前面说过扩展了ActiveSupport::Concern的模块我把它简称为依赖模块，那我们怎么知道一个模块是不是依赖模块呢？答案就在这个类方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">extended</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_set</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">,</span> <span class="o">[]</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>写过Ruby的应该都知道，这个是当一个模块被扩展(extend)之后就会被调用的一个回调方法，</p>
+
+<p>并以扩展它的模块做为参数(base)传入该回调方法。</p>
+
+<p>当一个模块扩展了ActiveSupport::Concern之后就会在模块内部设置一个实例变量</p>
+
+<p>@_dependencies并设置为空数组，我们姑且把它看做是ActiveSupport::Concern的“胎记”，</p>
+
+<p>后面我们会利用这个“胎记”所包含的依赖项，优雅地增强我们的终端模块。</p>
+
+<h3>3) 收集并扩展相关方法</h3>
+
+<p>在分析后面的方法之前我们先来简单看一下的原理。</p>
+
+<p>我们都知道在Ruby里面如何定义一个类，并且定义相关的类方法，和实例方法</p>
+
+<p>（我们只需要用class关键字就能够很容易做到这一点），但不知道大家是否了解还有这样一种方式？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">instance_block</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am instance method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_method_in_instance_block</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am class method in instance block&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">class_block</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;I am class method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">instance_block</span><span class="p">)</span>
+</span><span class='line'><span class="no">ClassModule</span> <span class="o">=</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="no">ClassModule</span><span class="o">.</span><span class="n">module_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_block</span><span class="p">)</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">ClassModule</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_method</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">class_method_in_instance_block</span>
+</span><span class='line'><span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">instance_method</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果</p>
+
+<blockquote><p>I am class method
+I am class method in instance block
+I am instance method</p></blockquote>
+
+<p>运行结果有点意思，下面简单来分析一下:
+我们以代码块的方式收集了类方法class_method，class_method_in_instance_block，</p>
+
+<p>以及实例方法instance_method。然后我们创建一个空的类Example，</p>
+
+<p>用Class#class_eval方法来打开类，在类的上下文环境下运行块instance_block，</p>
+
+<p>其实这就相当于我们在类上下文中运行相应的语句，这样就能够得到Example#instance_method,</p>
+
+<p>Example::class_method_in_instance_block这两个方法了。
+另外，我们从已有的知识中了解到，可以通过Class#extend扩展模块的方式来获得类方法。</p>
+
+<p>为此我们可以把class_block这个代码块包裹在模块ClassModule中，</p>
+
+<p>最后我们只需要扩展(extend)这个模块就可以得到相应的类方法Example#class_method了。</p>
+
+<p>ActiveSupport::Concern其实就是这种黑科技，</p>
+
+<p>这里我简单把接下来的过程分为两部分</p>
+
+<p>1）收集方法。</p>
+
+<p>2）对收集的方法进行功能扩展</p>
+
+<ol type="a">
+<li>方法收集
+来看看依赖模块如何收集方法的？</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">included</span><span class="p">(</span><span class="n">base</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>      <span class="k">raise</span> <span class="no">MultipleIncludedBlocks</span> <span class="k">if</span> <span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_included_block</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="vi">@_included_block</span> <span class="o">=</span> <span class="n">block</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先我们来看ActiveSupport::Concern#included，</p>
+
+<p>当ActiveSupport::Concern被扩展之后这个included方法就会变成相应模块的类方法了。</p>
+
+<p>咦，这不是一个模块被包含之后才会被调用的回调函数吗？没错，为了不影响它原来的功能rails团队采用了个巧妙的做法，</p>
+
+<p>当我们在扩展了ActiveSupport::Concern的模块的上下文中显式调用included方法，</p>
+
+<p>并且不带任何参数而只传入代码块的情况下，便会在模块内部设置一个@_included_block实例变量来接收这个代码块，</p>
+
+<p>换句话说这个实例变量就是我们将来需要在终端模块上下文运行的代码块。</p>
+
+<p>而在其他情况下则通过super关键字来调用原始版本的included方法。</p>
+
+<p>这样既增强了included方法又不影响原始方法的使用。</p>
+
+<p>另外我们也注意到了，在一个模块里面included方法只能被显式调用一次，</p>
+
+<p>否则会抛出MultipleIncludedBlocks这个自定义的错误，这便是前面定义的内部类的应用场景。</p>
+
+<p>OK，收集完需要在模块上下文运行的代码，我们接下来要收集类方法了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_methods</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_methods_module_definition</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">mod</span> <span class="o">=</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span> <span class="p">?</span>
+</span><span class='line'>      <span class="nb">const_get</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span> <span class="p">:</span>
+</span><span class='line'>      <span class="nb">const_set</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">,</span> <span class="no">Module</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mod</span><span class="o">.</span><span class="n">module_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class_methods_module_definition</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实这个东西跟前面的included方法原理差不多，也是通过代码块来收集方法，只是有一点点不同，</p>
+
+<p>我们需要把这个收集到的代码块包裹到一个模块中，以后再扩展这个模块。</p>
+
+<p>首先通过const_defined?来判断常量ClassMethods是否存在，</p>
+
+<p>该方法的第二个参数false表示只从当前模块查找该常量，而不会从祖先链中去查找。</p>
+
+<p>如果没有则以ClassMethods为名定义一个模块，</p>
+
+<p>然后以Module#module_eval方法打开该模块并在模块的上下文运行我们所接收的代码块class_methods_module_definition。</p>
+
+<p>这样模块ClassMethods就会包含对应的方法了。</p>
+
+<p>在以后的日子里我们只需要扩展ClassMethods，该模块里面的方法就能成为目标模块的类方法了。</p>
+
+<ol type="a">
+<li>功能增强
+收集完相关功能之后可以来看如何增强我们的终端模块了。在分析代码之前，</li>
+</ol>
+
+
+<p>先来认识一下append_features，我们需要知道的是它会在模块被包含的时候调用，并且它会在included回调方法之前被调用。</p>
+
+<p>接下来我们看看扩展功能的源代码，它应该是ActiveSupport::Concern里面最复杂的方法了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveSupport::Concern</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">append_features</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="ss">:@_dependencies</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">base</span> <span class="o">&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="vi">@_dependencies</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">dep</span><span class="o">|</span> <span class="n">base</span><span class="o">.</span><span class="n">include</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">const_get</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span> <span class="k">if</span> <span class="nb">const_defined?</span><span class="p">(</span><span class="ss">:ClassMethods</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="vi">@_included_block</span><span class="p">)</span> <span class="k">if</span> <span class="n">instance_variable_defined?</span><span class="p">(</span><span class="ss">:@_included_block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在我们可以看到之前设置“胎记”起作用了，设置了“胎记”的依赖模块也可以被其他的依赖模块所包含，</p>
+
+<p>但他们并不会进行相应的功能扩展，他们会做的只是在“胎记”列表@_dependencies里面添加对应的依赖选项。</p>
+
+<p>然后返回false。这也是我们第一个条件分支的逻辑。
+当我们的依赖模块终于被终端模块（不含“胎记”的模块）包含的时候我们程序便可以走else分支的逻辑。</p>
+
+<p>如果该依赖模块已经在终端模块的祖先链中的话则表明这个模块已经在终端模块增强过了，我们就没必要做重复工作，直接返回false。</p>
+
+<p>否则的话继续执行后面的代码，接下来这个语句有点意思
+@_dependencies.each { |dep| base.include(dep) }</p>
+
+<p>我们会以终端模块的身份去包含当前依赖模块的@_dependencies列表里面的所有模块，</p>
+
+<p>这个时候我们@_dependencies的模块又会进入各自相应的append_features方法，并且都会走else分支，</p>
+
+<p>然后查看各自@_dependencies接下来又会以终端模块的身份再去包含列表里的那些模块，</p>
+
+<p>以此类推。这递归的过程就像是链式反应，这样就能保证不管各个依赖模块之间的依赖关系如何，</p>
+
+<p>我们的终端模块都不用太过在意了，反正最后都会被我们终端模块给包含掉。</p>
+
+<p>接下来调用super关键字来调用原始的append_features方法，保证了原始的功能。</p>
+
+<p>毕竟我们这里做的是对原始功能加强，而并不是要复写掉原始功能。</p>
+
+<p>最后我们在每一个依赖模块内部都会执行大家所熟悉的语句
+base.extend const_get(:ClassMethods) if const_defined?(:ClassMethods)
+base.class_eval(&amp;@<em>included_block) if instance_variable_defined?(:@</em>included_block)</p>
+
+<p>最最最后，咱们的终端模块就会具备我们预先定义好的类方法，实例方法。</p>
+
+<p>并且可以直接运行一些预先定义好需要在模块上下文运行的类方法了。</p>
+
+<h3>优雅的Ruby</h3>
+
+<p>源码分析暂时告一段落，为了让我们对ActiveSupport::Concern印象更加深刻一些。最后我用一个简单的例子来展示一下这个库的优雅之处</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_support&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">A</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number1</span>
+</span><span class='line'>      <span class="s2">&quot;number1 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active1</span>
+</span><span class='line'>      <span class="s2">&quot;active1 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">B</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">A</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number2</span>
+</span><span class='line'>      <span class="s2">&quot;number2 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active2</span>
+</span><span class='line'>      <span class="s2">&quot;active2 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">C</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">B</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number3</span>
+</span><span class='line'>      <span class="s2">&quot;number3 method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">number2</span>
+</span><span class='line'>      <span class="s2">&quot;number2 in C&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active3</span>
+</span><span class='line'>      <span class="s2">&quot;active3 class method&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">active2</span>
+</span><span class='line'>      <span class="s2">&quot;active2 in C&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Example</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">C</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">A</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">B</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">C</span><span class="o">.</span><span class="n">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@_dependencies&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active3</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active2</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">active1</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number3</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number2</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">Example</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">number1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后的打印结果是</p>
+
+<blockquote><p>&ldquo;[]&rdquo; &ldquo;[A]&rdquo; &ldquo;[B]&rdquo;
+active3 class method
+active2 in C
+active1 class method
+number3 method
+number2 in C
+number1 method</p></blockquote>
+
+<p>利用ActiveSupport::Concern我们可以用少量的代码，优雅地定义我们的扩展模块，并在需要的时候进行功能增强。</p>
+
+<p>在该例子中我通过打印“胎记”可以知道依赖模块之间的依赖关系，</p>
+
+<p>而且他们之间的依赖关系终端模块根本不会在意，它只需要包含一个依赖模块，</p>
+
+<p>便可以得到有依赖关系其他依赖模块中所定义的功能了。</p>
+
+<p>另外，我在模块C中做了些手脚，复写了它所依赖的模块B中所收集的方法，</p>
+
+<p>是为了展示我们所收集方法在各个有依赖关系模块中的优先级关系。</p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2019/11/27/railsde-activesupport-concern/">Railsçš„ActiveSupport::Concern</a>
+      <time datetime="2019-11-27T18:47:49+08:00" pubdate><span class='month'>Nov</span> <span class='day'>27</span> <span class='year'>2019</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/ruby/'>ruby</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/">文本建模算法入门-1</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2019-01-04T13:43:27+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="文本建模算法入门一">文本建模算法入门（一）</h1></p>
+
+<h3 id="0x1-文本建模">0x1 文本建模</h3>
+
+
+
+
+<p>文本并不像其他数值型的数据一样可以比较轻易的通过运算、函数、方程、矩阵等来表达他们之间的相互关系。</p>
+
+
+
+
+<p>在处理一篇文本的时候，假设每一个文本储存为一篇文档，那么从人的视角来看，这可以说是一段有序的词序列<script type="math/tex; mode=display" id="MathJax-Element-1">Document=(w_1,w_2,...,w_n)</script> <br>
+统计学家将这些序列的生成，生动地描绘成了一个“上帝的游戏”，即人类产生的所有语料的文本都可以看作是：一个伟大的上帝在天堂中掷骰子形成的。我们所看到的文本其实就是这个游戏掷了若干次后产生的序列。</p>
+
+
+
+
+<p>那么，在这个游戏中，我们<strong>最需要关注的两个核心问题</strong>就出现了：</p>
+
+
+
+
+<ol>
+<li>上帝有怎样的骰子？</li>
+<li>上帝是怎么掷的骰子？</li>
+</ol>
+
+
+
+
+<p>对应这两个问题，各大学家持着不同的观点，于是便有了以下三种模型：</p>
+
+
+
+
+<ol>
+<li>Unigram Model</li>
+<li>Topic Model(PLSA)</li>
+<li>LDA</li>
+</ol>
+
+
+
+
+<h4 id="0x11-unigram-model">0x11 Unigram Model</h4>
+
+
+
+
+<p>Unigram Model是非常简单直接的，它假设</p>
+
+
+
+
+<ol>
+<li>上帝只有一个V面的骰子，每一个面对应一个词，同时每个面的概率不一样。（这里可以通过“老千骰子”来理解下，有些面因为被做过了“手脚”，所以抛到的几率就大了，那如果没个面都这样，那么每个面抛到的几率也就不一样了）</li>
+<li>每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyudrkxl14j2086052dg2.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>那现在我们把上帝这个唯一的骰子各个面的概率记为<script type="math/tex" id="MathJax-Element-2">\vec{p}=\{p_1,p_2,...,p_v\}</script>，然后我们把掷这个V面骰子的实验记作<script type="math/tex" id="MathJax-Element-3">w \sim Mult(w|\vec{p}) </script></p>
+
+
+
+
+<p>那么对应一篇文档d，该文档生成的概率就是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-4">p(\vec{w})=p(w_1,w_2,...,w_n)=p(w_1)p(w_2)...p(w_n)</script></p>
+
+
+
+
+<p>而文档和文档之间我们认为是独立的，所以如果语料中有多篇文档<script type="math/tex" id="MathJax-Element-5">W=(\vec{w_1},\vec{w_2},...,\vec{w_m})</script>，则该语料生成的概率就是<script type="math/tex; mode=display" id="MathJax-Element-6">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})</script></p>
+
+
+
+
+<p>在Unigram Model中，我们又假设了文档之间是独立可交换的。即，词与词之间的顺序对文档表示并不造成影响，一篇文档相当于一个袋子，里面装着一些词。这样的模型也称为<strong>词袋模型（Bag-of-words）。</strong></p>
+
+
+
+
+<p>那么，如果语料中的总词频是N，在N个词中，如果我们关注每一个词<script type="math/tex" id="MathJax-Element-7">w_i</script>的发生次数<script type="math/tex" id="MathJax-Element-8">n_i</script>，则<script type="math/tex" id="MathJax-Element-9">\vec{n}=(n_1,n_2,...,n_V)</script>正好是一个多项分布 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-10">p(\vec{n})=Mult(\vec{n}|\vec{p},N)</script> <br>
+此时，语料的概率是 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-11">p(W)=p(\vec{w_1})p(\vec{w_2})...p(\vec{w_m})=\prod_{k=1}^Vp_k^{n_k}</script></p>
+
+
+
+
+<h4 id="0x110-贝叶斯unigram-model假设">0x110 贝叶斯Unigram Model假设</h4>
+
+
+
+
+<p>在贝叶斯统计学派看来，上帝拥有唯一一个固定的骰子是不合理的。于是他们觉得以上模型的骰子<script type="math/tex" id="MathJax-Element-12">\vec{p}</script>不应该唯一固定，而应该也是一个随机变量。</p>
+
+
+
+
+<p>那这样我们就可以将整个掷骰子的游戏过程更新成以下形式：</p>
+
+
+
+
+<ol>
+<li>上帝有一个装着无穷多骰子的罐子，里面有各种骰子，每个骰子有V个面。每一个面对应一个词</li>
+<li>上帝从罐子抽出一个骰子，然后用这个骰子不断的抛，每抛一次骰子，抛出的面就对应有一个词，那么抛n次骰子后，按抛掷顺序产生的序列就生成了一篇n个词的文档 <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyufvboyshj20a106cjs7.jpg" alt="enter image description here" title=""></li>
+</ol>
+
+
+
+
+<p>在以上的假设之下，由于我们事先并不知道上帝用了哪个骰子<script type="math/tex" id="MathJax-Element-13">\vec{p}</script>，所以每个骰子都是有可能被使用的，只是使用的概率由先验分布<script type="math/tex" id="MathJax-Element-14">p(\vec{p})</script>决定，对每一个具体的骰子<script type="math/tex" id="MathJax-Element-15">\vec{p}</script>，由该骰子产生数据的概率是<script type="math/tex" id="MathJax-Element-16">p(W|\vec{p})</script>，所以最终数据产生的概率就是对每个骰子上产生的数据概率进行积分累加求和 <br>
+<script type="math/tex; mode=display" id="MathJax-Element-17">P(W)=\int p(W|\vec{p})p(\vec{p})d\vec{p}</script> <br>
+在贝叶斯分析的框架之下，此处的先验分布概率其实就是一个多项分布的概率，其中一个比较好的选择即<strong>多项分布对应的共轭分布：Dirichlet分布</strong></p>
+
+
+
+
+<h4 id="0x12-plsa-topic-model">0x12 PLSA Topic Model</h4>
+
+
+
+
+<p>再来回顾Unigram Model我们发现：这个模型的假设过于简单，和人类真实的书写有着较大的差距</p>
+
+
+
+
+<p>从人类视角看，我们在日常构思文章中，我们往往要先确定自己文章的主旨，包含了哪些主题，然后再围绕着这些主题展开阐述。</p>
+
+
+
+
+<p>例如，一篇关于现代教育的文章，它可能就包含了这些主题：教育方法、多媒体技术、互联网等。篇幅上可能以教育方法为主，而其他为辅。然后，在不同的主题里面就包含了许多主题领域内常见的关键词。例如，谈到互联网时，我们会提及Web、Tcp等。</p>
+
+
+
+
+<p>这样一种直观的想法就在<strong>PLSA模型中进行了明确的体现</strong>，如果我们再利用这个想法更新“掷骰子”的游戏就有以下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两种类型骰子，一类是doc-topic骰子，骰子共k个面代表了k个主题；一类是topic-word骰子，骰子V个面，每面对应主题内的一个词</li>
+<li>生成文章的时候，首先要先创造一个特定的doc-topic骰子，使得骰子内的主题围绕文章要阐述的主题</li>
+<li>投掷doc-topic骰子，得到一个主题z</li>
+<li>根据得到的主题z，找到对应的topic-word骰子，投掷它得到一个词</li>
+<li>不断重复3，4步，直至文章生成完成</li>
+</ol>
+
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyugrx9ybdj20a50810tj.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在上面的游戏规则中，文档与文档之间顺序无关，同一个文档内的词的顺序也是无关的。所以还是一个bag-of-words模型。</p>
+
+
+
+
+<p>那么，在第m篇文档Dm中每个词的生成概率为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-18">p(w|D_m)=\sum^K_{z=1}p(w|z)p(z|D_m)=\sum^K_{z=1}\phi_{zw_i}\theta_{dz}</script> <br>
+<script type="math/tex" id="MathJax-Element-19">\phi_{zw_i}</script>:对应游戏中K个topic-word骰子中第z个骰子对应的词列表</p>
+
+
+
+
+<p><script type="math/tex" id="MathJax-Element-20">\theta_{dz}</script>:文档对应的第z个主题，即对应的doc-topic</p>
+
+
+
+
+<p>所以整篇文档的生成概率就为： <br>
+<script type="math/tex; mode=display" id="MathJax-Element-21">p(w|D_m)=\prod^n_{i=1}\sum^K_{z=1}p(w_i|z)p(z|D_m)</script></p>
+
+
+
+
+<h4 id="0x13-ldalatent-dirichlet-allocation">0x13 LDA(Latent Dirichlet Allocation)</h4>
+
+
+
+
+<p>就像Unigram Model 加入贝叶斯框架那样，doc-topic和topic-word都是模型的参数，即随机变量。于是类似对Unigram Model的改造对以上两个骰子模型加入先验分布。然后由于<script type="math/tex" id="MathJax-Element-22">\vec{\theta}</script>，<script type="math/tex" id="MathJax-Element-23">\vec{\phi}</script>都对应着多项分布，因此先验分布依旧选择Drichlet分布。于是得到的这个新模型就是<strong>LDA(Latent Dirichlet Allocation)模型</strong> <br>
+<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fyuhfhrza5j20cx09bwgm.jpg" alt="enter image description here" title=""></p>
+
+
+
+
+<p>在LDA模型中，上帝的游戏规则就又被更新成如下情形：</p>
+
+
+
+
+<ol>
+<li>上帝有两个罐子，第一个装着都哦doc-topic骰子，第二个装着topic-word骰子</li>
+<li>上帝随机的从第二个罐子中独立抽出K个topic-doc骰子，编号1-K</li>
+<li>每次生成新文档时，从第一个罐子随机抽一个doc-topic骰子</li>
+<li>投掷得到的doc-topic骰子。得到一个主题编号z</li>
+<li>在K个主题骰子里面选择编号为z的骰子，投掷骰子，得到一个词</li>
+<li>重复4，5步，直至文档生成完成</li>
+</ol>
+
+
+
+
+<h3 id="0x2-后记">0x2 后记</h3>
+
+
+
+
+<p>至此，入门篇（一）的内容就写到这了。由于是第一篇，文章中避过了许多较为复杂的数学证明和计算，尤其是关于LDA模型的。这样是为了，先建立对文本建模思路和过程的直观认识，而不是一上来就深究细节。</p>
+
+
+
+
+<p>加上笔者目前也是在学习阶段，后面的细节再慢慢地一一补充，大家共同进步 !! <br>
+                        \(^_^)/</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2019/01/04/wen-ben-jian-mo-suan-fa-ru-men-1/">文本建模算法入门-1</a>
+      <time datetime="2019-01-04T13:43:27+08:00" pubdate><span class='month'>Jan</span> <span class='day'>04</span> <span class='year'>2019</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
+      
+      </footer>
+    </article>
   
   
     <article>
@@ -601,2213 +1435,6 @@ IsValueValid是评估函数，在剪枝操作之后，callback的被调用次数
       </footer>
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/27/bei-xie-si-jing-xiang-tu/">贝叶斯景象图</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-27T22:51:43+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="贝叶斯景象图">贝叶斯景象图</h1></p>
-
-<h2 id="理论说明">理论说明</h2>
-
-
-
-
-<h3 id="均匀分布">均匀分布</h3>
-
-
-
-
-<p>对于一个含有Ｎ个未知元素的贝叶斯推断问题，我们隐式地为其先验分布创建了一个Ｎ维空间。先验分布上某一点的概率，都投射到某个高维的面或曲线上，其形状由先验分布决定。比如，假定有两个未知元素 <script type="math/tex" id="MathJax-Element-81">p_1、p_2</script>，其先验分布都是（０，５）上的均匀分布，那么先验分布存在于一个边长为５的正方形空间，而其概率面就是正方形上方的一个平面（由于假定了均匀分布，因此每一点概率相同）。</p>
-
-
-
-
-<h3 id="代码绘图演示">代码绘图演示</h3>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">IPython.core.pylabtools</span> <span class="kn">import</span> <span class="n">figsize</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">jet</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
-</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
-</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors.&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">)</span>
-</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Uniform prior landscape; alternate view&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovd74ecb8j20lg083tae.jpg" alt="" title=""></p>
-
-
-
-
-<h3 id="指数分布">指数分布</h3>
-
-
-
-
-<p>再者，如果 <script type="math/tex" id="MathJax-Element-192">p_1、p_2</script>的先验分布为Exp(3)和Exp(10)，那么对应的空间便是二维平面上，各维都取正值确定的范围，而对应的概率面的形状就是一个从（0，0）点向正值方向流淌的瀑布。</p>
-
-
-
-
-<p>以下的示例图就描绘了这样的情形，其中颜色越是趋向于暗红的位置，其先验概率就越高。反过来，颜色越是趋向于深蓝的位置，其先验概率就越低。</p>
-
-
-
-
-<h3 id="代码绘图演示">代码绘图演示</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
-</span><span class='line'><span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'><span class="c">#plt.xlabel(&quot;prior on $p_1$&quot;)</span>
-</span><span class='line'><span class="c">#plt.ylabel(&quot;prior on $p_2$&quot;)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">)</span>
-</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">azim</span><span class="o">=</span><span class="mi">390</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;$Exp(3), Exp(10)$ prior landscape; </span><span class="se">\n</span><span class="s">alternate view&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdfq6o3cj20mg0a577q.jpg" alt="" title=""></p>
-
-
-
-
-<p>这些二维空间的例子很简单，我们的大脑可以轻易想象得到。但实际中，先验分布所在的空间和其概率面往往具有更高的维度。</p>
-
-
-
-
-<h3 id="观测值对先验分布的影响">观测值对先验分布的影响　</h3>
-
-
-
-
-<p>在实际中，观测样本对空间不会有影响，但它会改变概率面的形状，将其在某些局部区域拉伸或挤压，以表明参数的真实性在哪里。更多的数据意味着对概率面更多的拉伸和挤压，使得最初的概率面形状变得十分奇怪。反之数据越少，那么最初的形状就保留得越好。不管如何，最后得到的概率面描述了后验分布的形状。</p>
-
-
-
-
-<p>假如我们现在想对两个参数为<script type="math/tex" id="MathJax-Element-239">\lambda</script>的泊松分布进行估计。那么我们将要分别比较用均匀分布和指数分布来对<script type="math/tex" id="MathJax-Element-240">\lambda</script>的先验分布进行假设的不同效果。</p>
-
-
-
-
-<h3 id="代码绘图演示-2">代码绘图演示</h3>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># create the observed data</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># sample size of data we observe, trying varying this (keep it less than 100 ;)</span>
-</span><span class='line'><span class="n">N</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># the true parameters, but of course we do not see these values...</span>
-</span><span class='line'><span class="n">lambda_1_true</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">lambda_2_true</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#...we see the data generated, dependent on the above two values.</span>
-</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
-</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
-</span><span class='line'>    <span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;observed (2-dimensional,sample size = </span><span class="si">%d</span><span class="s">):&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># plotting details.</span>
-</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">.</span><span class="mo">01</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-</span><span class='line'><span class="n">likelihood_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">_x</span><span class="p">)</span>
-</span><span class='line'>                        <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">likelihood_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">_y</span><span class="p">)</span>
-</span><span class='line'>                        <span class="k">for</span> <span class="n">_y</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">likelihood_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">likelihood_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
-</span><span class='line'><span class="n">observed</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="n">dimensional</span><span class="p">,</span><span class="n">sample</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[[</span><span class="mi">0</span> <span class="mi">2</span><span class="p">]]</span>
-</span><span class='line'><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
-</span><span class='line'><span class="n">figsize</span><span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
-</span><span class='line'><span class="c"># matplotlib heavy lifting below, beware!</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
-</span><span class='line'><span class="n">uni_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">uni_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">uniform</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">uni_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">uni_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-.</span><span class="mi">15</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Uniform priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Uniform priors on $p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
-</span><span class='line'><span class="n">exp_x</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span class='line'><span class="n">exp_y</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span><span class='line'><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">exp_x</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">exp_y</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape formed by Exponential priors on $p_1, p_2$.&quot;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
-</span><span class='line'><span class="c"># This is the likelihood times prior, that results in the posterior.</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span>
-</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-</span><span class='line'>                <span class="n">cmap</span><span class="o">=</span><span class="n">jet</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lambda_2_true</span><span class="p">,</span> <span class="n">lambda_1_true</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Landscape warped by </span><span class="si">%d</span><span class="s"> data observation;</span><span class="se">\n</span><span class="s"> Exponential priors on </span><span class="se">\</span>
-</span><span class='line'><span class="s">$p_1, p_2$.&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450ly1fovdubnzc1j20mo0m10y2.jpg" alt="" title=""></p>
-
-
-
-
-<p>四张图里的黑点代表了参数的真实取值，左下图为均匀先验得到的后验分布图。虽然观测值相同，但是两种假设下的后验分布形状是不一样的。其主要原因是因为观测点的位置在两者的假设的前提先验概率是不一样的。这样，我们可以知道，即便只有一个观测值，形成的山峰也试图要包括参数值的真实位置。当然，在真正的推断中，仅用一个观测值显然也是十分不科学的，这里仅仅为了方便阐述而已。</p>
-
-
-
-
-<p>本文参考自<a href="https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter3_MCMC/Ch3_IntroMCMC_PyMC3.ipynb">《Probabilistic-Programming-and-Bayesian-Methods-for-Hackers》</a></p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/27/bei-xie-si-jing-xiang-tu/">贝叶斯景象图</a>
-      <time datetime="2018-02-27T22:51:43+08:00" pubdate><span class='month'>Feb</span> <span class='day'>27</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/tong-ji-xue-xi/'>统计学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/">Python Keras + LSTM 进行单变量时间序列预测</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-22T16:06:57+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Python Keras + LSTM 进行单变量时间序列预测</h1>
-
-<p>首先，时间序列预测问题是一个复杂的预测模型问题，它不像一般的回归预测模型。时间序列预测的输入变量是一组按时间顺序的数字序列。它既具有延续性又具有随机性，所以在建模难度上相对回归预测更大。</p>
-
-<p>但同时，正好有一种强大的神经网络适合处理这种存在依赖关系的序列问题：RNN（Recurrent neural networks）。在过去几年中，应用 RNN 在语音识别，语言建模，翻译，图片描述等问题上已经取得一定成功，并且应用领域还在扩展。</p>
-
-<h2>LSTM网络</h2>
-
-<p><strong>Long Short-Term Memory 网络</strong>亦称<strong>LSTM 网络</strong>，是一种在深度学习中应用的循环神经网络。可以学习长期依赖信息。LSTM 由Hochreiter &amp; Schmidhuber (1997)提出，并在近期被Alex Graves进行了改良和推广。在很多问题，LSTM 都取得相当巨大的成功，并得到了广泛的使用。LSTM 通过刻意的设计来避免长期依赖问题。记住长期的信息在实践中是 LSTM 的默认行为，而非需要付出很大代价才能获得的能力。</p>
-
-<h2>具体应用</h2>
-
-<p>下面以一个洗发水销售的例子，来实现LSTM。
-首先，你可以在这里<a href="https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period#!ds=22r0&amp;display=line">下载</a>到本文需要用的数据集。这是一个描述了3年内洗发水的月度销售数量的数据集。</p>
-
-<h3>数据读取</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span><span class="s">&quot;%Y-%m&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
-</span><span class='line'>                 <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="n">series</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>数据划分</h3>
-
-<p>首先我们把数据集划分成两个部分即：训练集和测试集。
-那么我们该如何划分呢？因为我们今天研究的是时间序列分析，所以在数据集的划分上我们也应该按照时间来划分。我们可以将前两年的数据作为我们的训练集而将最后一年的数据作为测试集。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># split data into train and test</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里我们假设一个滚动预测的情景，又称<strong>前向模型验证（walk-forward model validation）</strong>。其原理很简单，举例来说就像当公司的预测期长达一年时，预测会将已过去的月份排除，而将预测期末的月份补上。好比一月份过去后，我们将其从预测中移除，同时次年的一月份就会作为收尾被添加到预测中以便预测总能保持12个月的完整性。</p>
-
-<p>这样通过使用每月新的洗发水销售量来进行下个月的预测，我们就像模拟了一个更接近于真实世界的场景。</p>
-
-<p>最后，我们将所有在测试集上的预测结果收集起来并计算出他们与真实值的均方根误差（RMSE）以此来作为评估我们模型的基准。</p>
-
-<h3>持续模型预测(Persistence Model Forecast)</h3>
-
-<p>持续性预测的基本思路就是从先前的（t-1）时间序列的结果用于预测当前时间（t）的取值。
-那么根据以上的思路，我们可以通过滚动预测的原理从训练集的历史数据中获取最后一次观察值并使用它来预测当前时间的可能取值。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
-</span><span class='line'><span class="c"># load dataset</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span>
-</span><span class='line'>                  <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-</span><span class='line'>                  <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'><span class="c"># split data into train and test</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
-</span><span class='line'><span class="c"># walk-forward validation</span>
-</span><span class='line'><span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]</span>
-</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)):</span>
-</span><span class='line'>  <span class="c"># make prediction</span>
-</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>  <span class="c"># observation</span>
-</span><span class='line'>  <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'><span class="c"># report performance</span>
-</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
-</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://i.loli.net/2017/09/07/59b1503007a96.png" alt="persistence_rmse.png" /></p>
-
-<p>通过持续模型的预测，我们得到了一个最基础的预测模型以及RMSE（baseline）为了提升我们预测模型的效果，下面让我们进入正题来构建LSTM模型来对数据集进行时间序列预测。</p>
-
-<h3>数据处理</h3>
-
-<p>为了能够构建一个LSTM模型对训练集进行训练，我们首先要对数据进行一下处理：</p>
-
-<ol>
-<li>将时间序列问题转化成监督学习问题</li>
-<li>平稳时间序列</li>
-<li>数据标准化</li>
-</ol>
-
-
-<h4>将时间序列转换成监督学习</h4>
-
-<p>对于一个时间序列问题，我们可以通过使用从最后一个（t-1）时刻的观测值作为输入的特征X和当前时刻（t）的观测值作为输出Y来实现转换。</p>
-
-<p>因为，需要转换的是一组时间序列数据，所以无法组合成像真正的监督学习那样有明确一对一映射的输入输出关系。尤其是在数据集的最开始或最后时，两个位置总有一个位置无法在训练集中找到对应关系。为了解决这样的问题，我们通常的做法是，在最开始时将输入特征置为0，而它对应的输出就是时间序列的第一个元素。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
-</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># load dataset</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'><span class="c"># transform to supervised learning</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">supervised</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>输出结果：
-        0      0
-0     0.0  266.0
-1   266.0  145.9
-2   145.9  183.1
-3   183.1  119.3
-4   119.3  180.3
-5   180.3  168.5
-6   168.5  231.8
-7   231.8  224.5
-8   224.5  192.8
-9   192.8  122.9
-10  122.9  336.5
-11  336.5  185.9
-12  185.9  194.3
-13  194.3  149.5
-14  149.5  210.1
-15  210.1  273.3
-16  273.3  191.4
-17  191.4  287.0
-18  287.0  226.0
-19  226.0  303.6
-20  303.6  289.9
-21  289.9  421.6
-22  421.6  264.5
-23  264.5  342.3
-24  342.3  339.7
-25  339.7  440.4
-26  440.4  315.9
-27  315.9  439.3
-28  439.3  401.3
-29  401.3  437.4
-30  437.4  575.5
-31  575.5  407.6
-32  407.6  682.0
-33  682.0  475.3
-34  475.3  581.3
-35  581.3  646.9</p></blockquote>
-
-<h4>平稳时间序列</h4>
-
-<p>虽然不明显，但我们仍可以看出这个洗发水销售数据集在时间上呈上升趋势。因此我们说这个时间序列数据是非平稳的。那么，不平稳怎么办？</p>
-
-<p>答案就是：差分。（有关差分的介绍点击<a href="https://zh.wikipedia.org/wiki/%E5%B7%AE%E5%88%86">此处</a>）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># create a differenced series</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
-</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># invert differenced value</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># load dataset</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="c"># transform to be stationary</span>
-</span><span class='line'><span class="n">differenced</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">differenced</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="c"># invert transform</span>
-</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">differenced</span><span class="p">)):</span>
-</span><span class='line'>  <span class="n">value</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">differenced</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">inverted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span class='line'><span class="n">inverted</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="n">differenced</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://i.loli.net/2017/09/07/59b162fb84ac0.png" alt="diff.png" /></p>
-
-<p>经过一阶差分处理后，从图上看还是挺平稳的。</p>
-
-<h4>标准化数据</h4>
-
-<p>在数据输入前进行标准化可以非常有效的提升收敛速度和效果。尤其如果我们的激活函数是sigmoid或者tanh，其梯度最大的区间是0附近，当输入值很大或者很小的时候，sigmoid或者tanh的变化就基本平坦了（sigmoid的导数sig（1-sig）会趋于0），也就是进行梯度下降进行优化的时候，梯度会趋于0，而倒是优化速度很慢。</p>
-
-<p>如果输入不进行归一化，由于我们初始化的时候一般都是0均值的的正太分布或者小范围的均匀分布（Xavier），如果输入中存在着尺度相差很大的特征，例如（10000，0.001）这样的，很容易导致激活函数的输入w1<em>x1+w2</em>x2+b变的很大或者很小，从而引起梯度趋于0。</p>
-
-<p>而LSTM的默认激活函数就是tanh函数，它的输出范围在-1 到 1 之间，同时这是时间序列数据的首选范围。因此我们可以使用MinMaxScaler类将数据集转换到范围[-1,1]。像其他scikit用于转换数据的方法类一样，它需要以行和列的矩阵格式提供的数据。因此，在转换之前，我们必须重塑NumPy数组。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
-</span><span class='line'><span class="c"># load dataset</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="c"># transform scale</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'><span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-</span><span class='line'><span class="n">scaled_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-</span><span class='line'><span class="n">scaled_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">scaled_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span class='line'><span class="c"># invert transform</span>
-</span><span class='line'><span class="n">inverted_X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">scaled_X</span><span class="p">)</span>
-</span><span class='line'><span class="n">inverted_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">inverted_X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">inverted_series</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>输出结果：
-Month
-1901-01-01    266.0
-1901-02-01    145.9
-1901-03-01    183.1
-1901-04-01    119.3
-1901-05-01    180.3
-Name: Sales of shampoo over a three year period, dtype: float64
-0   -0.478585
-1   -0.905456
-2   -0.773236
-3   -1.000000
-4   -0.783188
-dtype: float64
-0    266.0
-1    145.9
-2    183.1
-3    119.3
-4    180.3
-dtype: float64</p></blockquote>
-
-<h3>构建LSTM模型</h3>
-
-<p>长短期记忆网络（LSTM）是一种递归神经网络（RNN）。
-这类网络的的优点是它能学习并记住较长序列，并不依赖预先指定的窗口滞后观察值作为输入。
-在Keras中，这被称为stateful，在定义LSTM网络层时将“stateful”语句设定为“True”。</p>
-
-<p>LSTM层要求输入矩阵格式为：[样本，时间步长，特征]</p>
-
-<p>鉴于训练数据集的形式定义为X输入和y输出，必须先将其转化为样本/时间步长/特征的形式。</p>
-
-<h4>完整代码</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">concat</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">datetime</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">LSTM</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># date-time parsing function for loading the dataset</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;190&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;%Y-%m&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># frame a sequence as a supervised learning problem</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">timeseries_to_supervised</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lag</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
-</span><span class='line'>  <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">df</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">df</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># create a differenced series</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
-</span><span class='line'>      <span class="n">value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">interval</span><span class="p">]</span>
-</span><span class='line'>      <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># invert differenced value</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">inverse_difference</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span> <span class="o">+</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="n">interval</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># scale train and test data to [-1, 1]</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
-</span><span class='line'>  <span class="c"># fit scaler</span>
-</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">scaler</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># transform train</span>
-</span><span class='line'>  <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>  <span class="n">train_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># transform test</span>
-</span><span class='line'>  <span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>  <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># inverse scaling for a forecasted value</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">new_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">inverted</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">inverted</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># fit an LSTM network to training data</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">fit_lstm</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">nb_epoch</span><span class="p">,</span> <span class="n">neurons</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">train</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>  <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">neurons</span><span class="p">,</span> <span class="n">batch_input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">stateful</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;mean_squared_error&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">&#39;adam&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_epoch</span><span class="p">):</span>
-</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">model</span><span class="o">.</span><span class="n">reset_states</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">model</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># make a one-step forecast</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">forecast_lstm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">yhat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># load dataset</span>
-</span><span class='line'><span class="n">series</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;sales-of-shampoo-over-a-three-ye.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">date_parser</span><span class="o">=</span><span class="n">parser</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># transform data to be stationary</span>
-</span><span class='line'><span class="n">raw_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'><span class="n">diff_values</span> <span class="o">=</span> <span class="n">difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># transform data to be supervised learning</span>
-</span><span class='line'><span class="n">supervised</span> <span class="o">=</span> <span class="n">timeseries_to_supervised</span><span class="p">(</span><span class="n">diff_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">supervised_values</span> <span class="o">=</span> <span class="n">supervised</span><span class="o">.</span><span class="n">values</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># split data into train and test-sets</span>
-</span><span class='line'><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">supervised_values</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">12</span><span class="p">],</span> <span class="n">supervised_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># transform the scale of the data</span>
-</span><span class='line'><span class="n">scaler</span><span class="p">,</span> <span class="n">train_scaled</span><span class="p">,</span> <span class="n">test_scaled</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># fit the model</span>
-</span><span class='line'><span class="n">lstm_model</span> <span class="o">=</span> <span class="n">fit_lstm</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'><span class="c"># forecast the entire training dataset to build up state for forecasting</span>
-</span><span class='line'><span class="n">train_reshaped</span> <span class="o">=</span> <span class="n">train_scaled</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_scaled</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">lstm_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">train_reshaped</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># walk-forward validation on the test data</span>
-</span><span class='line'><span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)):</span>
-</span><span class='line'>  <span class="c"># make one-step forecast</span>
-</span><span class='line'>  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">test_scaled</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">forecast_lstm</span><span class="p">(</span><span class="n">lstm_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># invert scaling</span>
-</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">invert_scale</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">yhat</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># invert differencing</span>
-</span><span class='line'>  <span class="n">yhat</span> <span class="o">=</span> <span class="n">inverse_difference</span><span class="p">(</span><span class="n">raw_values</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_scaled</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># store forecast</span>
-</span><span class='line'>  <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yhat</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">expected</span> <span class="o">=</span> <span class="n">raw_values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&#39;Month=</span><span class="si">%d</span><span class="s">, Predicted=</span><span class="si">%f</span><span class="s">, Expected=</span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">yhat</span><span class="p">,</span> <span class="n">expected</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#report performance</span>
-</span><span class='line'><span class="n">rmse</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:],</span> <span class="n">predictions</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&#39;Test RMSE: </span><span class="si">%.3f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
-</span><span class='line'><span class="c"># line plot of observed vs predicted</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw_values</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:])</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
-</span><span class='line'><span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://i.loli.net/2017/09/07/59b16bc803033.png" alt="lstm_pred.png" /></p>
-
-<p>最后运行结果打印出测试数据集12个月份中每个月份的预期和预测销量。示例还打印了所有预测值得均方根误差。该模型显示洗发水月度销量的均方根误差为111.925，好于持续性模型得出的对应结果136.761。</p>
-
-<p><strong>另外</strong>，神经网络的一个难题是初始条件不同，它们给出结果就不同。一种解决办法是修改Keras使用的随机数种子值以确保结果可复制。另一种办法是使用不同的实验设置控制随机初始条件。</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/22/python-keras-plus-lstm-jin-xing-dan-bian-liang-shi-jian-xu-lie-yu-ce/">Python Keras + LSTM 进行单变量时间序列预测</a>
-      <time datetime="2018-02-22T16:06:57+08:00" pubdate><span class='month'>Feb</span> <span class='day'>22</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/18/ru-he-mian-fei-shi-yong-gu-ge-gpuxun-lian-shen-jing-wang-luo/">如何免费使用谷歌GPU训练神经网络</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-18T21:21:44+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="完全云端运行免费使用谷歌gpu训练神经网络">完全云端运行：免费使用谷歌GPU训练神经网络</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p>对，你没有听错，高大上的ＧＰＵ，现在不花钱也能用上了。这是Google的一项免费云端机器学习服务，全名Colaboratory。</p>
-
-
-
-
-<p><strong>Colaboratory</strong> 是一个 Google 研究项目，旨在帮助传播机器学习培训和研究成果。它是一个 Jupyter 笔记本环境，不需要进行任何设置就可以使用，并且完全在云端运行。Colaboratory 笔记本存储在 Google 云端硬盘中，并且可以共享，就如同您使用 Google 文档或表格一样。Colaboratory 可免费使用，而且最重要的还提供免费的英伟达Tesla K80 GPU。还有这等好事？事不宜迟，本文马上介绍如何使用 Google CoLaboratory 训练神经网络。</p>
-
-
-
-
-<h2 id="准备工作">准备工作</h2>
-
-
-
-
-<p><strong>在Google Drive上创建文件夹</strong></p>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokw4gt73cj20au0cdmxt.jpg" alt="" title=""></p>
-
-
-
-
-<p>Colab用的数据都存储在Google Drive云端硬盘上，所以，我们需要先指定要在Google Drive上用的文件夹。</p>
-
-
-
-
-<p>比如说，可以在Google Drive上创建一个“app”文件夹，或者其他什么名字，也可以选择Colab笔记本默认的文件夹。</p>
-
-
-
-
-<h2 id="新建colab笔记本">新建Colab笔记本</h2>
-
-
-
-
-<p>在刚刚创建的app文件夹里点击右键，选择<strong>“更多”</strong>，然后从菜单里选择<strong>“Colaboratory”</strong>，这样就新建出了一个Colab笔记本。</p>
-
-
-
-
-<p>若是更多选项中没有<strong>“Colaboratory”</strong>选项，可以点击<strong>“关联更多应用”</strong>选项，然后在打开的页面中，搜索<strong>“Colaboratory”</strong>，然后再点<strong>关联应用</strong>，再次点击右键就可以在<strong>“更多”</strong>选项中看到<strong>“Colaboratory”</strong>选项了。</p>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokw7hbuf6j20je0hpwfn.jpg" alt="" title=""></p>
-
-
-
-
-<h2 id="设置免费gpu">设置免费GPU</h2>
-
-
-
-
-<p>新建Colaboratory成功后，在笔记本里点Edit&gt;Notebook settings（编辑&gt;笔记本设置），或者Runtime&gt;Change runtime type（运行时&gt;改变运行时类型），然后在Hardware accelerator（硬件加速器）一栏选择GPU。</p>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokwett0eij209b091jrn.jpg" alt="" title=""></p>
-
-
-
-
-<p>然后，Google Colab就可以用了。</p>
-
-
-
-
-<h2 id="关联google-drive">关联Google Drive</h2>
-
-
-
-
-<p>为了能让Colaboratory使用到你的Google Drive的文件，我们需要先运行下面这些代码，来安装必要的库、执行授权。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> install <span class="hljs-attribute">-y</span> <span class="hljs-attribute">-qq</span> software<span class="hljs-attribute">-properties</span><span class="hljs-attribute">-common</span> python<span class="hljs-attribute">-software</span><span class="hljs-attribute">-properties</span> module<span class="hljs-attribute">-init</span><span class="hljs-attribute">-tools</span>
-<span class="hljs-subst">!</span>add<span class="hljs-attribute">-apt</span><span class="hljs-attribute">-repository</span> <span class="hljs-attribute">-y</span> ppa:alessandro<span class="hljs-attribute">-strada</span>/ppa <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">&gt;</span> /dev/<span class="hljs-built_in">null</span>
-<span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> update <span class="hljs-attribute">-qq</span> <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">&gt;</span> /dev/<span class="hljs-built_in">null</span>
-<span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-y</span> install <span class="hljs-attribute">-qq</span> google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> fuse
-from google<span class="hljs-built_in">.</span>colab <span class="hljs-keyword">import</span> auth
-auth<span class="hljs-built_in">.</span>authenticate_user()
-from oauth2client<span class="hljs-built_in">.</span>client <span class="hljs-keyword">import</span> GoogleCredentials
-creds <span class="hljs-subst">=</span> GoogleCredentials<span class="hljs-built_in">.</span>get_application_default()
-<span class="hljs-keyword">import</span> getpass
-<span class="hljs-subst">!</span>google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> <span class="hljs-attribute">-headless</span> <span class="hljs-attribute">-id</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_id} <span class="hljs-attribute">-secret</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_secret} <span class="hljs-subst">&lt;</span> /dev/<span class="hljs-built_in">null</span> <span class="hljs-number">2</span><span class="hljs-subst">&gt;&amp;</span><span class="hljs-number">1</span> <span class="hljs-subst">|</span> grep URL
-vcode <span class="hljs-subst">=</span> getpass<span class="hljs-built_in">.</span>getpass()
-<span class="hljs-subst">!</span>echo {vcode} <span class="hljs-subst">|</span> google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> <span class="hljs-attribute">-headless</span> <span class="hljs-attribute">-id</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_id} <span class="hljs-attribute">-secret</span><span class="hljs-subst">=</span>{creds<span class="hljs-built_in">.</span>client_secret}
-</code></pre>
-
-
-
-
-<p>运行的时候应该会看到下图所示的结果： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fokwi71w3uj20jv07q41s.jpg" alt="" title=""></p>
-
-
-
-
-<p>看见那个链接之后，点击它，复制验证码并粘贴到文本框里。（这里其实是调用了Google Drive的SDK来访问你的Google Drive，而这个验证码就相当于access_key了）</p>
-
-
-
-
-<p>授权完成后，就可以挂载Google Drive了：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs lasso"><span class="hljs-subst">!</span>mkdir <span class="hljs-attribute">-p</span> drive
-<span class="hljs-subst">!</span>google<span class="hljs-attribute">-drive</span><span class="hljs-attribute">-ocamlfuse</span> drive</code></pre>
-
-
-
-
-<h2 id="测试gpu">测试GPU</h2>
-
-
-
-
-<p>这时，我们在本地电脑上创建一个.py文件来测试一下，挂载是否成功以及GPU是否在工作吧。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"import tensorflow as tf\nprint(tf.test.gpu_device_name())"</span> &gt; test.py</code></pre>
-
-
-
-
-<p>然后将test.py上传到我们开始时创建的app的文件夹里。</p>
-
-
-
-
-<p>然后在Colaboratory笔记本中运行一下代码：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs diff"><span class="hljs-change">!python3 drive/app/test.py</span></code></pre>
-
-
-
-
-<p>不出意外的话，就会输出类似以下的结果：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs applescript">/usr/<span class="hljs-keyword">local</span>/lib/python3<span class="hljs-number">.6</span>/dist-packages/h5py/__init__.py:<span class="hljs-number">36</span>: FutureWarning: Conversion <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">second</span> argument <span class="hljs-keyword">of</span> issubdtype <span class="hljs-keyword">from</span> `float` <span class="hljs-keyword">to</span> `np.floating` <span class="hljs-keyword">is</span> deprecated. In future, <span class="hljs-keyword">it</span> will be treated <span class="hljs-keyword">as</span> `np.float64 == np.dtype(float).type`.
-  <span class="hljs-keyword">from</span> ._conv import register_converters <span class="hljs-keyword">as</span> _register_converters
-<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.172726</span>: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:<span class="hljs-number">898</span>] successful NUMA node <span class="hljs-command">read</span> <span class="hljs-keyword">from</span> SysFS had negative value (-<span class="hljs-number">1</span>), <span class="hljs-keyword">but</span> there must be <span class="hljs-keyword">at</span> least one NUMA node, so <span class="hljs-keyword">returning</span> NUMA node zero
-<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.172988</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">1208</span>] Found device <span class="hljs-number">0</span> <span class="hljs-keyword">with</span> properties: 
-<span class="hljs-property">name</span>: Tesla K80 major: <span class="hljs-number">3</span> minor: <span class="hljs-number">7</span> memoryClockRate(GHz): <span class="hljs-number">0.8235</span>
-pciBusID: <span class="hljs-number">0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">04.0</span>
-totalMemory: <span class="hljs-number">11.17</span>GiB freeMemory: <span class="hljs-number">503.62</span>MiB
-<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.173016</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">1308</span>] Adding visible gpu devices: <span class="hljs-number">0</span>
-<span class="hljs-number">2018</span>-<span class="hljs-number">02</span>-<span class="hljs-number">18</span> <span class="hljs-number">12</span>:<span class="hljs-number">37</span>:<span class="hljs-number">05.457665</span>: I tensorflow/core/common_runtime/gpu/gpu_device.cc:<span class="hljs-number">989</span>] Creating TensorFlow device (/device:GPU:<span class="hljs-number">0</span> <span class="hljs-keyword">with</span> <span class="hljs-number">243</span> MB memory) -&gt; physical GPU (device: <span class="hljs-number">0</span>, <span class="hljs-property">name</span>: Tesla K80, pci bus <span class="hljs-property">id</span>: <span class="hljs-number">0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">04.0</span>, compute capability: <span class="hljs-number">3.7</span>)
-/device:GPU:<span class="hljs-number">0</span></code></pre>
-
-
-
-
-<p>到这里的话，那么恭喜你，你的GPU环境基本可以用了，只要把你的项目文件夹上传到你的app文件夹下，搭建好深度学习的库环境，就可以通过类似上面的操作进行神经网络训练了。</p>
-
-
-
-
-<h2 id="tips">Tips</h2>
-
-
-
-
-<h3 id="如何安装库">如何安装库？</h3>
-
-
-
-
-<p>安装Keras：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>pip install <span class="hljs-attribute">-q</span> keras
-<span class="hljs-keyword">import</span> keras</code></pre>
-
-
-
-
-<p>安装PyTorch：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs avrasm">!pip install -q http://download<span class="hljs-preprocessor">.pytorch</span><span class="hljs-preprocessor">.org</span>/whl/cu75/torch-<span class="hljs-number">0.2</span><span class="hljs-number">.0</span><span class="hljs-preprocessor">.post</span>3-cp27-cp27mu-manylinux1_x86_64<span class="hljs-preprocessor">.whl</span> torchvision
-import torch</code></pre>
-
-
-
-
-<p>安装OpenCV：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> libsm6 libxext6 <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> <span class="hljs-attribute">-U</span> opencv<span class="hljs-attribute">-python</span>
-<span class="hljs-keyword">import</span> cv2</code></pre>
-
-
-
-
-<p>安装XGBoost：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>pip install <span class="hljs-attribute">-q</span> xgboost<span class="hljs-subst">==</span><span class="hljs-number">0.4</span>a30
-<span class="hljs-keyword">import</span> xgboost</code></pre>
-
-
-
-
-<p>安装GraphViz：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> graphviz <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> pydot
-<span class="hljs-keyword">import</span> pydot</code></pre>
-
-
-
-
-<p>安装7zip Reader：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-subst">!</span>apt<span class="hljs-attribute">-get</span> <span class="hljs-attribute">-qq</span> install <span class="hljs-attribute">-y</span> libarchive<span class="hljs-attribute">-dev</span> <span class="hljs-subst">&amp;&amp;</span> pip install <span class="hljs-attribute">-q</span> <span class="hljs-attribute">-U</span> libarchive
-<span class="hljs-keyword">import</span> libarchive</code></pre>
-
-
-
-
-<p>安装其他库：</p>
-
-
-
-
-<pre class="prettyprint"><code class=" hljs cmake">用!pip <span class="hljs-keyword">install</span>或者!apt-get <span class="hljs-keyword">install</span>命令。</code></pre>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/18/ru-he-mian-fei-shi-yong-gu-ge-gpuxun-lian-shen-jing-wang-luo/">如何免费使用谷歌GPU训练神经网络</a>
-      <time datetime="2018-02-18T21:21:44+08:00" pubdate><span class='month'>Feb</span> <span class='day'>18</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shen-jing-wang-luo-yu-shen-du-xue-xi/'>神经网络与深度学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-15T08:44:11+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="元胞自动机与生命游戏game-of-life">元胞自动机与《生命游戏》（Game of Life）</h1></p>
-
-<h2 id="背景">背景</h2>
-
-
-
-
-<p>笔者最近读到一篇交通流仿真的论文里，提到了一个挺有意思的模型　－－　<strong>元胞自动机</strong>。</p>
-
-
-
-
-<p>在好奇心的驱使之下查询了不少资料，所以今天就来跟大家来分享一下<strong>“元胞自动机”</strong>这个模型以及它和<strong>“康威《生命游戏》”</strong>的关系。</p>
-
-
-
-
-<p>为了让话题更加有趣，我们先从《生命游戏》开始谈起。</p>
-
-
-
-
-<h2 id="什么是生命游戏">什么是《生命游戏》？</h2>
-
-
-
-
-<p>生命游戏由英国数学家约翰·何顿·康威提出，它其实是一个零玩家游戏，它包括一个二维矩形世界，这个世界中的每个方格居住着一个活着的或死了的细胞。</p>
-
-
-
-
-<p>而整个《生命游戏》是贯彻着一条生命游戏定律的，即：<strong>如果一个生命，其周围的同类生命太少，会因为得不到帮助而死亡；如果太多，则会因为得不到足够的生命资源而死亡。</strong> ——英国数学家约翰·康威</p>
-
-
-
-
-<p>一个细胞在下一个时刻生死取决于相邻八个方格中活着的或死了的细胞的数量。如果相邻方格活着的细胞数量过多，这个细胞会因为资源匮乏而在下一个时刻死去；相反，如果周围活细胞过少，这个细胞会因太孤单而死去。实际中，你可以设定周围活细胞的数目怎样时才适宜该细胞的生存。如果这个数目设定过低，世界中的大部分细胞会因为找不到太多的活的邻居而死去，直到整个世界都没有生命；如果这个数目设定过高，世界中又会被生命充满而没有什么变化。</p>
-
-
-
-
-<p>实际中，这个数目一般选取2或者3；这样整个生命世界才不至于太过荒凉或拥挤，而是一种动态的平衡。</p>
-
-
-
-
-<p>这样的话，游戏的规则就是：当一个方格周围有2或3个活细胞时，方格中的活细胞在下一个时刻继续存活；即使这个时刻方格中没有活细胞，在下一个时刻也会“诞生”活细胞。在这个游戏中，还可以设定一些更加复杂的规则，例如当前方格的状况不仅由父一代决定，而且还考虑祖父一代的情况。你还可以作为这个世界的上帝，随意设定某个方格细胞的死活，以观察对世界的影响。</p>
-
-
-
-
-<p>在游戏的进行中，杂乱无序的细胞会逐渐演化出各种精致、有形的结构；这些结构往往有很好的对称性，而且每一代都在变化形状。一些形状已经锁定，不会逐代变化。</p>
-
-
-
-
-<p>有时，一些已经成形的结构会因为一些无序细胞的“入侵”而被破坏。但是形状和秩序经常能从杂乱中产生出来。</p>
-
-
-
-
-<h2 id="生命游戏和元胞自动机的关系以及什么是元胞自动机">《生命游戏》和元胞自动机的关系以及什么是元胞自动机？</h2>
-
-
-
-
-<p>生命游戏的原理就是基于元胞自动机的，或者说《生命游戏》就是元胞自动机的一个展示。</p>
-
-
-
-
-<p><strong>元胞自动机(Cellular Automata，简称CA</strong>，也有人译为细胞自动机、点格自动机、分子自动机或单元自动机)。是一时间和空间都离散的动力系统。</p>
-
-
-
-
-<p>散布在规则格网 (Lattice Grid)中的每一元胞(Cell)取有限的离散状态，遵循同样的作用规则，依据确定的局部规则作同步更新。大量元胞通过简单的相互作用而构成动态系统的演化。不同于一般的动力学模型，元胞自动机不是由严格定义的物理方程或函数确定，而是用一系列模型构造的规则构成。凡是满足这些规则的模型都可以算作是元胞自动机模型。</p>
-
-
-
-
-<p>因此，元胞自动机是一类模型的总称，或者说是一个方法框架。其特点是时间、空间、状态都离散，每个变量只取有限多个状态，且其状态改变的规则在时间和空间上都是局部的。</p>
-
-
-
-
-<p><strong>初等元胞自动机（ Elementary Cellular Automata， ECA)</strong>的基本要素如下</p>
-
-
-
-
-<ul>
-<li>空间：一维直线上等间距的点。可为某区间上的整数点的集合。</li>
-<li>状态集：S={s1,s2} 即只有两种不同的状态。这两种不同的状态可将其分别编码为0 与 1；若用图形表示，则可对应“黑”与“白” 或者其他两种不同的颜色。</li>
-<li>邻居：取邻居半径r=1，即每个元胞最多只有“左邻右舍”两个邻居。</li>
-<li>演化规则：任意设定， 最多2^8=256</li>
-</ul>
-
-
-
-
-<p><strong>元胞以相邻的8个元胞为邻居。即Moore邻居；一个元胞的生死由其在该时刻本身的生死状态和周围八个邻居的状态。</strong></p>
-
-
-
-
-<p>为了解释它，我们可以把计算机中的宇宙想象成是一堆方格子构成的封闭空间，尺寸为N的空间就有N*N个格子。而每一个格子都可以看成是一个生命体，每个生命都有生和死两种状态，如果该格子生就显示蓝色，死则显示白色。每一个格子旁边都有邻居格子存在，如果我们把3ｘ3的9个格子构成的正方形看成一个基本单位的话，那么这个正方形中心的格子的邻居就是它旁边的8个格子。</p>
-
-
-
-
-<p>每个格子的生死遵循下面的原则：</p>
-
-
-
-
-<ol>
-<li>如果一个细胞周围有3个细胞为生（一个细胞周围共有8个细胞），则该细胞为生（即该细胞若原先为死，则转为生，若原先为生，则保持不变）。</li>
-<li>如果一个细胞周围有2个细胞为生，则该细胞的生死状态保持不变；</li>
-<li>在其它情况下，该细胞为死（即该细胞若原先为生，则转为死，若原先为死，则保持不变） </li>
-</ol>
-
-
-
-
-<p>设定图像中每个像素的初始状态后依据上述的游戏规则演绎生命的变化，由于初始状态和迭代次数不同，将会得到令人叹服的优美图案。</p>
-
-
-
-
-<p>这样就把这些若干个格子（生命体）构成了一个复杂的动态世界。运用简单的3条作用规则构成的群体会涌现出很多意想不到的复杂行为，这就是复杂性科学的研究焦点。</p>
-
-
-
-
-<h2 id="元胞自动机的应用">元胞自动机的应用</h2>
-
-
-
-
-<p>在实际应用过程中，有的元胞自动机模型对其中的某些特征进行了扩展，有的在规则设计中引入随机因素，如：森林火灾模型。 又如，在交通、通讯发达的今天， 研究流行病或计算机病毒的传播问题时， 我们还可以将空间背景换成复杂网络的结点，用网络邻接点作为邻居。</p>
-
-
-
-
-<p>这样的调整显然比仍旧使用二维欧氏空间、采用欧氏距离的模型更加符合实际情况。 在大型场所人群紧急疏散问题模拟研究中，可以考虑年龄、性别等因素，即元胞不是同质的，更加有利于使模拟系统接近真实系统。</p>
-
-
-
-
-<h2 id="生命游戏实现python版">《生命游戏实现》Python版</h2>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">GameOfLife</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells_shape</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    Parameters</span>
-</span><span class='line'><span class="sd">    ----------</span>
-</span><span class='line'><span class="sd">    cells_shape : 一个元组，表示画布的大小。</span>
-</span><span class='line'>
-</span><span class='line'><span class="sd">    Examples</span>
-</span><span class='line'><span class="sd">    --------</span>
-</span><span class='line'><span class="sd">    建立一个高20，宽30的画布</span>
-</span><span class='line'><span class="sd">    game = GameOfLife((20, 30))</span>
-</span><span class='line'><span class="sd">    </span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># 矩阵的四周不参与运算</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">cells_shape</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">real_width</span> <span class="o">=</span> <span class="n">cells_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
-</span><span class='line'>    <span class="n">real_height</span> <span class="o">=</span> <span class="n">cells_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">real_width</span><span class="p">,</span> <span class="n">real_height</span><span class="p">))</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;更新一次状态&quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>        <span class="c"># 计算该细胞周围的存活细胞数</span>
-</span><span class='line'>        <span class="n">neighbor</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">))</span>
-</span><span class='line'>        <span class="n">neighbor_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="s">&#39;valid&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">neighbor_num</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>        <span class="k">elif</span> <span class="n">neighbor_num</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">buf</span>
-</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">plot_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;画出当前的状态&quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Iter :{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">update_and_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">):</span>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;更新状态并画图</span>
-</span><span class='line'><span class="sd">    Parameters</span>
-</span><span class='line'><span class="sd">    ----------</span>
-</span><span class='line'><span class="sd">    n_iter : 更新的轮数</span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iter</span><span class="p">):</span>
-</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Iter :{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="p">))</span>
-</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
-</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span>
-</span><span class='line'>      <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">game</span> <span class="o">=</span> <span class="n">GameOfLife</span><span class="p">(</span><span class="n">cells_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
-</span><span class='line'>  <span class="n">game</span><span class="o">.</span><span class="n">update_and_plot</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>效果图　</p>
-
-
-
-
-<blockquote>
-  <p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtk3ezxj209908tdgf.jpg" alt="" title=""> <br>
-  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjw782j208u08y0sw.jpg" alt="" title=""> <br>
-  <img src="https://ws1.sinaimg.cn/large/a3d23450gy1fogdtjvhopj209109274d.jpg" alt="" title=""></p>
-</blockquote>
-
-
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/15/yuan-bao-zi-dong-ji-yu-sheng-ming-you-xi-(game-of-life)/">元胞自动机与生命游戏（Game of Life）</a>
-      <time datetime="2018-02-15T08:44:11+08:00" pubdate><span class='month'>Feb</span> <span class='day'>15</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shu-xue-jian-mo/'>数学建模</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2018-02-12T22:14:22+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><p>﻿<h1 id="使用树莓派进行24小时不间断直播">使用树莓派进行24小时不间断直播</h1></p>
-
-<h2 id="开始">开始</h2>
-
-
-
-
-<p>多余的话就不多说了，今天本文为大家介绍两种使用树莓派来做直播服务器的方法。</p>
-
-
-
-
-<h2 id="方案一-ffmpeg-ffserver搭建流媒体服务器">方案一 ffmpeg + ffserver搭建流媒体服务器</h2>
-
-
-
-
-<p><strong>首先</strong> <br>
-我们用到的工具有：</p>
-
-
-
-
-<p><strong>硬件方面：</strong></p>
-
-
-
-
-<ul>
-<li>树莓派主板一块</li>
-<li>兼容树莓派的USB摄像头一个</li>
-</ul>
-
-
-
-
-<p><strong>软件方面：</strong></p>
-
-
-
-
-<ul>
-<li>ffmpeg，负责媒体文件的转码工作，把你服务器上的源媒体文件转成要发出去的流媒体文件。</li>
-<li>ffserver，负责响应客户端的流媒体请求，把流媒体数据发送给客户端，相当与一个小型的服务端。</li>
-</ul>
-
-
-
-
-<p>具体的工作方式就如下图所示： <br>
-<img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzrw4b72j20iu0buq52.jpg" alt="" title=""></p>
-
-
-
-
-<p>多个输入源被“喂”到广播服务器，这些多媒体内容就会分发到多个客户端。上图的目的是显示地表明你的流系统能够被分成多个块部署到网络上，允许你广播不同的在线内容，而不需要改变流媒体系统的结构。</p>
-
-
-
-
-<h3 id="配置">配置</h3>
-
-
-
-
-<p>无论是树莓派官方摄像头模块还是其他兼容的USB摄像头，连接好摄像头之后，运行命令去启用摄像头：</p>
-
-
-
-
-<blockquote>
-  <p>sudo raspi-config</p>
-</blockquote>
-
-
-
-
-<p><strong>ffserver.conf</strong>，ffserver启动时的配置文件，在这个文件中主要是对网络协议，缓存文件feed1.ffm（见下述）和要发送的流媒体文件的格式参数做具体的设定。</p>
-
-
-
-
-<p><strong>feed1.ffm</strong>，可以看成是一个流媒体数据的缓存文件，ffmpeg把转码好的数据发送给ffserver，如果没有客户端连接请求，ffserver把数据缓存到该文件中。</p>
-
-
-
-
-<p><strong>下面就是一个ffserver.conf的一个例子</strong>：</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs avrasm">Port <span class="hljs-number">8090</span>                      <span class="hljs-preprocessor"># Port to bind the server to</span>
-BindAddress <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>
-MaxHTTPConnections <span class="hljs-number">2000</span>
-MaxClients <span class="hljs-number">1000</span>
-MaxBandwidth <span class="hljs-number">10000</span>             <span class="hljs-preprocessor"># Maximum bandwidth per client</span>
-                               <span class="hljs-preprocessor"># set this high enough to exceed stream bitrate</span>
-CustomLog -
-NoDaemon                       <span class="hljs-preprocessor"># Remove this if you want FFserver to daemonize after start</span>
-
-&lt;Feed feed1<span class="hljs-preprocessor">.ffm</span>&gt;               <span class="hljs-preprocessor"># This is the input feed where FFmpeg will send</span>
-   File ./feed1<span class="hljs-preprocessor">.ffm</span>            <span class="hljs-preprocessor"># video stream.</span>
-   FileMaxSize <span class="hljs-number">64</span>M              <span class="hljs-preprocessor"># Maximum file size for buffering video</span>
-   ACL allow <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>         <span class="hljs-preprocessor"># Allowed IPs</span>
-&lt;/Feed&gt;
-
-&lt;Stream test<span class="hljs-preprocessor">.webm</span>&gt;              <span class="hljs-preprocessor"># Output stream URL definition</span>
-   Feed feed1<span class="hljs-preprocessor">.ffm</span>              <span class="hljs-preprocessor"># Feed from which to receive video</span>
-   Format webm
-
-   <span class="hljs-preprocessor"># Audio settings</span>
-   AudioCodec vorbis
-   AudioBitRate <span class="hljs-number">64</span>             <span class="hljs-preprocessor"># Audio bitrate</span>
-
-   <span class="hljs-preprocessor"># Video settings</span>
-   VideoCodec libvpx
-   VideoSize <span class="hljs-number">720</span>x576           <span class="hljs-preprocessor"># Video resolution</span>
-   VideoFrameRate <span class="hljs-number">25</span>           <span class="hljs-preprocessor"># Video FPS</span>
-   AVOptionVideo flags +global_header  <span class="hljs-preprocessor"># Parameters passed to encoder</span>
-                                       <span class="hljs-preprocessor"># (same as ffmpeg command-line parameters)</span>
-   AVOptionVideo cpu-used <span class="hljs-number">0</span>
-   AVOptionVideo qmin <span class="hljs-number">10</span>
-   AVOptionVideo qmax <span class="hljs-number">42</span>
-   AVOptionVideo quality good
-   AVOptionAudio flags +global_header
-   PreRoll <span class="hljs-number">15</span>
-   StartSendOnKey
-   VideoBitRate <span class="hljs-number">400</span>            <span class="hljs-preprocessor"># Video bitrate</span>
-&lt;/Stream&gt;
-
-&lt;Stream status<span class="hljs-preprocessor">.html</span>&gt;            <span class="hljs-preprocessor"># Server status URL</span>
-   Format status
-   <span class="hljs-preprocessor"># Only allow local people to get the status</span>
-   ACL allow localhost
-   ACL allow <span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> <span class="hljs-number">192.168</span><span class="hljs-number">.255</span><span class="hljs-number">.255</span>
-&lt;/Stream&gt;
-
-&lt;Redirect index<span class="hljs-preprocessor">.html</span>&gt;    <span class="hljs-preprocessor"># Just an URL redirect for index</span>
-   <span class="hljs-preprocessor"># Redirect index.html to the appropriate site</span>
-   URL http://www<span class="hljs-preprocessor">.ffmpeg</span><span class="hljs-preprocessor">.org</span>/
-&lt;/Redirect&gt;</code></pre>
-
-
-
-
-<p>ffserver启动时默认查看 /etc/ffserver.conf 配置文件，你可以通过-f选项控制查阅的配置文件。</p>
-
-
-
-
-<blockquote>
-  <p>ffserver -f ffserver.conf</p>
-</blockquote>
-
-
-
-
-<p>运行结果如下所示的话，那么ffserver就算是启动成功了。</p>
-
-
-
-
-<p><img src="https://ws1.sinaimg.cn/large/a3d23450gy1fodzzq0svjj20xm08jgmv.jpg" alt="" title=""></p>
-
-
-
-
-<p>打开<a href="http://localhost:8090/status.html">http://localhost:8090/status.html</a>可以看到当前server中各个流的状态。</p>
-
-
-
-
-<h3 id="接入视频流">接入视频流</h3>
-
-
-
-
-<p>ffserver启动之后，就可以向 <br>
-<a href="http://localhost:8090/feed1.ffm">http://localhost:8090/feed1.ffm</a>接入视频流。</p>
-
-
-
-
-<p><strong>注意</strong>，这里不需要指定编码格式，FFserver会重新编码。</p>
-
-
-
-
-<p>视频流的来源可以是文件、摄像头或者录制屏幕。</p>
-
-
-
-
-<h3 id="接入视频文件">接入视频文件</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs avrasm">ffmpeg -i testvideo<span class="hljs-preprocessor">.mp</span>4 http://localhost:<span class="hljs-number">8090</span>/feed1<span class="hljs-preprocessor">.ffm</span></code></pre>
-
-
-
-
-<h3 id="接入录制屏幕">接入录制屏幕</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> x11grab <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x512 <span class="hljs-attribute">-i</span> :<span class="hljs-number">0.0</span> <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span>
-</code></pre>
-
-
-
-
-<p>这里有两个-f，第一个指的是视频流，第二个指的是音频流。视频流是抓取屏幕形成视频，-r设置帧率为25帧/s，-s设置抓取图像大小为640x512，-i设置录制视频的初始坐标。音频流设置为alsa(Advanced Linux Sound Architecture)，从Linux系统中获取音频。这其中这样ffmpeg可以录制屏幕feed到feed1.ffm中。</p>
-
-
-
-
-<h3 id="接入摄像头直播">接入摄像头直播</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs lasso">ffmpeg <span class="hljs-attribute">-f</span> video4linux2 <span class="hljs-attribute">-s</span> <span class="hljs-number">640</span>x480 <span class="hljs-attribute">-r</span> <span class="hljs-number">25</span> <span class="hljs-attribute">-i</span> /dev/video0 <span class="hljs-attribute">-f</span> alsa <span class="hljs-attribute">-i</span> pulse http:<span class="hljs-comment">//localhost:8090/feed1.ffm</span></code></pre>
-
-
-
-
-<h2 id="方案二-avconv-和-gstreamer-用于采集摄像头捕获的视频流并推送到-rtmp-服务">方案二 avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</h2>
-
-
-
-
-<p><strong>首先</strong> <br>
-我们用到的工具有：</p>
-
-
-
-
-<p><strong>硬件方面：</strong></p>
-
-
-
-
-<ul>
-<li>树莓派主板一块</li>
-<li>兼容树莓派的USB摄像头一个</li>
-</ul>
-
-
-
-
-<p><strong>软件方面：</strong></p>
-
-
-
-
-<ul>
-<li>avconv 和 GStreamer 用于采集摄像头捕获的视频流并推送到 RTMP 服务</li>
-<li>NGINX 和 RTMP 模块，用于接收视频流，同时提供视频发布功能</li>
-</ul>
-
-
-
-
-<h3 id="安装配置">安装＆配置</h3>
-
-
-
-
-<p>因为这里我们要用到nginx的rtmp模块作为服务端，而系统自带的apt安装的nginx是没有这个模块的，所以我们需要先安装后移除nginx然后再手动编译（安装是为了下载好相关依赖）。</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs bash"><span class="hljs-built_in">sudo</span> apt-get update
-<span class="hljs-comment">#安装 nginx</span>
-<span class="hljs-built_in">sudo</span> apt-get -y install nginx
-<span class="hljs-comment">#移除 nginx</span>
-<span class="hljs-built_in">sudo</span> apt-get -y remove nginx
-<span class="hljs-built_in">sudo</span> apt-get clean
-<span class="hljs-comment">#清空 nginx 的配置文件</span>
-<span class="hljs-built_in">sudo</span> rm -rf /etc/nginx/*
-<span class="hljs-comment">#安装编译用的模块</span>
-<span class="hljs-built_in">sudo</span> apt-get install -y curl build-essential libpcre3 libpcre3-dev libpcre++-dev zlib1g-dev libcurl4-openssl-dev libssl-dev
-<span class="hljs-comment">#创建存放网页的目录给 nginx 使用</span>
-<span class="hljs-built_in">sudo</span> mkdir -p /var/www
-<span class="hljs-comment">#创建编译用的目录</span>
-mkdir -p ~/nginx_src
-<span class="hljs-built_in">cd</span> ~/nginx_src
-<span class="hljs-comment">#下载 nginx 源码包</span>
-wget http://nginx.org/download/nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
-<span class="hljs-comment">#下载 nginx-rtmp-module 源码包</span>
-wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
-tar -zxvf nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>.tar.gz
-unzip master.zip
-<span class="hljs-built_in">cd</span> nginx-<span class="hljs-number">1.11</span>.<span class="hljs-number">8</span>
-<span class="hljs-comment">#设定编译参数</span>
-./configure --prefix=/var/www --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_ssl_module --without-http_proxy_module --add-module=/home/pi/nginx_src/nginx-rtmp-module-master
-<span class="hljs-comment">#开始编译安装</span>
-make
-<span class="hljs-built_in">sudo</span> make install</code></pre>
-
-
-
-
-<h3 id="配置-nginx">配置 nginx</h3>
-
-
-
-
-<blockquote>
-  <p>sudo gedit /etc/nginx/nginx.conf</p>
-</blockquote>
-
-
-
-
-<p>在末尾添加</p>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs applescript">rtmp {
-    server {
-        listen <span class="hljs-number">1935</span>;
-        chunk_size <span class="hljs-number">4096</span>;
-        <span class="hljs-type">application</span> live {
-            live <span class="hljs-function_start"><span class="hljs-keyword">on</span></span>;
-            <span class="hljs-type">record</span> off;
-        }
-    }
-}</code></pre>
-
-
-
-
-<p>重启 nginx 服务。</p>
-
-
-
-
-<blockquote>
-  <p>sudo service nginx start</p>
-</blockquote>
-
-
-
-
-<h3 id="安装-avconv-和-gstreamer">安装 avconv 和 GStreamer</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs cs">sudo apt-<span class="hljs-keyword">get</span> update
-sudo apt-<span class="hljs-keyword">get</span> install libav-tools
-<span class="hljs-preprocessor">#安装 GStreamer</span>
-sudo apt-<span class="hljs-keyword">get</span> install gstreamer1<span class="hljs-number">.0</span>-tools
-<span class="hljs-preprocessor">#安装 GStreamer 扩展组件</span>
-sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span>-dbg libgstreamer1<span class="hljs-number">.0</span>-dev liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span> liborc-<span class="hljs-number">0.4</span>-<span class="hljs-number">0</span>-dbg liborc-<span class="hljs-number">0.4</span>-dev liborc-<span class="hljs-number">0.4</span>-doc gir1<span class="hljs-number">.2</span>-gst-plugins-<span class="hljs-keyword">base</span>-<span class="hljs-number">1.0</span> gir1<span class="hljs-number">.2</span>-gstreamer-<span class="hljs-number">1.0</span> gstreamer1<span class="hljs-number">.0</span>-alsa gstreamer1<span class="hljs-number">.0</span>-doc gstreamer1<span class="hljs-number">.0</span>-omx gstreamer1<span class="hljs-number">.0</span>-plugins-bad gstreamer1<span class="hljs-number">.0</span>-plugins-bad-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-bad-doc gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span> gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-apps gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-<span class="hljs-keyword">base</span>-doc gstreamer1<span class="hljs-number">.0</span>-plugins-good gstreamer1<span class="hljs-number">.0</span>-plugins-good-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-good-doc gstreamer1<span class="hljs-number">.0</span>-plugins-ugly gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-dbg gstreamer1<span class="hljs-number">.0</span>-plugins-ugly-doc gstreamer1<span class="hljs-number">.0</span>-pulseaudio gstreamer1<span class="hljs-number">.0</span>-tools gstreamer1<span class="hljs-number">.0</span>-x libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-bad1<span class="hljs-number">.0</span>-dev libgstreamer-plugins-base1<span class="hljs-number">.0</span>-<span class="hljs-number">0</span> libgstreamer-plugins-base1<span class="hljs-number">.0</span>-dev
-</code></pre>
-
-
-
-
-<h3 id="采集与呈现视频流">采集与呈现视频流</h3>
-
-
-
-
-<pre class="prettyprint"><code class="language-sh hljs erlang-repl"><span class="hljs-function_or_atom">gst</span>-<span class="hljs-function_or_atom">launch</span>-<span class="hljs-number">1.0</span> -<span class="hljs-function_or_atom">v</span> <span class="hljs-function_or_atom">v4l2src</span> <span class="hljs-function_or_atom">device</span>=/<span class="hljs-function_or_atom">dev</span>/<span class="hljs-function_or_atom">video0</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-string">'video/x-raw, width=1024, height=768, framerate=30/1'</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">queue</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">videoconvert</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">omxh264enc</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">h264parse</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">flvmux</span> <span class="hljs-exclamation_mark">!</span> <span class="hljs-function_or_atom">rtmpsink</span> <span class="hljs-function_or_atom">location</span>=<span class="hljs-string">'rtmp://树莓派的IP地址/live live=1'</span> &amp;</code></pre>
-
-
-
-
-<p>采用以上命令就可以在后台采集ＵＳＢ摄像头拍摄的直播内容并推送到ｒｔｍｐ服务端上了。</p>
-
-
-
-
-<p><strong>呈现直播视频画面</strong>：</p>
-
-
-
-
-<p>1、使用 RTMP 播放器播放视频流 <br>
-例如 VLC 等播放器（桌面版和手机版均有）支持 RTMP 视频流播放，填入 rtmp://树莓派的IP地址/live 即可播放。不过这个软件有数十秒的缓冲延迟，需要设定缓冲时间来缩短延迟。</p>
-
-
-
-
-<p>２、推送至斗鱼直播平台观看 <br>
-你可能注意到了 GStreamer 这个命令中有 location 这个参数。这个参数是设定采集到的视频流推向哪里，通过设定这个参数可以将视频流推向任何支持 RTMP 协议的服务器。</p>
-
-
-
-
-<p>斗鱼平台同样采用了 RTMP 协议传输直播视频，首先获取斗鱼的 RTMP 推流地址。开启了直播室之后可以获得推流码。注意，斗鱼的推流码是有时限的，取到推流码需要尽快使用以免过期。</p>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2018/02/12/shi-yong-shu-mei-pai-shi-xian-24xiao-shi-bu-jian-duan-zhi-bo/">使用树莓派实现24小时不间断直播</a>
-      <time datetime="2018-02-12T22:14:22+08:00" pubdate><span class='month'>Feb</span> <span class='day'>12</span> <span class='year'>2018</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/shu-mei-pai/'>树莓派</a></span>
-      
-      </footer>
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -2881,7 +1508,7 @@ sudo apt-<span class="hljs-keyword">get</span>  install libgstreamer1<span class
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2020 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2022 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>

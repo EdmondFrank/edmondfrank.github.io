@@ -1,0 +1,921 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="ja"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>EdmondFrank's 时光足迹</title>
+  <meta name="author" content="EdmondFrank">
+
+  
+  <meta name="description" content="Ruby Shoes：用户界面优雅的轻量之选 Shoes简介 人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括： 将Ruby绑定到Qt或者GTK这样的用户界面库
+使用基于JRuby的嵌入式DSL或者API创建Swing界面 Ruby Shoes实现GUI的方式则略显不同.Ruby &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://edmondfrank.github.io/posts/20/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="EdmondFrank's 时光足迹" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.cat.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG"></script>
+  
+  
+
+</head>
+
+<body >
+  <div id="container">
+    <header role="banner"><hgroup>
+  <h1><a href="/">EdmondFrank's 时光足迹</a></h1>
+  
+    <h2>この先は暗い夜道だけかもしれない　それでも信じて進むんだ。星がその道を少しでも照らしてくれるのを。<br>或许前路永夜，即便如此我也要前进，因为星光即使微弱也会我为照亮前途。<br>——《四月は君の嘘》</h2>
+  
+</hgroup>
+
+</header>
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="site:edmondfrank.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-30T20:10:11+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Ruby Shoes：用户界面优雅的轻量之选</h1>
+
+<h2>Shoes简介</h2>
+
+<p>人们总是在不断在Ruby GUI领域进行尝试。现已知的方法包括：</p>
+
+<ul>
+<li>将Ruby绑定到Qt或者GTK这样的用户界面库</li>
+<li>使用基于JRuby的嵌入式DSL或者API创建Swing界面</li>
+</ul>
+
+
+<hr />
+
+<p>Ruby Shoes实现GUI的方式则略显不同.Ruby Shoes出自Why&rsquo;s (Poignant) Guide to Ruby的作者Why The Lucky Stiff之手,这 Shoes工具箱基于Cairo（绘图）以及Pango（文本）等GTK技术开发,GUI控件的数目受限于设计,而且现有的控件使用到了系统相关的GUI 组件.目前我们可以在MacOSX、Windows以及GTK图形环境下使用它.</p>
+
+<p>Ruby Shoes用C语言实现,并通过Ruby扩展库同Ruby代码交互。在自述文件中,作者声称受到了HyberCard这样的工具包,Processing以及NodeBox这样的语言的启发.我们可以通过Ruby Shoes自带的样例代码,看出后面几种专门用于完成可视化（Visualization）任务的近代语言对它的影响.</p>
+
+<p><strong>目前shoes已经更新到第四版,更多有关Shoes的信息可以前往<a href="http://shoesrb.com/">官网</a>了解.</strong></p>
+
+<p><em>除此之外,最新的<a href="https://github.com/shoes/shoes4">Shoes4</a>也托管在<a href="https://github.com">github</a>上.</em></p>
+
+<h2>示例代码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Shoes</span><span class="o">.</span><span class="n">app</span> <span class="ss">width</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">height</span><span class="p">:</span> <span class="mi">200</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">background</span> <span class="n">lime</span><span class="o">.</span><span class="n">.blue</span>
+</span><span class='line'>  <span class="n">stack</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">para</span> <span class="s2">&quot;Welcome to the world of Shoes!&quot;</span>
+</span><span class='line'>    <span class="n">button</span> <span class="s2">&quot;Click me&quot;</span> <span class="k">do</span> <span class="n">alert</span> <span class="s2">&quot;Nice click!&quot;</span> <span class="k">end</span>
+</span><span class='line'>    <span class="n">image</span> <span class="s2">&quot;http://shoesrb.com/img/shoes-icon.png&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">margin_top</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="ss">margin_left</span><span class="p">:</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>界面效果如下:</p>
+
+<p>　<img src="/images/shoes4.png"></p>
+
+<hr />
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/30/ruby-shoes-you-ya-qing-liang-guizhi-xuan/">Ruby Shoes-优雅轻量GUI之选</a>
+      <time datetime="2016-06-30T20:10:11+08:00" pubdate><span class='month'>Jun</span> <span class='day'>30</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/kai-fa-zi-xun/'>开发资讯</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-27T16:23:25+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript DOM对象学习笔记</h1>
+
+<h2>节点属性</h2>
+
+<p>在文档对象(DOM)中,每个节点都是一个对象.DOM节点有三个重要属性:</p>
+
+<p>(1) nodeName:节点名称,相当于tagName属性节点返回属性名,文本节点返回#text.</p>
+
+<blockquote><p>1.元素节点的nodeName与标签名相同<br>
+2.属性节点的nodeName是属性的名称<br>
+3.文本节点的nodeName永远是#text<br>
+4.文档节点的nodeName永远是#document<br></p></blockquote>
+
+<p><strong>(注:nodeName,是只读的)</strong></p>
+
+<p>(2) noType:节点类型 => 返回值:</p>
+
+<blockquote><p>返回值为<br>
+1,元素节点;<br>
+2,属性节点;<br>
+3,文本节点;<br>
+8,注释;<br>
+9.文档;<br></p></blockquote>
+
+<p><strong>(注:nodeType,也是只读的)</strong></p>
+
+<p>(3) nodeValue:节点的值,返回一个字符串,表示这个节点的值.元素节点返回null,属性节点返回属性值,文本节点返回文本.</p>
+
+<blockquote><p>1.元素节点的nodeValue是undefined或null<br>
+2.文本节点的nodeValue是文本自身<br>
+3.属性节点的nodeValue是属性的值<br></p></blockquote>
+
+<p><strong>(nodeValue除了对元素节点不能写外,可读可写,但一般只用于设置文本节点的值)</strong></p>
+
+<h2>元素内容</h2>
+
+<p>我们有两种方法替换元素的内容,一个是innerHTML,另一个是innerText</p>
+
+<ul>
+<li>innerHTML属性用于获取或替换元素的内容.</li>
+<li>innerText属性用于获取或替换元素的文本内容，只有文本内容，没有其它HTML标签.</li>
+</ul>
+
+
+<h3>使用语法</h3>
+
+<blockquote><p>Object.innerHTML
+Object.innerText</p></blockquote>
+
+<p><strong>(Object 是获取的元素对象,如通过document.getElementById(&ldquo;ID&rdquo;)获取的元素)</strong></p>
+
+<p>innerHTML 和 innerText 都是既可读又可写的,他们既可以直接输出值或赋值给变量.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">alert</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">)</span><span class="err">或</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ostr</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">innerHTML</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>元素样式</h2>
+
+<h3>1.style的使用语法:</h3>
+
+<blockquote><p>Object.style.property = new style;</p></blockquote>
+
+<p><strong>(property为css样式属性,比如 color,width等等)</strong></p>
+
+<h3>2.className属性可以设置或返回元素的class 属性</h3>
+
+<blockquote><p>Object.className = classname;</p></blockquote>
+
+<p><strong>(className为元素的class属性)</strong></p>
+
+<h2>遍历节点树</h2>
+
+<h3>父子节点</h3>
+
+<p>可以使用childNodes对象访问选定元素节点下的所有子节点的列表,返回的值可以看作是一个数组,他具有length属性。如果选定的节点没有子节点,则该属性返回不包含节点的 NodeList.</p>
+
+<blockquote><p>elementNode.childNodes</p></blockquote>
+
+<p>有子节点,相应的,就有父亲节点.
+parentNode可获取指定节点的父节点</p>
+
+<blockquote><p>elementNode.parentNode</p></blockquote>
+
+<p><strong>(注意:父节点只能有一个)</strong></p>
+
+<h3>兄弟节点</h3>
+
+<p>在 DOM 树形结构中,除了父子关系属性外,还有同辈关系属性.
+同辈关系中,也分为两种,一种是向前的同辈关系 previousSibling,另一种是向后的同辈关系nextSibling
+<strong>(注:两个属性获取的是节点,所以我们可以先判断节点nodeType是否为1,如不为元素节点,跳过)</strong></p>
+
+<h2>创建节点</h2>
+
+<h3>创建元素</h3>
+
+<blockquote><p>document.createElement(tagName);</p>
+
+<p>参数说明：
+tagName：字符串值,这个字符串用来指明创建元素的类型.</p></blockquote>
+
+<p><strong>(注意:createElement()方法只是创建元素,并不会自动出现在文档中,如果想显示在浏览器中,还需要与appendChild() 或 insertBefore()方法联合使用)</strong></p>
+
+<h3>创建文本节点</h3>
+
+<blockquote><p>document.createTextNode(str);</p>
+
+<p>str,为字符串值,可规定此节点文本.</p></blockquote>
+
+<h2>添加与删除节点</h2>
+
+<blockquote><p>nodeObject.appendChild(newnode);</p></blockquote>
+
+<p>nodeObject:父节点;newnode指定追加的节点.</p>
+
+<blockquote><p>nodeObject.removeChild(node);</p></blockquote>
+
+<p>参数意义同上.</p>
+
+<p><strong>(注:把删除的子节点赋值给rm,这个子节点不在 DOM 树中,但是还存在内存中,如果要完全删除对象,需给rm赋null值)</strong></p>
+
+<h2>指定位置插入字节点</h2>
+
+<blockquote><p>fnode.insertBefore(newnode,node);</p></blockquote>
+
+<p>参数说明:</p>
+
+<blockquote><p>newnode:必需,表示需要插入的新节点<br>
+node:可选,在其之前插入新节点的子节点,默认为末尾插入<br>
+返回值:插入的节点<br></p></blockquote>
+
+<h2>子节点的替换</h2>
+
+<blockquote><p>fnode.replaceChild(newnode,oldnode);</p></blockquote>
+
+<p>参数说明:</p>
+
+<blockquote><p>newnode:用于替换的新节点<br>
+oldnode:被newnode替换的节点<br>
+返回值:被替换的节点<br></p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/27/javascript-domxue-xi-bi-ji/">JavaScript-DOM学习笔记</a>
+      <time datetime="2016-06-27T16:23:25+08:00" pubdate><span class='month'>Jun</span> <span class='day'>27</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-26T14:52:05+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript学习笔记2</h1>
+
+<h2>一.流程控制</h2>
+
+<h3>一般选择-if 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="err">表达式</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'><span class="err">执行</span><span class="mi">3</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多重选择-switch 结构</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">switch</span><span class="p">(</span><span class="err">表达式</span><span class="p">){</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">1</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">1</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="mi">2</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="mi">2</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">case</span> <span class="err">条件</span><span class="nx">n</span><span class="o">:</span>
+</span><span class='line'>  <span class="err">执行</span><span class="nx">n</span>
+</span><span class='line'>  <span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="k">default</span><span class="o">:</span>
+</span><span class='line'>  <span class="p">...;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:switch所依赖的参数必须赋初始值,值与每个case值匹配,满足执行改case后的所以语句,并用break语句来阻止运行下一个case.)</strong></p>
+
+<h3>循环语句-for</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">for</span><span class="p">(</span><span class="err">初始化变量</span><span class="p">;</span><span class="err">循环条件</span><span class="p">;</span><span class="err">循环迭代</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>循环语句-while</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">while</span><span class="p">(</span><span class="err">判断条件</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="err">循环语句</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(break语句可用在循环语句中,跳出循环.
+与其类似的有continue语句,用于跳过本次循环,而整个循环体继续执行.)</strong></p>
+
+<h2>二.函数(function)</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">fun</span><span class="p">(){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">fun</span><span class="p">();</span><span class="c1">//调用函数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">fun2</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span><span class="nx">arg2</span><span class="p">){</span>
+</span><span class='line'><span class="c1">//函数体</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//带参数及返回值的函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>函数的this</h3>
+
+<p>函数体中的this表示当前的方法属于谁.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>[object global]9</p></blockquote>
+
+<h3>函数的call</h3>
+
+<p>函数的call方法可以改变函数的this的指向.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="o">+</span><span class="p">(</span><span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">add</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>11</p></blockquote>
+
+<p><strong>(输出结果表明:this也是一个数字,所以叫号作为运算符而非连接符处理.)</strong></p>
+
+<h3>函数的apply</h3>
+
+<p>函数的apply方法也可以改变函数的this的指向,但不同的是,apply是将原参数作为一个数组进行传递.</p>
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ar</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">22</span><span class="p">];</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">arr</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果:</p>
+
+<blockquote><p>2</p></blockquote>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/26/javascriptxue-xi-bi-ji-2/">JavaScript学习笔记2</a>
+      <time datetime="2016-06-26T14:52:05+08:00" pubdate><span class='month'>Jun</span> <span class='day'>26</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2016-06-24T21:41:53+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>JavaScript学习笔记1</h1>
+
+<h2>一.第一个程序:Hello World的输出</h2>
+
+<ul>
+<li><p>控制台下的输出:</p>
+
+<blockquote><p>console.log(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+<li><p>消息框模式输出:</p>
+
+<blockquote><p>alert(&lsquo;Hello World!&rsquo;);</p></blockquote></li>
+</ul>
+
+
+<p>　<img src="/images/alert.png"></p>
+
+<h2>二.变量</h2>
+
+<ul>
+<li>必须以字母、下划线或美元符号开头，后面可以跟字母、下划线、美元符号和数字.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">_myvar</span><span class="p">;</span>
+</span><span class='line'><span class="nx">$myvar</span><span class="p">;</span> <span class="c1">//以上均为正确的变量名</span>
+</span><span class='line'><span class="mi">1</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//错误,不能用数字开头</span>
+</span><span class='line'><span class="o">%</span><span class="nx">myvar</span><span class="p">;</span> <span class="c1">//开头不能用(_,$)以外的特殊字符</span>
+</span><span class='line'><span class="kd">var</span><span class="p">;</span> <span class="c1">//错误,不能使用保留字和关键字</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>变量的声明</h3>
+
+<blockquote><p>var 变量名;</p></blockquote>
+
+<p>eg: var mynum = 1;</p>
+
+<p>同时声明多个变量时使用",&ldquo;分割即可.</p>
+
+<p>eg: var myvar,myvar2,myvar3;</p>
+
+<p><strong>(注:在JavaScript中,未赋值的变量,会自动被使用"undefined"值来初始化)</strong></p>
+
+<h2>三.数据类型</h2>
+
+<p>JavaScript中有5种基本数据类型,分别是:
+1. 字符串
+2. 数字
+3. 布尔值
+4. 数组
+5. 对象</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">mychar1</span> <span class="o">=</span> <span class="s2">&quot;双引号包起来的字符串&quot;</span><span class="p">;</span> <span class="c1">// 这是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mychar2</span> <span class="o">=</span> <span class="s1">&#39;单引号包起来的字符串&#39;</span><span class="p">;</span> <span class="c1">// 这也是字符串</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="c1">// 这是数字6</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum3</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e5</span><span class="p">;</span> <span class="c1">// 这是使用科学（指数）计数法来书写的12300000</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mynum4</span> <span class="o">=</span> <span class="mi">123</span><span class="nx">e</span><span class="o">-</span><span class="mi">5</span><span class="p">;</span> <span class="c1">// 这是0.00123</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">mybool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// 这是布尔值</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span> <span class="c1">// 这是数组</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myobject</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">};</span> <span class="c1">// 这是对象</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>四.表达式及运算符</h2>
+
+<p>与Ruby和Python类似.
+<strong>(注:完整语句后面记得加上";&ldquo;)</strong></p>
+
+<h2>五.数组</h2>
+
+<p>数组变量的声明:</p>
+
+<blockquote><p>var arr = [&lsquo;a&rsquo;,&lsquo;b&rsquo;,&lsquo;c&rsquo;];</p></blockquote>
+
+<p><strong>(注:任意一种类型的数据,都可以放进数组里,且数组支持嵌套)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">a</span><span class="o">:</span><span class="mi">1</span><span class="p">},</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="kd">function</span><span class="p">(){</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">//对象</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">//数组</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">//函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>length属性:返回数组成员的数量</li>
+</ul>
+
+
+<p>eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>(注:length 属性是可写的。如果人为设置一个小于当前成员个数的值，该数组的成员会自动减少到 length 设置的长度.即,随意改写length值会造成数据丢失问题.)</strong>
+eg:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>    <span class="c1">// =&gt; 3</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'><span class="nx">arr</span><span class="p">;</span>    <span class="c1">// =&gt; [&quot;a&quot;, &quot;b&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">arr</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//快速清空数组</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>增加新元素</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">myarr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="nx">myarr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myarr</span><span class="p">);</span> <span class="c1">// =&gt;[1,2,3,4]</span>
+</span><span class='line'><span class="c1">//此处特性与Ruby数组相似.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>六.对象</h2>
+
+<p>JavaScript的对象，是指带有属性和方法的数据类型，一般由若干个“键值对”（key-value）构成</p>
+
+<ul>
+<li>键名
+键名加不加引号都可以，前面的代码也可以写成这样：
+
+<blockquote><p>var o = {
+  &ldquo;p&rdquo;: &ldquo;Hello&rdquo;
+};</p></blockquote></li>
+</ul>
+
+
+<p><strong>(注:键名如果不符合标识名的条件，也不是正整数，则必须加上引号)</strong></p>
+
+<h3>生成方法</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">obj3</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>对象引用</h3>
+
+<p>如果不同的变量名指向同一个对象，那么它们都是这个对象的引用，也就是说指向同一个内存地址。修改其中一个变量的属性，会影响到其他所有变量(此处与C类似)</p>
+
+<h3>内置对象</h3>
+
+<p>JavaScript常见的内置对象(built-in object)有: String, Number, Boolean,Date Object</p>
+
+<p>有关更多JavaScript内置对象相关属性及方法可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">JavaScript|MDN</a></p>
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2016/06/24/javascriptxue-xi-bi-ji-1/">JavaScript学习笔记1</a>
+      <time datetime="2016-06-24T21:41:53+08:00" pubdate><span class='month'>Jun</span> <span class='day'>24</span> <span class='year'>2016</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
+      
+      </footer>
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/posts/21">&larr; Older</a>
+    
+    <a href="/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/19">Newer &rarr;</a>
+    
+  </div><!-- /div.pagination -->
+</div><!-- /div.blog-index -->
+
+      </div><!-- /div#content -->
+    </div><!-- /div#main -->
+  </div><!-- /div.container -->
+  <footer><div id="footer-widgets-wrapper">
+  <div id="footer-first" class="footer-widget">
+    <h3>About Me</h3>
+    <section class="about-me">
+      
+        <img class="icon-image" src="https://avatars0.githubusercontent.com/u/13914416?s=240" alt="icon_image">
+      
+      <div>
+        <ul>
+          
+            <li>GitHub: <a href="https://github.com/EdmondFrank">@EdmondFrank</a></li>
+          
+          
+            <li>Twitter: <a href="https://twitter.com/EdmondFrank4">@EdmondFrank4</a></li>
+          
+            <li>Blog: <a href="https://edmondfrank.github.io">https://edmondfrank.github.io</a></li>
+        </ul>
+        <p>
+          この町、冗談と気まぐれと偶然でてきっているらしい。
+        </p>
+      </div>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-second" class="footer-widget">
+    <h3>Recent Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Recent Posts";
+        Hatena.BookmarkWidget.sort  = "hot";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-second -->
+
+  <div id="footer-third" class="footer-widget">
+    <h3>Popular Posts</h3>
+    <section id="hatena-popular" class="hatena-bookmark">
+      <script language="javascript" type="text/javascript" src="https://b.hatena.ne.jp/js/widget.js" charset="utf-8"></script>
+      <script language="javascript" type="text/javascript">
+        Hatena.BookmarkWidget.url   = "https://edmondfrank.github.io";
+        Hatena.BookmarkWidget.title = "Popular Posts";
+        Hatena.BookmarkWidget.sort  = "count";
+        Hatena.BookmarkWidget.width = 0;
+        Hatena.BookmarkWidget.num   = 10;
+        Hatena.BookmarkWidget.theme = "notheme";
+        Hatena.BookmarkWidget.load();
+      </script>
+    </section>
+  </div><!-- /div#footer-third -->
+</div><!-- /div#footer-widgets-wrapper -->
+
+<div id="credit" role="contentinfo">
+  <p>
+    Copyright &copy; 2022 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  </p>
+</div>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'https://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

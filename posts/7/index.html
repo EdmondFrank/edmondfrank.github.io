@@ -9,7 +9,12 @@
   <meta name="author" content="EdmondFrank">
 
   
-  <meta name="description" content="Scala 的概率编程语言库-Figaro 什么是概率编程？ 概率编程是一种系统创建方法，它所创建的系统能够帮助我们在面对不确定性时作出决策。 为什么使用概率编程？ 概率推理是机器学习的基础技术之一。Google,Amazon和Microsoft等公司使用它理解可用数据。 &hellip;">
+  <meta name="description" content="﻿Python在Spark上的机器学习(三)之统计分析 背景 通常来说，一个完整使用机器学习建模解决问题的过程包含一下步骤： 数据获取
+数据预处理
+数据统计分析
+算法建模
+训练
+预测/分类 这就意味着，在我们进行一般的数学建模或者挑选机器学习训练算法之前，应该先对数据进行清洗以及简单的统计分析， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,7 +75,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/">Scala概率编程语言库-Figaro介绍</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/">Python在Spark上的机器学习(三)之统计分析</a></h1>
     
     
       <div class="post-meta">
@@ -88,7 +93,7 @@
 
 
 
-<time datetime="2017-07-24T16:15:49+08:00" pubdate data-updated="true"></time> -</span>
+<time datetime="2017-10-27T18:39:42+08:00" pubdate data-updated="true"></time> -</span>
           
         </p>
       </div>
@@ -96,43 +101,496 @@
   </header>
 
 
-  <div class="entry-content"><h1>Scala 的概率编程语言库-Figaro</h1>
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习三之统计分析">Python在Spark上的机器学习(三)之统计分析</h1></p>
 
-<h2>什么是概率编程？</h2>
+<h2 id="背景">背景</h2>
 
-<p><strong>概率编程</strong>是一种系统创建方法，它所创建的系统能够帮助我们在面对不确定性时作出决策。</p>
 
-<h2>为什么使用概率编程？</h2>
 
-<p>概率推理是机器学习的基础技术之一。Google,Amazon和Microsoft等公司使用它理解可用数据。概率推理已经应用于各种各样的应用程序，如预测股价，推荐电影，诊断计算机和检测网络入侵。</p>
+
+<p>通常来说，一个完整使用机器学习建模解决问题的过程包含一下步骤：</p>
+
+
+
 
 <ul>
-<li>概率推理可用于预测未来，推断过去，以及从过去的事实中学习更好地预测未来。</li>
-<li>概率编程是使用图灵完备的编程语言作为表示语言的概率编程。</li>
+<li>数据获取</li>
+<li>数据预处理</li>
+<li>数据统计分析</li>
+<li>算法建模</li>
+<li>训练</li>
+<li>预测/分类</li>
 </ul>
 
 
-<p><strong>事实上：</strong>概率推理 + 图灵完备 = 概率编程</p>
-
-<h2>Figaro的简介</h2>
-
-<p>Figaro是一个内嵌于Scala编程语言的概率编程系统。除了继承了Scala的良好特性外，Figaro还提供了相当多的额外的优势，包括：</p>
-
-<ul>
-<li>Figaro能够表示及其广泛的概率模型。Figaro元素的值可以为任何类型，包括布尔型，整数，双精度数，数组，树，图等。</li>
-<li>Figaro提供了使用其条件和约束规定证据的丰富框架</li>
-<li>Figaro有多种多样的推理算法</li>
-<li>Figaro能够表示和推理随时间变化的的动态模型</li>
-<li>Figaro能够在其模型中包含明确决策，并支持最优决策的推断。</li>
-</ul>
 
 
-<h2>简单示例-量化“你好，世界”</h2>
+<p>这就意味着，在我们进行一般的数学建模或者挑选机器学习训练算法之前，应该先对数据进行清洗以及简单的统计分析，以便了解数据中显著的特征或者规律（虽然现在的机器学习方法，很多情况下根本不需要了解数据的意义，仅仅是通过堆叠特征就能获得一个可行的结果，但这显然离一个优秀的结果还是有一段距离的）。为了得到更加鲁棒的模型，以及了解数据背后的含义，我们这篇文章就来讲讲如何在PySpark上进行简单的统计分析。</p>
 
-<p>图片截取自<a href="http://www.epubit.com.cn/book/details/4366">《概率编程实战》</a> 表 1-1
-<img src="/images/figaro.jpg"></p>
 
-<p><strong>代码实现：</strong></p>
+
+
+<h3 id="概念介绍">概念介绍</h3>
+
+
+
+
+<p><strong>描述性统计分析</strong> <br>
+这是一个统计学的概念，描述性统计是以揭示数据分布特性的方式汇总并表达定量数据的方法。主要包括数据的频数分析、数据的集中趋势分析、数据离散程度分析、数据的分布、以及一些基本的统计图形。特征括并表示定量数据，揭示数据分布的特征。 <br>
+描述性统计是一类统计方法的汇总，作用是提供了一种概括和表征数据的有效且相对简便的方法。通常用图示法来表述，易于看懂，能发现质量特性值（总体）的分布状况、趋势走向的一些规律，便于采取措施。用于汇总和表征数据，通常是对数据进一步定量分析的基础，或是对推断性统计方法的有效补充。</p>
+
+
+
+
+<h3 id="数据读取">数据读取</h3>
+
+
+
+
+<p>本文使用的是一个信用欺诈检测的一个数据集，具体下载地址：<a href="http://tomdrabas.com/data/LearningPySpark/ccFraud.csv.gz">这里</a></p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">PySpark.sql.types</span> <span class="kn">as</span> <span class="nn">typ</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;data/ccFraud.csv&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">header</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span class='line'><span class="n">fraud</span> <span class="o">=</span> <span class="n">fraud</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span><span class="n">row</span><span class="o">!=</span><span class="n">header</span><span class="p">)</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:[</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)])</span>
+</span><span class='line'><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>    <span class="o">*</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">typ</span><span class="o">.</span><span class="n">StructField</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">typ</span><span class="o">.</span><span class="n">IntegerType</span><span class="p">(),</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">]</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">StructType</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+</span><span class='line'><span class="n">fraud_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">fraud</span><span class="p">,</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  root <br>
+   |– custID: integer (nullable = true) <br>
+   |– gender: integer (nullable = true) <br>
+   |– state: integer (nullable = true) <br>
+   |– cardholder: integer (nullable = true) <br>
+   |– balance: integer (nullable = true) <br>
+   |– numTrans: integer (nullable = true) <br>
+   |– numIntlTrans: integer (nullable = true) <br>
+   |– creditLine: integer (nullable = true) <br>
+   |– fraudRisk: integer (nullable = true) <br>
+  Out: <br>
+  Row(custID=1, gender=1, state=35, cardholder=1, balance=3000, numTrans=4, numIntlTrans=14, creditLine=2, fraudRisk=0)</p>
+</blockquote>
+
+
+
+
+<p>在上面的代码中，我们读入了我们的数据集，以及创建了一个DataFrame，下面我们再进行一些简单的分析操作。</p>
+
+
+
+
+<h3 id="简单统计分析">简单统计分析</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;gender&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c">#按照性别分类汇总</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">numerical</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;balance&#39;</span><span class="p">,</span> <span class="s">&#39;numTrans&#39;</span><span class="p">,</span> <span class="s">&#39;numIntlTrans&#39;</span><span class="p">]</span>
+</span><span class='line'><span class="n">desc</span> <span class="o">=</span> <span class="n">fraud_df</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
+</span><span class='line'><span class="c">##对balance，numTrans，numIntTrans进行描述性分析</span>
+</span><span class='line'><span class="n">desc</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 计算balance值分布的偏度</span>
+</span><span class='line'><span class="n">fraud_df</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s">&#39;balance&#39;</span><span class="p">:</span> <span class="s">&#39;skewness&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  +——+——-+ <br>
+  |gender|  count| <br>
+  +——+——-+ <br>
+  |     1|6178231| <br>
+  |     2|3821769| <br>
+  +——+——-+ <br>
+  +——-+—————–+——————+—————–+ <br>
+  |summary|          balance|          numTrans|     numIntlTrans| <br>
+  +——-+—————–+——————+—————–+ <br>
+  |  count|         10000000|          10000000|         10000000| <br>
+  |   mean|     4109.9199193|        28.9351871|        4.0471899| <br>
+  | stddev|3996.847309737258|26.553781024523122|8.602970115863904| <br>
+  |    min|                0|                 0|                0| <br>
+  |    max|            41485|               100|               60| <br>
+  +——-+—————–+——————+—————–+ <br>
+  +——————+ <br>
+  | skewness(balance)| <br>
+  +——————+ <br>
+  |1.1818315552993839| <br>
+  +——————+</p>
+</blockquote>
+
+
+
+
+<p>上面我们使用了一些常用的统计分析函数，以及简单地了解了一下PySpark 聚合函数agg()的使用。通常地，常用的聚合函数还有avg() , count(), countDistinct() , max() 等。</p>
+
+
+
+
+<h3 id="相关分析">相关分析</h3>
+
+
+
+
+<p><strong>相关分析</strong>（correlation analysis），相关分析是研究现象之间是否存在某种依存关系，并对具体有依存关系的现象探讨其相关方向以及相关程度，是研究随机变量之间的相关关系的一种统计方法。通常两个变量之间存在的相关关系有：正相关、完全正相关、负相关、完全负相关、无相关。</p>
+
+
+
+
+<p><strong>相关系数</strong>是最早由统计学家卡尔·皮尔逊设计的统计指标，是研究变量之间线性相关程度的量，一般用字母 r 表示。由于研究对象的不同，相关系数有多种定义方式，较为常用的是皮尔逊相关系数。简单来说，相关系数是衡量两个变量间相关关系的指标。</p>
+
+
+
+
+<p>在PySpark中计算两个变量之间的相关系数是非常简单的，往往只需要一条代码：</p>
+
+
+
+
+<blockquote>
+  <p>fraud_df.corr(‘balance’, ‘numTrans’)#计算balance和numTrans的相关系数</p>
+</blockquote>
+
+
+
+
+<p>输出</p>
+
+
+
+
+<blockquote>
+  <p>Out：0.0004452314017265385</p>
+</blockquote>
+
+
+
+
+<p>我们还可以通过下面的方法来创建一个相关矩阵。</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">n_numerical</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">numerical</span><span class="p">)</span>
+</span><span class='line'><span class="n">corr</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_numerical</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fraud_df</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">numerical</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">numerical</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+</span><span class='line'>    <span class="n">corr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果; <br>
+  [[1.0, 0.0004452314017265387, 0.0002713991339817875], [None, 1.0, -0.00028057128198165555], [None, None, 1.0]]</p>
+</blockquote>
+
+
+
+
+<p>正如输出结果所示，这个信用欺诈检测的数据集中的特征之间不存在过大的相关关系，基本全部都为相互独立关系。因此，在选择特征代入机器学习算法训练时，可以采用全部的变量。正也是统计分析的用处，可以帮助我们了解变量之间的线性相关关系，有利于帮住我们选取训练的特征变量。</p>
+
+</div>
+  
+  
+
+
+      <footer>
+      
+      - <a href="/blog/2017/10/27/pythonzai-sparkshang-de-ji-qi-xue-xi-san-zhi-tong-ji-fen-xi/">Python在Spark上的机器学习(三)之统计分析</a>
+      <time datetime="2017-10-27T18:39:42+08:00" pubdate><span class='month'>Oct</span> <span class='day'>27</span> <span class='year'>2017</span></time>
+      
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
+      
+      </footer>
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/">Python在Spark上的机器学习(二)之数据操作</a></h1>
+    
+    
+      <div class="post-meta">
+        <p class="meta">
+          <span class="timestamp">- 
+
+
+
+
+
+
+
+
+  
+
+
+
+<time datetime="2017-10-22T16:18:47+08:00" pubdate data-updated="true"></time> -</span>
+          
+        </p>
+      </div>
+    
+  </header>
+
+
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习二之数据操作">Python在Spark上的机器学习(二)之数据操作</h1></p>
+
+<h2 id="pyspark">PySpark</h2>
+
+
+
+
+<p>PySpark 是 Spark 为 Python 开发者提供的 API。 <br>
+Spark是用Scala语言写成的，Scala把要编译的东西编译为Java虚拟机（JVM）的字节码（bytecode）。Spark的开源社区开发了一个叫PySpark的工具库。它允许使用者用Python处理RDD。这多亏了一个叫Py4J的库，它让Python可以使用JVM的对象（比如RDD）。  <br>
+Pyspark Internals这篇<a href="https://cwiki.apache.org/confluence/display/SPARK/PySpark+Internals">wiki</a>里介绍了pyspark的实现机制，大体是下面这张图就可以表示：</p>
+
+
+
+
+<p><img src="http://i.imgur.com/YlI8AqEl.png" alt="enter image description here" title=""></p>
+
+
+
+
+<h2 id="resilient-distributed-datasets">Resilient Distributed Datasets</h2>
+
+
+
+
+<p>说到Spark上的数据模式，一定不能少的就是Spark中的核心：RDD了。与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark让人着迷的地方。</p>
+
+
+
+
+<p><strong>RDD 具体是什么呢？</strong> <br>
+RDD，全称Resilient Distributed Datasets，又称弹性分布式数据集。是一个可容错的、并行的数据结构，可以让用户显示地将数据储存到磁盘和内存当中，并能控制数据的分区。</p>
+
+
+
+
+<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
+
+
+
+
+<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
+
+
+
+
+<h2 id="使用pyspark">使用Pyspark</h2>
+
+
+
+
+<p>在按照系列的上一个教程搭建好环境后，在终端中直接输入pyspark就可以运行Python与Spark的交互式的shell了。</p>
+
+
+
+
+<p>那么，下面我们就以一些简单的例子来使用pyspark。</p>
+
+
+
+
+<h3 id="创建rdd">创建RDD</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span>
+</span><span class='line'>    <span class="p">[(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Alfred&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Skye&#39;</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;Albert&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+</span><span class='line'>     <span class="p">(</span><span class="s">&#39;Amber&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)])</span>
+</span><span class='line'><span class="n">data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>ParallelCollectionRDD[3] at parallelize at PythonRDD.scala:475</p>
+</blockquote>
+
+
+
+
+<h3 id="rdd对象转换成python对象">RDD对象转换成Python对象</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">data_heterogenous</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">&#39;Ferrari&#39;</span><span class="p">,</span> <span class="s">&#39;fast&#39;</span><span class="p">),</span> <span class="p">{</span><span class="s">&#39;Porsche&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">},</span> <span class="p">[</span><span class="s">&#39;Spain&#39;</span><span class="p">,</span><span class="s">&#39;visited&#39;</span><span class="p">,</span> <span class="mi">4504</span><span class="p">]])</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'><span class="n">data_heterogenous</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>[(‘Ferrari’, ‘fast’), {‘Porsche’: 100000}, [‘Spain’, ‘visited’, 4504]]</p>
+</blockquote>
+
+
+
+
+<h3 id="读取文件及统计词频">读取文件及统计词频</h3>
+
+
+
+
+<p>首先word.txt文件内容如下：</p>
+
+
+
+
+<blockquote>
+  <p>The dynamic lifestyle <br>
+  people lead nowadays <br>
+  causes many reactions <br>
+   in our bodies and <br>
+   the one that is the <br>
+   most frequent of all <br>
+   is the headache. However so good</p>
+</blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span>
+</span><span class='line'><span class="n">lines</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;word.txt&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">counts</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>\
+</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
+</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>[(”, 4), (‘good’, 1), (‘in’, 1), (‘is’, 2), (‘However’, 1), (‘of’, 1), (‘causes’, 1), (‘lifestyle’, 1), (‘The’, 1), (‘headache.’, 1), (‘reactions’, 1), (‘most’, 1), (‘frequent’, 1), (‘that’, 1), (‘all’, 1), (‘our’, 1), (‘dynamic’, 1), (‘nowadays’, 1), (‘so’, 1), (‘the’, 3), (‘people’, 1), (‘bodies’, 1), (‘many’, 1), (‘one’, 1), (‘and’, 1), (‘lead’, 1)] <br>
+  …</p>
+</blockquote>
+
+
+
+
+<h2 id="dataframe">DataFrame</h2>
+
+
+
+
+<p>DataFrameDataFrame是Spark推荐的统一结构化数据接口，是一个不可变的分布式数据集合，它结构与关系数据库中的表类似。</p>
+
+
+
+
+<p>类似于Python Pandas DataFrame或R DataFrame，它能够让用户轻松处理结构化数据。</p>
+
+
+
+
+<p>DataFrame还允许用户通过Spark SQL数据库或者采用一些函数式的方法查询及操作结构数据，下面我们就通过一些例子来了解和使用DataFrame。</p>
+
+
+
+
+<h3 id="创建dataframes">创建DataFrames</h3>
+
+
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -156,59 +614,209 @@
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">mport</span> <span class="n">com</span><span class="o">.</span><span class="n">cra</span><span class="o">.</span><span class="n">figaro</span><span class="o">.</span><span class="n">language</span><span class="o">.</span><span class="k">_</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.library.compound.If</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">com.cra.figaro.algorithm.factored.VariableElimination</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">object</span> <span class="nc">Main</span><span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyToday</span> <span class="k">=</span> <span class="nc">Flip</span><span class="o">(</span><span class="mf">0.2</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">greetingToday</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span>
-</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;Howdy universe&quot;</span><span class="o">),</span>
-</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.2</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.8</span><span class="o">-&gt;</span> <span class="s">&quot;no not again!&quot;</span><span class="o">))</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">sunnyTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.8</span><span class="o">)</span> <span class="o">,</span> <span class="nc">Flip</span> <span class="o">(</span><span class="mf">0.05</span><span class="o">))</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">greetingTomorrow</span> <span class="k">=</span> <span class="nc">If</span><span class="o">(</span><span class="n">sunnyTomorrow</span><span class="o">,</span>
-</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;Howdy universe&quot;</span><span class="o">),</span>
-</span><span class='line'>    <span class="nc">Select</span><span class="o">(</span><span class="mf">0.6</span> <span class="o">-&gt;</span> <span class="s">&quot;Hello World&quot;</span><span class="o">,</span><span class="mf">0.4</span> <span class="o">-&gt;</span> <span class="s">&quot;no not again&quot;</span><span class="o">))</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">predict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingToday</span><span class="o">,</span><span class="s">&quot;Hello World&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Today&#39;s greeting is \&quot;Hello World!\&quot; &quot;</span><span class="o">+</span><span class="s">&quot; with probability &quot;</span><span class="o">+</span> <span class="n">result</span> <span class="o">+</span><span class="s">&quot;.&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">infer</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="s">&quot;Hello World&quot;</span>
-</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">sunnyToday</span><span class="o">,</span><span class="kc">true</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&#39;s greeting is $greeting with probability $result.&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">learnAndPredict</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">={</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">greeting</span> <span class="k">=</span> <span class="s">&quot;Hello World&quot;</span>
-</span><span class='line'>    <span class="n">greetingToday</span><span class="o">.</span><span class="n">observe</span><span class="o">(</span><span class="n">greeting</span><span class="o">)</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">VariableElimination</span><span class="o">.</span><span class="n">probability</span><span class="o">(</span><span class="n">greetingTomorrow</span><span class="o">,</span><span class="n">greeting</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;If today&#39;s greeting is $greeting,tomorrow&#39;s greeting will be $greeting\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>      <span class="n">s</span><span class="s">&quot;with probability $result.&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">predict</span>
-</span><span class='line'>    <span class="n">infer</span>
-</span><span class='line'>    <span class="n">learnAndPredict</span>
-</span><span class='line'>  <span class="o">}</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">stringJSONRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">((</span><span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="s">{ &quot;id&quot;: &quot;123&quot;,</span>
+</span><span class='line'><span class="s">&quot;name&quot;: &quot;Katie&quot;,</span>
+</span><span class='line'><span class="s">&quot;age&quot;: 19,</span>
+</span><span class='line'><span class="s">&quot;eyeColor&quot;: &quot;brown&quot;</span>
+</span><span class='line'><span class="s">}&quot;&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
+</span><span class='line'><span class="sd">&quot;id&quot;: &quot;234&quot;,</span>
+</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Michael&quot;,</span>
+</span><span class='line'><span class="sd">&quot;age&quot;: 22,</span>
+</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;green&quot;</span>
+</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;{</span>
+</span><span class='line'><span class="sd">&quot;id&quot;: &quot;345&quot;,</span>
+</span><span class='line'><span class="sd">&quot;name&quot;: &quot;Simone&quot;,</span>
+</span><span class='line'><span class="sd">&quot;age&quot;: 23,</span>
+</span><span class='line'><span class="sd">&quot;eyeColor&quot;: &quot;blue&quot;</span>
+</span><span class='line'><span class="sd">}&quot;&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="n">swimmersJSON</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">stringJSONRDD</span><span class="p">)</span>
+</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmersJSON&quot;</span><span class="p">)</span> <span class="c">#这里创建了临时表</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>+—+——–+—+——-+ <br>
+  |age|eyeColor| id|   name| <br>
+  +—+——–+—+——-+ <br>
+  | 19|   brown|123|  Katie| <br>
+  | 22|   green|234|Michael| <br>
+  | 23|    blue|345| Simone| <br>
+  +—+——–+—+——-+</p>
+</blockquote>
+
+
+
+
+<h3 id="dataframe的简单内容及类型查询">DataFrame的简单内容及类型查询</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select * from swimmersJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span><span class='line'><span class="n">swimmersJSON</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span> <span class="c">#显示表数据的类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>[Row(age=19, eyeColor=’brown’, id=’123’, name=’Katie’), <br>
+   Row(age=22, eyeColor=’green’, id=’234’, name=’Michael’), <br>
+   Row(age=23, eyeColor=’blue’, id=’345’, name=’Simone’)] <br>
+   root <br>
+   |– age: long (nullable = true) <br>
+   |– eyeColor: string (nullable = true) <br>
+   |– id: string (nullable = true) <br>
+   |– name: string (nullable = true)</p>
+</blockquote>
+
+
+
+
+<h3 id="指定数据储存及处理的类型">指定数据储存及处理的类型</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Import types</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pyspark.sql.types</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class='line'><span class="c"># Generate comma delimited data</span>
+</span><span class='line'><span class="n">stringCSVRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([</span>
+</span><span class='line'><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#39;Katie&#39;</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="s">&#39;brown&#39;</span><span class="p">),</span>
+</span><span class='line'><span class="p">(</span><span class="mi">234</span><span class="p">,</span> <span class="s">&#39;Michael&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">),</span>
+</span><span class='line'><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="s">&#39;Simone&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="s">&#39;blue&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">])</span>
+</span><span class='line'><span class="c"># Specify schema</span>
+</span><span class='line'><span class="n">schema</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
+</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
+</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
+</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="n">LongType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
+</span><span class='line'><span class="n">StructField</span><span class="p">(</span><span class="s">&quot;eyeColor&quot;</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'><span class="p">])</span>
+</span><span class='line'><span class="c"># Apply the schema to the RDD and Create DataFrame</span>
+</span><span class='line'><span class="n">swimmers</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">stringCSVRDD</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+</span><span class='line'><span class="c"># Creates a temporary view using the DataFrame</span>
+</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">&quot;swimmers&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">swimmers</span><span class="o">.</span><span class="n">printSchema</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>root <br>
+   |– id: long (nullable = true) <br>
+   |– name: string (nullable = true) <br>
+   |– age: long (nullable = true) <br>
+   |– eyeColor: string (nullable = true)</p>
+</blockquote>
+
+
+
+
+<p><strong>明明可以自动匹配储存类型，为什么我们还要手动指定类型呢？</strong> <br>
+因为，在自动匹配类型的情况下，有时会将ID，Age等我们未来将要用来计算的数据以String的方式存储，这样就不利于我们对这些数据进行加减等运算，所以手动指定储存类型还是很有必要的。</p>
+
+
+
+
+<h3 id="使用sql语句查询及操作数据">使用SQL语句查询及操作数据</h3>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select count(1) from swimmers&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s">&quot;select id, age from swimmers where age = 22&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span class='line'><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+</span><span class='line'><span class="s">&quot;select name, eyeColor from swimmers where eyeColor like &#39;b%&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>输出：</p>
+
+
+
+
+<blockquote>
+  <p>+——–+ <br>
+  |count(1)| <br>
+  +——–+ <br>
+  |       3| <br>
+  +——–+</p>
+  
+  <p>+—+—+ <br>
+  | id|age| <br>
+  +—+—+ <br>
+  |234| 22| <br>
+  +—+—+</p>
+  
+  <p>+——+——–+ <br>
+  |  name|eyeColor| <br>
+  +——+——–+ <br>
+  | Katie|   brown| <br>
+  |Simone|    blue| <br>
+  +——+——–+</p>
+</blockquote>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>在这篇文章中我们可以看出，通过Pyspark结合RDD与DataFrames让我们可以用Python用上Spark平台上的分布式优势，也能够进一步加速和优化我们平时的数据操作。通过Spark导出的抽象层的API我们无需学过过于复杂和繁多的语法就能操作RDD上的数据。这篇文章的内容主要是为了后面用在用Python在Spark进行数据建模和机器学习所铺路，但受限于文章篇幅，还有十分多的函数和API无提及。所以有兴趣的读者可以阅读下<a href="http://spark.apache.org/docs/latest/sql-programming-guide.html">Spark DataFrame的官方文档</a>深入了解一下。</p>
 
 </div>
   
@@ -217,10 +825,10 @@
 
       <footer>
       
-      - <a href="/blog/2017/07/24/scalagai-lu-bian-cheng-yu-yan-ku-figarojie-shao/">Scala概率编程语言库-Figaro介绍</a>
-      <time datetime="2017-07-24T16:15:49+08:00" pubdate><span class='month'>Jul</span> <span class='day'>24</span> <span class='year'>2017</span></time>
+      - <a href="/blog/2017/10/22/pythonzai-sparkshang-de-ji-qi-xue-xi-er-zhi-shu-ju-cao-zuo/"> Python在Spark上的机器学习(二)之数据操作</a>
+      <time datetime="2017-10-22T16:18:47+08:00" pubdate><span class='month'>Oct</span> <span class='day'>22</span> <span class='year'>2017</span></time>
       
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-zhu-za-tan/'>技术杂谈</a></span>
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       
       </footer>
     </article>
@@ -230,7 +838,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/">Python科学计算库NumPy的使用</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a></h1>
     
     
       <div class="post-meta">
@@ -248,7 +856,7 @@
 
 
 
-<time datetime="2017-07-19T19:10:49+08:00" pubdate data-updated="true"></time> -</span>
+<time datetime="2017-10-16T14:07:29+08:00" pubdate data-updated="true"></time> -</span>
           
         </p>
       </div>
@@ -256,503 +864,485 @@
   </header>
 
 
-  <div class="entry-content"><h1>Python科学计算库NumPy的使用</h1>
+  <div class="entry-content"><p>﻿<h1 id="python在spark上的机器学习一之环境搭建">Python在Spark上的机器学习(一)之环境搭建</h1></p>
 
-<h2>NumPy的介绍</h2>
-
-<p>NumPy(Numerical Python的缩写)是一个开源的Python科学计算库。使用NumPy,就可以很自然地使用数组和矩阵。NumPy包含很多实用的数学函数,涵盖线性代数运算、傅里叶变换和随机数生成等功能。如果你的系统中已经装有LAPACK,NumPy的线性代数模块会调用它,否则NumPy将使用自己实现的库函数。LAPACK是一个著名的数值计算库,最初是用Fortran写成的,Matlab同样也需要调用它。从某种意义上讲,NumPy可以取代Matlab和Mathematica的部分功能,并且允许用户进行快速的交互式原型设计。</p>
-
-<h2>NumPy的数组对象</h2>
-
-<p>ndarray是一个多维数组对象，该对象由实际数据+描述性元数据组成。
-使用Numpy需要先安装和导入NumPy库，有关安装教程可以参考<a href="https://docs.scipy.org/doc/numpy/user/install.html">Installing NumPy</a></p>
-
-<blockquote><p>导入语法：import numpy as np</p></blockquote>
-
-<p>此处使用np为别名是为了避免命名空间被污染。</p>
-
-<p><strong>特点</strong>：</p>
-
-<ol>
-<li>NumPy数组一般是同质（即数组内的元素为相同类型，特殊类型除外）</li>
-<li>NumPy数组的下标也是从0开始</li>
-<li>可以方便地创建高维数组</li>
-</ol>
+<p>前面已经介绍了不少机器学习的算法了，那么机器学习又该如何结合大数据一起使用么？</p>
 
 
-<p><em>eg：</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>5<span class="o">)</span>
-</span><span class='line'>In: a.dtype
-</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;int64&#39;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>而在32位系统中，得到的结果类型可能是int32。</p>
-
-<p><strong>多维数组的创建</strong>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">m</span> <span class="o">=</span> np.array<span class="o">([</span>np.arange<span class="o">(</span>2<span class="o">)</span>, np.arange<span class="o">(</span>2<span class="o">)])</span>
-</span><span class='line'>In: m
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span>0, 1<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>0, 1<span class="o">]])</span>
-</span><span class='line'>In: m.shape <span class="c">#shape可以输出数组行列（维度）信息</span>
-</span><span class='line'>Out: <span class="o">(</span>2, 2<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<h2 id="常言道工欲善其事必先利其器">常言道：工欲善其事，必先利其器</h2>
 
 
-<p><strong>选取数组元素</strong>：
-我们继续沿用上面创建的数组m</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: m<span class="o">[</span>0,0<span class="o">]</span>
-</span><span class='line'>Out: 0
-</span><span class='line'>In: m<span class="o">[</span>0,1<span class="o">]</span>
-</span><span class='line'>Out: 1
-</span></code></pre></td></tr></table></div></figure>
 
 
-<pre><code>是的,从数组中选取元素就是这么简单。对于数组 a ,只需要用 a[m,n] 选取各数组元素,其中 m 和 n 为元素下标。
+<p>既然来结合大数据与机器学习，我们就不得不提Spark了。</p>
+
+
+
+
+<p>首先，<a href="https://spark.apache.org/docs/latest/index.html">Apache Spark</a> 是专为大规模数据处理而设计的快速通用的计算引擎。Spark是UC Berkeley AMP lab (加州大学伯克利分校的AMP实验室)所开源的类Hadoop MapReduce的通用并行框架，Spark，拥有Hadoop MapReduce所具有的优点；但不同于MapReduce的是Job中间输出结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的MapReduce的算法。</p>
+
+
+
+
+<p>Spark 是一种与 Hadoop 相似的开源集群计算环境，但是两者之间还存在一些不同之处，这些有用的不同之处使 Spark 在某些工作负载方面表现得更加优越，换句话说，Spark 启用了内存分布数据集，除了能够提供交互式查询外，它还可以优化迭代工作负载。</p>
+
+
+
+
+<p>讲了这么多Spark的优点，那么现在我们就先开始来搭建一个Spark 集群环境吧！</p>
+
+
+
+
+<h3 id="安装基础环境">安装基础环境</h3>
+
+
+
+
+<p><strong>1. Java1.8环境搭建</strong>（下载JDK1.8的）：</p>
+
+
+
+
+<blockquote>
+  <p>下载页面： <br>
+  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
+</blockquote>
+
+
+
+
+<p>安装过程可以参考<a href="http://www.linuxidc.com/Linux/2016-05/131348.htm">Linux公社给出的教程</a></p>
+
+
+
+
+<p><strong>Ubuntu用户：</strong> <br>
+Ubuntu用户可以通过添加PPA源再通过Apt来进行安装</p>
+
+
+
+
+<blockquote>
+  <p><span>$</span> sudo add-apt-repository ppa:webupd8team/java <br>
+  <span>$</span> sudo apt-get update <br>
+  <span>$</span> sudo apt-get install oracle-java8-installer</p>
+</blockquote>
+
+
+
+
+<p><strong>2. Scala环境搭建</strong></p>
+
+
+
+
+<p>下载scala安装包：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">wget -O <span class="hljs-string">"scala-2.12.3.deb"</span> 
+<span class="hljs-label">https:</span>//downloads<span class="hljs-preprocessor">.lightbend</span><span class="hljs-preprocessor">.com</span>/scala/<span class="hljs-number">2.12</span><span class="hljs-number">.3</span>/scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span>
+或者
+wget -O <span class="hljs-string">"scala-2.12.3.rpm"</span> <span class="hljs-string">"https://downloads.lightbend.com/scala/2.12.3/scala-2.12.3.rpm"</span>
 </code></pre>
 
-<p><strong>NumPy的数据类型</strong>:
-    Python支持的数据类型有整型、浮点型以及复数型,但这些类型不足以满足科学计算的需求,因此NumPy添加了很多其他的数据类型。在NumPy中,许多函数的参数中可以指定数据类型,通常这个参数是可选的:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.arange<span class="o">(</span>7, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
-</span><span class='line'>Out: array<span class="o">([</span>0, 1, 2, 3, 4, 5, 6<span class="o">]</span>, <span class="nv">dtype</span><span class="o">=</span>uint16<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中完整的数据类型可以通过np.sctypeDict.keys()查到：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>dict_keys<span class="o">([</span>0, 1, 2, 3, <span class="s1">&#39;D&#39;</span>, 5, 6, <span class="s1">&#39;ushort&#39;</span>, 8, <span class="s1">&#39;P&#39;</span>, 10, 11, 12, <span class="s1">&#39;uintp&#39;</span>, 14, 15, 16, 17, 18, 19, <span class="s1">&#39;Float16&#39;</span>, 21, 22, 23, <span class="s1">&#39;cfloat&#39;</span>, 4, <span class="s1">&#39;Object0&#39;</span>, <span class="s1">&#39;int32&#39;</span>, <span class="s1">&#39;UInt64&#39;</span>, <span class="s1">&#39;Complex128&#39;</span>, <span class="s1">&#39;uint0&#39;</span>, <span class="s1">&#39;i2&#39;</span>, 7, <span class="s1">&#39;Int16&#39;</span>, <span class="s1">&#39;int&#39;</span>, <span class="s1">&#39;complex&#39;</span>, <span class="s1">&#39;ubyte&#39;</span>, <span class="s1">&#39;Int32&#39;</span>, <span class="s1">&#39;float&#39;</span>, <span class="s1">&#39;i&#39;</span>, <span class="s1">&#39;short&#39;</span>, <span class="s1">&#39;B&#39;</span>, <span class="s1">&#39;str0&#39;</span>, 9, <span class="s1">&#39;complex_&#39;</span>, <span class="s1">&#39;O&#39;</span>, <span class="s1">&#39;long&#39;</span>, <span class="s1">&#39;bytes&#39;</span>, <span class="s1">&#39;float_&#39;</span>, <span class="s1">&#39;Int64&#39;</span>, <span class="s1">&#39;int0&#39;</span>, <span class="s1">&#39;Void0&#39;</span>, <span class="s1">&#39;float128&#39;</span>, <span class="s1">&#39;Float64&#39;</span>, <span class="s1">&#39;Str0&#39;</span>, <span class="s1">&#39;int64&#39;</span>, <span class="s1">&#39;b&#39;</span>, <span class="s1">&#39;longdouble&#39;</span>, <span class="s1">&#39;void&#39;</span>, <span class="s1">&#39;f&#39;</span>, <span class="s1">&#39;longcomplex&#39;</span>, <span class="s1">&#39;ulonglong&#39;</span>, <span class="s1">&#39;intp&#39;</span>, <span class="s1">&#39;UInt32&#39;</span>, <span class="s1">&#39;V&#39;</span>, <span class="s1">&#39;object_&#39;</span>, <span class="s1">&#39;longlong&#39;</span>, <span class="s1">&#39;csingle&#39;</span>, <span class="s1">&#39;uint&#39;</span>, <span class="s1">&#39;c32&#39;</span>, <span class="s1">&#39;M&#39;</span>, <span class="s1">&#39;I&#39;</span>, <span class="s1">&#39;singlecomplex&#39;</span>, <span class="s1">&#39;double&#39;</span>, <span class="s1">&#39;timedelta64&#39;</span>, <span class="s1">&#39;object&#39;</span>, <span class="s1">&#39;unicode_&#39;</span>, <span class="s1">&#39;Float128&#39;</span>, <span class="s1">&#39;uint64&#39;</span>, <span class="s1">&#39;h&#39;</span>, <span class="s1">&#39;str&#39;</span>, <span class="s1">&#39;d&#39;</span>, <span class="s1">&#39;UInt8&#39;</span>, 20, <span class="s1">&#39;complex128&#39;</span>, <span class="s1">&#39;string_&#39;</span>, <span class="s1">&#39;clongfloat&#39;</span>, <span class="s1">&#39;H&#39;</span>, <span class="s1">&#39;m8&#39;</span>, <span class="s1">&#39;clongdouble&#39;</span>, <span class="s1">&#39;S&#39;</span>, <span class="s1">&#39;g&#39;</span>, <span class="s1">&#39;bool_&#39;</span>, <span class="s1">&#39;unicode&#39;</span>, <span class="s1">&#39;f16&#39;</span>, 13, <span class="s1">&#39;int8&#39;</span>, <span class="s1">&#39;void0&#39;</span>, <span class="s1">&#39;L&#39;</span>, <span class="s1">&#39;M8&#39;</span>, <span class="s1">&#39;uint32&#39;</span>, <span class="s1">&#39;p&#39;</span>, <span class="s1">&#39;bytes0&#39;</span>, <span class="s1">&#39;e&#39;</span>, <span class="s1">&#39;datetime64&#39;</span>, <span class="s1">&#39;U&#39;</span>, <span class="s1">&#39;float16&#39;</span>, <span class="s1">&#39;c16&#39;</span>, <span class="s1">&#39;?&#39;</span>, <span class="s1">&#39;Bool&#39;</span>, <span class="s1">&#39;byte&#39;</span>, <span class="s1">&#39;i4&#39;</span>, <span class="s1">&#39;c8&#39;</span>, <span class="s1">&#39;int16&#39;</span>, <span class="s1">&#39;half&#39;</span>, <span class="s1">&#39;uint16&#39;</span>, <span class="s1">&#39;str_&#39;</span>, <span class="s1">&#39;i8&#39;</span>, <span class="s1">&#39;Complex32&#39;</span>, <span class="s1">&#39;Int8&#39;</span>, <span class="s1">&#39;bool&#39;</span>, <span class="s1">&#39;Bytes0&#39;</span>, <span class="s1">&#39;G&#39;</span>, <span class="s1">&#39;l&#39;</span>, <span class="s1">&#39;uint8&#39;</span>, <span class="s1">&#39;f2&#39;</span>, <span class="s1">&#39;single&#39;</span>, <span class="s1">&#39;f8&#39;</span>, <span class="s1">&#39;q&#39;</span>, <span class="s1">&#39;Q&#39;</span>, <span class="s1">&#39;m&#39;</span>, <span class="s1">&#39;Complex64&#39;</span>, <span class="s1">&#39;f4&#39;</span>, <span class="s1">&#39;u2&#39;</span>, <span class="s1">&#39;Float32&#39;</span>, <span class="s1">&#39;i1&#39;</span>, <span class="s1">&#39;u4&#39;</span>, <span class="s1">&#39;Datetime64&#39;</span>, <span class="s1">&#39;intc&#39;</span>, <span class="s1">&#39;float64&#39;</span>, <span class="s1">&#39;a&#39;</span>, <span class="s1">&#39;complex64&#39;</span>, <span class="s1">&#39;u1&#39;</span>, <span class="s1">&#39;bytes_&#39;</span>, <span class="s1">&#39;cdouble&#39;</span>, <span class="s1">&#39;object0&#39;</span>, <span class="s1">&#39;UInt16&#39;</span>, <span class="s1">&#39;bool8&#39;</span>, <span class="s1">&#39;float32&#39;</span>, <span class="s1">&#39;uintc&#39;</span>, <span class="s1">&#39;Timedelta64&#39;</span>, <span class="s1">&#39;F&#39;</span>, <span class="s1">&#39;longfloat&#39;</span>, <span class="s1">&#39;b1&#39;</span>, <span class="s1">&#39;u8&#39;</span>, <span class="s1">&#39;int_&#39;</span>, <span class="s1">&#39;complex256&#39;</span><span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>创建自定义数据类型</strong>：</p>
-
-<p>(1)创建数据类型</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">t</span> <span class="o">=</span> np.dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>,np.str_,128<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;count&#39;</span>,np.int32<span class="o">)</span>,<span class="o">(</span><span class="s1">&#39;price&#39;</span>,np.float64<span class="o">)])</span>
-</span><span class='line'>In: t
-</span><span class='line'>Out: dtype<span class="o">([(</span><span class="s1">&#39;name&#39;</span>, <span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;count&#39;</span>, <span class="s1">&#39;&lt;i4&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;price&#39;</span>, <span class="s1">&#39;&lt;f8&#39;</span><span class="o">)])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)查看数据类型</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: t<span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span>
-</span><span class='line'>Out: dtype<span class="o">(</span><span class="s1">&#39;&lt;U128&#39;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)使用自定义数据</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">itemz</span> <span class="o">=</span> np.array<span class="o">([(</span><span class="s1">&#39;Meaning of life DVD&#39;</span>, 42, 3.14<span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)]</span>, <span class="nv">dtype</span><span class="o">=</span>t<span class="o">)</span>
-</span><span class='line'>In: itemz<span class="o">[</span>1<span class="o">]</span>
-</span><span class='line'>Out: <span class="o">(</span><span class="s1">&#39;Butter&#39;</span>, 13, 2.72<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>一维数组的索引和切片</strong>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>
-</span><span class='line'>In: a<span class="o">[</span>3:7<span class="o">]</span>
-</span><span class='line'>Out: array<span class="o">([</span>3, 4, 5, 6<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>多维数组索引和切片</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In： <span class="nv">b</span><span class="o">=</span>np.arange<span class="o">(</span>24<span class="o">)</span>.reshape<span class="o">(</span>2,3,4<span class="o">)</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out: array<span class="o">([[[</span> 0,  1,  2,  3<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 4,  5,  6,  7<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 8,  9, 10, 11<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>       <span class="o">[[</span>12, 13, 14, 15<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>16, 17, 18, 19<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>20, 21, 22, 23<span class="o">]]])</span>
-</span><span class='line'>In: b<span class="o">[</span>0,2,1<span class="o">]</span>
-</span><span class='line'>Out: 9-
-</span><span class='line'><span class="c">#我们还可以这样写,选取第0组的所有元素:</span>
-</span><span class='line'>In: b<span class="o">[</span>0,:,:<span class="o">]</span>
-</span><span class='line'>Out: array<span class="o">([[</span>
-</span><span class='line'>0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>4, 5, 6, 7<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>8, 9,10,11<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同时，b[0,:,:] == b[0,&hellip;]。</em>
-更多的多维数组的索引和切片操作可以参考<a href="https://docs.scipy.org/doc/numpy/reference/">NumPy使用手册</a></p>
-
-<p><strong>数组展平</strong>:</p>
-
-<p>(1)ravel</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b-
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[[</span> 0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]]</span>,
-</span><span class='line'><span class="o">[[</span>12,13,14,15<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]])</span>
-</span><span class='line'>In: b.ravel<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)flatten</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.flatten<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-</span><span class='line'>17, 18, 19, 20, 21, 22, 23<span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>flatten 和 ravel的区别在于：flatten函数会请求分配内存来保存结果，而reval函数只是返回数组的一个视图（view）</p>
-
-<p>(3)改变数组的shape属性</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.shape <span class="o">=</span> <span class="o">(</span>6,4<span class="o">)</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([</span> 0, 1, 2, 3<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 4, 5, 6, 7<span class="o">]</span>,-
-</span><span class='line'><span class="o">[</span> 8, 9,10,11<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12,13,14,15<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>16,17,18,19<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>20,21,22,23<span class="o">]]</span>,
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(4)transpose,相当与线性代数的转置</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.transpose<span class="o">()</span>
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span> 0, 4, 8,12,16,20<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 1, 5, 9,13,17,21<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 2, 6,10,14,18,22<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3, 7,11,15,19,23<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(5)resize，功能和reshape相同，但是resize会直接影响原操作数组</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: b.resize<span class="o">((</span>2,12<span class="o">))</span>
-</span><span class='line'>In: b
-</span><span class='line'>Out:
-</span><span class='line'>array<span class="o">([[</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12,13,14,15,16,17,18,19,20,21, 22, 23<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>数组组合</strong>：</p>
-
-<p>(1)水平组合</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span>9<span class="o">)</span>.reshape<span class="o">(</span>3,3<span class="o">)</span>
-</span><span class='line'>In: <span class="nv">b</span><span class="o">=</span>2*a
-</span><span class='line'>In: np.hstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2,  0,  2,  4<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span> 3,  4,  5,  6,  8, 10<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span> 6,  7,  8, 12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同样可以使用concatenate函数实现同样效果</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>1<span class="o">)</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0, 1, 2, 0, 2, 4<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3, 4, 5, 6, 8,10<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6, 7, 8,12,14,16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)垂直组合</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsta-ck<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 3,  4,  5<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 6,  7,  8<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 0,  2,  4<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span> 6,  8, 10<span class="o">]</span>,
-</span><span class='line'>   <span class="o">[</span>12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同样可以使用concatenate函数实现同样效果</em></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: concatenate<span class="o">((</span>a,b<span class="o">)</span>,axis<span class="o">=</span>0<span class="o">)</span>
-</span><span class='line'>Out: In: np.vstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[</span> 0,  1,  2<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 3,  4,  5<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6,  7,  8<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 0,  2,  4<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span> 6,  8, 10<span class="o">]</span>,
-</span><span class='line'><span class="o">[</span>12, 14, 16<span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)深度组合</p>
-
-<p>深度组合,就是将一系列数组沿着纵轴(深度)方向进行层叠组合。举个例子,有若干张二维平面内的图像点阵数据,我们可以将这些图像数据沿纵轴方向层叠在一起,这就形象地解释了什么是深度组合。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dstack<span class="o">((</span>a,b<span class="o">))</span>
-</span><span class='line'>Out: array<span class="o">([[[</span> 0,  0<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 1,  2<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 2,  4<span class="o">]]</span>,
-</span><span class='line'>       <span class="o">[[</span> 3,  6<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 4,  8<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 5, 10<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>       <span class="o">[[</span> 6, 12<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 7, 14<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span> 8, 16<span class="o">]]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(4)列组合,column_stack 函数对于一维数组将按列方向进行组合,而对于二维数组, column_stack 与 hstack 的效果是相同的</p>
-
-<p>(5)行组合,当然,NumPy中也有按行方向进行组合的函数,它就是 row_stack 。对于两
-个一维数组,将直接层叠起来组合成一个二维数组。同样，对于二维数组，row_stack 与 vstack 的效果是相同的。</p>
-
-<p><strong>数组分割</strong>:</p>
-
-<p>NumPy数组可以进行水平、垂直或深度分割,相关的函数有 hsplit 、 vsplit 、 dsplit 和split 。我们可以将数组分割成相同大小的子数组,也可以指定原数组中需要分割的位置。</p>
-
-<p>(1)水平分割</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: a
-</span><span class='line'>Out: array<span class="o">([[</span>0, 1, 2<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span>3, 4, 5<span class="o">]</span>,
-</span><span class='line'>       <span class="o">[</span>6, 7, 8<span class="o">]])</span>
-</span><span class='line'>In: np.hsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#沿水平方向分割成三个大小相同的子数组</span>
-</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[</span>0<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>3<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>6<span class="o">]])</span>, array<span class="o">([[</span>1<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>4<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>7<span class="o">]])</span>, array<span class="o">([[</span>2<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>5<span class="o">]</span>,
-</span><span class='line'>        <span class="o">[</span>8<span class="o">]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(2)垂直分割</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.vsplit<span class="o">(</span>a,3<span class="o">)</span> <span class="c">#在垂直方向上分割成三个大小相同的子数组</span>
-</span><span class='line'>Out： <span class="o">[</span>array<span class="o">([[</span>0, 1, 2<span class="o">]])</span>, array<span class="o">([[</span>3, 4, 5<span class="o">]])</span>, array<span class="o">([[</span>6, 7, 8<span class="o">]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)深度分割,dsplit函数将按深度方向分割数组。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>In: np.dsplit<span class="o">(</span>np.arange<span class="o">(</span>27<span class="o">)</span>.reshape<span class="o">(</span>3,3,3<span class="o">)</span>,3<span class="o">)</span>
-</span><span class='line'>Out: <span class="o">[</span>array<span class="o">([[[</span> 0<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 3<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 6<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span> 9<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>12<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>15<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>18<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>21<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>24<span class="o">]]])</span>, array<span class="o">([[[</span> 1<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 4<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 7<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>10<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>13<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>16<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>19<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>22<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>25<span class="o">]]])</span>, array<span class="o">([[[</span> 2<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 5<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span> 8<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>11<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>14<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>17<span class="o">]]</span>,
-</span><span class='line'>
-</span><span class='line'>        <span class="o">[[</span>20<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>23<span class="o">]</span>,
-</span><span class='line'>         <span class="o">[</span>26<span class="o">]]])]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>同时，hsplit,vsplit同样也可以用函数split来实现，其使用就像上面的数组组合函数concatenate类似</em></p>
-
-<p><strong>到此，NumPy的常规的数组操作基本就结束了！</strong></p>
+
+
+
+<p>安装deb/rpm包：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">rpm -ivh scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.rpm</span>
+dpkg -i scala-<span class="hljs-number">2.12</span><span class="hljs-number">.3</span><span class="hljs-preprocessor">.deb</span></code></pre>
+
+
+
+
+<p>增加SCALA_HOME</p>
+
+
+
+
+<blockquote>
+  <p>$ vim /etc/profile</p>
+</blockquote>
+
+
+
+
+<p>增加如下内容;</p>
+
+
+
+
+<blockquote>
+  <p>export SCALA_HOME=/usr/share/scala</p>
+</blockquote>
+
+
+
+
+<p>刷新配置</p>
+
+
+
+
+<blockquote>
+  <p>$ source /etc/profile</p>
+</blockquote>
+
+
+
+
+<h3 id="安装hadoop">安装Hadoop</h3>
+
+
+
+
+<p><strong>1.下载二进制包：</strong> <br>
+wget <a href="http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz">http://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz</a></p>
+
+
+
+
+<p><strong>2.解压并移动至相应目录：</strong></p>
+
+
+
+
+<p>我的习惯是将软件放置/opt目录下：</p>
+
+
+
+
+<blockquote>
+  <p>tar -xvf hadoop-2.7.3.tar.gz <br>
+  mv hadoop-2.7.3 /opt</p>
+</blockquote>
+
+
+
+
+<p><strong>3.修改相应的配置文件：</strong></p>
+
+
+
+
+<blockquote>
+  <p><strong>（1）</strong> $ vim /etc/profile</p>
+</blockquote>
+
+
+
+
+<p>增加如下内容：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#hadoop enviroment </span>
+<span class="hljs-keyword">export</span> HADOOP_HOME=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/
+<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$HADOOP_HOME</span>/bin:<span class="hljs-variable">$HADOOP_HOME</span>/sbin:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop
+<span class="hljs-keyword">export</span> YARN_CONF_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/etc/hadoop</code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（2）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hadoop-env.sh</p>
+</blockquote>
+
+
+
+
+<p>修改JAVA_HOME 如下：</p>
+
+
+
+
+<blockquote>
+  <p>export JAVA_HOME=&lt;你的Java安装目录&gt;</p>
+</blockquote>
+
+
+
+
+<p>-</p>
+
+
+
+
+<blockquote>
+  <p><strong>（3）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/core-site.xml</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>fs.defaultFS<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>hdfs://master:9000<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>io.file.buffer.size<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>131072<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+       <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>hadoop.tmp.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>/opt/hadoop-2.7.3/tmp<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（4）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/hdfs-site.xml</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:50090<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.replication<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.namenode.name.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/name<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>dfs.datanode.data.dir<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>file:/opt/hadoop-2.7.3/hdfs/data<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（5）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/mapred-site.xml</p>
+</blockquote>
+
+
+
+
+<p>复制template，生成xml：</p>
+
+
+
+
+<blockquote>
+  <p>cp mapred-site.xml.template mapred-site.xml</p>
+</blockquote>
+
+
+
+
+<p>内容：</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>
+ <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.framework.name<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>yarn<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:10020<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>mapreduce.jobhistory.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:19888<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span></code></pre>
+
+
+
+
+<p><strong>（6）</strong> <span>$</span> vim $HADOOP_HOME/etc/hadoop/yarn-site.xml</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-comment">&lt;!-- Site specific YARN configuration properties --&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>mapreduce_shuffle<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+           <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+           <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8032<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.scheduler.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8030<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.resource-tracker.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8031<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.admin.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8033<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span>
+     <span class="hljs-tag">&lt;<span class="hljs-title">property</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">name</span>&gt;</span>yarn.resourcemanager.webapp.address<span class="hljs-tag">&lt;/<span class="hljs-title">name</span>&gt;</span>
+         <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>master:8088<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span>
+     <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span></code></pre>
+
+
+
+
+<p>至此master节点的hadoop搭建完毕</p>
+
+
+
+
+<p>再启动之前我们需要</p>
+
+
+
+
+<p>格式化一下namenode</p>
+
+
+
+
+<blockquote>
+  <p>$ hadoop namenode -format</p>
+</blockquote>
+
+
+
+
+<h3 id="安装spark">安装Spark</h3>
+
+
+
+
+<p><strong>下载文件：</strong></p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs mathematica">wget -<span class="hljs-keyword">O</span> <span class="hljs-string">"spark-2.1.0-bin-hadoop2.7.tgz"</span> <span class="hljs-string">"http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz"</span></code></pre>
+
+
+
+
+<p><strong>解压并移动至相应的文件夹：</strong></p>
+
+
+
+
+<blockquote>
+  <p>tar -xvf spark-2.1.0-bin-hadoop2.7.tgz <br>
+  mv spark-2.1.0-bin-hadoop2.7 /opt</p>
+</blockquote>
+
+
+
+
+<p><strong>修改相应的配置文件：</strong></p>
+
+
+
+
+<blockquote>
+  <p><strong>（1）</strong> <span>$</span> vim /etc/profie</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#Spark enviroment</span>
+<span class="hljs-keyword">export</span> SPARK_HOME=/opt/spark-<span class="hljs-number">2.1</span>.<span class="hljs-number">0</span>-bin-hadoop2.<span class="hljs-number">7</span>/
+<span class="hljs-keyword">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$SPARK_HOME</span>/bin:<span class="hljs-variable">$PATH</span>"</span></code></pre>
+
+
+
+
+<blockquote>
+  <p><strong>（2）</strong> <span>$</span> vim $SPARK_HOME/conf/spark-env.sh</p>
+</blockquote>
+
+
+
+
+<p>-</p>
+
+
+
+
+<blockquote>
+  <p>cp spark-env.sh.template spark-env.sh</p>
+</blockquote>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs bash"><span class="hljs-comment">#配置内容如下：</span>
+<span class="hljs-keyword">export</span> SCALA_HOME=/usr/share/scala
+<span class="hljs-keyword">export</span> JAVA_HOME=&lt;你的Java安装目录&gt;
+<span class="hljs-keyword">export</span> SPARK_MASTER_IP=master
+<span class="hljs-keyword">export</span> SPARK_WORKER_MEMORY=<span class="hljs-number">1</span>g
+<span class="hljs-keyword">export</span> HADOOP_CONF_DIR=/opt/hadoop-<span class="hljs-number">2.7</span>.<span class="hljs-number">3</span>/etc/hadoop</code></pre>
+
+
+
+
+<p>至此，我们大部分环境基本安装完毕！</p>
+
+
+
+
+<h2 id="测试spark">测试Spark</h2>
+
+
+
+
+<p>为了避免麻烦这里我们使用spark-shell以及本地的文件（非hdfs），做一个简单的worcount的测试。</p>
+
+
+
+
+<pre class="prettyprint"><code class=" hljs livecodeserver">val <span class="hljs-built_in">file</span>=sc.textFile(<span class="hljs-string">"/home/ef/Desktop/Notes/wordcount_test"</span>)
+val rdd = <span class="hljs-built_in">file</span>.flatMap(<span class="hljs-built_in">line</span> =&gt; <span class="hljs-built_in">line</span>.<span class="hljs-built_in">split</span>(<span class="hljs-string">" "</span>)).map(<span class="hljs-built_in">word</span> =&gt; (<span class="hljs-built_in">word</span>,<span class="hljs-number">1</span>)).reduceByKey(_+_)
+rdd.collect()
+rdd.foreach(println)</code></pre>
+
+
+
+
+<p><strong>展示图：</strong> <br>
+<img src="https://i.loli.net/2017/10/10/59dc80d01e9ff.png" alt="spark-shell.png" title=""></p>
+
+
+
+
+<h2 id="小结">小结</h2>
+
+
+
+
+<p>到此，我们在Spark上进行机器学习训练的环境，就搭建完毕了，下章我们再开始讲Spark中的数据结构与Python中的区别，以及结合Pyspark来进行数据处理。</p>
+
 </div>
   
   
@@ -760,10 +1350,10 @@
 
       <footer>
       
-      - <a href="/blog/2017/07/19/pythonke-xue-ji-suan-ku-numpyde-shi-yong/">Python科学计算库NumPy的使用</a>
-      <time datetime="2017-07-19T19:10:49+08:00" pubdate><span class='month'>Jul</span> <span class='day'>19</span> <span class='year'>2017</span></time>
+      - <a href="/blog/2017/10/16/pythonzai-sparkshang-de-ji-qi-xue-xi-%5B%3F%5D-zhi-huan-jing-da-jian/">Python在Spark上的机器学习(一)之环境搭建</a>
+      <time datetime="2017-10-16T14:07:29+08:00" pubdate><span class='month'>Oct</span> <span class='day'>16</span> <span class='year'>2017</span></time>
       
-      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
+      <span class="categories">posted in <a class='category' href='/blog/categories/pyspark-and-spark/'>pyspark&spark</a></span>
       
       </footer>
     </article>
@@ -773,7 +1363,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/">有关统计学的一些笔记</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/">SVM支持向量机</a></h1>
     
     
       <div class="post-meta">
@@ -791,7 +1381,7 @@
 
 
 
-<time datetime="2017-07-14T13:22:09+08:00" pubdate data-updated="true"></time> -</span>
+<time datetime="2017-10-11T16:38:50+08:00" pubdate data-updated="true"></time> -</span>
           
         </p>
       </div>
@@ -799,159 +1389,182 @@
   </header>
 
 
-  <div class="entry-content"><h1>有关推断统计学</h1>
+  <div class="entry-content"><p>﻿<h1 id="svmsupport-vector-machines-支持向量机">SVM(Support Vector Machines)-支持向量机</h1></p>
 
-<h2>样本与总体</h2>
-
-<p>在统计中，一个<strong>总体</strong>包括事件的全部，而一个<strong>样本</strong>是总体的一小部分（子集）
-。</p>
-
-<h2>推断统计学</h2>
-
-<p><strong>推断统计学（Inferential statistics）</strong> 是使用样本归纳总体的一种统计方法。推断统计非常有用，因为他允许我们基于有限的信息（样本）对总体得出结论。</p>
-
-<h2>假设检验</h2>
-
-<p>当我们使用样本对总体进行推断时，这个过程为假设检验（Hypothesis testing）。在假设检验中，通常要陈述两个假设：<strong>原假设（null hypothesis）</strong> 和<strong>对立假设（alternative hypothesis）</strong>。原假设通常陈述处理没有效果，而对立假设陈述处理有效果。</p>
-
-<h2>单边检验和双边检验</h2>
-
-<p>在评估处理要看是否对任一方向有影响（了解得分是更高还是更低）时使用双边检验，而在母的仅仅是调查单一方向（仅仅是更高还是更低）时使用单边检验。</p>
-
-<h2>第一类错误和第二类错误</h2>
-
-<p>在假设检验中，使用样本对总体进行推断。因为样本是总体的不完整“图像”，所以在假设检验过程中，就可能有错误。有两类错误发生：第一类错误，第二类错误。如果在原假设是真实的情况下拒绝了原假设，就发生了第一类错误。如果在原假设是错误的情况下没有拒绝原假设，就发生了第二类错误。</p>
-
-<h2>功效</h2>
-
-<p><strong>功效（power）</strong>等于原假设错误的拒绝原假设的概率（如果原假设是错误的，他也是被拒绝的，就是做了一个正确的决策）。功效的取值范围在0~1之间，数值越大，功效越大。</p>
-
-<h2>抽样误差</h2>
-
-<p>一般来说，样本越小，样本与总体的差异就越大。样本与总体的差异就是<strong>抽样误差（sampling error）</strong></p>
-
-<h2>p-值</h2>
-
-<p>如果从总体中抽取的样本通常都是不相同的，那么我们应该如何确定样本之间存在有意义的差异，还是由于抽样误差所导致的结果。p-值表明在原假设为真时获得特定结果的的概率。在假设检验中，检验的p-值是和预先确定的数值进行比较的，且基于比较的结果，对原假设进行决策。在社会和行为科学中，常用0.05位水平，来评价p-值。</p>
-
-<blockquote><p>评价p-值过程如下：
-1. 如果p-值小于或等于0.05（α），拒绝原假设（假定策略之间存在差异）
-2. 如果p-值大于0.05（α），不能拒绝原假设（没有假定策略之间有差异）</p></blockquote>
-
-<h2>效应量</h2>
-
-<p><strong>效应量（effect sizes）</strong>一般用来描述策略组之间的差异程度，表明我们研究结果的大小。</p>
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/07/14/you-guan-tong-ji-xue-de-yi-xie-bi-ji/">有关统计学的一些笔记</a>
-      <time datetime="2017-07-14T13:22:09+08:00" pubdate><span class='month'>Jul</span> <span class='day'>14</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/xue-xi-xin-de/'>学习心得</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
+<p>曾经很多人都认为SVM是现在的最好的分类器，即：在不加以修改的前提之下，就能够在数据上进行训练并能够对训练集之外的数据点做出很好的分类决策。</p>
 
 
 
 
+<h2 id="基于最大间隔分割数据">基于最大间隔分割数据</h2>
 
 
 
 
-  
+<p><strong>支持向量机：</strong> <br>
+优点：泛化错误率低，计算开销不大，结果容易解释 <br>
+缺点：对参数调节和核函数的选择策略敏感，原始分类器不加修改仅适用于处理二类问题。 <br>
+<img src="http://scikit-learn.org/stable/_images/sphx_glr_plot_separating_hyperplane_0011.png" alt="enter image description here" title=""></p>
 
 
 
-<time datetime="2017-07-03T12:18:45+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
+
+<p>在上图中，我们可以看出：我们可以很容易在图中画出一条直线将两组数据点分开。在这种情况下，这组数据被称为<strong>线性可分(linearly separable)</strong>数据，而将数据集分割开来的直线我们称为<strong>分隔超平面(separating hyperplane)</strong>。在上图例子中，由于数据点都在二维平面上，所有此时分隔超平面就只是一条直线而已。但是，如果所给的数据为三维的，那么此时用来分隔数据的就是一个平面。依此类推，如果给出一个N（N&gt;3）维数据集，那么则要用一个N-1维的对象来对数据进行分隔，该对象亦被称为<strong>超平面(hyperplane)</strong>。</p>
 
 
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 背景：</a></li>
-<li><a href="#sec-2">2. 基本原理：</a></li>
-<li><a href="#sec-3">3. 联合概率计算</a></li>
-<li><a href="#sec-4">4. 算法实现</a></li>
-</ul>
-</div>
-</div>
 
 
-<h1>贝叶斯算法在检测群聊垃圾广告中的应用</h1>
-
-<h1>背景：<a id="sec-1" name="sec-1"></a></h1>
-
-<p>贝叶斯过滤器是一种基于统计学的过滤器方法，是建立在已有的统计结果之上的，所以在实现算法
-之前需要先建立历史资料库，即，先提供两组已经标注好的训练数据。
-在此附上训练数据链接：<a href="https://pan.baidu.com/s/1nuGW2Ul">https://pan.baidu.com/s/1nuGW2Ul</a></p>
-
-<h1>基本原理：<a id="sec-2" name="sec-2"></a></h1>
-
-<p>当看到一段文本时，我们先假定它是广告文本的概率为50%，其实整个识别模式就像垃圾邮件过滤
-一样，我们先用S来表示垃圾文本，用H来表示正常文本。因此，P(S)和 P(H)的先验概率都是
-50%：</p>
-
-<p><script type="math/tex" id="MathJax-Element-115"> P(S) = P(H) = 50% </script></p>
+<p>我们希望通过这样的方式来构建分类器。即如果数据点离决策边界越远，那么其最后的预测效果就越可信。那么我们继续看回上面的图片，我们可以看到有三条直线（一条实线，两条虚线）它们分别都能将数据分隔开，但是其中哪一条才是最理想的呢？通常，我们可以做过这样的方法来确定一个最佳分隔平面，即：我们先找到离分隔平面最近的点，确保它们离分隔平面的距离尽可能远。</p>
 
 
-<p>然后我们再对其进行分词解析处理，我们用W来表示其中存在的某个关键词，然后问题就转变成了在
-某个词语W存在的情况之下，目标文本为垃圾文本的可能性有多大？而解决这个问题的关键就是计算
-P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
-
-<p><script type="math/tex" id="MathJax-Element-116"> P(S|W) = P(W|S)P(S)/(P(W|S)P(S)+P(W|H)P(H)) </script></p>
 
 
-<p>公式之中，P(W|S)和P(W|H)分别代表在正常文本和垃圾文本之中，词语W出现的概率，而这个概率
-我们可以根据已经标注的好训练数据中计算得出。这里，我们假设对于词语W来说，上面所提到的两个
-概率分别为5%和0.05%，那么我们可以计算出P(S|W)＝ 99.0%</p>
-
-<p>因此，根据我们得出的99%的后验概率，我们可以说词语W的推断能力很强，在垃圾文本和正常文本之
-中有十分良好的推断效果。</p>
-
-<h1>联合概率计算<a id="sec-3" name="sec-3"></a></h1>
-
-<p>但是，一段文本中存在非常多的词汇，我们不能单凭一个单词就推断出这段文本的分类属性。因此，
-常规的做法是我们需要选取出整段文本中，P(S|W)最高的15个词，然后计算它们的联合概率。
-（其中可能存在的问题有：某些新词在历史数据中都不曾出现过，我们无法计算其P(S|W)的值，
-对于这样的问题需要用到贝叶斯平滑的思想进行处理，本文为了从简，我们都先假设这类词的P(S|W)
-值为0.4）</p>
-
-<p>对于联合概率的补充解释：联合概率是指在多个事件发生的情况之下，另一个发生的概率有多大。
-例如：已知，W<sub>1</sub> 和 W<sub>2</sub>为两个不同的词语，它们都出现在某段文本之中，那么这段文本为广告
-文本的概率就是W<sub>1</sub>和W<sub>2</sub>的联合概率。</p>
-
-<p>最后，根据提取的15个词，得出最终的概率计算公式</p>
-
-<p><script type="math/tex" id="MathJax-Element-118"> P ＝ P_1P_2P_3…P_{15}/(P_1P_2…P_{15}+(1-P_1)(1-P_2)…(1-P_{15})) </script></p>
+<p>这里我们又要先引入一些新的概念： <br>
+首先是，点到分隔面的距离被称为<strong>间隔(margin)</strong> <br>
+<strong>支持向量(support vector)：</strong>就是离分割平面最近的那些点。</p>
 
 
-<p>在得出最后的概率后，再对阈值（门槛值）进行比较，如：0.9,若 > 0.9 则15个词联合
-认定为90%为垃圾文本！</p>
 
-<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
+
+<p>接下来，就是最大化支持向量都分隔面的距离，并需要找到此问题的优化求解方法。</p>
+
+
+
+
+<h2 id="寻找最大间隔">寻找最大间隔</h2>
+
+
+
+
+<p><strong>Maximum Marginal（最大间隔）</strong>是SVM的一个理论基础之一。选择使得间隔最大的函数作为分隔平面是十分容易解释的。从概率的角度上而言，就是使得置信度最小的点置信度最大;从现实意义上而言，两个个体的类别差异越大，我们自然也能够更为准确地分类。</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd657a3c93.png" alt="svm.png" title=""></p>
+
+
+
+
+<p>上图就是一个对之前所提及的类别间隙的一个描述。其中中间的黑色实线为<strong>分隔边界（Classifier Boundary）</strong>是我们算法中要求解的<strong>f(x)</strong>，红色和蓝色的线(plus plane 与 minus plane)就是支持变量所在的平面，而红色，蓝色之间的间隙就是我们要最大化的分类间的间隙。</p>
+
+
+
+
+<p>首先，我们可以知道其两个支持向量的所在平面可以表达成如下形式：</p>
+
+
+
+
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a677ed33ca0c840aa9295405fc095c8aefa73e48" alt="enter image description here" title=""></p>
+
+
+
+
+<p>和</p>
+
+
+
+
+<p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c3dbeeb7d5af27a2551ec07ce172ddbce62fc58" alt="enter image description here" title=""></p>
+
+
+
+
+<p>然后，这两个超平面的距离可以表达成：<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac553c94aec996dffa3369adcf285319178a474f" alt="enter image description here" title=""></p>
+
+
+
+
+<p>因此，为了最大化两个平面的距离，我们只要最小化<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">即可。</p>
+
+
+
+
+<p><strong>综上所述</strong>，我们可以将整个原理表示为：</p>
+
+
+
+
+<blockquote>
+  <p>Minimize<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b6f27a892f3053ef0bfe273f88f18351a1a18ac" alt="" title="">  <br>
+  subject to<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7181cf8e723b24ad6d85b73b9513dcaac0d31023" alt="" title=""> <br>
+  for <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/520ffef648f7b26db5bae564be860346630635fc" alt="enter image description here" title=""></p>
+</blockquote>
+
+
+
+
+<p>当支持变量确定的时候，整个分割函数也就确定了下来。除此之外，支持向量的出现还可以让向量后方的样本点不用再参与计算，大大降低了算法的计算复杂度。</p>
+
+
+
+
+<p>再者，有关距离计算的优化。<script type="math/tex" id="MathJax-Element-41">||\vec w||</script>的意思是<script type="math/tex" id="MathJax-Element-42">\vec w</script>的二范数，由之前我们得到的最大间隔<script type="math/tex" id="MathJax-Element-43">M=2/||\vec w||</script>，最大化这个式子等价于最小化<script type="math/tex" id="MathJax-Element-44">|||\vec w||</script>，另外由于<script type="math/tex" id="MathJax-Element-45">||\vec w||</script>是一个单调函数，我们可以对其进行平方，和加上系数。数学经验丰富的朋友可能一眼就看出来，这样做是为了方便求导。</p>
+
+
+
+
+<p>最后我们的式子可以写成：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726bc801.png" alt="svmalg.png" title=""></p>
+
+
+
+
+<p><strong>s.t的意思是subject to</strong>，也就是在后面这个限制条件下的意思，这个词在svm的论文里面非常容易见到。这其实是一个<strong>带约束的二次规划(quadratic programming, QP)问题</strong>，是一个<strong>凸问题</strong>，凸问题就是指的不会有局部最优解，可以想象一个漏斗，不管我们开始的时候将一个小球放在漏斗的什么位置，这个小球最终一定可以掉出漏斗，也就是得到全局最优解。s.t.后面的限制条件可以看做是一个凸多面体，我们要做的就是在这个凸多面体中找到最优解。</p>
+
+
+
+
+<h2 id="优化求解">优化求解</h2>
+
+
+
+
+<p>这个优化问题可以用<a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">拉格朗日乘子法</a>去解，使用了<a href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">KKT条件</a>的理论，这里直接作出这个式子的拉格朗日目标函数： <br>
+<img src="https://i.loli.net/2017/10/11/59ddd726bb94a.png" alt="Lagrange.png" title=""></p>
+
+
+
+
+<p>由于求解这个式子的过程需要<a href="https://en.wikipedia.org/wiki/Quadratic_programming#Lagrangian_duality">拉格朗日对偶性</a>的相关知识，以及较深入的数学背景知识，在这篇文章中暂且不谈，以后博客再另外写一篇有关具体推导的文章。</p>
+
+
+
+
+<p>在此，我先贴出在该问题在论文中的关键推导步骤：</p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726dd5a4.png" alt="formulation.png" title=""></p>
+
+
+
+
+<p><img src="https://i.loli.net/2017/10/11/59ddd726d9bc8.png" alt="dual.png" title=""></p>
+
+
+
+
+<p>上图就是我们需要最终优化的式子了。整篇文章到这里，我们终于得到了SVM线性可分问题的优化式子。</p>
+
+
+
+
+<h2 id="svm的使用">SVM的使用</h2>
+
+
+
+
+<p>由于支持向量机算法的实现涉及过多的数学背景，在本中暂不使用原生程序代码实现，而是选择调用Python sklearn 库现有的SVM算法进行使用的举例。</p>
+
+
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -963,325 +1576,71 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#encoding=utf-8</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">re</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">pickle</span>
-</span><span class='line'><span class="c">#spam类对象</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">jieba</span><span class="p">;</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">spamEmailBayes</span><span class="p">:</span>
-</span><span class='line'>    <span class="c">#获得停用词表</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getStopWords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">stopList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/stopwords&quot;</span><span class="p">):</span>
-</span><span class='line'>            <span class="n">stopList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">stopList</span><span class="p">;</span>
-</span><span class='line'>    <span class="c">#获得词典</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_word_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">content</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#分词结果放入res_list</span>
-</span><span class='line'>        <span class="n">res_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res_list</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopList</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">!=</span><span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="o">!=</span><span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>                    <span class="n">wordsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#若列表中的词已在词典中，则加1，否则添加进去</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">addToDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">wordsDict</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsList</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">wordsDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">wordsDict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">get_File_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filePath</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">filenames</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">filenames</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">getTestWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testDict</span><span class="p">,</span><span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">wordProbList</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">num</span>  <span class="ow">in</span> <span class="n">testDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#该文件中包含词个数</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="n">spamDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">spamFilelen</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="n">pw_s</span><span class="o">=</span><span class="mf">0.01</span>
-</span><span class='line'>                <span class="n">pw_n</span><span class="o">=</span><span class="n">normDict</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">normFilelen</span>
-</span><span class='line'>                <span class="n">ps_w</span><span class="o">=</span><span class="n">pw_s</span><span class="o">/</span><span class="p">(</span><span class="n">pw_s</span><span class="o">+</span><span class="n">pw_n</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">ps_w</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spamDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>                <span class="c">#若该词不在脏词词典中，概率设为0.4</span>
-</span><span class='line'>                <span class="n">wordProbList</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
-</span><span class='line'>        <span class="nb">sorted</span><span class="p">(</span><span class="n">wordProbList</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="n">wordProbList</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算贝叶斯概率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calBayes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wordList</span><span class="p">,</span><span class="n">spamdict</span><span class="p">,</span><span class="n">normdict</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">ps_w</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="n">ps_n</span><span class="o">=</span><span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">prob</span> <span class="ow">in</span> <span class="n">wordList</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
-</span><span class='line'>            <span class="k">print</span><span class="p">(</span><span class="n">word</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
-</span><span class='line'>            <span class="n">ps_w</span><span class="o">*=</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">ps_n</span><span class="o">*=</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">prob</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">p</span><span class="o">=</span><span class="n">ps_w</span><span class="o">/</span><span class="p">(</span><span class="n">ps_w</span><span class="o">+</span><span class="n">ps_n</span><span class="p">)</span>
-</span><span class='line'><span class="c">#         print(str(ps_w)+&quot;////&quot;+str(ps_n))</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">p</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#计算预测结果正确率</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">calAccuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">testResult</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rightCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="n">errorCount</span><span class="o">=</span><span class="mi">0</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">name</span> <span class="p">,</span><span class="n">catagory</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000</span> <span class="ow">and</span> <span class="n">catagory</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
-</span><span class='line'>                <span class="n">rightCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">errorCount</span><span class="o">+=</span><span class="mi">1</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">rightCount</span><span class="o">/</span><span class="p">(</span><span class="n">rightCount</span><span class="o">+</span><span class="n">errorCount</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">spam</span><span class="o">=</span><span class="n">spamEmailBayes</span><span class="p">()</span>
-</span><span class='line'><span class="c">#保存词频的词典</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="n">testDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存每封邮件中出现的词</span>
-</span><span class='line'><span class="n">wordsList</span><span class="o">=</span><span class="p">[]</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#保存预测结果,key为文件名，值为预测类别</span>
-</span><span class='line'><span class="n">testResult</span><span class="o">=</span><span class="p">{}</span>
-</span><span class='line'><span class="c">#分别获得正常邮件、垃圾邮件及测试文件名称列表</span>
-</span><span class='line'><span class="n">normFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/normal&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/spam&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">testFileList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">get_File_List</span><span class="p">(</span><span class="s">&quot;../data/test2&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获取训练集中正常邮件与垃圾邮件的数量</span>
-</span><span class='line'><span class="n">normFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">normFileList</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamFilelen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spamFileList</span><span class="p">)</span>
-</span><span class='line'><span class="c">#获得停用词表，用于对停用词过滤</span>
-</span><span class='line'><span class="n">stopList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getStopWords</span><span class="p">()</span>
-</span><span class='line'><span class="c">#获得正常邮件中的词频</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">normFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/normal/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="c">#过滤掉非中文字符</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="c">#将每封邮件出现的词保存在wordsList中</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#统计每个词在所有邮件中出现的次数</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">normDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;norm.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">normDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#获得垃圾邮件中的词频</span>
-</span><span class='line'><span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">spamFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/spam/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;gbk&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'><span class="n">spamDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;spam.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spamDict</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">output</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;model.pkl&#39;</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">spam</span><span class="p">,</span><span class="n">output</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="n">output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 测试邮件</span>
-</span><span class='line'><span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="n">testFileList</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">wordsDict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">wordsList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;../data/test2/&quot;</span><span class="o">+</span><span class="n">fileName</span><span class="p">):</span>
-</span><span class='line'>    <span class="c">#for line in open(&quot;../data/test/&quot;+fileName,encoding=&#39;gbk&#39;):</span>
-</span><span class='line'>        <span class="n">rule</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;[^\u4e00-\u9fa5]&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">line</span><span class="o">=</span><span class="n">rule</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">spam</span><span class="o">.</span><span class="n">get_word_list</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">wordsList</span><span class="p">,</span><span class="n">stopList</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">spam</span><span class="o">.</span><span class="n">addToDict</span><span class="p">(</span><span class="n">wordsList</span><span class="p">,</span> <span class="n">wordsDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">testDict</span><span class="o">=</span><span class="n">wordsDict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span class='line'>    <span class="c">#通过计算每个文件中p(s|w)来得到对分类影响最大的15个词</span>
-</span><span class='line'>    <span class="n">wordProbList</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">getTestWords</span><span class="p">(</span><span class="n">testDict</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span><span class="n">normDict</span><span class="p">,</span><span class="n">normFilelen</span><span class="p">,</span><span class="n">spamFilelen</span><span class="p">)</span>
-</span><span class='line'>    <span class="c">#对每封邮件得到的15个词计算贝叶斯概率</span>
-</span><span class='line'>    <span class="n">p</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calBayes</span><span class="p">(</span><span class="n">wordProbList</span><span class="p">,</span> <span class="n">spamDict</span><span class="p">,</span> <span class="n">normDict</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">testResult</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="c">#计算分类准确率（测试集中文件名低于1000的为正常邮件）</span>
-</span><span class='line'><span class="n">testAccuracy</span><span class="o">=</span><span class="n">spam</span><span class="o">.</span><span class="n">calAccuracy</span><span class="p">(</span><span class="n">testResult</span><span class="p">)</span>
-</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">ic</span> <span class="ow">in</span> <span class="n">testResult</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ic</span><span class="p">))</span>
-</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">testAccuracy</span><span class="p">)</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+</span><span class='line'><span class="n">clf</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">()</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
+</span><span class='line'><span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+</span><span class='line'><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'><span class="n">pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<blockquote>
+  <p>输出结果 <br>
+  SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, <br>
+    decision_function_shape=None, degree=3, gamma=’auto’, kernel=’rbf’, <br>
+    max_iter=-1, probability=False, random_state=None, shrinking=True, <br>
+    tol=0.001, verbose=False) <br>
+  0.986666666667</p>
+</blockquote>
+
+
+
+
+<p>本例使用的是<strong>sklearn</strong>库自带的<strong>iris</strong>数据集使用SVM算法进行训练，然后再进行回测。首先，我们可以看到在不做任意处理的前提下，SVM模型的预估效果也是相当不错的，其准确率高达98%（其结果主要因为使用的数据集优秀导致的，直接运用于工程上时不会有这么高的准确率）。</p>
+
+
+
+
+<p>当然，上面例子中的算法模型的实现方式是十分简陋的。如果真正要使用SVM进行严格地建模，测试集与训练集的划分问题，数据的归一化处理问题等。都是我们需要考虑的元素。但由于本文主要为了介绍与探讨SVM算法，其他细节问题就不一一处理，详细方法可以参考我写的其他文章。</p>
+
+
+
+
+<h2 id="svm的其他实现">SVM的其他实现</h2>
+
+
+
+
+<p>除了Python的sklearn库外，SVM在其它语言及平台也有实现。其中： <br>
+最流行的有</p>
+
+
+
+
+<blockquote>
+  <p><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM：</a><a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">https://www.csie.ntu.edu.tw/~cjlin/libsvm/</a> <br>
+  这是经典的svm库支持多种语言调用</p>
+</blockquote>
+
+
+
+
+<p>再者，在R语言中也有SVM算法的实现：</p>
+
+
+
+
+<blockquote>
+  <p><a href="https://cran.r-project.org/web/packages/e1071/index.html">e1071：</a> <br>
+  <a href="https://cran.r-project.org/web/packages/e1071/index.html">https://cran.r-project.org/web/packages/e1071/index.html</a></p>
+</blockquote>
 
 </div>
   
@@ -1290,711 +1649,8 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
 
       <footer>
       
-      - <a href="/blog/2017/07/03/bei-xie-si-suan-fa-zai-jian-ce-qun-liao-la-ji-yan-gao-zhong-de-ying-yong/">贝叶斯算法在检测群聊垃圾广告中的应用</a>
-      <time datetime="2017-07-03T12:18:45+08:00" pubdate><span class='month'>Jul</span> <span class='day'>03</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/">Python大规模数据的处理技巧</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-06-07T13:43:01+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 问题一：大数据量的csv读入到内存中</a>
-<ul>
-<li><a href="#sec-1-1">1.1. 问题分析：</a></li>
-<li><a href="#sec-1-2">1.2. 应对思路：</a></li>
-<li><a href="#sec-1-3">1.3. 简易示例：</a></li>
-</ul>
-</li>
-<li><a href="#sec-2">2. 问题二：如何高效读取csv文件成python内部的list结构</a>
-<ul>
-<li><a href="#sec-2-1">2.1. 问题分析：</a></li>
-<li><a href="#sec-2-2">2.2. 应对思路：</a></li>
-<li><a href="#sec-2-3">2.3. 简易示例：</a></li>
-</ul>
-</li>
-<li><a href="#sec-3">3. 问题三：数据结构之间合并</a>
-<ul>
-<li><a href="#sec-3-1">3.1. 问题分析：</a></li>
-<li><a href="#sec-3-2">3.2. 应对思路：</a></li>
-<li><a href="#sec-3-3">3.3. 简易示例：</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-
-
-<p>目前在数据分析和挖掘领域内，最为热门的莫过于Python和R了，不过这两门语言一直因为不好处理大规模的数据而被人们调侃，
-同时，hadoop和spark也因此应运而生。然而，其实Python在大规模的数据处理上也并非像传言所说的那么慢。甚者，其中也蕴含了
-挺多的技巧让我们能够利用Python对大规模的数据进行分析计算。</p>
-
-<p>下面就Python操作大规模数据时可能会遇到的问题，给出一些个人的见解。</p>
-
-<h1>问题一：大数据量的csv读入到内存中<a id="sec-1" name="sec-1"></a></h1>
-
-<h2>问题分析：<a id="sec-1-1" name="sec-1-1"></a></h2>
-
-<p>当一个csv文件的数据量十分大时，例如，一个电商站点的一个月的流水帐单或交易记录，其中可能有高达几千万条至上亿条
-记录文本。这样的文件对于一般性能的计算机来说，若是全部数据一次读入内存的存储就非常吃力了，甚至有崩溃的可能。</p>
-
-<h2>应对思路：<a id="sec-1-2" name="sec-1-2"></a></h2>
-
-<p>这时一个比较明智的方法就是将这些数据全部读入数据库之中，或者是根据我们的实际数据使用情况将大文件拆分成小块，然后
-再按块读入。</p>
-
-<h2>简易示例：<a id="sec-1-3" name="sec-1-3"></a></h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#使用pandas包的最简示例</span>
-</span><span class='line'> <span class="n">chunker</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">PATH_LOAD</span><span class="p">,</span> <span class="n">chunksize</span> <span class="o">=</span> <span class="n">CHUNK_SIZE</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#按列按需读取</span>
-</span><span class='line'>  <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;date_time&quot;</span><span class="p">,</span>  <span class="s">&quot;user_id&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">chunks_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">usecols</span> <span class="o">=</span> <span class="n">columns</span><span class="p">,</span> <span class="n">chunksize</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#分块分行读取</span>
-</span><span class='line'><span class="k">for</span> <span class="n">rawPiece</span> <span class="ow">in</span> <span class="n">chunker_rawData</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">current_chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rawPiece</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>   <span class="c">#rawPiece 是dataframe</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">current_chunk_size</span> <span class="p">):</span>
-</span><span class='line'>    <span class="n">timeFlag</span> <span class="o">=</span> <span class="n">timeShape</span><span class="p">(</span><span class="n">rawPiece</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>   <span class="c">#获取第i行的数据</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>问题二：如何高效读取csv文件成python内部的list结构<a id="sec-2" name="sec-2"></a></h1>
-
-<h2>问题分析：<a id="sec-2-1" name="sec-2-1"></a></h2>
-
-<p>当仅仅需要对外部大规模的csv做一些的简单的求和，求平均值，等简单的统计描述性分析时，使用pandas包显然是不明智的，因为pd
-的读取中包含了各种抽象的转换操作，一但数据规模较大，性能是十分低下的。</p>
-
-<h2>应对思路：<a id="sec-2-2" name="sec-2-2"></a></h2>
-
-<p>这时应该直接采用python原生的IO读写操作，节省那些多此一举的转换操作。</p>
-
-<h2>简易示例：<a id="sec-2-3" name="sec-2-3"></a></h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#使用pandas包的方法，转换操作多，效率低下。</span>
-</span><span class='line'>    <span class="n">userList</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>    <span class="n">content</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)):</span>
-</span><span class='line'>        <span class="n">line</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
-</span><span class='line'>        <span class="n">userList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#直接使用原生操作读取外部数据，效率较高，但数据操作不及pandas方便</span>
-</span><span class='line'>    <span class="n">userList</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">userList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>问题三：数据结构之间合并<a id="sec-3" name="sec-3"></a></h1>
-
-<h2>问题分析：<a id="sec-3-1" name="sec-3-1"></a></h2>
-
-<p>当你要对一组数据特征进行建模时，就要用到数据结构的合并功能了。
-然而，对于大规模数据来说，任何的操作和合并如何采用的方法不当，其要浪费的时间都是十分致命的。</p>
-
-<h2>应对思路：<a id="sec-3-2" name="sec-3-2"></a></h2>
-
-<p>纵向的合并使用list并不好，因为需要去拆解list的每一个行元素，并用extend去拓展每一行的纵向元素
-最好使用dataframe中的concat函数：c = pd.concat([a, b], axis = 1)，当axis=0时表示合并行（以行为轴）</p>
-
-<h2>简易示例：<a id="sec-3-3" name="sec-3-3"></a></h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">inx1</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nSample_neg</span><span class="p">),</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;randVal&#39;</span><span class="p">])</span>
-</span><span class='line'><span class="n">inx2</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nSample_neg</span><span class="p">),</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;inxVal&#39;</span><span class="p">])</span>
-</span><span class='line'><span class="n">inx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">inx1</span><span class="p">,</span> <span class="n">inx2</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/06/07/pythonda-gui-mo-shu-ju-de-chu-li-ji-qiao/">Python大规模数据的处理技巧</a>
-      <time datetime="2017-06-07T13:43:01+08:00" pubdate><span class='month'>Jun</span> <span class='day'>07</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/python/'>python</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/05/21/ji-yu-redisde-bloomfilter/">基于Redis的Bloomfilter</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-05-21T11:05:15+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 背景</a></li>
-<li><a href="#sec-2">2. 前言及原理简介</a>
-<ul>
-<li><a href="#sec-2-1">2.1. 传统弊端</a></li>
-<li><a href="#sec-2-2">2.2. bloomfilter</a>
-<ul>
-<li><a href="#sec-2-2-1">2.2.1. 优点：</a></li>
-<li><a href="#sec-2-2-2">2.2.2. 缺点：</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#sec-3">3. 简单图示</a></li>
-<li><a href="#sec-4">4. 算法实现</a></li>
-</ul>
-</div>
-</div>
-
-
-<h1>背景<a id="sec-1" name="sec-1"></a></h1>
-
-<p>url去重一直是大型分布式爬虫的主题，在一般规模比较大的的情景，去重需要考虑到两个点：</p>
-
-<ol>
-<li>去重的数据量</li>
-<li>去重的速度</li>
-</ol>
-
-
-<p>并且，在一般情况下为了尽量降低去重对爬虫效率的影响一般选择在内存中去重。</p>
-
-<ul>
-<li>小数据：直接使用语言的逻辑判断及数据结构去重，如python的set，ruby的Set</li>
-<li>持续化去重： redis的set</li>
-<li>中型数据量去重：加密算法压缩url及长字符串在混合使用其他方法去重</li>
-<li>大型数据去重：使用bloomfilter（布隆过滤器）桉内存位去重</li>
-</ul>
-
-
-<h1>前言及原理简介<a id="sec-2" name="sec-2"></a></h1>
-
-<h2>传统弊端<a id="sec-2-1" name="sec-2-1"></a></h2>
-
-<p>按照以往惯例来说，我们一般判断一个元素是否在一个集合内的通常做法是：先将所有元素保存下来，
-然后通过比较判断它是否在集合之中。但是，这样的常规判断方法有一个很大的弊端就是，随着集合内的
-元素个数变大，我们需要的空间和时间都呈线性增长，检索速度也越来越慢。</p>
-
-<h2>bloomfilter<a id="sec-2-2" name="sec-2-2"></a></h2>
-
-<p>而Bloom filter 采用的是哈希函数的方法，将一个元素表示为一个点并将他映射到一个长度为m的
-阵列上。在检索时如果在阵列上发现对应的映射点为1时，那么这个元素在集合内，反之则不在集合内。</p>
-
-<h3>优点：<a id="sec-2-2-1" name="sec-2-2-1"></a></h3>
-
-<p>Bloom filter 优点在于它的插入和查询时间都是常数，另外它查询的元素不保存元素本身，具有良好的
-安全性。</p>
-
-<h3>缺点：<a id="sec-2-2-2" name="sec-2-2-2"></a></h3>
-
-<p>最明显的一点是，当插入元素越多，查询元素被错判成“在集合内”的概率就越大。针对这个问题常用的
-解决方法有：使用k个哈希函数来对应映射k个点，如果所对应的所有点都是1的话。那么元素在集合内，
-如果任何一个有0的话，则元素不在集合内。另外，Bloom filter也不能删除一个元素，因为多个元素的哈希
-的结果可能在bloom filter的阵列中都是占用同一个位。如果删除了一个比特位，可能会影响多个元素的检测。</p>
-
-<h1>简单图示<a id="sec-3" name="sec-3"></a></h1>
-
-<p>实现我们设我们的哈希函数有两个。</p>
-
-<p>开始时集合内没有元素：</p>
-
-<p><img src="http://e.hiphotos.baidu.com/baike/s%3D250/sign=0fd8813a78f0f736dcfe4b043a54b382/7af40ad162d9f2d3f39093aaa9ec8a136227ccf6.jpg" alt="img" /></p>
-
-<p>当来了一个元素a时，进行哈希计算再判断，当计算出对应的比特位上为0时，即a不在集合内，添加a的哈希值进去。</p>
-
-<p><img src="http://g.hiphotos.baidu.com/baike/s%3D250/sign=7debb7818c1001e94a3c130a880e7b06/9d82d158ccbf6c815e2dd280bd3eb13533fa4044.jpg" alt="img" /></p>
-
-<p>之后的元素，要判断是不是在集合内，也是同 a 一样的方法，只有对元素哈希后对应位置上都是 1 才认为这个元素在集合内</p>
-
-<p><img src="http://c.hiphotos.baidu.com/baike/s%3D250/sign=71f00574a18b87d65442ac1a37092860/d6ca7bcb0a46f21f7ce5e916f6246b600d33aea6.jpg" alt="img" /></p>
-
-<p>随着元素的插入，Bloom filter 中修改的值变多，出现误判的几率也随之变大，当新来一个元素时，
-满足其在集合内的条件，即所有对应位都是1，这样就可能有两种情况，
-一是这个元素就在集合内，没有发生误判；还有一种情况就是发生误判，出现了哈希碰撞，这个元素本不在集合内。</p>
-
-<p><img src="http://a.hiphotos.baidu.com/baike/s%3D250/sign=7dd68ea2912397ddd2799f016983b216/2cf5e0fe9925bc31448eb6dd5edf8db1ca1370a7.jpg" alt="img" /></p>
-
-<h1>算法实现<a id="sec-4" name="sec-4"></a></h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># encoding=utf-8</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">redis</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SimpleHash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cap</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">=</span> <span class="n">cap</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
-</span><span class='line'>            <span class="n">ret</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">*</span> <span class="n">ret</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cap</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ret</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">BloomFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">blockNum</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s">&#39;bloomfilter&#39;</span><span class="p">):</span>
-</span><span class='line'>        <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">        :param host: the host of Redis</span>
-</span><span class='line'><span class="sd">        :param port: the port of Redis</span>
-</span><span class='line'><span class="sd">        :param db: witch db in Redis</span>
-</span><span class='line'><span class="sd">        :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.</span>
-</span><span class='line'><span class="sd">        :param key: the key&#39;s name in Redis</span>
-</span><span class='line'><span class="sd">        &quot;&quot;&quot;</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">bit_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span>  <span class="c"># Redis的String类型最大容量为512M，现使用256M</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">seeds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">61</span><span class="p">]</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span> <span class="o">=</span> <span class="n">blockNum</span>
-</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seeds</span><span class="p">:</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SimpleHash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bit_size</span><span class="p">,</span> <span class="n">seed</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">isContains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_input</span><span class="p">):</span>
-</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">str_input</span><span class="p">:</span>
-</span><span class='line'>            <span class="k">return</span> <span class="bp">False</span>
-</span><span class='line'>        <span class="n">m5</span> <span class="o">=</span> <span class="n">md5</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">m5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">str_input</span> <span class="o">=</span> <span class="n">m5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">str_input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">loc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">getbit</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">ret</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_input</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">m5</span> <span class="o">=</span> <span class="n">md5</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">m5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">str_input</span> <span class="o">=</span> <span class="n">m5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">str_input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockNum</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hashfunc</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">loc</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">str_input</span><span class="p">)</span>
-</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setbit</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'><span class="sd">&quot;&quot;&quot; 第一次运行时会显示 not exists!，之后再运行会显示 exists! &quot;&quot;&quot;</span>
-</span><span class='line'>    <span class="n">bf</span> <span class="o">=</span> <span class="n">BloomFilter</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">bf</span><span class="o">.</span><span class="n">isContains</span><span class="p">(</span><span class="s">&#39;http://www.baidu.com&#39;</span><span class="p">):</span>   <span class="c"># 判断字符串是否存在</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;exists!&#39;</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">print</span> <span class="s">&#39;not exists!&#39;</span>
-</span><span class='line'>        <span class="n">bf</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;http://www.baidu.com&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/05/21/ji-yu-redisde-bloomfilter/">基于Redis的Bloomfilter</a>
-      <time datetime="2017-05-21T11:05:15+08:00" pubdate><span class='month'>May</span> <span class='day'>21</span> <span class='year'>2017</span></time>
-      
-      <span class="categories">posted in <a class='category' href='/blog/categories/suan-fa-bi-ji/'>算法笔记</a></span>
-      
-      </footer>
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/">基本抽样和蓄水池抽样</a></h1>
-    
-    
-      <div class="post-meta">
-        <p class="meta">
-          <span class="timestamp">- 
-
-
-
-
-
-
-
-
-  
-
-
-
-<time datetime="2017-05-12T19:33:10+08:00" pubdate data-updated="true"></time> -</span>
-          
-        </p>
-      </div>
-    
-  </header>
-
-
-  <div class="entry-content"><div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. 前言</a></li>
-<li><a href="#sec-2">2. 基本采样方法的简介</a>
-<ul>
-<li><a href="#sec-2-1">2.1. 单纯随机抽样（simple random sampling）</a></li>
-<li><a href="#sec-2-2">2.2. 系统抽样（systematic sampling）</a></li>
-</ul>
-</li>
-<li><a href="#sec-3">3. 扩展</a>
-<ul>
-<li><a href="#sec-3-1">3.1. 蓄水池抽样算法</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-
-
-<h1>前言<a id="sec-1" name="sec-1"></a></h1>
-
-<p>在阅读机器学习以及神经网络的相关资料中，我们总会时不时看见统计采样的身影。
-看似简单的统计采样，在各种学习算法中发挥的强大的作用，一份好的样本，不但可以大幅度降低算法的计算量，
-还能较为准确的代表整个样本空间，对算法的效率优化和整体的模型设计都有着非常大的意义。</p>
-
-<h1>基本采样方法的简介<a id="sec-2" name="sec-2"></a></h1>
-
-<h2>单纯随机抽样（simple random sampling）<a id="sec-2-1" name="sec-2-1"></a></h2>
-
-<p><strong>主要思想</strong> ：首先将整体编号，然后采用随机数的方法进行不放回性地抽取，并将所取得的数据组成新的样本。</p>
-
-<ul>
-<li><em>优点</em> :操作简单</li>
-<li><em>缺点</em> :数据量大时难以编号</li>
-</ul>
-
-
-<p><strong>代码实现</strong> ：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">dataMat</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-</span><span class='line'>            <span class="n">dataMat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">dataMat</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">simple_sampling</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-</span><span class='line'>    <span class="k">try</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">samples</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">samples</span>
-</span><span class='line'>    <span class="k">except</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">print</span><span class="p">(</span><span class="s">&#39;sample larger than population&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>系统抽样（systematic sampling）<a id="sec-2-2" name="sec-2-2"></a></h2>
-
-<p><strong>主要思想</strong> ：先将总体分成n个部分，然后依次用相等间隔，从每一个部分中抽取出一个数据项组成观察样本。</p>
-
-<ul>
-<li><em>优点</em> :易于理解，样本涵盖范围广，有利于避免边缘化。</li>
-<li><em>缺点</em> :容易受总体的增减趋势影响。</li>
-</ul>
-
-
-<p><strong>代码实现</strong> ：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">dataMat</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-</span><span class='line'>            <span class="n">dataMat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">dataMat</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">systematic_sampling</span><span class="p">(</span><span class="n">dataMat</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataMat</span><span class="p">)</span><span class="o">/</span><span class="n">num</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">dataMat</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">k</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">)]</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">samples</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>扩展<a id="sec-3" name="sec-3"></a></h1>
-
-<h2>蓄水池抽样算法<a id="sec-3-1" name="sec-3-1"></a></h2>
-
-<p>蓄水池抽样是个很有趣的问题，这个问题的来源是关于等概率抽样的一种思考，
-问题是，如何能在不知道总体对象数量（或者数量巨大）的情况下抽取k个对象，
-使得每个对象被抽取到的概率相同。</p>
-
-<p><strong>原理</strong> ：考虑最终一定要抽取到k个对象，所以先任意抽出k个，
-然后对剩下的对象分别以某种概率概率，使得最终每个对象被抽到的概率相同。</p>
-
-<p><strong>算法步骤</strong> ：</p>
-
-<ul>
-<li>输入：长度为N的数组L（N未知或者很大）；输出：被等可能抽出的长度为k的数组l</li>
-<li>对输入L取前k个数组成的数组作为蓄水池</li>
-<li>对于L的第i(i=k+1,k+2,…,N)个数，任取r为0~i-1之间的整数，若r>k-1,则不进行替换，若r&lt;=k-1,则用第i个数去替换蓄水池中第r个数</li>
-<li>遍历一遍L，取到的l中的每个元素都是以概率k/n等可能取到的</li>
-</ul>
-
-
-<p><strong>代码实现</strong> ：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">pool</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">L</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">k</span><span class="p">:]):</span>
-</span><span class='line'>        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">r</span><span class="o">&lt;=</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">arr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">arr</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">l1</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">l2</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">q</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-</span><span class='line'>        <span class="n">l1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l1</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">l2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">l1</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">l1</span><span class="p">,</span><span class="n">l2</span>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">10000000</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span><span class="c">#生成等量的0，1，2</span>
-</span><span class='line'>    <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span>
-</span><span class='line'>    <span class="n">L</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span class='line'>    <span class="n">k</span> <span class="o">=</span> <span class="mi">300000</span><span class="c">#设置要抽取的样本的数量，一般远小于总体数量</span>
-</span><span class='line'>    <span class="n">p</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">l1</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;value=</span><span class="si">%d</span><span class="s">&#39;</span><span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">3</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="n">labels</span><span class="o">=</span><span class="n">l1</span><span class="p">,</span><span class="n">labeldistance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">autopct</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%1.2f%%</span><span class="s">&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Reservoir sampling&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-      <footer>
-      
-      - <a href="/blog/2017/05/12/ji-ben-chou-yang-he-xu-shui-chi-chou-yang/">基本抽样和蓄水池抽样</a>
-      <time datetime="2017-05-12T19:33:10+08:00" pubdate><span class='month'>May</span> <span class='day'>12</span> <span class='year'>2017</span></time>
+      - <a href="/blog/2017/10/11/svmzhi-chi-xiang-liang-ji/">SVM支持向量机</a>
+      <time datetime="2017-10-11T16:38:50+08:00" pubdate><span class='month'>Oct</span> <span class='day'>11</span> <span class='year'>2017</span></time>
       
       <span class="categories">posted in <a class='category' href='/blog/categories/ji-qi-xue-xi/'>机器学习</a></span>
       
@@ -2074,7 +1730,7 @@ P（S|W）的值。根据条件概率公式我们可以写出以下等式。</p>
 
 <div id="credit" role="contentinfo">
   <p>
-    Copyright &copy; 2020 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
+    Copyright &copy; 2022 - <a href="https://github.com/EdmondFrank/">EdmondFrank</a> -
     <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   </p>
 </div>
